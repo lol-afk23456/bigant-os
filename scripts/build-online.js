@@ -3,7 +3,9 @@
 //
 // Strumenti fissati, installati nella cartella tecnica esclusa da Git:
 //   npm install --prefix .cache/build-online esbuild@0.25.10 buffer@6.0.3 sql.js@1.13.0
-// Uso: node scripts/build-online.js
+// Uso: node scripts/build-online.js            → .cache/online/BigAnt-OS.html (Artifact privato, con password di prova)
+//      node scripts/build-online.js --pubblica → online/pubblica/index.html (sito pubblico di prova su Railway:
+//      accesso con i profili DEMO, senza password, senza giri reali né dati interni dell'agenzia)
 // Le password dei due accessi di prova stanno in .cache/online/credenziali.json (esclusa da Git):
 // si generano la prima volta, oppure si impostano con BIGANT_ONLINE_PASSWORD_SOCIO e BIGANT_ONLINE_PASSWORD_CLIENTE.
 import {readFileSync,writeFileSync,mkdirSync,readdirSync,existsSync} from 'node:fs';
@@ -15,23 +17,25 @@ const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const strumenti=resolve(root,'.cache/build-online/node_modules');
 if(!existsSync(resolve(strumenti,'esbuild')))throw new Error('Strumenti mancanti: npm install --prefix .cache/build-online esbuild@0.25.10 buffer@6.0.3 sql.js@1.13.0');
 const {build}=await import(resolve(strumenti,'esbuild/lib/main.js'));
+const pubblica=process.argv.includes('--pubblica');
 const uscita=resolve(root,'.cache/online');mkdirSync(uscita,{recursive:true});
 
 // ---------- Credenziali di prova (mai nel repository) ----------
 const fileCredenziali=resolve(uscita,'credenziali.json');
 const alfabeto='ABCDEFGHJKMNPQRSTUVWXYZ23456789',parola=n=>[...randomBytes(n)].map(b=>alfabeto[b%alfabeto.length]).join('');
-const credenziali=existsSync(fileCredenziali)?JSON.parse(readFileSync(fileCredenziali,'utf8')):{
+const credenziali=pubblica?{}:existsSync(fileCredenziali)?JSON.parse(readFileSync(fileCredenziali,'utf8')):{
  'demo-owner':{email:'socio@bigant.example',password:process.env.BIGANT_ONLINE_PASSWORD_SOCIO||`Socio-${parola(4)}-${parola(4)}`},
  'demo-client':{email:'cliente@aurora.example',password:process.env.BIGANT_ONLINE_PASSWORD_CLIENTE||`Cliente-${parola(4)}-${parola(4)}`}
 };
-writeFileSync(fileCredenziali,JSON.stringify(credenziali,null,1),{mode:0o600});
+if(!pubblica)writeFileSync(fileCredenziali,JSON.stringify(credenziali,null,1),{mode:0o600});
 
 // ---------- File letti dal server a runtime: playbook, istruzioni degli agenti, giri reali registrati ----------
 const vfs={};
 const aggiungi=(cartella,filtro)=>{const d=resolve(root,cartella);if(!existsSync(d))return;for(const voce of readdirSync(d,{withFileTypes:true})){const p=resolve(d,voce.name);if(voce.isDirectory())aggiungi(relative(root,p),filtro);else if(filtro(voce.name))vfs['/app/'+relative(root,p)]=readFileSync(p,'utf8');}};
-aggiungi('docs/playbook',n=>n.endsWith('.md'));
-aggiungi('.claude/agents',n=>n.endsWith('.md'));
-aggiungi('docs/demo-sciame',n=>n==='giro.json');
+// Il catalogo legge solo le schede S01–S19; nel sito pubblico restano fuori gli altri documenti interni del playbook.
+aggiungi('docs/playbook',n=>pubblica?/^S\d\d_.+\.md$/.test(n):n.endsWith('.md'));
+// Nel sito pubblico: niente istruzioni degli agenti né registri dei giri reali (contengono costi e dati interni).
+if(!pubblica){aggiungi('.claude/agents',n=>n.endsWith('.md'));aggiungi('docs/demo-sciame',n=>n==='giro.json');}
 
 const shim=n=>resolve(root,'online/shim',n);
 const moduli={'node:sqlite':shim('sqlite.js'),'node:crypto':shim('crypto.js'),'node:fs':shim('fs.js'),'node:path':shim('path.js'),'node:url':shim('url.js'),'node:http':shim('http.js'),
@@ -64,7 +68,10 @@ const versione=impronta.digest('hex').slice(0,12);
 const r=await build({entryPoints:[resolve(root,'online/avvio.js')],bundle:true,format:'iife',globalName:'BigAntOnline',platform:'browser',target:'es2022',write:false,
  minifyWhitespace:true,minifySyntax:true,legalComments:'none',nodePaths:[strumenti],plugins:[pluginOnline],logLevel:'warning',
  define:{__BIGANT_VERSIONE__:JSON.stringify(versione),__BIGANT_CREDENZIALI__:JSON.stringify(Object.fromEntries(Object.entries(credenziali).map(([id,c])=>[id,c.password])))}});
-const server=r.outputFiles[0].text;
+let server=r.outputFiles[0].text;
+// Dati interni dell'agenzia che non vanno in una pagina pubblica.
+const interni=[/Circa 14 clienti attivi[^'"]*/g];
+if(pubblica)for(const x of interni){if(!x.test(server))throw new Error('Dato interno da oscurare non trovato: '+x);server=server.replace(x,'[Dato interno non pubblicato nella versione di prova]');}
 
 // ---------- Dashboard: stessi file di public/, con tre adattamenti per la pagina online ----------
 let app=readFileSync(resolve(root,'public/app.js'),'utf8');
@@ -89,7 +96,7 @@ const pagina=`<title>BigAnt OS</title>
 <div id="app"><main class="loading" aria-live="polite"><p>Sto aprendo BigAnt OS nel tuo browser…</p></main></div>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 <dialog id="dialog" aria-labelledby="dialog-title"><div id="dialog-content"></div></dialog>
-<div class="online-bar" id="online-bar" hidden><span>Versione online di prova · i dati restano in questo browser</span><button type="button" id="online-reset">Ricomincia da capo</button></div>
+<div class="online-bar" id="online-bar" hidden><span>${pubblica?'Prova pubblica · dati inventati, restano nel tuo browser':'Versione online di prova · i dati restano in questo browser'}</span><button type="button" id="online-reset">Ricomincia da capo</button></div>
 ${script(`try{const o=history.replaceState.bind(history);history.replaceState=(...a)=>{try{o(...a);}catch{}};}catch{}`)}
 ${script(sqlJs)}
 ${script(server)}
@@ -106,5 +113,7 @@ ${script(`(async()=>{
   window.__BIGANT_START();
  }catch(e){document.getElementById('app').innerHTML='<main class="loading"><p>BigAnt OS non è riuscito a partire in questo browser.</p><p><small>'+String(e&&e.message||e).replace(/[<>&]/g,'')+'</small></p></main>';console.error(e);}
 })();`)}`;
-const file=resolve(uscita,'BigAnt-OS.html');writeFileSync(file,pagina);
-console.log(JSON.stringify({file:relative(root,file),versione,kb:Math.round(Buffer.byteLength(pagina)/1024),fileInclusi:Object.keys(vfs).length,credenziali:relative(root,fileCredenziali)}));
+const file=pubblica?resolve(root,'online/pubblica/index.html'):resolve(uscita,'BigAnt-OS.html');
+if(pubblica)mkdirSync(dirname(file),{recursive:true});
+writeFileSync(file,pubblica?`<!doctype html><html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><meta name="description" content="BigAnt OS: prova con dati inventati."></head><body>${pagina}</body></html>`:pagina);
+console.log(JSON.stringify({file:relative(root,file),versione,kb:Math.round(Buffer.byteLength(pagina)/1024),fileInclusi:Object.keys(vfs).length,credenziali:pubblica?'nessuna (profili DEMO)':relative(root,fileCredenziali)}));

@@ -48,7 +48,8 @@ export async function avvia(){
  const [db,sessione]=await Promise.all([leggi('database'),leggi('sessione')]);
  if(db?.versione===VERSIONE)globalThis.__BIGANT_DB_SALVATO=db.dati;
  if(sessione?.versione===VERSIONE)cookie=sessione.cookie||'';
- const app=createApp({worker:true,importaProveSciame:true,env:{BIGANT_MOTORE:'demo',BIGANT_DEMO_RITMO_MS:'6000',BIGANT_APPROVAZIONE_AUTOMATICA_DEMO:'true',BIGANT_SCIAME_PARALLELISMO:'3'}});
+ const app=createApp({worker:true,importaProveSciame:true,// nel sito pubblico i giri reali non sono inclusi: l'import trova la cartella vuota
+ env:{BIGANT_MOTORE:'demo',BIGANT_DEMO_RITMO_MS:'6000',BIGANT_APPROVAZIONE_AUTOMATICA_DEMO:'true',BIGANT_SCIAME_PARALLELISMO:'3'}});
  app.server.listen(4330,'127.0.0.1');
  // Password dei due accessi di prova (scelte alla costruzione della pagina, mai salvate nel repository).
  for(const [id,password] of Object.entries(CREDENZIALI))app.store.run('UPDATE os_users SET password_hash=? WHERE id=?',passwordHash(password),id);
