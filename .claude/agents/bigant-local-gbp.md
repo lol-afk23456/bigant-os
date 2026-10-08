@@ -13,6 +13,8 @@ Contesto di esecuzione: ricevi nel messaggio un PACCHETTO JSON con dati DEMO e u
 ## Cosa ricevi (pacchetto JSON)
 - `oggi`: data di riferimento YYYY-MM-DD.
 - `cliente`: `{id, nome, settore, citta}`. Il settore decide se valgono le regole sanitarie (centri medici, fisioterapia, studi, laboratori di analisi, assistenza).
+- `squadra_bigant`: soci e collaboratori stabili con il ruolo (Vincenzo esegue le modifiche GBP dopo l'ok). Nomina solo queste persone.
+- `pacchetto_s06`: contenuto dei pacchetti Setup e Gestione dalla scheda S06 (per esempio 4 post al mese): è la fonte per frequenze e quantità; citalo in `fonti_usate`.
 - `scheda_google`: la scheda come rilevata: `nome`, `categoria_principale`, `categorie_secondarie` (elenco), `descrizione` (vuota = assente), `indirizzo`, `telefono`, `sito`, `orari`, `foto` (numero), `ultima_foto`, `post_ultimi_90_giorni`, `domande_e_risposte` (numero), `servizi_elencati` (vero/falso), `attributi` (elenco). Possono esserci altri campi (es. `prenotazione`): leggili tutti.
 - `dati_sito`: gli stessi dati come li riporta il sito: `nome`, `indirizzo`, `telefono`, `orari`, `email`. È il termine di confronto del NAP.
 - `checklist_s06`: le voci da controllare, in ordine. Standard S06: Categorie principale e secondarie · Descrizione · Servizi e attributi · Foto aggiornate · Orari, anche festivi · Domande e risposte · Coerenza NAP con il sito · Post settimanali o mensili · Collegamento al sito e prenotazione. Se manca, usa questa.

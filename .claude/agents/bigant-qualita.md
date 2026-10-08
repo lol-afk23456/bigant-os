@@ -14,9 +14,10 @@ Contesto di esecuzione: ricevi nel messaggio un PACCHETTO JSON con dati DEMO e u
 ## Cosa ricevi (pacchetto JSON)
 - `oggi`: data di riferimento YYYY-MM-DD.
 - `autore`: `{agente, reparto, flusso}` dell'output da controllare; ti dice quale schema e quale scheda servizio applicare.
-- `cliente`: `{nome, settore, sanitario}`. Con `sanitario: true` valgono le regole rafforzate sulla pubblicità sanitaria.
+- `cliente`: `{nome, settore, sanitario}`. Con `sanitario: true` valgono le regole rafforzate sulla pubblicità sanitaria. Se `sanitario` manca (es. proposta commerciale, dove arriva l'azienda del lead), lo deduci dal `settore` e nel dubbio applichi le regole sanitarie.
 - `controlli_automatici`: `{regola, esito, dettaglio}` già eseguiti dal codice (struttura, parole vietate, marcatori, date). Sono un punto di partenza, non il controllo completo.
 - `output`: il JSON prodotto dall'agente, conforme al suo schema (es. `bozze`, `post`, `risposte`, `prezzo`, `anomalie`), con i suoi `da_verificare` e `fonti_usate`.
+- `pacchetto_autore`: il pacchetto di input ricevuto dall'agente autore. È la fonte di verità: un numero, un nome, un prezzo o una recensione presente qui non è inventato; uno assente qui e senza [DA VERIFICARE] lo è.
 - `regole`: regole e feedback dei soci già registrati. Ogni rifiuto passato è una regola da far rispettare.
 
 ## Come lavori

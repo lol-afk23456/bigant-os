@@ -11,7 +11,7 @@ import {createMotore,ETICHETTE} from '../motori/index.js';
 import {schemi,valida,FLUSSI} from './schemi.js';
 import {controlliAutomatici,esitoQualita} from './qualita.js';
 import {agentiSciame,perRegistro,descrizioneFlussi,statoServiziPlaybook,roadmapQ4_2026,checklistS06} from './agenti.js';
-import {aziendeDemo,bottegaDemo,bigantProfilo,pacchettoPresenza,NOTA_DEMO} from './dati-demo.js';
+import {aziendeDemo,bottegaDemo,bigantProfilo,pacchettoPresenza,pacchettoS06,NOTA_DEMO} from './dati-demo.js';
 
 const romeDate=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Rome',year:'numeric',month:'2-digit',day:'2-digit'});
 const euro=c=>(c<0?'-':'')+(Math.abs(c)/100).toLocaleString('it-IT',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
@@ -65,7 +65,7 @@ export function createSciame({store:s,production,administration,growth,orchestra
 
  async function controllo(giro,autore,output,pacchetto,cliente){
   const auto=controlliAutomatici(autore.agente,output,pacchetto);
-  const pq=nuovoPasso(giro,{flusso:autore.flusso,agente:'qualita',clientId:autore.client_id,visibilita:autore.visibilita,controlla:autore.id,compito:`Controlla l’output di ${agentiSciame[autore.agente].nome} prima della coda approvazioni`,pacchetto:{oggi:oggi(),autore:{agente:autore.agente,reparto:autore.reparto,flusso:autore.flusso},cliente,controlli_automatici:auto,output,regole:['Brand e tono BigAnt','Nessun dato inventato: ciò che manca è [DA VERIFICARE]','Dati DEMO mai presentati come reali','GDPR e consensi','Pubblicità sanitaria e Codice del Consumo','Recensioni mai inventate o incentivate','Prezzi solo [DA VALIDARE]','Nessuna azione esterna dichiarata come eseguita','BigAnt non è una società']}});
+  const pq=nuovoPasso(giro,{flusso:autore.flusso,agente:'qualita',clientId:autore.client_id,visibilita:autore.visibilita,controlla:autore.id,compito:`Controlla l’output di ${agentiSciame[autore.agente].nome} prima della coda approvazioni`,pacchetto:{oggi:oggi(),autore:{agente:autore.agente,reparto:autore.reparto,flusso:autore.flusso},cliente,controlli_automatici:auto,output,pacchetto_autore:pacchetto,regole:['Brand e tono BigAnt','Nessun dato inventato: ciò che manca è [DA VERIFICARE]','Dati DEMO mai presentati come reali','GDPR e consensi','Pubblicità sanitaria e Codice del Consumo','Recensioni mai inventate o incentivate','Prezzi solo [DA VALIDARE]','Nessuna azione esterna dichiarata come eseguita','BigAnt non è una società']}});
   try{
    const {output:v,meta}=await chiamaMotore(pq,{agente:'qualita',compito:pq.compito,pacchetto:JSON.parse(pq.input_json)});
    const esito=esitoQualita(auto,v);
@@ -84,7 +84,7 @@ export function createSciame({store:s,production,administration,growth,orchestra
    p=aggiorna(p.id,{stato:'controllo_qualita',output_json:JSON.stringify(output),durata_ms:durata,costo_usd_micro:costo});
    registra(p,`Sciame · ${agentiSciame[p.agente].nome}: output pronto per Qualità`,{costoUsdMicro:costo,durataMs:durata});
    let q=await controllo(giro,p,output,def.pacchetto,def.cliente);
-   if(q.esito==='da_correggere'){
+   if(q.esito!=='approvabile'){ // una sola correzione, anche dopo un 'bloccato': poi il passo si ferma
     const rilievi=[...q.auto.filter(c=>c.esito!=='ok').map(c=>`${c.regola}: ${c.dettaglio}`),...q.verdetto.rilievi.map(r=>`[${r.gravita}] ${r.problema} → ${r.correzione}`)];
     registra(p,`Sciame · ${agentiSciame[p.agente].nome}: correzione richiesta da Qualità`,{rilievi:rilievi.length});
     const r=await chiamaMotore(p,{...def,compito:`${def.compito}\n\nCORREZIONE RICHIESTA DA QUALITÀ: riscrivi l’output applicando questi rilievi.\n- ${rilievi.join('\n- ')}`});
@@ -122,15 +122,16 @@ export function createSciame({store:s,production,administration,growth,orchestra
  function eseguiAzioneEsterna(user,id){requireOwner(user);const a=s.one('SELECT * FROM os_azioni_esterne WHERE id=?',id);if(!a)throw new AppError('Azione non trovata.',404);s.audit(user,a.client_id,'Tentativo di azione esterna rifiutato',id,{tipo:a.tipo},'internal');throw new AppError(`${AZIONI[a.tipo]||a.tipo}: bloccato. ${a.motivo}`,409);}
 
  // ---------- Contenuti nella produzione comune (stati IDEA → … → PROGRAMMATO) ----------
- async function contenuti(passoRow,bozze,{approvatore}){
+ async function contenuti(passoRow,bozze,{approvatore,servizio='social',attendiCliente=false}){
   const r=robot(),c=passoRow.client_id,creati=[];
   for(const b of bozze){
-   const corpo=`${b.testo}\n\nCTA: ${b.cta}${b.hashtag?.length?'\n'+b.hashtag.join(' '):''}\n\nBrief visivo: ${b.brief_visivo}\nCanale: ${b.canale} · ${b.formato}`;
+   const corpo=`${b.testo}\n\nCTA: ${b.cta}${b.hashtag?.length?'\n'+b.hashtag.join(' '):''}${b.brief_visivo?`\n\nBrief visivo: ${b.brief_visivo}`:''}${b.canale?`\nCanale: ${b.canale} · ${b.formato}`:'\nCanale: Google Business Profile'}`;
    const fonte=`Sciame ${passoRow.giro_id.slice(0,8)} · ${agentiSciame[passoRow.agente].nome} · motore ${passoRow.motore}`;
-   let x=(await production.handle({method:'POST',path:'/contents',body:{service:'social',title:text(b.titolo,170),body:corpo,source:fonte},user:r,clientId:c})).data;
+   let x=(await production.handle({method:'POST',path:'/contents',body:{service:servizio,title:text(b.titolo,170),body:corpo,source:fonte},user:r,clientId:c})).data;
    x=(await production.handle({method:'PATCH',path:'/contents/'+x.id,body:{version:x.version,state:'IN PRODUZIONE'},user:r,clientId:c})).data;
    x=(await production.handle({method:'PATCH',path:'/contents/'+x.id,body:{version:x.version,state:'DA APPROVARE'},user:r,clientId:c})).data;
    const a=s.one("SELECT * FROM os_approvals WHERE kind='content' AND entity_id=? AND version=?",x.id,x.version);
+   if(attendiCliente){registra(passoRow,'Contenuto in attesa dell’approvazione del cliente',{contenuto:x.id,approvazione:a.id});creati.push(x.id);continue;}
    if(autoDemo()){
     await production.handle({method:'POST',path:'/approvals/'+a.id,body:{decision:'approved',reason:`auto-approvato (DEMO) · ${approvatore}`},user:r,clientId:c});
     s.run("UPDATE os_approvals SET reason=? WHERE id=?",`auto-approvato (DEMO) · ${approvatore}`,a.id);
@@ -139,7 +140,7 @@ export function createSciame({store:s,production,administration,growth,orchestra
     x=(await production.handle({method:'PATCH',path:'/contents/'+x.id,body:{version:x.version,state:'PROGRAMMATO',scheduled_at:quando},user:r,clientId:c})).data;
     registra(passoRow,'Contenuto programmato (solo calendario DEMO)',{contenuto:x.id,quando});
    }
-   creati.push(x.id);azioneEsterna(passoRow,'pubblicazione',`${b.canale}: «${b.titolo}» — pubblicazione reale bloccata (Postiz/Meta non collegati)`);
+   creati.push(x.id);azioneEsterna(passoRow,servizio==='local'?'pubblicazione_gbp':'pubblicazione',servizio==='local'?`Post GBP «${b.titolo}» — pubblicazione bloccata (GBP API non collegata)`:`${b.canale}: «${b.titolo}» — pubblicazione reale bloccata (Postiz/Meta non collegati)`);
   }
   return creati;
  }
@@ -229,7 +230,7 @@ export function createSciame({store:s,production,administration,growth,orchestra
  }
  async function flussoCommerciale(giro){
   const candidati=await leadCandidati();
-  const pr={oggi:oggi(),obiettivo:'Trovare e qualificare PMI locali per l’analisi gratuita S17',servizi_prioritari:['Video','Siti web','Social','Sponsorizzate'],servizi_esclusi_acquisizione:['Insegne','Foto','Abbigliamento','Gadget personalizzati'],candidati:candidati.map(({chiave,...c})=>c),vincoli:['Lead DEMO inventati: nessun contatto reale','GDPR e Registro delle opposizioni prima di qualsiasi contatto','Nessun invio automatico']};
+  const pr={oggi:oggi(),obiettivo:'Trovare e qualificare PMI locali per l’analisi gratuita S17',profilo_bigant:{area:bigantProfilo.area,clienti_attuali:bigantProfilo.clienti_attuali,settori_presidiati:bigantProfilo.settori_presidiati,fonte:'docs/BRIEF-BIGANT.md, Parte 1 “Chi siamo”'},pacchetto_ingresso:{nome:pacchettoPresenza.nome,composizione:pacchettoPresenza.composizione,fonte:'docs/playbook/00_CATALOGO-BIGANT.md, sezione 4'},servizi_prioritari:['Video','Siti web','Social','Sponsorizzate'],servizi_esclusi_acquisizione:['Insegne','Foto','Abbigliamento','Gadget personalizzati'],candidati:candidati.map(({chiave,...c})=>c),vincoli:['Lead DEMO inventati: nessun contatto reale','GDPR e Registro delle opposizioni prima di qualsiasi contatto','Nessun invio automatico']};
   const ricerca=await passo(giro,{flusso:'commerciale',agente:'ricerca-clienti',clientId:'demo-bigant',compito:'Qualifica i candidati DEMO e scegli il lead per l’analisi gratuita.',pacchetto:pr,cliente:{nome:'BigAnt',settore:'Agenzia',sanitario:false}});
   if(!ricerca.approvato)return ricerca;
   for(const v of ricerca.output.valutazioni)if(candidati.some(c=>c.lead_id===v.lead_id))growth.store.run('UPDATE leads SET score=?,notes=?,updated=? WHERE workspace=? AND id=?',v.punteggio,text(`Qualifica sciame (motore ${ricerca.passo.motore}): ${v.motivo}`,6000),now(),'demo-bigant',v.lead_id);
@@ -245,22 +246,32 @@ export function createSciame({store:s,production,administration,growth,orchestra
  }
  async function flussoSocial(giro){
   const d=oggi(),m=new Date(d+'T12:00:00Z');m.setUTCMonth(m.getUTCMonth()+1);const mese=`${mesi[m.getUTCMonth()]} ${m.getUTCFullYear()}`;
-  const pk={oggi:d,mese,cliente:bottegaDemo.cliente,pacchetto:{nome:'S “Presenza”',contenuti_mese:8,canali:['Instagram','Facebook'],reel:2},dna:bottegaDemo.dna,promozioni_eventi:bottegaDemo.promozioni_eventi,feedback_cliente:feedback('demo-bottega','social'),regole:['Piano del mese successivo entro il 20','Voce del cliente (DNA)','Nessuna promessa o prezzo non fornito','Pubblicazione solo dopo ok del cliente']};
+  const pk={oggi:d,mese,cliente:bottegaDemo.cliente,squadra_bigant:bigantProfilo.squadra,pacchetto:{nome:'S “Presenza”',contenuti_mese:8,canali:['Instagram','Facebook'],reel:2},dna:bottegaDemo.dna,promozioni_eventi:bottegaDemo.promozioni_eventi,feedback_cliente:feedback('demo-bottega','social'),regole:['Piano del mese successivo entro il 20','Voce del cliente (DNA)','Nessuna promessa o prezzo non fornito','Pubblicazione solo dopo ok del cliente']};
   const r=await passo(giro,{flusso:'social',agente:'social',clientId:'demo-bottega',compito:`Prepara il piano editoriale S01 di ${mese} per ${bottegaDemo.cliente.nome} con i testi dei post.`,pacchetto:pk,cliente:{nome:bottegaDemo.cliente.nome,settore:bottegaDemo.cliente.settore,sanitario:false}});
   if(r.approvato)await contenuti(r.passo,r.output.post,{approvatore:'approvazione del cliente simulata'});
   return r;
  }
- async function flussoLocal(giro){
-  const cliente={nome:bottegaDemo.cliente.nome,settore:bottegaDemo.cliente.settore,sanitario:false};
-  const gbp=await passo(giro,{flusso:'local',agente:'local-gbp',clientId:'demo-bottega',compito:`Controlla la scheda Google di ${cliente.nome} (S06), segnala le incoerenze con il sito e prepara 4 post GBP del mese.`,pacchetto:{oggi:oggi(),cliente:bottegaDemo.cliente,scheda_google:bottegaDemo.scheda_google,dati_sito:bottegaDemo.dati_sito,checklist_s06:checklistS06,vincoli:['Le modifiche le esegue Vincenzo dopo l’ok (Trello “GBP OPS”)','Nessuna modifica aggressiva: rischio sospensione']},cliente});
-  if(gbp.approvato){azioneEsterna(gbp.passo,'modifica_scheda',`${gbp.output.controlli.filter(c=>c.stato!=='ok').length} correzioni alla scheda Google — modifica bloccata (GBP API non collegata)`);for(const x of gbp.output.post_gbp)azioneEsterna(gbp.passo,'pubblicazione_gbp',`Post GBP «${x.titolo}» — pubblicazione bloccata`);}
-  const rep=await passo(giro,{flusso:'local',agente:'reputazione',clientId:'demo-bottega',compito:`Prepara le risposte a tutte le recensioni DEMO di ${cliente.nome} (S08) e il kit di raccolta.`,pacchetto:{oggi:oggi(),cliente:bottegaDemo.cliente,tono:bottegaDemo.dna,recensioni:bottegaDemo.recensioni,regole:['Vietato comprare, inventare o incentivare recensioni','Negative: avviso immediato e ok del cliente','Nessun dato personale o sensibile nelle risposte']},cliente});
+ async function flussoLocal(giro,{dati=bottegaDemo,attendiCliente=false}={}){
+  const cid=dati.cliente.id,cliente={nome:dati.cliente.nome,settore:dati.cliente.settore,sanitario:/fisio|medic|sanit|clinic/i.test(dati.cliente.settore)};
+  const gbp=await passo(giro,{flusso:'local',agente:'local-gbp',clientId:cid,compito:`Controlla la scheda Google di ${cliente.nome} (S06), segnala le incoerenze con il sito e prepara 4 post GBP del mese.`,pacchetto:{oggi:oggi(),cliente:dati.cliente,squadra_bigant:bigantProfilo.squadra,pacchetto_s06:pacchettoS06,scheda_google:dati.scheda_google,dati_sito:dati.dati_sito,checklist_s06:checklistS06,vincoli:['Le modifiche le esegue Vincenzo dopo l’ok (Trello “GBP OPS”)','Nessuna modifica aggressiva: rischio sospensione']},cliente});
+  if(gbp.approvato){azioneEsterna(gbp.passo,'modifica_scheda',`${gbp.output.controlli.filter(c=>c.stato!=='ok').length} correzioni alla scheda Google — modifica bloccata (GBP API non collegata)`);
+   if(attendiCliente)gbp.contenuti=await contenuti(gbp.passo,gbp.output.post_gbp,{approvatore:'cliente',servizio:'local',attendiCliente:true});
+   else for(const x of gbp.output.post_gbp)azioneEsterna(gbp.passo,'pubblicazione_gbp',`Post GBP «${x.titolo}» — pubblicazione bloccata`);}
+  if(!dati.recensioni?.length)return gbp;
+  const rep=await passo(giro,{flusso:'local',agente:'reputazione',clientId:cid,compito:`Prepara le risposte a tutte le recensioni DEMO di ${cliente.nome} (S08) e il kit di raccolta.`,pacchetto:{oggi:oggi(),cliente:dati.cliente,tono:dati.dna||'[DA VERIFICARE] DNA non compilato',recensioni:dati.recensioni,regole:['Vietato comprare, inventare o incentivare recensioni','Negative: avviso immediato e ok del cliente','Nessun dato personale o sensibile nelle risposte']},cliente});
   if(rep.approvato){for(const a of rep.output.avvisi)registra(rep.passo,'Avviso reputazione',{avviso:text(a,200)});azioneEsterna(rep.passo,'risposta_recensioni',`${rep.output.risposte.length} risposte alle recensioni — pubblicazione bloccata (GBP API non collegata)`);}
   return rep;
  }
  async function flussoAmministrazione(giro){
   const importazione=await primaNotaDemo(),pk=pacchettoAmministrazione(importazione);
   return passo(giro,{flusso:'amministrazione',agente:'amministrazione',clientId:'demo-bigant',visibilita:'admin',compito:'Spiega ai soci le anomalie “cosa non torna” della prima nota DEMO, con verifiche e correzioni solo proposte.',pacchetto:pk,cliente:{nome:'BigAnt (area riservata ai soci)',settore:'Amministrazione',sanitario:false}});
+ }
+ async function flussoUpsell(giro,{clientId}){
+  const c=s.one('SELECT * FROM os_clients WHERE id=?',clientId),attivi=JSON.parse(c.services_json),analisi=growth.store.query('SELECT company,analysis FROM leads WHERE client_id=? OR company=?',clientId,c.name)[0];
+  const pk={...pacchettoDirettore(),cliente:{id:c.id,nome:c.name,settore:c.industry,servizi_attivi:attivi},analisi_iniziale:analisi?.analysis?text(analisi.analysis,3000):'[DA VERIFICARE] analisi non disponibile',pacchetti_catalogo:['BigAnt Presenza (S06+S07+S08 base+S17+dashboard)','BigAnt Crescita Locale (Presenza + S01 M + S03 Start)','BigAnt Sanità (Sito Standard + S05 S + Presenza + S12 Servizi + S13 chatbot + compliance sanitaria)','BigAnt Ristorazione','BigAnt Brand'],vincoli:['Esattamente 3 proposte di upsell gentile per questo cliente, nessuna pressione commerciale','Prezzi solo [DA VALIDARE]','Il Direttore propone, i soci decidono e solo dopo il cliente vede i servizi consigliati']};
+  const r=await passo(giro,{flusso:'upsell',agente:'direttore-crescita',clientId:'demo-bigant',compito:`Proponi ai soci 3 opportunità di upsell per ${c.name}, partendo dai servizi attivi, dall’analisi iniziale e dal catalogo.`,pacchetto:pk,cliente:{nome:c.name,settore:c.industry,sanitario:/fisio|medic|sanit|clinic/i.test(c.industry)}});
+  if(r.approvato)s.run("INSERT INTO os_memory VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(client_id,kind) DO UPDATE SET content=excluded.content,version=os_memory.version+1,source=excluded.source,visibility='client',updated_at=excluded.updated_at",uid(),clientId,'servizi-consigliati',r.output.priorita.map((p,i)=>`${i+1}. ${p.titolo}\n${p.risultato_atteso}`).join('\n\n'),'client',1,`Direttore Crescita · motore ${r.passo.motore} · approvato`,now());
+  return r;
  }
  const esecutori={crescita:flussoCrescita,marketing:flussoMarketing,commerciale:flussoCommerciale,social:flussoSocial,local:flussoLocal,amministrazione:flussoAmministrazione};
 
@@ -321,7 +332,7 @@ export function createSciame({store:s,production,administration,growth,orchestra
   for(const p of s.query("SELECT id,agente,giro_id,client_id,compito,stato,motore,output_json,errore,esito_qualita,costo_usd_micro,created_at,finished_at FROM os_sciame_passi ORDER BY created_at DESC LIMIT 400")){
    const reg=agentiSciame[p.agente].registro;
    if(['al_lavoro','controllo_qualita'].includes(p.stato)&&!inCorso.has(reg))inCorso.set(reg,p);
-   if(!ultimi.has(reg))ultimi.set(reg,p);
+   if(!ultimi.has(reg)&&!['in_coda','al_lavoro','controllo_qualita'].includes(p.stato))ultimi.set(reg,p);
    if(p.created_at.slice(0,7)===mese)costiMese.set(reg,(costiMese.get(reg)||0)+p.costo_usd_micro);
   }
   const jobs=new Map();for(const j of s.query('SELECT agent,status,created_at,finished_at,error,result FROM os_jobs ORDER BY created_at DESC LIMIT 300'))if(!jobs.has(j.agent))jobs.set(j.agent,j);
@@ -340,7 +351,7 @@ export function createSciame({store:s,production,administration,growth,orchestra
   const stanze=[{id:'regia',nome:'Regia',agenti:[postazione('orchestrator','Orchestratore')]},...departments.map(d=>({id:d.id,nome:d.name,agenti:d.agents.map(a=>postazione(a,agentDefinitions.find(x=>x.id===a).name))}))];
   const feed=s.query("SELECT a.id,a.action,a.client_id,a.detail,a.visibility,a.created_at,u.name actor FROM os_audit a LEFT JOIN os_users u ON u.id=a.user_id ORDER BY a.created_at DESC,a.rowid DESC LIMIT 60").map(a=>({...a,detail:parse(a.detail)}));
   const giri=s.query('SELECT id,richiesta,motore,stato,origine,costo_usd_micro,created_at,started_at,finished_at FROM os_sciame_giri ORDER BY created_at DESC LIMIT 12');
-  return {aggiornatoAlle:now(),motore:{id:mot().id,etichetta:mot().etichetta,...statoMotore},autoApprovazioneDemo:autoDemo(),pausa:s.getSetting('paused')==='true',budget:orchestrator.budget(),stanze,feed,giri,inCorso:[...attivi.keys()],
+  return {aggiornatoAlle:now(),motore:{id:mot().id,etichetta:mot().etichetta,...statoMotore},autoApprovazioneDemo:autoDemo(),pausa:s.getSetting('paused')==='true',budget:orchestrator.budget(),stanze,feed,giri,inCorso:s.query("SELECT id FROM os_sciame_giri WHERE stato IN('in_coda','in_corso')").map(g=>g.id),
    azioniBloccate:s.query("SELECT * FROM os_azioni_esterne ORDER BY created_at DESC LIMIT 30"),stati:STATI_PASSO,flussi:descrizioneFlussi};
  }
  function dettaglioPasso(user,id){requireOwner(user);const p=s.one('SELECT * FROM os_sciame_passi WHERE id=?',id);if(!p)throw new AppError('Passo non trovato.',404);return {...p,input:parse(p.input_json),output:parse(p.output_json),qualita:parse(p.qualita_json),motoreEtichetta:ETICHETTE[p.motore]||p.motore,approvazione:p.approvazione_id?s.one('SELECT * FROM os_approvals WHERE id=?',p.approvazione_id):null,azioni:s.query('SELECT * FROM os_azioni_esterne WHERE passo_id=?',id),input_json:undefined,output_json:undefined,qualita_json:undefined};}
@@ -379,6 +390,8 @@ export function createSciame({store:s,production,administration,growth,orchestra
   m=path.match(/^\/azioni\/([^/]+)\/esegui$/);if(m&&method==='POST')return eseguiAzioneEsterna(user,m[1]);
   return null;
  }
- return {handle,creaGiro,eseguiGiro,avviaGiro,decide,ufficio,riepilogoGiro,dettaglioPasso,esportaProve,importaProve,eseguiAzioneEsterna,
+ const flussi={crescita:flussoCrescita,marketing:flussoMarketing,commerciale:flussoCommerciale,social:flussoSocial,local:flussoLocal,amministrazione:flussoAmministrazione,upsell:flussoUpsell};
+ function chiudiGiro(id){const passi=s.query('SELECT stato,costo_usd_micro FROM os_sciame_passi WHERE giro_id=?',id);s.run('UPDATE os_sciame_giri SET stato=?,costo_usd_micro=?,started_at=COALESCE(started_at,created_at),finished_at=? WHERE id=?',passi.some(p=>p.stato==='errore')?'completato_con_errori':'completato',passi.reduce((n,p)=>n+p.costo_usd_micro,0),now(),id);return riepilogoGiro(id);}
+ return {flussi,chiudiGiro,handle,creaGiro,eseguiGiro,avviaGiro,decide,ufficio,riepilogoGiro,dettaglioPasso,esportaProve,importaProve,eseguiAzioneEsterna,
   get motore(){return mot();},usaMotore(m){motoreCorrente=m;},attesa:()=>Promise.all(attivi.values())};
 }

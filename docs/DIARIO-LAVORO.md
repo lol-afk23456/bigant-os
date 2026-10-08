@@ -20,3 +20,17 @@ Le copie remote dei report Drive possono essere precedenti alla consegna. Nessun
 
 
 Controllo documentale dopo il salvataggio del brief integrale: `npm run check` passa sintassi, registro, dipendenze e prototipo locale, ma segnala 22 riferimenti relativi del testo sorgente a schede playbook non ancora estratte. Primo salvataggio: 21/21 file confrontati con GitHub e coincidenti. Il file integrale resta byte per byte uguale all’originale. Anche questo limite è consegnato a Claude, senza cambiare il testo sorgente o introdurre segnaposto vuoti.
+
+
+## Sessione Claude Code cloud — 8 ottobre 2026
+
+Orari Europe/Rome dei commit (i lavori sono stati committati a blocchi, quindi più righe possono avere lo stesso orario). Prova principale di ogni riga: commit, test e file indicati.
+
+| Ora | Ciclo / macro-area | Requisiti R-xxx | Risultato | Problemi |
+|---|---|---|---|---|
+| 14:52 | Presa in carico | R-021 | Prompt salvato in `docs/PROMPT-CLAUDE-CLOUD.md`, `CLAUDE.md` creato (`5f1e730`). Node 24.19.0 ufficiale installato in `.cache/` con verifica SHA-256 | Il container aveva Node 22 |
+| 14:53 | Test e controlli | R-008, R-018, R-047, R-208, R-367 | Test agenzia riallineati senza perdere copertura; playbook estratto dal brief (24 file) e link del brief risolti per file incorporato (`b708ec5`). `npm test` 161/161, `npm run check` 5/5 | — |
+| 15:14 | Metodo e matrice | R-019 | Brief scomposto in 377 requisiti R-001…R-377 (`d364e37`, il messaggio cita per errore R-016) | Valutazione dello stato in corso con revisione avversaria |
+| 15:14 | Sciame | R-002, R-028, R-083, R-134, R-147, R-151, R-152, R-176 | Motore intercambiabile (Claude Code / API / DEMO / nessuno), 11 agenti con istruzioni in `.claude/agents/`, Qualità prima della coda approvazioni, auto-approvazione DEMO, azioni esterne bloccate, tetto di spesa (`2a4168e`). 175/175 test | Con `--agent` l'output strutturato non è disponibile: JSON letto dal testo e sempre validato |
+| 15:14 | Dashboard interna | R-145, R-149 | Ufficio virtuale: 9 stanze, 33 postazioni, flusso in tempo reale, aggiornamento ogni 4 s, prova browser desktop e 390 px senza scorrimento orizzontale (`f7a83e1`) | — |
+| 15:17 | Sciame, prova reale | R-002, R-028, R-083 | Giro completo con motore Claude Code avviato su dati DEMO; output e registro in `docs/demo-sciame/` | Vedi riga successiva per l'esito |

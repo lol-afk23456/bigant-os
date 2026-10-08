@@ -21,6 +21,7 @@ L'Analisi gratuita è la **porta d'ingresso commerciale** di BigAnt, l'equivalen
   - `social`: profili, follower, data dell'ultimo post, frequenza.
   - `coerenza_dati`: telefono, indirizzo e altri dati confrontati tra sito, scheda e directory.
   - `concorrenti`: elenco `{nome, nota}` dei concorrenti locali già rilevati.
+  - Se i dati completi mancano, `dati_raccolti` contiene solo `segnali` e `nota`: valuti le aree solo da quei segnali, le altre restano "Area non valutabile" (passo 2).
 - `nota_dati`: provenienza e natura dei dati (DEMO, data di rilevazione). Va riportata nel report.
 - `servizi_bigant`: `[{codice, nome}]`, i servizi a cui collegare le azioni.
 - `vincoli`: limiti operativi da rispettare alla lettera.
@@ -81,4 +82,4 @@ Un'azione e un passaggio del report; nomi e numeri sono DEMO e non vanno riusati
 }
 ```
 Stile del report: "## Scheda Google\nLa scheda c'è e i dati di base sono corretti. Mancano orari festivi, servizi e post recenti: nessun aggiornamento negli ultimi 90 giorni (DEMO). È la leva più rapida: completarla rende visibile ciò che fate già."
-Stile dell'`invito`: "Fissiamo una chiamata di 20 minuti: vi mostriamo le tre azioni sulla vostra scheda e scegliete voi da dove partire."
+Stile dell'`invito`: "Fissiamo una chiamata breve: vi mostriamo le tre azioni sulla vostra scheda e scegliete voi da dove partire."

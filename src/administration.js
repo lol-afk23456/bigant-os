@@ -22,6 +22,7 @@ function hourlyCost(minutes,rate) { integer(minutes,0,1000000); integer(rate,0,L
 const RULES = [
   ['invoice_overdue','Credito scaduto o canone non incassato','implemented'],
   ['partial_payment','Incasso parziale oltre scadenza','implemented'],
+  ['payment_mismatch','Incasso diverso dall’importo dovuto (non ancora scaduto)','implemented'],
   ['missing_document','Movimento privo di documento','implemented'],
   ['possible_duplicate','Possibile doppio movimento su documento/data/importo','implemented'],
   ['entity_mismatch','Ditta incoerente con conto o documento','implemented'],
@@ -179,12 +180,36 @@ export function createAdministrationModule({store:s,clock=()=>new Date()}) {
     const obligations=s.query('SELECT * FROM os_fin_obligations').map(o=>({...o,paid_cents:paid('obligation_id',o.id,asOf),remaining_cents:Math.max(0,o.amount_cents-paid('obligation_id',o.id,asOf))}));
     return {accounts,invoices,obligations};
   }
+  // Un contratto attivo genera: fattura da emettere del mese (bozza), canoni attesi nei mesi successivi
+  // e scadenze (preavviso di rinnovo, fine). L'importo del contratto è inteso come canone mensile.
+  function contractPlan(c,asOf,{months=3}={}) {
+    const invoices=s.query('SELECT * FROM os_fin_invoices WHERE contract_id=?',c.id),firstOfMonth=v=>v.slice(0,7)+'-01',expected=[];
+    for(let i=0,m=firstOfMonth(asOf);i<=months;i++,m=addMonths(m,1)) {
+      if(endMonth(m.slice(0,7))<c.start_date||m>c.end_date) continue;
+      const invoice=invoices.find(x=>x.issue_date.slice(0,7)===m.slice(0,7));
+      expected.push({month:m.slice(0,7),amount_cents:c.amount_cents,invoice_id:invoice?.id||null,status:invoice?'fatturato':i===0?'da_emettere':'atteso'});
+    }
+    const notice=addDays(c.end_date,-c.notice_days);
+    return {contract_id:c.id,client_id:c.client_id,service:c.service,monthly_cents:c.amount_cents,expected,
+      deadlines:[{kind:'preavviso_rinnovo',date:notice,title:`Decidere il rinnovo entro il ${notice}`},{kind:'fine_contratto',date:c.end_date,title:'Fine del contratto'}],
+      assumption:'Importo del contratto inteso come canone mensile; termini di pagamento a 30 giorni [DA VERIFICARE nel contratto standard].'};
+  }
+  function contractInvoice(user,contractId,asOf) {
+    const c=get('contracts',contractId,'Contratto'); if(c.status!=='active') throw new AppError('Contratto non attivo.',409);
+    const plan=contractPlan(c,asOf),current=plan.expected.find(x=>x.month===asOf.slice(0,7));
+    if(!current) throw new AppError('Il contratto non copre il mese indicato.',409);
+    if(current.invoice_id) return {plan,invoice:get('invoices',current.invoice_id,'Fattura'),created:false};
+    const issue=asOf.slice(0,7)+'-01'<c.start_date?c.start_date:asOf.slice(0,7)+'-01',number=`CAN-${asOf.slice(0,7).replace('-','')}-${c.id.slice(0,8)}`,id=uid();
+    s.run('INSERT INTO os_fin_invoices VALUES(?,?,?,?,?,?,?,?,?,?,?)',id,c.entity_id,c.counterparty_id,c.client_id,c.id,number,c.amount_cents,issue,addDays(issue,30),'draft','Fattura da emettere generata dal contratto: emissione e invio SDI solo dopo l’ok di un socio');
+    return {plan:contractPlan(c,asOf),invoice:get('invoices',id,'Fattura'),created:true};
+  }
   function analyze(user,{asOf=today()}={}) {
     owner(user); date(asOf); if(asOf>today()) throw new AppError('Analisi futura non ammessa.');
     return s.transaction(()=>{
       const {accounts,invoices,obligations}=financials(asOf),found=[];
       const add=(rule,record,title,amount,priority='medium',suffix='')=>found.push({rule,source_id:record.id+suffix,entity_id:record.entity_id||null,client_id:record.client_id||null,title,amount_cents:Math.abs(amount),priority});
       for(const i of invoices) if(i.due_date<asOf&&i.remaining_cents>0) { add('invoice_overdue',i,'Documento DEMO scaduto con residuo da incassare',i.remaining_cents,'high'); if(i.paid_cents>0) add('partial_payment',i,'Incasso parziale oltre la scadenza',i.remaining_cents); }
+      for(const i of invoices) if(i.paid_cents>0&&i.paid_cents!==i.amount_cents&&!(i.due_date<asOf&&i.remaining_cents>0)) add('payment_mismatch',i,i.paid_cents>i.amount_cents?'Incasso superiore all’importo dovuto':'Incasso diverso dall’importo dovuto',Math.abs(i.amount_cents-i.paid_cents),'medium');
       const allMovements=s.query('SELECT * FROM os_fin_movements WHERE date<=?',asOf),reversals=s.query('SELECT r.* FROM os_fin_reversals r JOIN os_fin_movements m ON m.id=r.reversal_id WHERE m.date<=?',asOf),cancelled=new Set(reversals.flatMap(r=>[r.original_id,r.reversal_id])),movements=allMovements.filter(m=>!cancelled.has(m.id)),duplicates=new Map();
       for(const m of movements) {
         if(m.kind!=='transfer'&&!m.document_ref&&!m.invoice_id) add('missing_document',m,'Movimento senza fattura o ricevuta collegata',m.amount_cents);
@@ -234,7 +259,15 @@ export function createAdministrationModule({store:s,clock=()=>new Date()}) {
       {id:'decisions',question:'Quali decisioni dobbiamo prendere?',items:[...anomalies.filter(a=>a.status!=='resolved').slice(0,3).map(a=>({id:a.id,title:a.title,kind:'financial_anomaly'})),...approvals.slice(0,3).map(a=>({...a,kind:'approval'}))]}
     ];
     const margins=marginState(thisMonth,monthly,f.invoices,asOf);
-    return {demo:true,asOf,summary,entities,...f,counterparties:s.query('SELECT * FROM os_fin_counterparties'),contracts,movements,subscriptions,arrears,projections,margins,hourlyRates:s.query('SELECT * FROM os_fin_hourly_rates'),workAllocations:s.query('SELECT * FROM os_fin_work_allocations'),reversals:s.query('SELECT * FROM os_fin_reversals'),anomalies,reconciliations:s.query('SELECT * FROM os_fin_reconciliations ORDER BY month DESC,created_at DESC'),questions,rules:RULES,external:{sheets:'not_connected',bank:'not_connected',sdi:'disabled'},currency:'EUR',note:'Solo dati DEMO. Prima nota gestionale; nessuna consulenza o dichiarazione fiscale.'};
+    const contractPlans=contracts.filter(c=>c.status==='active'&&c.end_date>=asOf).map(c=>contractPlan(c,asOf));
+    const horizon=addDays(asOf,90),deadlineList=[
+      ...f.invoices.filter(i=>i.remaining_cents>0&&i.due_date<=horizon).map(i=>({kind:'incasso',date:i.due_date,title:`Incasso ${i.number}`,amount_cents:i.remaining_cents,client_id:i.client_id,overdue:i.due_date<asOf})),
+      ...f.obligations.filter(o=>o.remaining_cents>0&&o.due_date<=horizon).map(o=>({kind:'pagamento',date:o.due_date,title:o.title,amount_cents:o.remaining_cents,client_id:o.client_id,overdue:o.due_date<asOf})),
+      ...subscriptions.filter(x=>x.active&&x.next_due<=horizon).map(x=>({kind:'abbonamento',date:x.next_due,title:x.name,amount_cents:x.amount_cents,client_id:null,overdue:x.next_due<asOf})),
+      ...contractPlans.flatMap(p=>p.deadlines.filter(d=>d.date<=horizon).map(d=>({kind:d.kind,date:d.date,title:d.title,amount_cents:null,client_id:p.client_id,overdue:d.date<asOf}))),
+      ...contractPlans.flatMap(p=>p.expected.filter(x=>x.status!=='fatturato').map(x=>({kind:'canone_atteso',date:x.month+'-01',title:`Canone ${p.service} ${x.month}${x.status==='da_emettere'?' · fattura da emettere':''}`,amount_cents:x.amount_cents,client_id:p.client_id,overdue:false})))
+    ].sort((a,b)=>a.date.localeCompare(b.date));
+    return {demo:true,asOf,summary,entities,...f,contractPlans,deadlines:deadlineList,counterparties:s.query('SELECT * FROM os_fin_counterparties'),contracts,movements,subscriptions,arrears,projections,margins,hourlyRates:s.query('SELECT * FROM os_fin_hourly_rates'),workAllocations:s.query('SELECT * FROM os_fin_work_allocations'),reversals:s.query('SELECT * FROM os_fin_reversals'),anomalies,reconciliations:s.query('SELECT * FROM os_fin_reconciliations ORDER BY month DESC,created_at DESC'),questions,rules:RULES,external:{sheets:'not_connected',bank:'not_connected',sdi:'disabled'},currency:'EUR',note:'Solo dati DEMO. Prima nota gestionale; nessuna consulenza o dichiarazione fiscale.'};
   }
   async function handle({method,path,body={},user,clientId}) {
     owner(user);
@@ -250,6 +283,8 @@ export function createAdministrationModule({store:s,clock=()=>new Date()}) {
         s.run('UPDATE os_fin_anomalies SET status=?,assignee=?,resolution_note=? WHERE id=?',status,assignee,note,a.id); return get('anomalies',a.id,'Anomalia');
       }); return {data};
     }
+    const plan=path.match(/^\/contracts\/([^/]+)\/invoice$/);
+    if(method==='POST'&&plan) return {data:mutate(user,path,body,()=>contractInvoice(user,plan[1],body.asOf?date(body.asOf):today())),status:201};
     if(method!=='POST'||!['/accounts','/counterparties','/contracts','/invoices','/obligations','/subscriptions','/movements','/transfers','/reconciliations','/reversals','/corrections','/hourly-rates','/work-allocations'].includes(path)) return null;
     const data=mutate(user,path,body,()=>{
       if(path==='/movements') return insertMovement(body);

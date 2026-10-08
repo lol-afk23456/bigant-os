@@ -13,7 +13,7 @@ Chiudi la catena commerciale: ricerca clienti → Analisi gratuita S17 → **pro
 
 ## Cosa ricevi (pacchetto JSON)
 - `oggi`: data di riferimento (YYYY-MM-DD).
-- `azienda`: il destinatario della proposta (nome ed eventuali dati del lead), DEMO.
+- `azienda`: `{lead_id, nome, settore, citta, sito}` del destinatario della proposta, DEMO.
 - `analisi`: `{punteggio_presenza, sintesi, azioni_consigliate}` dall'Analisi gratuita S17; ogni azione ha `titolo`, `perche`, `servizio_bigant`.
 - `pacchetto`: `{nome, composizione, setup_proposto, canone_proposto, stato_prezzi}`. Prezzi = fasce del catalogo 0.1: proposte di mercato, **non decisioni**.
 - `ditte`: le due ditte individuali che possono emettere il documento.
@@ -43,14 +43,14 @@ Un oggetto JSON con questi campi, tutti obbligatori, nessun campo in più:
   - `nome`: il nome della voce come nel pacchetto.
   - `cosa_include`: massimo 200 caratteri dal passo 3, collegato quando possibile all'azione dell'analisi che realizza.
 - `prezzo`:
-  - `setup`: fascia del pacchetto + "[DA VALIDARE dai soci]" (es. "200–300 € [DA VALIDARE dai soci]").
-  - `canone_mensile`: fascia del pacchetto + "[DA VALIDARE dai soci]".
+  - `setup`: fascia di `pacchetto.setup_proposto` con "[DA VALIDARE dai soci]" (es. "200–300 € [DA VALIDARE dai soci]"); se il pacchetto contiene già la dicitura, la copi una sola volta.
+  - `canone_mensile`: fascia di `pacchetto.canone_proposto` con "[DA VALIDARE dai soci]", stessa regola.
   - `nota`: `stato_prezzi`, regime forfettario senza IVA, marca da bollo e diciture [DA VERIFICARE con il commercialista], ditta emittente [DA DECIDERE].
 - `tempi`: 2–4 frasi sulle fasi: ok del cliente e accessi come gestore della scheda → setup S06 e allineamento dei dati → attivazione S07 dopo la scelta della piattaforma → risposte S08 → prima analisi S17 trimestrale. Durate [DA VERIFICARE].
 - `condizioni`: 5–8 voci brevi: prezzi [DA VALIDARE dai soci]; durata minima [DA DEFINIRE nel contratto standard]; ditta emittente [DA DECIDERE]; regime forfettario, bollo [DA VERIFICARE]; cosa serve dal cliente (accesso alla scheda, dati ufficiali, foto, tono delle risposte, chi approva le risposte sensibili); nulla si pubblica senza l'ok registrato del cliente o di un socio; risultati misurati e rendicontati ogni mese nella dashboard; validità dell'offerta [DA DEFINIRE].
 - `email_accompagnamento`:
   - `oggetto`: massimo 70 caratteri, concreto, senza maiuscole urlate né urgenze (es. "Presenza online di <azienda>: il piano in tre mosse").
-  - `testo`: 90–160 parole. Prima riga "[BOZZA DEMO — invio bloccato fino all'ok di un socio]". Poi: riferimento all'analisi e al punteggio, le tre azioni in una frase, proposta allegata, CTA attiva ("Rispondete con due fasce orarie: fissiamo 20 minuti per partire"). Firma "[Socio firmatario DA DECIDERE] — BigAnt Agency".
+  - `testo`: 90–160 parole. Prima riga "[BOZZA DEMO — invio bloccato fino all'ok di un socio]". Poi: riferimento all'analisi e al punteggio, le tre azioni in una frase, proposta allegata, CTA attiva ("Rispondete con due fasce orarie: fissiamo una chiamata breve per partire"). Firma "[Socio firmatario DA DECIDERE] — BigAnt Agency".
 - `testo_proposta`: Markdown, 450–900 parole. Struttura: `# BigAnt Presenza — proposta per <azienda>`; riga DEMO; `## Da dove partiamo` (punteggio e sintesi dell'analisi); `## Il piano` (tabella Azione | Servizio | Cosa facciamo); `## Cosa è incluso`; `## Oltre Presenza` (solo se serve); `## Investimento` (prezzi marcati, nota fiscale, ditta emittente); `## Tempi e avvio`; `## Condizioni`; `## Prossimo passo` (CTA attiva). Chiusura: "Proposta di BigAnt, marchio condiviso da due ditte individuali. Bozza: invio solo dopo l'ok di un socio."
 - `da_verificare`: ogni [DA VERIFICARE], [DA VALIDARE], [DA DEFINIRE] o [DA DECIDERE] usato, con il campo; sempre la voce "Invio di proposta ed email bloccato fino all'ok di un socio".
 - `fonti_usate`: percorsi dei campi letti, es. "pacchetto.analisi.azioni_consigliate[0]", "pacchetto.pacchetto.canone_proposto", "pacchetto.ditte".
@@ -79,4 +79,4 @@ Due campi; nomi e numeri sono DEMO e non vanno riusati.
   ]
 }
 ```
-Stile del `## Prossimo passo`: "Scegliete una fascia oraria: in 20 minuti definiamo accessi e priorità, e il setup parte dalla scheda Google."
+Stile del `## Prossimo passo`: "Scegliete una fascia oraria: in una chiamata breve definiamo accessi e priorità, e il setup parte dalla scheda Google."

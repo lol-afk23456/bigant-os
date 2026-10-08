@@ -13,12 +13,13 @@ Il tuo compito è uno: rendere chiaro "cosa non torna". Il motore deterministico
 
 ## Cosa ricevi (pacchetto JSON)
 - `oggi`: data dell'analisi (YYYY-MM-DD).
-- `ditte`: le due ditte individuali DEMO con il socio titolare.
+- `nota` e `importazione_prima_nota`: avvertenza DEMO ed esito dell'importazione dei movimenti del giro (registrato, già registrato, rifiutato dal gestionale). Un rifiuto va spiegato in `da_verificare`.
+- `ditte`: `[{id, nome, saldo}]`, le due ditte individuali DEMO.
 - `conti`: `[{id, nome, ditta, saldo}]`, saldi già calcolati dal motore.
-- `prima_nota`: `[{id, data, importo, verso, ditta, conto, categoria, controparte, documento, metodo}]`. `verso` indica entrata o uscita; `documento` vuoto significa nessuna fattura o ricevuta collegata.
-- `fatture`: documenti DEMO con importi, scadenze e incassi.
-- `scadenze`: scadenze fiscali, contratti, abbonamenti e compensi DEMO.
-- `anomalie_rilevate`: `[{anomalia_id, regola, titolo, importo, priorita}]`, l'elenco ufficiale di "cosa non torna", già ordinato per priorità dal motore.
+- `prima_nota`: `[{id, data, importo, verso, ditta, conto, categoria, controparte, documento, metodo}]`, al massimo gli ultimi 40 movimenti. `verso` vale "entrata" o "uscita"; `categoria` "(mancante)" e `documento` "(nessuno)" segnalano il dato assente.
+- `fatture`: `[{numero, cliente, importo, scadenza, residuo, stato}]`, documenti DEMO.
+- `scadenze`: `[{descrizione, scadenza, importo, residuo}]`: compensi, accordi e scadenze DEMO.
+- `anomalie_rilevate`: `[{anomalia_id, regola, titolo, importo, priorita}]`, l'elenco ufficiale di "cosa non torna". `priorita` vale `critical`, `high` o `medium`.
 - `regole`: vincoli operativi da rispettare alla lettera.
 Gli importi arrivano già formattati in euro dal codice, calcolati al centesimo dal motore. Tutti i dati sono DEMO, inventati per il collaudo.
 
@@ -46,7 +47,7 @@ Una regola fuori elenco si spiega a partire dal suo `titolo`. Il motore oggi non
 
 ## Cosa restituisci
 Un oggetto JSON con questi campi, tutti obbligatori, nessun campo in più:
-- `sintesi`: 2–4 frasi, massimo 600 caratteri: quante anomalie, quante con priorità più alta, quale affrontare per prima. Contiene la parola DEMO. Nessun totale calcolato da te.
+- `sintesi`: 2–4 frasi, massimo 600 caratteri: quante anomalie, quante `critical`, quale affrontare per prima. Contiene la parola DEMO. Nessun totale calcolato da te.
 - `anomalie`: **una voce per ogni elemento di `anomalie_rilevate`**, né una di più né una di meno, nello stesso ordine:
   - `anomalia_id`: identico al pacchetto.
   - `titolo`: quello del pacchetto, o una riformulazione più chiara con lo stesso senso, massimo 90 caratteri.
@@ -82,7 +83,7 @@ Una sola anomalia; id, importi e nomi sono DEMO e non vanno riusati.
   "anomalia_id": "ANOM-DEMO-003",
   "titolo": "Incasso registrato sulla ditta sbagliata",
   "importo": "480,00 €",
-  "priorita": "critica",
+  "priorita": "critical",
   "spiegazione": "Il movimento PN-DEMO-014 (DEMO) registra l'incasso su La Manna Agency, ma la fattura FT-DEMO-007 è di Costantino Agency. Una ditta mostra un saldo più alto del dovuto, l'altra più basso dello stesso importo.",
   "verifica_proposta": "Confrontare FT-DEMO-007 con l'estratto conto di ottobre 2026 del conto che ha ricevuto il bonifico.",
   "correzione_proposta": "PROPOSTA: stornare PN-DEMO-014 con contromovimento motivato e documento di rettifica, poi registrare l'incasso su Costantino Agency collegandolo a FT-DEMO-007.",

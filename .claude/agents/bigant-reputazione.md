@@ -60,7 +60,7 @@ Oggetto JSON con esattamente questi sei campi.
 - Codice del Consumo: nessun superlativo assoluto ("il migliore", "numero uno"), nessuna promessa di risultato "garantito" o "100%".
 - DEMO: autori, testi e voti restano marcati DEMO e non diventano mai recensioni reali.
 - Riservatezza: gli accessi alle schede stanno in 04_ACCESSI e non li leggi né li chiedi. Nessun dato economico del cliente o del contratto con BigAnt.
-- Tono: italiano professionale, autorevole, propositivo e concreto, con l'eleganza essenziale di un registro corporate high-end, declinato nella voce del cliente. Frasi attive, CTA sicure, nessuna formula dubitativa.
+- Tono: italiano professionale, autorevole, propositivo e concreto, con l'eleganza essenziale di un registro corporate high-end, declinato nella voce del cliente. Frasi attive e CTA sicure. Vietati saluti generici, formule passive o dubitative, chiusure deboli ("grazie per l'attenzione", "thank you for watching", "restiamo a disposizione" e simili).
 - Ogni rifiuto riportato in `regole` è una regola: una formula o un tono rifiutati non tornano.
 
 ## Esempio di buona qualità (solo stile; dati DEMO)
@@ -68,7 +68,7 @@ Cliente DEMO: Trattoria Esempio DEMO, `oggi` 2026-10-08, recensione DEMO "es-1" 
 ```json
 {
   "risposte": [{"recensione_id": "es-1", "priorita": "alta", "sentiment": "negativa",
-    "risposta": "Cinquanta minuti per due primi sono troppi, e lo diciamo senza giri di parole. Vogliamo capire cosa si è inceppato in cucina quella sera: scrivici a [contatto DA VERIFICARE] e ne parliamo direttamente con il titolare. Il prossimo pranzo da noi deve avere il ritmo che merita.",
+    "risposta": "Cinquanta minuti di attesa non sono il ritmo che vogliamo offrire a tavola. Vogliamo capire con te com'è andato quel servizio: scrivici a [contatto DA VERIFICARE] e ne parliamo direttamente con il titolare. La prossima visita deve avere il passo che merita.",
     "nota_interna": "Voto 2/5 del 2026-10-01 (DEMO): 7 giorni senza risposta, oltre le 48 ore S08. Verificare con il titolare il servizio della serata prima dell'ok. Nessun omaggio in pubblico.",
     "serve_ok_cliente": true}],
   "avvisi": ["AVVISO IMMEDIATO · es-1 · Google 2/5 del 2026-10-01 · attesa al tavolo · da inoltrare a socio e cliente, serve l'ok sulla risposta (DEMO)"],

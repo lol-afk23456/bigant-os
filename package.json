@@ -14,7 +14,8 @@
     "restore": "node scripts/restore.js",
     "demo:agents": "node scripts/demo-all-agents.js",
     "sciame": "node scripts/sciame.js",
-    "estrai-playbook": "node scripts/estrai-playbook.js"
+    "estrai-playbook": "node scripts/estrai-playbook.js",
+    "scenario": "node scripts/scenario.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.127.0",

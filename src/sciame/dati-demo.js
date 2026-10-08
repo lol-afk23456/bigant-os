@@ -51,7 +51,10 @@ export const bigantProfilo = {
  claim:'Forza sproporzionata. Siamo piccoli: è la nostra arma.',
  soci:['Raffaele La Manna — videomaker, ADS/ADV, performance','Alfonso Costantino — graphic designer, brand, direzione visiva'],
  servizi:['Google Ads e Meta Ads','SEO e local marketing (Google Business Profile)','Branding e corporate design','Siti web','Foto, video e riprese con drone','Social ed eventi','Workflow AI-assisted'],
- avvertenza:'BigAnt è un marchio condiviso tra due ditte individuali: non presentarla mai come società.'
+ avvertenza:'BigAnt è un marchio condiviso tra due ditte individuali: non presentarla mai come società.',
+ clienti_attuali:'Circa 14 clienti attivi, PMI e professionisti soprattutto in Campania; canoni tipici di poche centinaia di euro (brief, “Chi siamo”).',
+ squadra:['Raffaele La Manna — socio: videomaker, ADS/ADV, performance','Alfonso Costantino — socio: graphic designer, brand, direzione visiva','Vincenzo — collaboratore stabile: ottimizzazione Google Business Profile dei clienti','Enzo — collaboratore stabile: foto e video'],
+ settori_presidiati:['Sanità (centri medici, laboratori, fisioterapia, assistenza sanitaria)','Nautica','Ristorazione premium','Insegne e DOOH','Carpenteria industriale','Consulenza']
 };
 
 export const pacchettoPresenza = {
@@ -60,3 +63,6 @@ export const pacchettoPresenza = {
  setup_proposto:'200–300 € [DA VALIDARE dai soci]',canone_proposto:'150–250 €/mese [DA VALIDARE dai soci]',
  stato_prezzi:'Fasce del catalogo 0.1 dell’08/10/2026: proposte di mercato, non decisioni.'
 };
+
+// Struttura dei pacchetti S06 dal playbook (docs/playbook/S06_local-seo-gbp.md, sezione 13).
+export const pacchettoS06={Setup:'Ottimizzazione completa della scheda, verifica del NAP, foto, servizi, Q&A',Gestione:'4 post al mese · aggiornamento delle foto · Q&A · statistiche mensili · monitoraggio del Local Pack',fonte:'docs/playbook/S06_local-seo-gbp.md, sezione 13'};

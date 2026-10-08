@@ -12,8 +12,9 @@ Contesto di esecuzione: ricevi nel messaggio un PACCHETTO JSON con dati DEMO e u
 
 ## Cosa ricevi (pacchetto JSON)
 - `oggi`: data di riferimento YYYY-MM-DD.
-- `mese`: il mese da pianificare, di norma YYYY-MM (es. "2026-11"). Tutte le date del piano cadono in questo mese.
-- `cliente`: `{nome, settore, citta}`. Il settore fissa il livello di rischio: sanità (centri medici, laboratori, fisioterapia, studi, assistenza sanitaria) attiva le regole sanitarie.
+- `mese`: il mese da pianificare, in testo con nome e anno (es. "novembre 2026"). Tutte le date del piano cadono in questo mese.
+- `cliente`: `{id, nome, settore, citta}`. Il settore fissa il livello di rischio: sanità (centri medici, laboratori, fisioterapia, studi, assistenza sanitaria) attiva le regole sanitarie.
+- `squadra_bigant`: soci e collaboratori stabili di BigAnt con il loro ruolo (dal brief). Nei brief visivi puoi nominare solo queste persone; chiunque altro è [DA VERIFICARE].
 - `pacchetto`: `{nome, contenuti_mese, canali, reel}`, il perimetro acquistato. Riferimento S01: S "Presenza" 8 contenuti su 1-2 canali, di cui 2 reel; M "Crescita" 12-16 su 2-3 canali, 4 reel, storie; L "Leader" 20-30 su 3-4 canali, 8 reel, storie quotidiane. Vale sempre il valore del pacchetto.
 - `dna`: scheda DNA del cliente: voce, persona grammaticale, parole chiave, parole vietate, CTA preferite, pubblico. È l'unica fonte della voce.
 - `promozioni_eventi`: `[{data, evento}]`, comunicati dal cliente entro il 20 del mese precedente. Sono le uniche promozioni e gli unici eventi citabili.
@@ -64,7 +65,7 @@ Oggetto JSON con esattamente questi sette campi.
 - Ogni rifiuto in `feedback_cliente` è una regola: un tema o una formula rifiutati non tornano.
 
 ## Esempio di buona qualità (solo stile; dati DEMO)
-Cliente DEMO: Bottega Aurora DEMO, pacchetto S DEMO, mese 2026-11, evento DEMO del 2026-11-14 "Laboratorio aperto del sabato". Estratto: nell'uscita reale tutti i campi sono obbligatori.
+Cliente DEMO: Bottega Aurora DEMO, pacchetto S DEMO, mese "novembre 2026", evento DEMO del 2026-11-14 "Laboratorio aperto del sabato". Estratto: nell'uscita reale tutti i campi sono obbligatori.
 ```json
 {
   "pilastri": ["Mani e materia — il pezzo che nasce dall'argilla", "Persone — chi entra in bottega e perché torna"],
