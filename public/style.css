@@ -114,3 +114,14 @@ div.office-row{cursor:default}
 .kpi-val{display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right;min-width:110px;overflow-wrap:anywhere}
 @media(max-width:1150px){.client-numbers{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:520px){.client-numbers{grid-template-columns:repeat(2,minmax(0,1fr))}.kpi-row{flex-direction:column}.kpi-val{align-items:flex-start;text-align:left}.client-brand{align-items:flex-start}}
+/* Diretta degli agenti: il testo che stanno scrivendo, letto dal registro ogni 2 secondi */
+.desk-live{display:flex;flex-direction:column;gap:4px;background:#1d1c19;border:1px solid #4a3a2f;border-radius:8px;padding:7px 8px;font-size:11px;color:#ffd9c2}
+.desk-live small{display:flex;align-items:center;gap:6px;color:#ffb488;font-weight:600}
+.desk-stream{color:#e9e7df;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;line-height:1.45;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.caret{display:inline-block;width:6px;height:11px;background:var(--orange);margin-left:2px;vertical-align:-1px;animation:caret-blink 1s steps(1) infinite}
+.live-transcript{background:#141413;color:#f7f6f2;border-radius:10px;padding:14px;margin-top:12px}
+.live-transcript small{display:flex;align-items:center;gap:6px;color:#ffb488;font-weight:600;margin-bottom:8px}
+.live-transcript p{margin:0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;line-height:1.6;max-height:50vh;overflow:auto;white-space:pre-wrap;word-break:break-word}
+.desk-al_lavoro .live-dot,.live-transcript .live-dot,.list-item .live-dot{animation:desk-pulse 1.6s infinite}
+@keyframes caret-blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.caret,.desk-al_lavoro .live-dot,.live-transcript .live-dot,.list-item .live-dot{animation:none}}

@@ -1,7 +1,7 @@
 'use strict';
 // Dashboard cliente: le 9 voci della specifica, pensate prima per il telefono.
 // Ogni numero mostra la fonte e lo stato: DEMO, COLLEGAMENTO MANCANTE, SOLO STRUTTURA o NON ATTIVO.
-const TONI_STATO={OPERATIVO:'green',DEMO:'orange','COLLEGAMENTO MANCANTE':'red','SOLO STRUTTURA':'','NON ATTIVO':''};
+const TONI_STATO={OPERATIVO:'green',DEMO:'orange','COLLEGAMENTO MANCANTE':'red','SOLO STRUTTURA':'','NON ATTIVO':'',Pronto:'green','Pronto per la verifica':'green','Al lavoro':'orange','Controllo qualità':'orange','In coda':'orange','In revisione interna':''};
 const statoBadge=st=>`<span class="badge ${TONI_STATO[st]??''}">${e(st)}</span>`;
 const euroC=c=>money(c);
 function kpiTabella(righe){return `<div class="kpi-list">${righe.map(k=>`<div class="kpi-row"><div><b>${e(k.kpi)}</b><small>${e(k.fonte)}</small></div><div class="kpi-val">${k.valore===null?'<span class="muted">—</span>':e(k.valore)}${statoBadge(k.stato)}</div></div>`).join('')}</div>`;}
@@ -9,6 +9,7 @@ function sezioneCliente(x){
  if(x.id==='home')return `<div class="client-numbers">${x.numeri.map(n=>`<article class="stat ${n.valore!==null?'emphasis':''}"><div class="stat-label">${e(n.nome)}</div><div class="stat-value">${n.valore===null?'—':e(n.valore)}</div><div class="stat-note">${statoBadge(n.stato)} ${e(n.fonte)}</div></article>`).join('')}</div>
   <div class="grid-two section">${panel('Come sta andando',x.sintesi?`<p class="preserve">${e(x.sintesi.testo).slice(0,1400)}</p><small>${e(x.sintesi.stato)} · ${e(x.sintesi.fonte)}</small>`:empty('Report del mese non ancora pronto','Il reporter lo scrive il primo giorno lavorativo del mese, dopo il controllo di un socio.','file'))}
   ${panel('Avvisi',x.avvisi.length?`<ul class="out-list">${x.avvisi.map(a=>`<li>${e(a)}</li>`).join('')}</ul>`:empty('Nessun avviso','Tutto in ordine per ora.','check'))}</div>
+  ${panel('Il team BigAnt al lavoro per te',x.squadra?.length?`<div class="list">${x.squadra.map(q=>`<div class="list-item office-row"><span><b>${q.attivo?'<b class="live-dot"></b>':''}${e(q.agente)}</b><small>${e(q.compito)} · ${e(date(q.quando,true))}</small></span>${statoBadge(q.stato)}</div>`).join('')}</div>`:empty('Nessun lavoro degli agenti ancora','Quando un agente lavora per la tua attività, lo vedi qui.','agents'),'','Si aggiorna da solo mentre gli agenti lavorano')}
   <div class="grid-two section">${panel('Cosa abbiamo fatto per te questo mese',x.fattoQuestoMese.length?`<ul class="out-list">${x.fattoQuestoMese.map(a=>`<li>${e(a)}</li>`).join('')}</ul>`:empty('Ancora nessuna consegna registrata nel mese','',"work"))}${panel('Prossimi passi',x.prossimiPassi.length?`<ul class="out-list">${x.prossimiPassi.map(p=>`<li>${e(p.titolo)}${p.scadenza?` · entro ${e(date(p.scadenza))}`:''}</li>`).join('')}</ul>`:empty('Nessun lavoro aperto','','calendar'))}</div>`;
  if(x.id==='risultati')return x.famiglie.map(f=>panel(f.nome,f.servizi.map(sv=>`<h3>${e(sv.codice)} · ${e(sv.nome)}</h3>${kpiTabella(sv.kpi)}`).join(''),'','Valori solo da fonti registrate; le piattaforme non collegate sono indicate')).join('')+notice(x.filtri.nota);
  if(x.id==='approvazioni')return `<div class="grid-two">${panel('Da approvare',x.daApprovare.length?`<div class="list">${x.daApprovare.map(a=>`<div class="list-item"><span class="number">${icon('approval')}</span><div class="body"><b>${e(a.title)}</b><p>Versione ${a.version} · ${e(date(a.created_at,true))}</p></div>${btn('Decidi','approval',a.id,'small primary')}</div>`).join('')}</div>`:empty('Niente da approvare','Le nuove bozze compariranno qui.','check'))}
@@ -30,3 +31,9 @@ function clienteDashboardView(){
  ${sezioni.map(x=>`<section class="client-section" id="sez-${e(x.id)}"><div class="section-title"><h2>${e(x.nome)}</h2></div>${sezioneCliente(x)}</section>`).join('')}`;
 }
 Object.assign(ACTIONS,{'vai-sezione':id=>{document.getElementById('sez-'+id)?.scrollIntoView({behavior:'smooth',block:'start'});}});
+// Mentre un agente lavora per il cliente, la pagina si aggiorna da sola (senza perdere la posizione).
+setInterval(async()=>{
+ if(!S.session?.user||S.view!=='client'||document.hidden||$('#dialog').open||S.refreshing)return;
+ const home=(S.module?.sezioni||[]).find(x=>x.id==='home');if(!home?.squadra?.some(q=>q.attivo))return;
+ S.refreshing=true;try{const y=scrollY;S.module=await api('/api/cliente/dashboard');render();scrollTo(0,y);}catch{}finally{S.refreshing=false;}
+},5000);

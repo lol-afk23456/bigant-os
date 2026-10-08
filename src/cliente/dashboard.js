@@ -5,6 +5,10 @@ import {AppError,requireClient} from '../store.js';
 import {integrations} from '../registry.js';
 import {catalogoServizi,codiciPerServiziRegistro} from '../servizi/catalogo.js';
 import {kpiServizio} from '../servizi/kpi.js';
+import {agentiSciame} from '../sciame/agenti.js';
+
+// Il cliente vede chi lavora per lui e a che punto è, senza costi, errori tecnici o output interni non approvati.
+const STATO_PER_CLIENTE={in_coda:'In coda',al_lavoro:'Al lavoro',controllo_qualita:'Controllo qualità',in_attesa_approvazione:'Pronto per la verifica',completato:'Pronto',bloccato_qualita:'In revisione interna',errore:'In revisione interna'};
 
 const FAMIGLIE=[
  {id:'contatti',nome:'Contatti',codici:['S14','S17','S12','S13']},
@@ -37,12 +41,14 @@ export function createClientDashboard({store:s}){
   const fonteNonCollegata=id=>({id,nome:integrations.find(i=>i.id===id)?.name||id,stato:'COLLEGAMENTO MANCANTE',nota:'Serve l’autorizzazione OAuth del cliente in sola lettura, non ancora attiva.'});
   // Solo le piattaforme dei dati del cliente (autorizzazione OAuth in sola lettura); gli strumenti interni di BigAnt restano fuori.
   const FONTI_CLIENTE=['google-ads','meta','ga4','gsc','gbp'],integrazioniCliente=[...new Set(catalogoServizi.filter(x=>codici.includes(x.codice)).flatMap(x=>x.integrazioni))].filter(id=>FONTI_CLIENTE.includes(id));
+  const squadra=s.query("SELECT agente,compito,stato,created_at,started_at,finished_at FROM os_sciame_passi WHERE client_id=? AND visibilita<>'admin' ORDER BY created_at DESC LIMIT 8",clientId).map(p=>({agente:agentiSciame[p.agente]?.nome||p.agente,compito:p.compito,stato:STATO_PER_CLIENTE[p.stato]||'In revisione interna',attivo:['in_coda','al_lavoro','controllo_qualita'].includes(p.stato),quando:p.finished_at||p.started_at||p.created_at}));
   const fatto=lavori.filter(t=>t.status==='done'),inCorso=lavori.filter(t=>t.status!=='done');
   const sezioni=[
    {id:'home',nome:'Home',
     numeri:CHIAVE_HOME.map(([nome,cod,i])=>{if(!codici.includes(cod))return {nome,valore:null,stato:'NON ATTIVO',fonte:'Servizio non acquistato'};const k=kpi.find(x=>x.codice===cod).kpi.filter(r=>!r.operativo)[i];return {nome,kpi:k.kpi,valore:k.valore,stato:k.stato,fonte:k.fonte};}),
     sintesi:report?{testo:report.content,fonte:report.source,aggiornato:report.updated_at,stato:'Report operativo dai dati registrati; nessuna metrica dei canali reali'}:null,
     fattoQuestoMese:[...contenuti.filter(x=>['APPROVATO','PROGRAMMATO'].includes(x.state)&&x.updated_at.startsWith(mese)).map(x=>`${x.title} · ${x.state}`),...fatto.map(t=>t.title)],
+    squadra,
     prossimiPassi:inCorso.slice(0,5).map(t=>({titolo:t.title,scadenza:t.due})),
     avvisi:[...(contenuti.filter(x=>x.state==='DA APPROVARE').length?[`${contenuti.filter(x=>x.state==='DA APPROVARE').length} contenuti da approvare`]:[]),...avvisiRecensioni,...contratti.filter(x=>x.status==='active').map(x=>`Contratto ${x.service}: decisione sul rinnovo entro ${new Date(Date.parse(x.end_date+'T00:00:00Z')-x.notice_days*86400000).toISOString().slice(0,10)}`)]},
    {id:'risultati',nome:'I tuoi risultati',famiglie:FAMIGLIE.map(f=>({...f,servizi:kpi.filter(k=>f.codici.includes(k.codice))})).filter(f=>f.servizi.length),

@@ -48,18 +48,27 @@ function motoreClaudeCode({root,env,spawnImpl=spawn}){
  const bin=env.BIGANT_CLAUDE_BIN||'claude',timeout=Number(env.BIGANT_MOTORE_TIMEOUT_MS||420000);
  return {id:'claude-code',etichetta:ETICHETTE['claude-code'],
   stato(){const ok=claudeDisponibile(bin);return {disponibile:ok,statoCollegamento:ok?'OPERATIVO':'COLLEGAMENTO MANCANTE',motivo:ok?'Claude Code risponde in modalità non interattiva; strumenti disattivati per ogni agente.':'Comando claude non trovato o non autenticato in questo ambiente.'};},
-  esegui({agente,compito,pacchetto,schema}){
+  esegui({agente,compito,pacchetto,schema,onProgresso=()=>{}}){
    // Nessuno strumento: l'agente non legge file, non naviga e non esegue comandi. Il pacchetto arriva da stdin.
-   const args=['-p','--agent',`bigant-${agente}`,'--tools','','--output-format','json','--json-schema',JSON.stringify(schema),'--no-session-persistence'];
+   // stream-json: il testo arriva mentre l'agente lo scrive, così l'ufficio virtuale lo mostra in diretta.
+   const args=['-p','--agent',`bigant-${agente}`,'--tools','','--output-format','stream-json','--verbose','--include-partial-messages','--json-schema',JSON.stringify(schema),'--no-session-persistence'];
    const inizio=Date.now();
    return new Promise((ok,ko)=>{
     const child=spawnImpl(bin,args,{cwd:root,env,stdio:['pipe','pipe','pipe']});
-    let out='',err='';const timer=setTimeout(()=>{child.kill('SIGTERM');ko(new Error(`Claude Code non ha risposto entro ${Math.round(timeout/1000)} s.`));},timeout);
-    child.stdout.on('data',d=>{out+=d;});child.stderr.on('data',d=>{err+=d;});
+    let resto='',err='',testo='',r=null;const timer=setTimeout(()=>{child.kill('SIGTERM');ko(new Error(`Claude Code non ha risposto entro ${Math.round(timeout/1000)} s.`));},timeout);
+    const riga=x=>{let j;try{j=JSON.parse(x);}catch{return;}
+     for(const ev of Array.isArray(j)?j:[j]){
+      if(ev?.type==='result')r=ev;
+      const d=ev?.type==='stream_event'&&ev.event?.type==='content_block_delta'?ev.event.delta:null;
+      if(d?.type==='text_delta'){testo+=d.text;onProgresso({fase:'scrittura',testo});}
+      else if(d?.type==='thinking_delta')onProgresso({fase:'ragionamento',testo});
+     }};
+    child.stdout.on('data',d=>{const parti=(resto+d).split('\n');resto=parti.pop();parti.forEach(riga);});child.stderr.on('data',d=>{err+=d;});
     child.on('error',e=>{clearTimeout(timer);ko(new Error('Avvio di Claude Code non riuscito: '+e.message));});
     child.on('close',code=>{
      clearTimeout(timer);
-     let r;try{r=JSON.parse(out);}catch{return ko(new Error(`Risposta di Claude Code non leggibile (uscita ${code}). ${err.slice(0,300)}`));}
+     if(resto.trim())riga(resto);
+     if(!r)return ko(new Error(`Risposta di Claude Code non leggibile (uscita ${code}). ${err.slice(0,300)}`));
      if(r.is_error||r.subtype!=='success')return ko(new Error(`Claude Code: esecuzione non riuscita (${r.subtype||'errore'}). ${String(r.result||err).slice(0,300)}`));
      // Con --agent gli strumenti del sottoagente sostituiscono quello dell'output strutturato:
      // in quel caso il JSON arriva nel testo e viene comunque validato sullo schema dal chiamante.
@@ -94,7 +103,7 @@ function motoreApi({root,env,importSdk=()=>import('@anthropic-ai/sdk')}){
 function motoreDemo(){
  return {id:'demo',etichetta:ETICHETTE.demo,
   stato:()=>({disponibile:true,statoCollegamento:'DEMO',motivo:'Regole deterministiche per i test automatici: non è intelligenza artificiale.'}),
-  async esegui({agente,pacchetto}){const inizio=Date.now();return {output:cervelloDemo(agente,pacchetto),meta:{motore:'demo',durataMs:Date.now()-inizio,costoUsdMicro:0,costoNota:'Nessun costo: regole locali'}};}};
+  async esegui({agente,pacchetto,onProgresso=()=>{}}){const inizio=Date.now(),output=cervelloDemo(agente,pacchetto);onProgresso({fase:'scrittura',testo:JSON.stringify(output)});return {output,meta:{motore:'demo',durataMs:Date.now()-inizio,costoUsdMicro:0,costoNota:'Nessun costo: regole locali'}};}};
 }
 
 function motoreNessuno(){

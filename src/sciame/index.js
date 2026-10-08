@@ -26,6 +26,9 @@ export function createSciame({store:s,production,administration,growth,orchestra
  CREATE TABLE IF NOT EXISTS os_azioni_esterne(id TEXT PRIMARY KEY,giro_id TEXT NOT NULL,passo_id TEXT NOT NULL,client_id TEXT NOT NULL,tipo TEXT NOT NULL,descrizione TEXT NOT NULL,stato TEXT NOT NULL,motivo TEXT NOT NULL,created_at TEXT NOT NULL);
  CREATE INDEX IF NOT EXISTS os_sciame_passi_giro ON os_sciame_passi(giro_id,ordine);
  CREATE INDEX IF NOT EXISTS os_sciame_passi_agente ON os_sciame_passi(agente,created_at);`);
+ // Diretta: il testo che l'agente sta scrivendo, salvato a intervalli brevi (visibile anche se il giro gira da riga di comando).
+ const colonne=s.query('PRAGMA table_info(os_sciame_passi)').map(c=>c.name);
+ for(const c of ['diretta','diretta_fase','diretta_at'])if(!colonne.includes(c))s.db.exec(`ALTER TABLE os_sciame_passi ADD COLUMN ${c} TEXT`);
  // Un processo riavviato non lascia agenti "al lavoro" per sempre: il lavoro interrotto diventa errore visibile.
  s.run("UPDATE os_sciame_passi SET stato='errore',errore='Interrotto: processo riavviato durante il lavoro',finished_at=? WHERE stato IN('in_coda','al_lavoro','controllo_qualita')",now());
  s.run("UPDATE os_sciame_giri SET stato='errore',errore='Interrotto: processo riavviato',finished_at=? WHERE stato IN('in_coda','in_corso')",now());
@@ -49,7 +52,11 @@ export function createSciame({store:s,production,administration,growth,orchestra
  async function chiamaMotore(passo,{agente,compito,pacchetto}){
   const costo=prenota(passo.client_id,agente);
   try{
-   const {output,meta}=await mot().esegui({agente,compito,pacchetto,schema:schemi[agente]});
+   let scritto=0,ultimo=null;
+   const salva=({fase,testo})=>s.run('UPDATE os_sciame_passi SET diretta=?,diretta_fase=?,diretta_at=? WHERE id=?',String(testo||'').slice(-20000),fase,now(),passo.id);
+   const onProgresso=x=>{ultimo=x;if(Date.now()-scritto<600)return;scritto=Date.now();salva(x);};
+   const {output,meta}=await mot().esegui({agente,compito,pacchetto,schema:schemi[agente],onProgresso});
+   if(ultimo)salva({...ultimo,fase:'finito'});
    const errori=valida(schemi[agente],output);
    addebita(costo,meta.costoUsdMicro||0);
    if(errori.length)throw new AppError('Uscita non conforme al contratto: '+errori.slice(0,5).join('; '));
@@ -325,11 +332,11 @@ export function createSciame({store:s,production,administration,growth,orchestra
 
  // ---------- Letture ----------
  const parse=v=>v?JSON.parse(v):null;
- function riepilogoGiro(id){const g=s.one('SELECT * FROM os_sciame_giri WHERE id=?',id);if(!g)throw new AppError('Giro non trovato.',404);return {...g,flussi:parse(g.flussi),piano:parse(g.piano),passi:s.query('SELECT * FROM os_sciame_passi WHERE giro_id=? ORDER BY ordine',id).map(p=>({...p,input:parse(p.input_json),output:parse(p.output_json),qualita:parse(p.qualita_json),input_json:undefined,output_json:undefined,qualita_json:undefined})),azioni_esterne:s.query('SELECT * FROM os_azioni_esterne WHERE giro_id=? ORDER BY created_at',id)};}
+ function riepilogoGiro(id){const g=s.one('SELECT * FROM os_sciame_giri WHERE id=?',id);if(!g)throw new AppError('Giro non trovato.',404);return {...g,flussi:parse(g.flussi),piano:parse(g.piano),passi:s.query('SELECT * FROM os_sciame_passi WHERE giro_id=? ORDER BY ordine',id).map(p=>({...p,input:parse(p.input_json),output:parse(p.output_json),qualita:parse(p.qualita_json),input_json:undefined,output_json:undefined,qualita_json:undefined,diretta:undefined,diretta_fase:undefined,diretta_at:undefined})),azioni_esterne:s.query('SELECT * FROM os_azioni_esterne WHERE giro_id=? ORDER BY created_at',id)};}
  function ufficio(user){
   requireOwner(user);const mese=oggi().slice(0,7),statoMotore=mot().stato();
   const ultimi=new Map(),costiMese=new Map(),inCorso=new Map();
-  for(const p of s.query("SELECT id,agente,giro_id,client_id,compito,stato,motore,output_json,errore,esito_qualita,costo_usd_micro,created_at,finished_at FROM os_sciame_passi ORDER BY created_at DESC LIMIT 400")){
+  for(const p of s.query("SELECT id,agente,giro_id,client_id,compito,stato,motore,output_json,errore,esito_qualita,costo_usd_micro,created_at,started_at,finished_at,CASE WHEN stato IN('al_lavoro','controllo_qualita') THEN substr(diretta,-700) END diretta_coda,diretta_fase,diretta_at FROM os_sciame_passi ORDER BY created_at DESC LIMIT 400")){
    const reg=agentiSciame[p.agente].registro;
    if(['al_lavoro','controllo_qualita'].includes(p.stato)&&!inCorso.has(reg))inCorso.set(reg,p);
    if(!ultimi.has(reg)&&!['in_coda','al_lavoro','controllo_qualita'].includes(p.stato))ultimi.set(reg,p);
@@ -346,7 +353,8 @@ export function createSciame({store:s,production,administration,growth,orchestra
    else if(!ultimo&&job?.status==='failed'){stato='errore';compito=job.error;}
    if(ultimo){const o=parse(ultimo.output_json);uscita={passoId:ultimo.id,giroId:ultimo.giro_id,titolo:ultimo.compito,sintesi:o?.sintesi||o?.esito||null,quando:ultimo.finished_at||ultimo.created_at,motore:ultimo.motore,motoreEtichetta:ETICHETTE[ultimo.motore]||ultimo.motore,esitoQualita:ultimo.esito_qualita,costoUsdMicro:ultimo.costo_usd_micro};}
    else if(job){const r=parse(job.result);uscita={titolo:r?.title||'Procedura DEMO locale',sintesi:r?.summary||job.error||null,quando:job.finished_at||job.created_at,motore:'regole-demo',motoreEtichetta:'Procedura DEMO locale a regole (nessuna AI)',costoUsdMicro:0};}
-   return {id,nome,stato,compito,ultimoOutput:uscita,costoMeseUsdMicro:costiMese.get(id)||0,sciame:!!perRegistro[id]};
+   const diretta=lavoro?{passoId:lavoro.id,cliente:lavoro.client_id,inizio:lavoro.started_at||lavoro.created_at,fase:lavoro.diretta_fase||'in_attesa',testo:lavoro.diretta_coda||'',aggiornato:lavoro.diretta_at,motore:lavoro.motore}:null;
+   return {id,nome,stato,compito,diretta,ultimoOutput:uscita,costoMeseUsdMicro:costiMese.get(id)||0,sciame:!!perRegistro[id]};
   };
   const stanze=[{id:'regia',nome:'Regia',agenti:[postazione('orchestrator','Orchestratore')]},...departments.map(d=>({id:d.id,nome:d.name,agenti:d.agents.map(a=>postazione(a,agentDefinitions.find(x=>x.id===a).name))}))];
   const feed=s.query("SELECT a.id,a.action,a.client_id,a.detail,a.visibility,a.created_at,u.name actor FROM os_audit a LEFT JOIN os_users u ON u.id=a.user_id ORDER BY a.created_at DESC,a.rowid DESC LIMIT 60").map(a=>({...a,detail:parse(a.detail)}));
