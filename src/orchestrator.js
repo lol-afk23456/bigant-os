@@ -65,7 +65,9 @@ export function createOrchestrator({store:s,production,administration,growth=nul
   async function tickModules() {
     const results=[];
     if(growth)try {results.push({module:'growth',...(await growth.engine.tick())});s.setSetting('module_error_growth','');}catch(e){s.setSetting('module_error_growth',text(e.message,300));results.push({module:'growth',error:true});}
-    if(fidelity)for(const c of s.query('SELECT id,services_json FROM os_clients WHERE active=1'))if(JSON.parse(c.services_json).includes('fidelity'))try {const r=fidelity.tick(c.id,robot);s.setSetting('module_error_fidelity','');if(r.prepared.length)results.push({module:'fidelity',clientId:c.id,prepared:r.prepared.length});}catch(e){s.setSetting('module_error_fidelity',text(e.message,300));results.push({module:'fidelity',clientId:c.id,error:true});}
+    const fidelityErrors=[];
+    if(fidelity)for(const c of s.query('SELECT id,name,services_json FROM os_clients WHERE active=1'))if(JSON.parse(c.services_json).includes('fidelity'))try {const r=fidelity.tick(c.id,robot);if(r.prepared.length)results.push({module:'fidelity',clientId:c.id,prepared:r.prepared.length});}catch(e){fidelityErrors.push(c.name+': '+text(e.message,300));results.push({module:'fidelity',clientId:c.id,error:true});}
+    if(fidelity)s.setSetting('module_error_fidelity',fidelityErrors.join(' · '));
     return results;
   }
   async function tick() {

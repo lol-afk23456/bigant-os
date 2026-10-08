@@ -29,6 +29,12 @@ export function openStore(path=':memory:') {
   CREATE TABLE IF NOT EXISTS os_settings(key TEXT PRIMARY KEY,value TEXT NOT NULL);
   INSERT OR IGNORE INTO os_settings VALUES('budget_cents','5000'),('fixed_cents','3500'),('paused','false');
   INSERT OR IGNORE INTO os_schema VALUES(1,strftime('%Y-%m-%dT%H:%M:%fZ','now'));
+  CREATE TABLE IF NOT EXISTS os_memory_versions(client_id TEXT NOT NULL,kind TEXT NOT NULL,version INTEGER NOT NULL,content TEXT NOT NULL,visibility TEXT NOT NULL,source TEXT NOT NULL,recorded_at TEXT NOT NULL,PRIMARY KEY(client_id,kind,version));
+  CREATE TRIGGER IF NOT EXISTS os_memory_history_insert AFTER INSERT ON os_memory BEGIN INSERT INTO os_memory_versions SELECT NEW.client_id,NEW.kind,NEW.version,NEW.content,NEW.visibility,NEW.source,NEW.updated_at WHERE NOT EXISTS(SELECT 1 FROM os_memory_versions WHERE client_id=NEW.client_id AND kind=NEW.kind AND version=NEW.version); END;
+  CREATE TRIGGER IF NOT EXISTS os_memory_history_update AFTER UPDATE ON os_memory BEGIN INSERT INTO os_memory_versions SELECT OLD.client_id,OLD.kind,OLD.version,OLD.content,OLD.visibility,OLD.source,OLD.updated_at WHERE NOT EXISTS(SELECT 1 FROM os_memory_versions WHERE client_id=OLD.client_id AND kind=OLD.kind AND version=OLD.version); INSERT INTO os_memory_versions SELECT NEW.client_id,NEW.kind,NEW.version,NEW.content,NEW.visibility,NEW.source,NEW.updated_at WHERE NOT EXISTS(SELECT 1 FROM os_memory_versions WHERE client_id=NEW.client_id AND kind=NEW.kind AND version=NEW.version); END;
+  CREATE TRIGGER IF NOT EXISTS os_memory_versions_no_update BEFORE UPDATE ON os_memory_versions BEGIN SELECT RAISE(ABORT, 'Storico memoria immutabile'); END;
+  CREATE TRIGGER IF NOT EXISTS os_memory_versions_no_delete BEFORE DELETE ON os_memory_versions BEGIN SELECT RAISE(ABORT, 'Storico memoria immutabile'); END;
+  INSERT OR IGNORE INTO os_memory_versions SELECT client_id,kind,version,content,visibility,source,updated_at FROM os_memory;
   CREATE INDEX IF NOT EXISTS os_tasks_client ON os_tasks(client_id,status,due);
   CREATE INDEX IF NOT EXISTS os_jobs_due ON os_jobs(status,available_at);
   CREATE INDEX IF NOT EXISTS os_audit_client ON os_audit(client_id,created_at);
