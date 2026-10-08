@@ -5,6 +5,7 @@ import { resolve, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PROJECT_ROOT, safePath, validateDatabase } from './backup.js';
 import { services, departments, agentDefinitions, integrations } from '../src/registry.js';
+import {validateAgencyRegistry} from '../src/agency/index.js';
 
 const run = promisify(execFile);
 const pinned = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
@@ -34,6 +35,7 @@ async function checkSyntax() {
 }
 
 async function checkRegistry() {
+  validateAgencyRegistry();
   for (const [label, rows] of Object.entries({ servizi: services, reparti: departments, agenti: agentDefinitions, integrazioni: integrations })) {
     demand(rows.length > 0 && rows.every(row => /^[a-z][a-z0-9-]*$/.test(row.id) && row.name), `Identificativi o nomi non validi nel registro ${label}.`);
     demand(new Set(rows.map(row => row.id)).size === rows.length, `Identificativi duplicati nel registro ${label}.`);
