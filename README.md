@@ -4,7 +4,9 @@ Il laboratorio interno di BigAnt per riunire lavoro, clienti, agenti e amministr
 
 Inizia da [Report della notte](docs/REPORT-NOTTE.md), [analisi](docs/ANALISI-INIZIALE.md), [architettura](docs/ARCHITETTURA.md) e [playbook operativo](docs/PLAYBOOK.md).
 
-La [verifica completa del brief](docs/VERIFICA-COPERTURA-BRIEF.md) misura **30,2% di copertura funzionale**, e **14,9% dell’agenzia oltre Growth/Fidelity**. La nuova [struttura dell’agenzia](docs/STRUTTURA-AGENZIA.md) dà uno spazio a tutti i pezzi: non significa che tutti i servizi siano operativi.
+**Consegna a Claude Code:** iniziare da [PASSAGGIO-CONSEGNE.md](docs/PASSAGGIO-CONSEGNE.md). Lo sviluppo è fermato per richiesta del proprietario. Il ramo GitHub da usare è `bigant-os-notte-1`, PR #1 aperta. La copia locale e quella remota hanno storie diverse: non forzare il push.
+
+Stato al passaggio: **32 procedure DEMO eseguibili**, non modelli AI collegati; **160/161 test passati**, con un test evento obsoleto in `tests/agency.test.js`. Il nuovo [brief integrale](docs/BRIEF-BIGANT.md) è conservato senza modifiche. La [copertura](docs/VERIFICA-COPERTURA-BRIEF.md) del documento esteso non è ancora misurata: il 30,2% storico (62/205) riguarda solo il vecchio brief notturno, conservato separatamente. La [struttura dell'agenzia](docs/STRUTTURA-AGENZIA.md) e i menu non equivalgono a servizi completi.
 
 ## Avvio locale
 
@@ -20,6 +22,7 @@ Apri l'indirizzo locale stampato all'avvio. Scegli un accesso dimostrativo per p
 ```sh
 npm test
 npm run check
+npm run demo:agents
 ```
 
 Il database di prova resta nella cartella tecnica `.data`, esclusa da Git. Le fonti originali per l'analisi restano in `.sources`, anch'essa esclusa. Il repository contiene codice, documentazione e fixture; nessun archivio reale.
@@ -48,3 +51,6 @@ Le funzioni esterne rimangono scollegate. La tabella nel report distingue funzio
 5. Cambia profilo in **Cliente Aurora DEMO**: controlla servizi e approvazioni, senza accesso alla contabilità dell’agenzia.
 
 Tutto rimane locale. Non aggiungere dati veri o credenziali: questo ramo prepara il pilota, non la messa in produzione. La sessione tecnica dello scheduler non consente accesso interattivo; non è un quinto profilo da usare.
+
+
+Controllo documentale dopo il salvataggio del brief integrale: `npm run check` passa sintassi, registro, dipendenze e prototipo locale, ma segnala 22 riferimenti relativi del testo sorgente a schede playbook non ancora estratte. Il file integrale resta byte per byte uguale all’originale. Anche questo limite è consegnato a Claude, senza cambiare il testo sorgente o introdurre segnaposto vuoti.

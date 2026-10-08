@@ -1,5 +1,7 @@
 # BigAnt OS — regole per gli agenti
 
+Prima di ogni sessione rileggere `docs/BRIEF-BIGANT.md`, `docs/VERIFICA-COPERTURA-BRIEF.md` e `docs/PASSAGGIO-CONSEGNE.md`. Il brief esteso è conservato integralmente; la matrice storica non ne misura ancora tutto il perimetro. Per proseguire usare il ramo remoto, senza forzare la storia locale.
+
 Leggere README, docs/BRIEF-BIGANT.md, docs/DECISIONI.md e docs/REPORT-NOTTE.md prima di modificare.
 
 - Progetto interno, due ditte individuali sotto un marchio. Non costruire un SaaS commerciale.
