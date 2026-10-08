@@ -1,0 +1,1013 @@
+{
+ "nota": "Valutazione PRELIMINARE dei requisiti R-001..R-126 eseguita da agenti indipendenti durante la sessione dell’8/10/2026, prima del collaudo finale. Non ancora verificata dal revisore scettico (seconda passata interrotta per limiti di credito). Gli stati di scenario a 13 passaggi, contratti, catalogo S01–S19 e dashboard cliente possono essere più alti di quanto indicato qui, perché costruiti dopo la valutazione.",
+ "valutazioni": [
+  {
+   "id": "R-001",
+   "stato": "DEMO",
+   "prova": "src/store.js:16-32 (os_clients, os_users, os_tasks, os_contents, os_approvals, os_jobs, os_costs, os_memory); src/administration.js:48-61 (os_fin_entities=aziende, os_fin_counterparties=contatti, os_fin_contracts, os_fin_movements); src/growth-store.js leads; src/sciame/index.js:24-26 (os_sciame_giri/passi = esecuzioni agenti). Un solo database: tests/growth.test.js 'Growth usa la connessione centrale...', tests/fidelity.test.js 'Fidelity usa clienti, utenti e audit comuni...', tests/administration.test.js 'anagrafiche contratti bozze scadenze e abbonamenti condividono il modello...'",
+   "manca": "Nessuna entità 'pacchetti' (solo costante pacchettoPresenza in src/sciame/dati-demo.js); 'documenti' esiste solo come campo testuale document_ref, senza tabella tipizzata/versionata; i servizi sono un JSON dentro os_clients e gli agenti stanno solo nel codice (src/registry.js), non nel modello dati.",
+   "area": "gestionale",
+   "requisito": "Modello dati unico condiviso dai tre sistemi con: aziende, clienti, contatti, servizi, pacchetti, contratti, attività, contenuti, approvazioni, movimenti, documenti, agenti, esecuzioni, costi."
+  },
+  {
+   "id": "R-002",
+   "stato": "DEMO",
+   "prova": "src/registry.js departments (8 reparti) e agentDefinitions (32); src/sciame/agenti.js (11 agenti AI) con .claude/agents/bigant-*.md; tests/sciame.test.js 'giro completo con motore DEMO: sette reparti...'; tests/swarm.test.js 'tutti i 32 agenti hanno executor distinti...'; giro reale Claude Code in docs/demo-sciame/2026-10-08-giro-167079fc/README.md (Direttore, Amministrazione, Marketing, Reputazione approvabili; file non ancora committato); Account: procedura a regole src/agents/core.js (scenario passo 5).",
+   "manca": "Account e customer success ha solo una procedura a regole (nessun agente AI); nel giro reale Ricerca clienti, Social S01 e Local GBP sono stati fermati da Qualità; Produzione copre con AI solo S01/S06/S08; la prova reale va committata.",
+   "area": "sciame",
+   "requisito": "Ogni reparto (Direttore Crescita, Marketing BigAnt, Commerciale, Account, Produzione per servizio, Qualità e compliance, Amministrazione) ha un agente definito e almeno un flusso DEMO funzionante."
+  },
+  {
+   "id": "R-003",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/registry.js:3-30 usa i numeri 1-19 del catalogo Italiaonline più 8 specialità, non i codici S01-S19; i codici S01-S19 compaiono solo come elenco di stato per il Direttore (src/sciame/agenti.js statoServiziPlaybook); pacchetto Presenza solo come dato DEMO (src/sciame/dati-demo.js pacchettoPresenza) e elenco testuale nel flusso upsell (src/sciame/index.js:271).",
+   "manca": "Da costruire: registro dei moduli con codici S01-S19 e i 5 pacchetti del catalogo (Presenza, Crescita Locale, Sanità, Ristorazione, Brand) come voci registrate con composizione; prezzi restano decisione dei soci.",
+   "area": "pacchetti",
+   "requisito": "Il registro dei moduli include i pacchetti del catalogo accanto ai codici S01-S19."
+  },
+  {
+   "id": "R-004",
+   "stato": "DEMO",
+   "prova": "src/agency/management.js: 10 moduli coincidenti con l'elenco del brief (anagrafiche, commerciale-contratti, fatturazione, scadenziario, cassa e prima nota, costi, lavoro e marginalità, task, documenti, cruscotto); tests/agency.test.js 'intera agenzia: ... dieci moduli distinti senza orfani'; tests/administration.test.js (19 test); tests/contratti.test.js.",
+   "manca": "Modulo Documenti solo struttura (nessuna tabella); preventivi versionati e accettazioni assenti; compensi e scadenze fiscali senza regole confermate; tutte le sezioni interne dei moduli sono marcate 'Solo struttura'.",
+   "area": "gestionale",
+   "requisito": "Esistono i 10 moduli del gestionale (tra cui CRM e commerciale, clienti e contratti, progetti e consegne, prima nota e contabilità, compensi, scadenziario, cosa non torna, crescita e fidelizzazione)."
+  },
+  {
+   "id": "R-005",
+   "stato": "DEMO",
+   "prova": "src/administration.js RULES (15 regole implementate, inclusa payment_mismatch) e analyze(); tests/administration.test.js 'analisi deterministica non cambia conti...' e 'prelievi distinti dai costi, superamento accordo e documenti mancanti segnalati'; tests/scenario.test.js passo 12 (incasso diverso di 9,00 € segnalato).",
+   "manca": "Regole tracker_mismatch (Prima Nota/Tracker reali), unusual_expense (non implementata), tax_threshold (serve commercialista), unrecorded_payment (servono estratti conto); funziona solo su movimenti DEMO.",
+   "area": "gestionale",
+   "requisito": "Il controllo \"cosa non torna\" rileva e segnala le incongruenze nei dati gestionali e contabili."
+  },
+  {
+   "id": "R-006",
+   "stato": "DEMO",
+   "prova": "src/agency/dashboards.js internalSections (12 sezioni: 10 'Flusso DEMO parziale', 2 'Solo struttura'); public/app.js viste direction/administration/clients/approvals/agents/activity; public/ufficio.js; tests/sciame.test.js 'ufficio virtuale: stanze dell'organigramma, 33 postazioni...'; tests/agency.test.js 'router HTTP: sessione obbligatoria...'.",
+   "manca": "Sezioni 'Priorità e KPI' e 'Documenti e portfolio' solo struttura; Marketing BigAnt con canali metrics:null e aree 'Solo struttura' (src/agency/marketing.js); workspace dei servizi con sezioni 'Solo struttura'.",
+   "area": "dashboard-interna",
+   "requisito": "La dashboard interna per i soci mostra tutte le sezioni previste con dati DEMO coerenti."
+  },
+  {
+   "id": "R-007",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/agency/dashboards.js clientSections: 11 sezioni, 8 con status 'Solo struttura' e metrics:null, solo approvals/ask/fidelity 'Flusso DEMO parziale'; public/app.js:93 clientView mostra 'Risultati dei canali — Fonti non collegate'; tests/agency.test.js 'dashboard cliente contiene le dieci sezioni previste...'.",
+   "manca": "Da costruire le 9 sezioni del documento (Home con KPI, Risultati per famiglia, Documenti e amministrazione, Profilo mancanti o vuoti) con dati DEMO coerenti; i dati reali richiedono GBP, Google Ads, Meta, GA4, Search Console.",
+   "area": "dashboard-cliente",
+   "requisito": "La dashboard cliente mostra tutte le 9 sezioni del documento \"Punti di forza, dashboard e sito\" con dati DEMO coerenti."
+  },
+  {
+   "id": "R-008",
+   "stato": "OPERATIVO",
+   "prova": "Comando node --test tests/*.test.js: 178 test, 178 passati, 0 falliti (eseguito ora); Growth, Fidelity, Amministrazione e ricerca clienti conservati (nessun file cancellato: git log --diff-filter=D vuoto).",
+   "manca": "Nulla per il requisito.",
+   "area": "metodo-consegne",
+   "requisito": "Si riparte dalla prima versione esistente (Growth, Fidelity, Amministrazione, ricerca clienti) senza rifare da zero; i 99 test esistenti e l'intera suite di test passano."
+  },
+  {
+   "id": "R-009",
+   "stato": "OPERATIVO",
+   "prova": "docs/DECISIONI.md (tabella 'Sessione Claude Code cloud' decisione + motivo, aggiornata nel commit f3f518b); docs/DOMANDE-PER-RAFFAELE.md (9 domande per i soci).",
+   "manca": "DOMANDE-PER-RAFFAELE.md non è aggiornato con le domande emerse dal brief integrale (es. ditta emittente, prezzi pacchetti): stanno in docs/DA-FARE-RAFFAELE.md.",
+   "area": "metodo-consegne",
+   "requisito": "Le decisioni prese in autonomia sono registrate con il motivo in docs/DECISIONI.md; le domande che solo i soci possono chiarire vanno in docs/DOMANDE-PER-RAFFAELE.md."
+  },
+  {
+   "id": "R-010",
+   "stato": "SOLO STRUTTURA",
+   "prova": "docs/VERIFICA-COPERTURA-BRIEF.md misura solo il brief notturno (ID AG-/MIG-, 'Copertura del nuovo brief integrale: NON ANCORA MISURATA'); docs/copertura/requisiti-brief.json elenca 377 requisiti senza stato.",
+   "manca": "Da costruire: matrice del brief integrale con stato FATTO/SOLO STRUTTURA e motivo ammesso per ogni R-xxx; oggi molte righe sarebbero ASSENTE (sito, report finale, integrazioni).",
+   "area": "metodo-consegne",
+   "requisito": "In docs/VERIFICA-COPERTURA-BRIEF.md nessun requisito è ASSENTE: ognuno è FATTO (funziona e ha test) o SOLO STRUTTURA con uno dei 3 motivi ammessi (credenziali, decisione soci, servizio a pagamento)."
+  },
+  {
+   "id": "R-011",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/agency/services.js serviceBlueprints: 27 servizi con agenti/inputs/sezioni, sop:'docs/PLAYBOOK.md' (non le schede docs/playbook/Sxx), sezioni tutte 'Solo struttura', solo 5 con 'Flusso DEMO parziale'; nessun codice S01-S19 nel registro.",
+   "manca": "Da costruire: modulo per ogni S01-S19 collegato alla propria scheda docs/playbook/Sxx, con flusso e agenti; i servizi ATTIVI (S01, S02, S03, S04, S06, S09, S15, S16) non hanno flussi completi.",
+   "area": "servizi",
+   "requisito": "Il registro dei moduli contiene i servizi S01-S19, ognuno con scheda collegata, flusso e agenti; i servizi ATTIVI sono completi e quelli DA ATTIVARE presenti come struttura completa."
+  },
+  {
+   "id": "R-012",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/agency/dashboards.js clientSections con metrics:null e updatedAt:null; nessun KPI per servizio S01-S19 nel codice.",
+   "manca": "Da costruire KPI per ciascun servizio nella dashboard cliente; i valori reali richiedono GBP, Google Ads, Meta, GA4, Search Console, Postiz non collegati.",
+   "area": "servizi",
+   "requisito": "Ogni servizio S01-S19 mostra i propri KPI nella dashboard cliente."
+  },
+  {
+   "id": "R-013",
+   "stato": "DEMO",
+   "prova": "src/store.js os_approvals (coda comune, UNIQUE kind/entity/version); server.js dispatch content/agent_output/growth_message/fidelity_campaign/sciame_output; tests/swarm.test.js 'tutti i 32 agenti...' (32 approvazioni distinte); tests/core-review.test.js 'approvazione Growth passa dalla coda comune'; tests/scenario.test.js passo 7 (approvazione del cliente con nome e data).",
+   "manca": "Le approvazioni sono per id servizio interno (social, ads, local…), non per codice S01-S19; per molti servizi arrivano solo da procedure a regole che preparano piani, non dal servizio completo.",
+   "area": "servizi",
+   "requisito": "Esiste una coda comune delle approvazioni e ogni servizio S01-S19 vi invia le proprie approvazioni."
+  },
+  {
+   "id": "R-014",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/agency/swarm.js departmentTriggers; src/orchestrator.js nextRun/event/POST /schedules; tests/swarm.test.js 'calendario conserva input...' e 'eventi deduplicati...'; tests/agency.test.js 'calendari ed eventi DEMO sono implementati ma nessuna pianificazione si attiva...'.",
+   "manca": "Produzione e Qualità non hanno un innesco a calendario, Amministrazione nessun innesco su evento; tutte le pianificazioni sono disattivate di default; lo sciame AI (src/sciame) parte solo a mano, senza inneschi.",
+   "area": "automazioni",
+   "requisito": "Ogni reparto dello sciame ha inneschi configurati sia a calendario sia su evento."
+  },
+  {
+   "id": "R-015",
+   "stato": "DEMO",
+   "prova": "src/administration.js contractPlan/contractInvoice e scadenziario (deadlines con canone_atteso, preavviso_rinnovo, fine_contratto); tests/contratti.test.js 'R-015: un contratto genera la fattura da emettere del mese, i canoni attesi e le scadenze...'; tests/scenario.test.js passi 10-11.",
+   "manca": "I canoni attesi stanno nello scadenziario e nelle proiezioni, non in prima nota; rinnovo automatico segnalato e collegamento preventivo→contratto assenti; emissione reale via SDI non collegata.",
+   "area": "gestionale",
+   "requisito": "I dati passano tra i moduli: un contratto genera le scadenze, le fatture da emettere e i canoni attesi in prima nota."
+  },
+  {
+   "id": "R-016",
+   "stato": "DEMO",
+   "prova": "src/growth*.js, src/fidelity*.js; tests/growth.test.js (21 test), tests/fidelity.test.js (25), tests/module-agents.test.js; docs/VERIFICA-COPERTURA-BRIEF.md: Growth 28/53 e Fidelity 17/38 funzioni FATTO.",
+   "manca": "Provider reali scollegati (ricerca web Brave, analisi AI, Gmail, Google Calendar, OAuth, Apple/Google Wallet) e parti di UI mancanti (modifica completa schede lead, filtri iscritti, anonimizzazione da dashboard, bootstrap del primo titolare, retry job Fidelity).",
+   "area": "growth-fidelity",
+   "requisito": "Growth, Fidelity e ricerca clienti funzionano dentro BigAnt OS, funzione per funzione."
+  },
+  {
+   "id": "R-017",
+   "stato": "DEMO",
+   "prova": "scripts/scenario.js (npm run scenario): eseguito ora, 13 passaggi su 13 completati con motore DEMO; tests/scenario.test.js 'R-017: scenario dimostrativo a 13 passaggi...'.",
+   "manca": "Con il motore DEMO l'analisi S17 e l'upsell sono testi preconfezionati; nessuna esecuzione dello scenario con il motore claude-code salvata (docs/demo-scenario assente); il report mensile riporta solo conteggi.",
+   "area": "metodo-consegne",
+   "requisito": "Scenario DEMO con un solo comando, 13 passaggi: lead, analisi S17, proposta Presenza, contratto, onboarding, contenuti, approvazione cliente, programmazione simulata, report, fattura, incasso, anomalia, upsell."
+  },
+  {
+   "id": "R-018",
+   "stato": "OPERATIVO",
+   "prova": "docs/BRIEF-BIGANT.md 2.184 righe, SHA-256 a5623a01b084faad179955f9f00feea83fbacfb1313fd9e0a7bd744f73dd91b6 uguale a quello registrato in docs/PASSAGGIO-CONSEGNE.md:214; mai modificato dopo f672299.",
+   "manca": "Nulla per il requisito.",
+   "area": "metodo-consegne",
+   "requisito": "docs/BRIEF-BIGANT.md contiene il prompt integrale e senza modifiche, usato come fonte di verità."
+  },
+  {
+   "id": "R-019",
+   "stato": "SOLO STRUTTURA",
+   "prova": "docs/copertura/requisiti-brief.json: 377 requisiti R-001..R-377 con area, tipo e righe, senza stato/prova/manca; docs/VERIFICA-COPERTURA-BRIEF.md usa ancora ID AG-/MIG- e dichiara la copertura 'NON ANCORA MISURATA'.",
+   "manca": "Da costruire: stato, prova e cosa manca per ogni R-xxx nella matrice, con copertura totale e per macro-area in cima.",
+   "area": "metodo-consegne",
+   "requisito": "La matrice assegna un ID R-xxx a ogni requisito di tutte le parti, con stato, prova e cosa manca, e riporta in cima la copertura reale totale e per macro-area."
+  },
+  {
+   "id": "R-020",
+   "stato": "SOLO STRUTTURA",
+   "prova": "Il campo area in docs/copertura/requisiti-brief.json permette il calcolo, ma non esiste misura per macro-area del brief integrale; docs/DIARIO-LAVORO.md non registra la scelta della macro-area più bassa.",
+   "manca": "Da costruire: misura per macro-area, scelta del ciclo dalla più bassa e controllo dello scarto di 30 punti dalla media.",
+   "area": "metodo-consegne",
+   "requisito": "Ogni ciclo parte dalla macro-area con copertura più bassa e nessuna macro-area resta oltre 30 punti percentuali sotto la media."
+  },
+  {
+   "id": "R-021",
+   "stato": "SOLO STRUTTURA",
+   "prova": "AGENTS.md riga 3: regola di rileggere BRIEF, VERIFICA e PASSAGGIO prima di ogni sessione; 'anche dopo ogni compressione' solo in CLAUDE.md:6; README.md fermo a '160/161 test' e senza sciame AI, npm run sciame o npm run scenario.",
+   "manca": "Aggiornare README.md (stato 178/178, sciame, motori, scenario, comandi) e aggiungere in cima ad AGENTS.md la rilettura dopo ogni compressione.",
+   "area": "metodo-consegne",
+   "requisito": "README.md e AGENTS.md aggiornati; AGENTS.md ha in cima la regola di rileggere docs/BRIEF-BIGANT.md e la matrice prima di ogni sessione e dopo ogni compressione."
+  },
+  {
+   "id": "R-022",
+   "stato": "SOLO STRUTTURA",
+   "prova": "docs/DIARIO-LAVORO.md, tabella 'Sessione Claude Code cloud' con ora, macro-area, R-xxx, risultato, problemi.",
+   "manca": "L'ultima riga (15:17, prova reale) rimanda a una 'riga successiva' che non esiste; il ciclo del commit f3f518b (contratti, scenario, R-015/R-017) non è registrato; le righe precedenti alla sessione non hanno R-xxx.",
+   "area": "metodo-consegne",
+   "requisito": "docs/DIARIO-LAVORO.md registra per ogni ciclo data e ora, macro-area, requisiti R-xxx toccati, risultato e problemi, ed è aggiornato anche in caso di interruzione."
+  },
+  {
+   "id": "R-023",
+   "stato": "SOLO STRUTTURA",
+   "prova": "git log: 2a4168e, f7a83e1, f3f518b citano R-xxx; 5f1e730 e b708ec5 senza R-xxx; d364e37 cita per errore R-016 invece di R-019; f3f518b tocca 20 file (~400 righe), quindi non è un commit piccolo.",
+   "manca": "Commit più piccoli e ciascuno con i R-xxx corretti che chiude.",
+   "area": "metodo-consegne",
+   "requisito": "Commit piccoli, chiari e in italiano; ogni messaggio cita i requisiti R-xxx che chiude."
+  },
+  {
+   "id": "R-024",
+   "stato": "SOLO STRUTTURA",
+   "prova": "docs/DIARIO-LAVORO.md riga 'Revisione indipendente | Permessi e regia' (prima del passaggio) e nota 'revisione avversaria in corso' alla riga 15:14.",
+   "manca": "Nessuna revisione brief-codice-matrice documentata sugli R-xxx con stati gonfiati e correzioni; manca la cadenza ogni 5 cicli e la revisione prima del completamento.",
+   "area": "metodo-consegne",
+   "requisito": "Ogni 5 cicli e prima del completamento si fa una revisione indipendente brief-codice-matrice su requisiti dimenticati, stati gonfiati e incoerenze, correggendo quanto trovato."
+  },
+  {
+   "id": "R-025",
+   "stato": "OPERATIVO",
+   "prova": "src/store.js os_users.role CHECK(owner/collaborator/client), requireOwner/requireClient; tests/core.test.js 'isola economia, agenti e CRM dal cliente e dal collaboratore, indipendentemente dalla UI'; tests/administration.test.js 'permessi anche nelle funzioni chiamate direttamente'; tests/fidelity.test.js 'Permessi ricontrollati nel modulo...'.",
+   "manca": "Matrice accessi di team e collaboratori su moduli non ancora costruiti (documenti); il titolare cliente non gestisce i propri operatori.",
+   "area": "sicurezza",
+   "requisito": "Ruoli e permessi sono definiti e applicati a utenti e moduli della piattaforma."
+  },
+  {
+   "id": "R-026",
+   "stato": "OPERATIVO",
+   "prova": "src/store.js os_audit (utente/agente, cliente, azione, dettaglio, visibilità); src/sciame/index.js registra() per ogni passo con motore e costo; tests/sciame.test.js 'giro completo...' (righe di audit per ogni passo); tests/growth.test.js 'Richieste concorrenti conservano il socio corretto nel registro comune'.",
+   "manca": "Nulla per il requisito.",
+   "area": "sicurezza",
+   "requisito": "Un registro delle attività traccia le operazioni svolte da utenti e agenti."
+  },
+  {
+   "id": "R-027",
+   "stato": "OPERATIVO",
+   "prova": "src/store.js os_settings budget_cents/fixed_cents; src/orchestrator.js:29 budget() e POST /budget (configurabile); src/sciame/index.js:45 prenota prima di ogni chiamata; tests/core.test.js 'budget centralizzato e pausa comune fermano i lavori senza falsi costi'; tests/sciame.test.js 'tetto di spesa: con budget esaurito lo sciame si ferma...'.",
+   "manca": "Costo del motore Claude Code contato come equivalente a listino (1 USD = 1 €): consumo effettivo sul piano Claude da verificare.",
+   "area": "automazioni",
+   "requisito": "Un tetto di spesa configurabile limita i costi delle esecuzioni degli agenti."
+  },
+  {
+   "id": "R-028",
+   "stato": "DEMO",
+   "prova": "src/sciame/index.js eseguiGiro (orchestratore pianifica i flussi, catena Crescita→Marketing, parallelismo, Qualità prima della coda); src/orchestrator.js coda os_jobs; tests/sciame.test.js 'giro completo con motore DEMO...'; docs/demo-sciame/2026-10-08-giro-167079fc/README.md passo 1 orchestratore Claude Code completato (non committato).",
+   "manca": "L'orchestratore AI coordina solo gli 11 agenti dello sciame; le 32 procedure a regole restano su una coda separata; nessun avvio automatico; prova reale da committare.",
+   "area": "sciame",
+   "requisito": "Un orchestratore coordina gli agenti dei reparti dello sciame."
+  },
+  {
+   "id": "R-029",
+   "stato": "OPERATIVO",
+   "prova": "src/store.js os_memory/os_memory_versions per client_id con storico immutabile; tests/core.test.js 'memoria conserva testo e fonte delle versioni precedenti...'; tests/module-agents.test.js 'ID altrui, identità falsificata e servizi revocati non attraversano i workspace'; tests/agency.test.js 'workspace isolato per cliente...'.",
+   "manca": "Nulla per la separazione; la struttura a cartelle Markdown è trattata in R-052.",
+   "area": "sciame",
+   "requisito": "Lo sciame mantiene una memoria separata per ciascun cliente."
+  },
+  {
+   "id": "R-030",
+   "stato": "SOLO STRUTTURA",
+   "prova": ".claude/agents/bigant-direttore-crescita.md (guida tradotta in istruzioni); src/sciame/index.js flussoCrescita e flussoUpsell; giro reale docs/demo-sciame/2026-10-08-giro-167079fc passo 2 (3 priorità AI approvabili, non committato); con motore DEMO le priorità sono fisse (src/motori/demo.js).",
+   "manca": "Della guida è eseguito solo il passo settimanale delle 3 priorità: mancano aggiornamento mensile della roadmap, revisione trimestrale di catalogo e prezzi, 'primo compito' (lista DA DEFINIRE, proposta definitiva Presenza, piano 30 giorni) e innesco del lunedì.",
+   "area": "sciame",
+   "requisito": "L'agente Direttore Crescita esegue la propria guida operativa definita nella Parte 2 del brief."
+  },
+  {
+   "id": "R-031",
+   "stato": "OPERATIVO",
+   "prova": "src/administration.js colonne *_cents con CHECK typeof integer, hourlyCost in BigInt; tests/administration.test.js 'centesimi interi, date effettive e categorie obbligatorie' e 'tariffa confermata ... costo ore arrotondato al centesimo'; src/sciame/qualita.js 'Importi identici al centesimo' (tests/sciame.test.js 'contratti...').",
+   "manca": "Nulla per il requisito.",
+   "area": "gestionale",
+   "requisito": "La contabilità è precisa al centesimo, senza errori di arrotondamento."
+  },
+  {
+   "id": "R-032",
+   "stato": "ASSENTE",
+   "prova": "docs/SITO-BIGANT.md non esiste; nessun modello di pagina nel repository; esiste solo la proposta sorgente in docs/playbook/00_ITALIAONLINE-PUNTI-DI-FORZA-DASHBOARD-SITO.md parte 4.",
+   "manca": "Scrivere il piano completo del sito in docs/SITO-BIGANT.md con i modelli di pagina (home, pagina servizio, storia di successo).",
+   "area": "sito",
+   "requisito": "docs/SITO-BIGANT.md contiene il piano completo del sito, accompagnato dai modelli di pagina."
+  },
+  {
+   "id": "R-033",
+   "stato": "OPERATIVO",
+   "prova": "Nessun client o configurazione Railway nel codice (grep 'railway' solo nei JSON dei requisiti); server.js:35,79,163 accetta solo 127.0.0.1; npm run check 'Prototipo locale: ... richieste non locali bloccate'.",
+   "manca": "Nulla per il requisito.",
+   "area": "sicurezza",
+   "requisito": "Cosa è online non si tocca: Railway solo in lettura (no deploy, modifiche, riavvii, cancellazioni); Grow, Fidelity e sito bigantagency.it restano invariati."
+  },
+  {
+   "id": "R-034",
+   "stato": "OPERATIVO",
+   "prova": "tests/scenario.test.js 'R-017: scenario dimostrativo a 13 passaggi con un comando...' verifica i 13 passaggi (lead, S17, proposta, contratto, onboarding, contenuti, approvazione cliente HTTP, programmazione, report, fattura, incasso, anomalia, upsell) e vieta la rete esterna; passato nella suite 178/178.",
+   "manca": "Nulla per il requisito; la verifica usa il motore DEMO deterministico.",
+   "area": "metodo-consegne",
+   "requisito": "Un test automatico esegue lo scenario dimostrativo e verifica tutti i 13 passaggi su dati DEMO."
+  },
+  {
+   "id": "R-035",
+   "stato": "OPERATIVO",
+   "prova": "Ramo bigant-os-notte-1; GitHub API repos/lol-afk23456/bigant-os/pulls: PR #1 state open, merged_at null, head bigant-os-notte-1, base main; reflog senza reset o forzature.",
+   "manca": "Nulla per il requisito.",
+   "area": "metodo-consegne",
+   "requisito": "Lavoro solo su branch dedicato: mai main, force-push o riscrittura della cronologia; alla fine pull request aperta e non unita."
+  },
+  {
+   "id": "R-036",
+   "stato": "OPERATIVO",
+   "prova": "git log --diff-filter=D: nessun file cancellato nella storia; il vecchio brief è conservato in docs/BRIEF-NOTTE-ORIGINALE.md; test riscritti, non rimossi.",
+   "manca": "Nulla; cartella archivio/ non ancora necessaria.",
+   "area": "sicurezza",
+   "requisito": "Nulla di esistente viene cancellato: ciò che va sostituito è spostato in archivio/ e documentato."
+  },
+  {
+   "id": "R-037",
+   "stato": "OPERATIVO",
+   "prova": "Seed con nomi 'DEMO' e domini .example (src/store.js:66-72, src/sciame/dati-demo.js); grep: nessuna email non .example né IBAN in src/tests; .gitignore esclude .data, .sources, *.sqlite; tests/specialists.test.js 'Non accetta contesto reale, fixture non marcate...'.",
+   "manca": "Nulla per il requisito.",
+   "area": "sicurezza",
+   "requisito": "Solo dati DEMO marcati come tali; nessun dato reale di clienti, contatti o contabilità in repository, log o screenshot."
+  },
+  {
+   "id": "R-038",
+   "stato": "OPERATIVO",
+   "prova": ".env.example senza valori (PORT=, DATA_DIR=); chiavi lette solo da variabili d'ambiente (src/motori/index.js BIGANT_ANTHROPIC_API_KEY); grep di pattern di chiavi (sk-ant, ghp_, AKIA, AIza) nel codice e nella storia: nessun risultato.",
+   "manca": ".env.example non elenca le variabili BIGANT_* usate (motore, chiave API, modello, approvazione DEMO); manca la dichiarazione dell'esito della scansione in cima al report finale.",
+   "area": "sicurezza",
+   "requisito": "Segreti solo da variabili d'ambiente con .env.example senza valori; eventuali segreti trovati in codice o cronologia non vengono usati e sono segnalati in cima al report."
+  },
+  {
+   "id": "R-039",
+   "stato": "OPERATIVO",
+   "prova": "src/sciame/index.js azioneEsterna/eseguiAzioneEsterna (sempre bloccate, 409); tests/sciame.test.js 'router HTTP dello sciame: ... azioni esterne rifiutate'; tests/scenario.test.js (PUBBLICATO e SDI rifiutati, rete esterna vietata); tests/growth.test.js 'Invio simulato idempotente e mai presentato come email reale'; nessuna integrazione Gmail.",
+   "manca": "Nulla per il requisito; il motore Claude Code usa la sessione autorizzata dal proprietario (docs/PROMPT-CLAUDE-CLOUD.md:35-40).",
+   "area": "sicurezza",
+   "requisito": "Nessuna azione verso l'esterno: niente email o messaggi, pubblicazioni, account reali collegati, spese o servizi a pagamento; Gmail non viene usata."
+  },
+  {
+   "id": "R-040",
+   "stato": "OPERATIVO",
+   "prova": "server.js:159 e scripts/sciame.js rifiutano DATA_DIR fuori dal repository; tests/backup.test.js 'Percorsi esterni, traversal ... sono rifiutati'; .cache e .data dentro il repository ed esclusi da Git.",
+   "manca": "La copia su Drive ('BigAnt OS - Report') del report finale con link alla PR non è ancora fatta, perché il report finale non esiste.",
+   "area": "sicurezza",
+   "requisito": "File di lavoro solo nella cartella tecnica del repository; su Drive accesso solo alla cartella \"BigAnt OS - Report\" per la copia dei report, con link alla PR."
+  },
+  {
+   "id": "R-041",
+   "stato": "OPERATIVO",
+   "prova": "package.json con versioni esatte (@anthropic-ai/sdk 0.127.0, qrcode 1.5.4, sharp 0.34.5) e package-lock.json; npm run check 'Dipendenze: 3 dipendenze dirette con versione esatta; ... integrità del lockfile'.",
+   "manca": "sharp 0.34.5 ha vulnerabilità alte segnalate da npm audit (docs/DA-FARE-RAFFAELE.md): aggiornare a 0.35.x con collaudo dei loghi.",
+   "area": "sicurezza",
+   "requisito": "Si usano solo dipendenze affidabili con versione fissata."
+  },
+  {
+   "id": "R-042",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/registry.js integrations: voci google-ads, meta, ga4, gsc, gbp con status 'Non collegato'; nessun modulo di interfaccia o adattatore per queste fonti (src/integrazioni assente); docs/DA-FARE-RAFFAELE.md: 'I connettori dei punti 2-6 non sono ancora scritti'.",
+   "manca": "Da costruire per GBP, Google Ads, Meta ads_read, GA4, Search Console: interfaccia, implementazione DEMO e implementazione reale disattivata attivabile con le variabili BIGANT_* già nominate; l'attivazione reale richiede le credenziali.",
+   "area": "integrazioni",
+   "requisito": "Ogni integrazione (Google Business Profile, Google Ads, Meta ads_read, GA4, Search Console) ha interfaccia, implementazione DEMO e implementazione reale disattivata attivabile via variabili d'ambiente."
+  },
+  {
+   "id": "R-043",
+   "stato": "SOLO STRUTTURA",
+   "prova": "docs/INTEGRAZIONI.md non esiste; i contenuti equivalenti sono in docs/DA-FARE-RAFFAELE.md (passi e variabili per Anthropic, GBP, Google Ads, Meta, GA4/GSC, Postiz) e docs/INTEGRAZIONI-ACCESSI.md (Parte 3 del brief).",
+   "manca": "Creare docs/INTEGRAZIONI.md con, per ogni integrazione, interfaccia, variabili e passi di attivazione e collaudo legati al codice reale (oggi i connettori non esistono).",
+   "area": "integrazioni",
+   "requisito": "docs/INTEGRAZIONI.md spiega per ogni integrazione cosa serve per attivarla."
+  },
+  {
+   "id": "R-044",
+   "stato": "OPERATIVO",
+   "prova": "public/app.js:93 clientView ('Risultati dei canali — Fonti non collegate'), :92 connectionsView con badge 'Non collegato' per le 17 integrazioni; src/agency/marketing.js canali 'Fonte non collegata'; ufficio mostra il motore 'COLLEGAMENTO MANCANTE'; tests/agency.test.js 'i nuovi spazi dichiarano ciò che manca e non inventano KPI...'.",
+   "manca": "Lo stato 'Non collegato' è fisso nel registro: quando esisteranno i connettori dovrà derivare dal loro stato reale.",
+   "area": "integrazioni",
+   "requisito": "La dashboard indica chiaramente quando una fonte dati esterna non è collegata."
+  },
+  {
+   "id": "R-045",
+   "stato": "ASSENTE",
+   "prova": "docs/REPORT-FINALE.md non esiste; docs/REPORT-NOTTE.md e docs/PASSAGGIO-CONSEGNE.md riguardano il brief notturno.",
+   "manca": "Scrivere il report finale: cosa funziona, cosa è solo struttura e perché, rischi urgenti, comandi esatti (npm test, check, sciame, scenario), esecuzione scenario, prossimi 10 passi.",
+   "area": "metodo-consegne",
+   "requisito": "docs/REPORT-FINALE.md in italiano semplice: cosa funziona, cosa è solo struttura e perché, rischi urgenti, comandi esatti di avvio e prova, esecuzione scenario, prossimi 10 passi."
+  },
+  {
+   "id": "R-046",
+   "stato": "SOLO STRUTTURA",
+   "prova": "docs/ARCHITETTURA.md, docs/COME-AGGIUNGERE-UN-MODULO.md, docs/ROADMAP.md (ultimo commit 8ffa83d) e docs/ANALISI-INIZIALE.md (cacc543) esistono ma sono precedenti alla sessione: nessuno cita src/sciame, src/motori o lo scenario (grep 0 occorrenze).",
+   "manca": "Aggiornare i quattro documenti al brief integrale e al codice attuale (sciame AI, motori, contratti, scenario).",
+   "area": "metodo-consegne",
+   "requisito": "Consegnati docs/ARCHITETTURA.md, docs/ANALISI-INIZIALE.md aggiornata, docs/COME-AGGIUNGERE-UN-MODULO.md e docs/ROADMAP.md."
+  },
+  {
+   "id": "R-047",
+   "stato": "OPERATIVO",
+   "prova": "scripts/estrai-playbook.js --verifica: 'Verificati 24 documenti dal brief integrale' (23 file in docs/playbook/ per i 23 marcatori FILE + docs/INTEGRAZIONI-ACCESSI.md); npm run check '24 documenti del playbook identici al brief'.",
+   "manca": "Nulla per il requisito.",
+   "area": "metodo-consegne",
+   "requisito": "Parte 2 salvata in docs/playbook/ con un file per ogni marcatore <!-- FILE: ... -->; Parte 3 salvata in docs/INTEGRAZIONI-ACCESSI.md."
+  },
+  {
+   "id": "R-048",
+   "stato": "OPERATIVO",
+   "prova": "os_azioni_esterne sempre 'bloccata' e rifiutate (src/sciame/index.js:115-122); production rifiuta PUBBLICATO, amministrazione rifiuta /sdi; tests/scenario.test.js e tests/sciame.test.js 'giro completo... azioni esterne bloccate'; tests/fidelity.test.js 'Campagna solo opt-in, approvazione comune, delivery bloccate...'.",
+   "manca": "L'auto-approvazione DEMO dei passaggi interni è attiva di default (BIGANT_APPROVAZIONE_AUTOMATICA_DEMO): va disattivata prima di qualsiasi uso reale.",
+   "area": "sicurezza",
+   "requisito": "Pubblicare, spendere, firmare, scrivere ai clienti e assumere restano decisioni dei soci con cancello umano; nel prototipo nessuna pubblicazione, pagamento, invio o modifica a sistemi online."
+  },
+  {
+   "id": "R-049",
+   "stato": "SOLO STRUTTURA",
+   "prova": "SOP in docs/SOP-REGIA-DEMO.md, docs/SOP-AGENTI-MODULI.md, docs/SOP-SPECIALISTI-DEMO.md e .claude/agents/*.md; npm run check 'Registro e SOP: ... 32 agenti con schede e SOP'; src/agency/swarm.js sop.validated:false.",
+   "manca": "Nessun blocco persistente che impedisca di attivare un agente o servizio senza SOP validata e testata; nessun blocco all'ingresso di nuovi clienti prima del pilota (lo scenario crea un cliente dal lead senza questo controllo).",
+   "area": "sciame",
+   "requisito": "Nessun agente o servizio attivato senza SOP scritta e testata; nuovi clienti entrano nel sistema solo dopo che il pilota funziona."
+  },
+  {
+   "id": "R-050",
+   "stato": "OPERATIVO",
+   "prova": "src/sciame/qualita.js regola 'BigAnt presentata come società' (bloccante); tests/sciame.test.js 'contratti: ... controlli automatici riconoscono le violazioni' (BigAnt S.r.l. bloccato); avvertenza in src/sciame/dati-demo.js bigantProfilo e in ogni .claude/agents/*.md; nessuna occorrenza di 'società' nelle pagine pubbliche.",
+   "manca": "La regex copre solo 'BigAnt S.r.l./S.p.A./società BigAnt': formulazioni come 'la nostra società' non sono intercettate; materiali pubblici (sito) non ancora prodotti.",
+   "area": "sito",
+   "requisito": "Nei materiali pubblici BigAnt non è mai presentata come società: è un marchio condiviso tra le ditte individuali forfettarie Costantino Agency e La Manna Agency."
+  },
+  {
+   "id": "R-051",
+   "stato": "SOLO STRUTTURA",
+   "prova": "public/style.css :root --orange:#f26b21 e --ink:#141413 usati in tutta la dashboard (anche public/index.html, public/app.js).",
+   "manca": "I modelli di pagina non esistono (vedi R-032): metà del requisito è da costruire.",
+   "area": "dashboard-cliente",
+   "requisito": "Dashboard e modelli di pagina usano i colori del brand BigAnt: arancione #F26B21 e nero #141413."
+  },
+  {
+   "id": "R-052",
+   "stato": "SOLO STRUTTURA",
+   "prova": "Orchestratore e agenti con memoria per cliente in os_memory (tipi master, dna, strategy, feedback, report più priorita-settimana, servizi-consigliati, agent-feedback); nessun riferimento a 00_SCHEDA-MASTER…06_CONTRATTO-E-STORICO nel codice (grep vuoto).",
+   "manca": "Da costruire la struttura fissa per cliente 00_SCHEDA-MASTER, 01_ADS, 02_COPY-SOCIAL, 03_NOTE-E-DIRETTIVE, 05_LOGO-E-BRAND, 06_CONTRATTO-E-STORICO, almeno come viste Markdown versionate della memoria.",
+   "area": "sciame",
+   "requisito": "Agenti specializzati coordinati da un orchestratore lavorano su una memoria condivisa per cliente in Markdown con la struttura fissa da 00_SCHEDA-MASTER a 06_CONTRATTO-E-STORICO."
+  },
+  {
+   "id": "R-053",
+   "stato": "SOLO STRUTTURA",
+   "prova": "Esclusione solo dichiarata in src/agency/swarm.js:65,86; il motore claude-code passa --tools '' (tests/sciame.test.js 'motore Claude Code: sottoagente, nessuno strumento...'), ma .claude/agents/*.md dichiarano 'tools: Read' e il commento in src/motori/index.js indica che con --agent valgono gli strumenti del sottoagente.",
+   "manca": "Nessun test che provi che 04_ACCESSI non è leggibile dagli agenti; nessun tipo di memoria o cartella accessi con blocco nel codice; togliere Read dai sottoagenti o provarne il blocco.",
+   "area": "sicurezza",
+   "requisito": "La cartella 04_ACCESSI (credenziali) di ogni cliente non è mai leggibile dagli agenti; il blocco è verificato da un test."
+  },
+  {
+   "id": "R-054",
+   "stato": "SOLO STRUTTURA",
+   "prova": "docs/playbook/S01-S19 (dal brief: cosa include, pacchetti, flusso, cancelli); docs/PLAYBOOK.md §4 e §9 con ore stimate; docs/DOMANDE-PER-RAFFAELE.md domanda 4.",
+   "manca": "I tempi sono [DA MISURARE]; i metodi originali (00_METODO-OPERATIVO Ads, SOP Video AI a 3 livelli, scheda DNA in 10 sezioni) non sono stati forniti né integrati: serve il materiale dei soci.",
+   "area": "metodo-consegne",
+   "requisito": "Playbook vivo con una SOP per ogni servizio (inclusioni, consegne, frequenza, misura, tempo richiesto) che integra metodo Google Ads, SOP Video AI a 3 livelli e scheda DNA esistenti."
+  },
+  {
+   "id": "R-055",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/agents/specialists.js:64-68 ads(): mappa a 11 leve, frase 'Reti partner e Display proposti spenti sulle Search; automazioni proposte spente finché le conversioni non sono affidabili', leva Conversione; tests/specialists.test.js 'ADS conserva undici leve e calcola metriche solo da dati coerenti'.",
+   "manca": "Checklist verificabile voce per voce (AI Max non nominato) e comandi di sessione AGGIORNAMI / AUDIT COMPLETO / BRIEF / CHIUDI SCHEDA assenti; il controllo delle impostazioni reali delle campagne richiede la Google Ads API.",
+   "area": "servizi",
+   "requisito": "S03: checklist dell'agente ADS dal metodo operativo: reti partner e Display spente sulle Search, AI Max/automazioni spente finché i dati non sono affidabili, conversioni tracciabili, comandi di sessione."
+  },
+  {
+   "id": "R-056",
+   "stato": "SOLO STRUTTURA",
+   "prova": "Cliente zero demo-bigant (src/store.js:66); flussoMarketing e flussoCrescita su BigAnt (src/sciame/index.js); giro reale docs/demo-sciame/2026-10-08-giro-167079fc passo 11 Marketing approvabile; src/agency/marketing.js aree tutte 'Solo struttura', canali metrics:null.",
+   "manca": "Audit SEO del sito (voto 4,8/10) non importato né usato come baseline (nessuna occorrenza nel codice): serve il documento dei soci; DNA, strategia 90 giorni, portfolio e misure BigAnt da compilare; canali BigAnt non collegati.",
+   "area": "metodo-consegne",
+   "requisito": "Pilota interno con BigAnt cliente zero: il sistema gestisce prima comunicazione e marketing di BigAnt, partendo dall'audit SEO del sito (voto 4,8/10) come baseline."
+  },
+  {
+   "id": "R-057",
+   "stato": "OPERATIVO",
+   "prova": "docs/PLAYBOOK.md §3 'Ciclo del cliente' (acquisizione, qualifica, proposta, onboarding, produzione, consegna, report, rinnovo/ampliamento, chiusura con input e criteri di uscita).",
+   "manca": "Nulla per il documento; validazione sul pilota da fare.",
+   "area": "metodo-consegne",
+   "requisito": "Processo standard documentato per acquisire, avviare, gestire e rinnovare un cliente."
+  },
+  {
+   "id": "R-058",
+   "stato": "OPERATIVO",
+   "prova": "docs/PLAYBOOK.md §5 'Produzione e approvazioni' (stati IDEA→RIUTILIZZABILE, tabella dei cancelli, tempi di feedback); implementato in src/production.js.",
+   "manca": "Nulla per il documento.",
+   "area": "metodo-consegne",
+   "requisito": "Flusso standard documentato di produzione e approvazione dei contenuti prima della loro uscita."
+  },
+  {
+   "id": "R-059",
+   "stato": "OPERATIVO",
+   "prova": "docs/PLAYBOOK.md §6 'Ritmo di agenzia e sciame' (giornaliero, lunedì, venerdì, primo del mese, fine mese, eventi) e §7 'Le sei domande del lunedì'.",
+   "manca": "Orari proposti da confermare con i soci.",
+   "area": "metodo-consegne",
+   "requisito": "Ritmo operativo settimanale e mensile dell'agenzia definito e documentato."
+  },
+  {
+   "id": "R-060",
+   "stato": "OPERATIVO",
+   "prova": "docs/PLAYBOOK.md §8 'KPI e definizioni' (formula e frequenza, incluso margine per cliente e tempo di approvazione per cliente) e KPI per servizio in §9 e in docs/playbook/Sxx.",
+   "manca": "Baseline e obiettivi da fissare dopo due cicli reali.",
+   "area": "metodo-consegne",
+   "requisito": "Il metodo definisce KPI di agenzia e KPI per singolo cliente, con modalità di misura."
+  },
+  {
+   "id": "R-061",
+   "stato": "OPERATIVO",
+   "prova": "docs/PLAYBOOK.md §9: 19 schede del catalogo target con stato/titolare, cosa include, KPI, gate e quando usare partner o persone; docs/playbook/00_CATALOGO-BIGANT.md §2 ('Come si eroga') e docs/playbook/S01-S19.",
+   "manca": "Nulla per il documento.",
+   "area": "servizi",
+   "requisito": "Scheda per ciascuno dei 19 servizi del catalogo target (S01-S19) con contenuto, stato attuale in BigAnt e valutazione di replicabilità."
+  },
+  {
+   "id": "R-062",
+   "stato": "SOLO STRUTTURA",
+   "prova": "Procedura a regole verticals in src/agents/specialists.js (tests/specialists.test.js 'Verticali costruisce il pacchetto solo dai componenti disponibili...'); flusso upsell (src/sciame/index.js:271) che sceglie tra i pacchetti già scritti nel catalogo; lo schema del Direttore restituisce solo 3 priorità.",
+   "manca": "Nessun agente progetta listini a livelli S/M/L/XL né il pacchetto verticale sanità con composizione, costi e margine; prezzi restano decisione dei soci.",
+   "area": "pacchetti",
+   "requisito": "Il Direttore Crescita progetta pacchetti e listini a livelli (S, M, L, XL) e pacchetti verticali per settore, a partire dalla sanità."
+  },
+  {
+   "id": "R-063",
+   "stato": "SOLO STRUTTURA",
+   "prova": "Agente .claude/agents/bigant-analisi-gratuita.md e flussoCommerciale (src/sciame/index.js) che salva il report sul lead Growth; tests/scenario.test.js passo 2; con motore DEMO il report è preconfezionato ('Analisi standard', punteggio 50); nel giro reale 167079fc la Ricerca clienti è stata fermata da Qualità e l'analisi non è stata prodotta.",
+   "manca": "Nessuna analisi S17 prodotta dal motore AI e approvata da Qualità salvata come prova; la lettura reale di sito, scheda Google e recensioni richiede ricerca web e GBP non collegate (oggi solo fixture .example).",
+   "area": "servizi",
+   "requisito": "Il Commerciale produce l'analisi gratuita della presenza online (S19) come porta d'ingresso commerciale."
+  },
+  {
+   "id": "R-064",
+   "stato": "SOLO STRUTTURA",
+   "prova": "docs/ROADMAP.md (fasi 3A-3D e 'catalogo per soglie' fino a ottobre 2027); docs/PLAYBOOK.md sez. 9 (19 schede con stato/titolare/partner); docs/playbook/00_CATALOGO-BIGANT.md sez. 6 (strumento/partner/competenza solo per 7 servizi nuovi, testo del brief); src/sciame/agenti.js roadmapQ4_2026 statico letto dal Direttore",
+   "manca": "Una roadmap unica servizio per servizio con ordine, competenze, strumenti, partner white-label scelti, costo mensile e momento di attivazione: i costi sono 'da quotare' e i partner non individuati (motivo: preventivi partner e decisione dei soci).",
+   "area": "servizi",
+   "requisito": "Roadmap verso il catalogo completo (esclusi directory, network, marketplace proprietari e noleggio Apple): ordine dei servizi, competenze, strumenti, partner white-label, costi e momento di attivazione."
+  },
+  {
+   "id": "R-065",
+   "stato": "OPERATIVO",
+   "prova": "src/registry.js (servizi branding, creative-direction, drone, video-ai, merch); docs/PLAYBOOK.md 'Servizi distintivi trasversali' e scheda 13; docs/playbook/00_CATALOGO-BIGANT.md (S15 'elemento distintivo', pacchetto BigAnt Brand); tests/specialists.test.js: 'Branding elabora tre direzioni…', 'Drone prepara riprese…', 'Video AI produce prompt…', 'Direzione creativa confronta…', 'Merch somma costi interi…'",
+   "manca": "Drone, Video AI e direzione creativa restano 'Da attivare' nel registro; prezzi e SOP da validare con i soci.",
+   "area": "servizi",
+   "requisito": "Il catalogo valorizza i servizi distintivi BigAnt assenti in Italiaonline: branding, direzione creativa, riprese drone, merch e video AI."
+  },
+  {
+   "id": "R-066",
+   "stato": "OPERATIVO",
+   "prova": "server.js: avvio rifiutato con NODE_ENV=production, ascolto solo su 127.0.0.1, POST /api/users solo con requireOwner (nessuna registrazione autonoma); SQLite locale con 2 dipendenze fissate (README); docs/CONFRONTO-MERCATO.md motiva la scelta 'una app piccola' e il tetto 50 €; motore sciame riusa Claude Code esistente",
+   "manca": "Nessun test dedicato al vincolo; il gestionale resta codice scritto da zero (scelta motivata in CONFRONTO-MERCATO ma da riconfermare se la manutenzione cresce).",
+   "area": "sciame",
+   "requisito": "Strumento interno per soci, collaboratori e poche decine di clienti: niente piani a pagamento, onboarding self-service o scalabilità SaaS; preferire strumenti esistenti a codice da zero."
+  },
+  {
+   "id": "R-067",
+   "stato": "SOLO STRUTTURA",
+   "prova": "README.md ('Avvio locale' con npm ci/npm start e 'Prima prova in cinque minuti'); docs/DA-FARE-RAFFAELE.md (passi per chiavi e account); docs/PASSAGGIO-CONSEGNE.md è rivolto a Claude Code",
+   "manca": "Un manuale d'uso per una persona non tecnica (accesso, operazioni quotidiane, approvazioni, prima nota, cosa fare in caso di errore, backup) senza comandi da terminale; il README è tecnico e con conteggi test superati (motivo: da costruire).",
+   "area": "metodo-consegne",
+   "requisito": "Documentazione chiara che permetta a una persona non tecnica di far funzionare il sistema."
+  },
+  {
+   "id": "R-068",
+   "stato": "SOLO STRUTTURA",
+   "prova": "docs/CONFRONTO-MERCATO.md (Railway Pro ≥$20, Supabase ≥$25, opzioni A/B/C, buste del tetto 50 €); docs/DECISIONI.md (costo motore Claude Code e API, 40/25 centesimi prenotati); docs/DA-FARE-RAFFAELE.md colonna 'Gratuito?'",
+   "manca": "Costo mensile per ogni scelta ancora aperto: consumo del motore Claude Code [DA VERIFICARE] se incluso nell'abbonamento, modello API non scelto, Postiz cloud 'a pagamento' senza importo, partner di listing/voce non quotati (motivo: servizio a pagamento e decisione dei soci).",
+   "area": "automazioni",
+   "requisito": "Per ogni scelta tecnica è indicato il costo mensile, mantenuto proporzionato a un'agenzia piccola."
+  },
+  {
+   "id": "R-069",
+   "stato": "SOLO STRUTTURA",
+   "prova": "public/app.js clientView; src/agency/dashboards.js clientSections (8 sezioni su 11 'Solo struttura' con metrics:null); tests/agency.test.js: 'dashboard cliente contiene le dieci sezioni previste ma filtra i servizi non acquistati' e 'i nuovi spazi dichiarano ciò che manca…'; scripts/scenario.js passi 7 e 13 (approvazione dal cliente, servizi consigliati)",
+   "manca": "Lavoro, approvazioni e consigli funzionano in DEMO, ma dati e analisi dei canali (social, pubblicità, local, recensioni, sito) sono segnaposto: vanno costruiti i riepiloghi e collegati GA4, Search Console, Google Ads, Meta e GBP; archivio report mensili scaricabili assente.",
+   "area": "dashboard-cliente",
+   "requisito": "Dashboard cliente: ogni titolare vede in un unico posto dati, analisi e lavoro sulla sua attività; nel pilota la usa il titolare BigAnt."
+  },
+  {
+   "id": "R-070",
+   "stato": "DEMO",
+   "prova": "src/registry.js departments (8 reparti: direction, marketing, sales, account, production, local, quality, administration) e 32 agentDefinitions; src/sciame/agenti.js (11 agenti AI); tests/agency.test.js 'intera agenzia…'; tests/sciame.test.js 'ufficio virtuale: stanze dell'organigramma, 33 postazioni…'",
+   "manca": "Il reparto Account non ha un agente AI nello sciame (solo procedura a regole); la Produzione AI copre solo S01, S06 e S08; i reparti girano su dati DEMO.",
+   "area": "sciame",
+   "requisito": "Organigramma dello sciame con reparti distinti: Direttore Crescita, Marketing BigAnt, Commerciale, Account, Produzione, Qualità e compliance, Amministrazione."
+  },
+  {
+   "id": "R-071",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/sciame/index.js pacchettoDirettore/flussoCrescita (KPI aggregati interni, funnel, stato servizi); src/sciame/qualita.js 'Esattamente tre priorità'; tests/sciame.test.js 'giro completo…' (con motore DEMO che restituisce 'Tre priorità standard dal catalogo'); src/agents/core.js director a priorità fisse",
+   "manca": "Analisi di risultati dei canali, mercato e concorrenti (Italiaonline e agenzie locali) assente dal pacchetto; nessuna esecuzione settimanale pianificata dello sciame (solo giro manuale); nessuna prova salvata di un giro reale con Claude Code (docs/demo-sciame non esiste).",
+   "area": "sciame",
+   "requisito": "Il Direttore Crescita produce ogni settimana un'analisi di clienti, servizi, risultati, mercato e concorrenti (Italiaonline e agenzie locali) con al massimo 3 priorità per i soci."
+  },
+  {
+   "id": "R-072",
+   "stato": "DEMO",
+   "prova": "src/sciame/index.js flussoUpsell (3 upsell per cliente da servizi attivi, analisi iniziale e catalogo, salvati in memoria 'servizi-consigliati' visibile al cliente); scripts/scenario.js passo 13; tests/scenario.test.js 'R-017: scenario dimostrativo a 13 passaggi…'",
+   "manca": "Le partnership non sono individuate (nessun dato partner); l'upsell va lanciato cliente per cliente, non su tutti i clienti attuali; provato solo con motore DEMO.",
+   "area": "pacchetti",
+   "requisito": "Il Direttore Crescita individua opportunità di upsell sui clienti attuali e possibili partnership."
+  },
+  {
+   "id": "R-073",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/sciame/index.js pacchettoDirettore: clienti_attivi e servizi_medi_per_cliente calcolati; ricavo_medio_per_cliente, clienti_persi, ore_risparmiate_agenti = '[DA VERIFICARE]'; src/agency/marketing.js canali con metrics:null; src/agency/foundations.js 'kpis' Solo struttura",
+   "manca": "Calcolo di ricavo medio (dai canoni dei contratti), clienti persi con storico, ore risparmiate con baseline e crescita dei canali BigAnt (richiede Meta, LinkedIn, TikTok, GBP); serie storiche e vista KPI (motivo: da costruire più collegamenti).",
+   "area": "dashboard-interna",
+   "requisito": "KPI di agenzia misurati: numero clienti, servizi per cliente, ricavo medio per cliente, clienti persi, ore risparmiate dagli agenti, crescita dei canali BigAnt."
+  },
+  {
+   "id": "R-074",
+   "stato": "OPERATIVO",
+   "prova": "src/sciame/index.js pacchettoDirettore (solo valori aggregati di administration.state().summary, nessun movimento/fattura); src/agency/swarm.js permissions.economicAggregates; src/sciame/qualita.js controllo 'KPI identici al pacchetto'; tests/sciame.test.js 'contratti: il motore DEMO rispetta gli schemi…'; verifica con probe in memoria: chiavi input del Direttore = oggi, settimana, kpi, funnel, stato_servizi, roadmap, priorità, feedback, vincoli",
+   "manca": "Manca un test che asserisca esplicitamente l'assenza di dati grezzi nel pacchetto del Direttore (anche nel flusso upsell).",
+   "area": "sicurezza",
+   "requisito": "Il Direttore Crescita usa per i numeri economici solo KPI aggregati preparati da Amministrazione (fatturato, margini, incassi, costi), mai i dati grezzi."
+  },
+  {
+   "id": "R-075",
+   "stato": "COLLEGAMENTO MANCANTE",
+   "prova": "src/sciame/index.js flussoMarketing (piano settimanale e bozze per i canali BigAnt, contenuti PROGRAMMATO); src/agency/marketing.js 9 canali 'Fonte non collegata'; tests/sciame.test.js 'giro completo…' (pubblicazioni registrate come bloccate)",
+   "manca": "Pubblicazione e misura della crescita richiedono Postiz/Meta/LinkedIn/TikTok/GBP non collegati; DNA e strategia BigAnt reali ancora da compilare (aree 'Solo struttura').",
+   "area": "sciame",
+   "requisito": "Il reparto Marketing BigAnt fa crescere i canali propri: Instagram, Facebook, LinkedIn di agenzia e soci, TikTok, Google Business Profile, sito e recensioni."
+  },
+  {
+   "id": "R-076",
+   "stato": "COLLEGAMENTO MANCANTE",
+   "prova": ".claude/agents/bigant-ricerca-clienti.md (griglia punteggio 0-100 esplicita); src/growth-engine.js (score e passaggio a qualified ≥60); tests/growth.test.js 'Ricerca, qualificazione e costi zero funzionano senza fetch o account'; tests/module-agents.test.js; scripts/scenario.js passo 1",
+   "manca": "La ricerca di aziende reali richiede un provider di ricerca (Brave/OpenAI) non collegato: oggi solo candidati DEMO .example.",
+   "area": "growth-fidelity",
+   "requisito": "Il Commerciale trova e qualifica nuovi clienti locali con criteri di qualificazione espliciti."
+  },
+  {
+   "id": "R-077",
+   "stato": "DEMO",
+   "prova": "src/sciame/index.js flussoCommerciale (proposta Presenza con prezzi [DA VALIDARE], email bloccata); src/growth.js pipeline 8 fasi, follow-up e conversione; tests/growth.test.js 'Il motore pianifica bozze di followup…' e 'Conversione del lead crea una sola anagrafica OS'; tests/scenario.test.js passi 3-4",
+   "manca": "Preventivo strutturato e versionato con accettazione/firma assente; invii reali richiedono Gmail non collegata.",
+   "area": "sciame",
+   "requisito": "Il Commerciale prepara preventivi e proposte e segue ogni contatto fino alla chiusura."
+  },
+  {
+   "id": "R-078",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/agents/core.js account (controlla solo master/DNA/strategia mancanti); src/agency/foundations.js 'onboarding' Solo struttura; docs/PLAYBOOK.md sez. 3 (fase Onboarding); scripts/scenario.js passo 5 (memoria, 3 attività e accesso cliente scritti a mano nello script)",
+   "manca": "Procedura di onboarding standard dentro il sistema: checklist per servizio, stato per cliente, campi e documenti mancanti, gate di avvio e avvio automatico su contract.signed (motivo: da costruire).",
+   "area": "sciame",
+   "requisito": "Il reparto Account gestisce l'onboarding dei nuovi clienti con una procedura standard."
+  },
+  {
+   "id": "R-079",
+   "stato": "SOLO STRUTTURA",
+   "prova": "os_clients.risk impostato a mano (normal/watch/risk) in server.js PATCH /api/clients; src/agents/core.js account (solo consegne oltre scadenza); src/administration.js domanda 'risks' (task scaduti)",
+   "manca": "Indicatore di salute per cliente che combini consegne in ritardo, arretrati, approvazioni ferme, contratto in scadenza e recensioni, con segnali di rischio motivati (motivo: da costruire).",
+   "area": "sciame",
+   "requisito": "Il reparto Account monitora la salute di ogni cliente ed evidenzia i segnali di rischio."
+  },
+  {
+   "id": "R-080",
+   "stato": "DEMO",
+   "prova": "src/administration.js regola contract_expiring, domanda 'contracts' (90 giorni), contractPlan con scadenza 'preavviso_rinnovo' nello scadenziario; tests/contratti.test.js 'R-015: un contratto genera…'",
+   "manca": "Flusso di rinnovo del reparto Account (revisione 60/30 giorni, proposta, esito registrato) e segnalazione del rinnovo automatico assenti; l'agente Account dà solo un testo fisso sui rinnovi.",
+   "area": "sciame",
+   "requisito": "Il reparto Account presidia i rinnovi dei contratti dei clienti."
+  },
+  {
+   "id": "R-081",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/agency/foundations.js 'portfolio' Solo struttura; src/agency/management.js modulo 'documents' Solo struttura; scripts/scenario.js crea solo un'attività 'Registrare l'autorizzazione portfolio'",
+   "manca": "Registro delle autorizzazioni portfolio (materiale, ambito, canali, validità, revoca) e controllo prima delle uscite (motivo: da costruire).",
+   "area": "sciame",
+   "requisito": "Il reparto Account raccoglie e registra le autorizzazioni dei clienti all'uso dei lavori nel portfolio."
+  },
+  {
+   "id": "R-082",
+   "stato": "DEMO",
+   "prova": "src/registry.js reparto production/local con specialisti; src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md e docs/playbook/S01-S19; tests/specialists.test.js 'I 21 specialisti hanno scenari espliciti…'; tests/swarm.test.js 'tutti i 32 agenti hanno executor distinti…'",
+   "manca": "Le procedure specialistiche sono a regole su fixture e non erogano il servizio (provesServiceDelivery:false); agenti AI solo per S01, S06, S08; SOP da validare sul pilota.",
+   "area": "sciame",
+   "requisito": "La Produzione ha un reparto per ogni servizio attivo del catalogo (social, video, ADV, SEO, local e reputazione, siti...), ciascuno con la sua SOP e i suoi specialisti."
+  },
+  {
+   "id": "R-083",
+   "stato": "DEMO",
+   "prova": "src/sciame/qualita.js (promesse, azioni dichiarate, BigAnt società, controlli per agente); .claude/agents/bigant-qualita.md (brand, dati, GDPR, pubblicità sanitaria); tests/sciame.test.js 'giro completo…Qualità su ogni output' e 'Qualità ferma un output con promessa garantita…'",
+   "manca": "Copre solo gli output dello sciame AI (non le 32 procedure a regole né le bozze Growth); verifica sanitaria e GDPR non validate da persona qualificata; prova solo con motore DEMO.",
+   "area": "sciame",
+   "requisito": "Il reparto Qualità e compliance controlla ogni output in uscita: coerenza di brand, correttezza dei dati, GDPR e norme sulla pubblicità sanitaria."
+  },
+  {
+   "id": "R-084",
+   "stato": "DEMO",
+   "prova": "src/administration.js (prima nota, fatture, scadenze, abbonamenti, contratti, quadrature, anomalie, margini); src/sciame/index.js flussoAmministrazione; tests/administration.test.js (19 test); tests/contratti.test.js",
+   "manca": "Mancano moduli Documenti, regole fiscali, solleciti a scaglioni, pacchetto commercialista e report mensile; tutto su dati DEMO.",
+   "area": "gestionale",
+   "requisito": "Amministrazione e gestione interna è un reparto completo che opera sul gestionale interno dell'agenzia."
+  },
+  {
+   "id": "R-085",
+   "stato": "OPERATIVO",
+   "prova": "docs/PLAYBOOK.md sez. 9: per ciascuna delle 19 schede 'Stato / titolare' e 'Gate / rischio / capacità' (in casa, partner obbligatorio, specialista dal primo incarico, assumere dopo carico misurato); docs/playbook/00_GUIDA-DIRETTORE-CRESCITA.md §6 (partner se costruire costa più di 12 mesi di abbonamento, persona oltre il 30% del tempo di un socio)",
+   "manca": "Le indicazioni sono sparse in due documenti senza una tabella unica servizio/scelta/momento; le soglie restano proposte [DA DEFINIRE] da confermare dai soci.",
+   "area": "servizi",
+   "requisito": "Per ogni servizio è indicato se farlo con agenti e strumenti propri, partner/white-label o una nuova persona, e in che momento ciascuna scelta diventa necessaria."
+  },
+  {
+   "id": "R-086",
+   "stato": "DEMO",
+   "prova": "server.js createApp: un solo database SQLite per moduli, sciame e dashboard; tests/agency.test.js 'nuove viste leggono la base comune senza rete o creazione di archivi paralleli'; src/sciame/index.js legge administration.state e growth dallo stesso archivio",
+   "manca": "Dati reali non migrati: la doppia modifica su Mac e Drive resta finché la cartella e i fogli non confluiscono; nessuna esportazione Markdown/Drive generata dal gestionale.",
+   "area": "gestionale",
+   "requisito": "Il gestionale è la fonte unica dei dati per agenti, dashboard interna e dashboard cliente: nessuna modifica da ripetere a mano su Mac e Drive."
+  },
+  {
+   "id": "R-087",
+   "stato": "SOLO STRUTTURA",
+   "prova": "docs/ROADMAP.md fase '3A, il controllo dei soldi' (ottobre-novembre 2026); src/agency/management.js (10 moduli con 'available' e 'missing')",
+   "manca": "Un piano di costruzione modulo per modulo, ordinato per impatto economico (arretrati, scadenze, abbonamenti) con passi, criteri di completamento e date (motivo: da costruire).",
+   "area": "gestionale",
+   "requisito": "Piano di costruzione dei moduli per gradi, con priorità ai moduli che fanno perdere soldi (arretrati, scadenze dimenticate, abbonamenti inutili)."
+  },
+  {
+   "id": "R-088",
+   "stato": "ASSENTE",
+   "prova": "grep 'GESTIONE INTERNA' e '00_CONTROLLO-CLIENTI' trova solo il brief (docs/BRIEF-BIGANT.md, docs/BRIEF-NOTTE-ORIGINALE.md); docs/REPORT-NOTTE.md riga 152 parla solo di Prima Nota/Tracker",
+   "manca": "Piano di migrazione della cartella GESTIONE INTERNA BIGANT e di 00_CONTROLLO-CLIENTI con mappatura di struttura e modelli sui 10 moduli (serve prima vedere la struttura dai soci).",
+   "area": "gestionale",
+   "requisito": "Piano di migrazione della cartella GESTIONE INTERNA BIGANT e della sezione 00_CONTROLLO-CLIENTI, con struttura e modelli mappati sui moduli del gestionale."
+  },
+  {
+   "id": "R-089",
+   "stato": "DEMO",
+   "prova": "src/administration.js state().questions (cassa, da incassare, rischi, contratti, sovraccarico, decisioni) mostrate in public/app.js directionView; tests/administration.test.js 'seed idempotente…' (6 domande)",
+   "manca": "Sovraccarico non calcolato (capacity_not_configured); priorità a 90 giorni e KPI di agenzia sono 'Solo struttura' (foundations 'objectives' e 'kpis').",
+   "area": "gestionale",
+   "requisito": "Cruscotto direzione: 6 domande settimanali (cassa, da incassare, rischi, contratti in scadenza, sovraccarichi, decisioni) calcolate in automatico, più decisioni aperte, priorità 90 giorni e KPI."
+  },
+  {
+   "id": "R-090",
+   "stato": "DEMO",
+   "prova": "src/store.js os_clients; src/administration.js os_fin_entities (due ditte) e os_fin_counterparties (client/supplier/collaborator/owner) con document_ref; tests/administration.test.js 'anagrafiche contratti bozze scadenze e abbonamenti condividono il modello…'",
+   "manca": "I documenti sono solo un riferimento testuale: mancano documenti tipizzati collegati per anagrafica e controlli di completezza.",
+   "area": "gestionale",
+   "requisito": "Modulo Anagrafiche: clienti, fornitori, collaboratori e le due ditte, ciascuno con i propri documenti collegati."
+  },
+  {
+   "id": "R-091",
+   "stato": "DEMO",
+   "prova": "src/store.js canAccessClient/requireOwner/requireClient e os_assignments; server.js /api/users (ruolo e clienti assegnati alla creazione); public/app.js usersView 'Persone e permessi'; tests/core.test.js 'isola economia, agenti e CRM dal cliente e dal collaboratore…'; tests/core-review.test.js 'accessi cliente, dati amministrativi…'",
+   "manca": "Matrice fissa a tre ruoli più assegnazione cliente, non modificabile dopo la creazione e senza visibilità per area (compensi, documenti, costi); utenti solo DEMO (email .example obbligatoria).",
+   "area": "sicurezza",
+   "requisito": "Matrice degli accessi di team e collaboratori (chi vede cosa) gestita nel gestionale e applicata ai permessi."
+  },
+  {
+   "id": "R-092",
+   "stato": "SOLO STRUTTURA",
+   "prova": "public/app.js clientsView (servizi, stato, rischio); src/administration.js contratti, contractPlans e arretrati per fattura",
+   "manca": "Vista aggregata per cliente con canone, cadenza, metodo di pagamento, arretrati, stato onboarding, storico clienti persi e portfolio (motivo: da costruire).",
+   "area": "gestionale",
+   "requisito": "Vista aggregata clienti: canone, cadenza, metodo di pagamento, arretrati, stato onboarding, storico dei clienti persi e portfolio."
+  },
+  {
+   "id": "R-093",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/administration.js state(): incassi del mese per ditta, margins per cliente/ditta, arretrati, anomalie (pannello public/app.js administrationView)",
+   "manca": "Generazione del report mensile per i soci; fatturato per cliente nel mese, margine per servizio e carico di lavoro per persona assenti.",
+   "area": "gestionale",
+   "requisito": "Report mensile di gestione per i soci: fatturato e incassi per ditta e cliente, arretrati, costi e margine per cliente e servizio, carico per persona, criticità."
+  },
+  {
+   "id": "R-094",
+   "stato": "DEMO",
+   "prova": "src/administration.js os_fin_subscriptions (importo, next_due, periodicità 1/12), obligations hosting/domain/other, regole subscription_*; tests/administration.test.js 'anagrafiche contratti bozze scadenze e abbonamenti…'",
+   "manca": "Tipologia dei costi ricorrenti (affitto, utenze, strumenti AI, compensi) non distinta, storico variazioni e costo degli strumenti AI per cliente assenti.",
+   "area": "gestionale",
+   "requisito": "Modulo Costi e abbonamenti: costi ricorrenti (affitto, utenze, strumenti come Canva/Adobe/AI, compensi) con costo mensile e data di rinnovo."
+  },
+  {
+   "id": "R-095",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/agency/management.js modulo 'documents' status 'Solo struttura', nessuna tabella (implementation.file null)",
+   "manca": "Archivio documenti tipizzato e versionato per contratti, privacy/GDPR, autorizzazioni portfolio e accordi collaboratori (motivo: da costruire).",
+   "area": "gestionale",
+   "requisito": "Modulo Documenti: contratti, privacy e GDPR, registro autorizzazioni portfolio e accordi con i collaboratori."
+  },
+  {
+   "id": "R-096",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/administration.js regole missing_document (solo movimenti senza documento) e contract_expiring (contratti scaduti o in scadenza)",
+   "manca": "Segnalazione di clienti senza contratto scritto, preventivi, accordi collaboratori, autorizzazioni portfolio, privacy, cookie e nomine GDPR mancanti (richiede il modulo Documenti).",
+   "area": "gestionale",
+   "requisito": "Segnalazione documenti mancanti: clienti senza contratto scritto o con contratto scaduto, preventivi, accordi collaboratori, autorizzazioni portfolio, privacy, cookie, nomine GDPR."
+  },
+  {
+   "id": "R-097",
+   "stato": "OPERATIVO",
+   "prova": ".gitignore (.data, *.sqlite, *.log, .env esclusi); seed e fixture marcati DEMO; audit amministrativo registra solo {demo:true} senza importi (src/administration.js mutate); email utenti obbligatoriamente .example (server.js); tests/specialists.test.js 'Non accetta contesto reale, fixture non marcate…'",
+   "manca": "Nessuna scansione automatica del repository per dati economici reali; il gestionale definitivo non esiste ancora.",
+   "area": "sicurezza",
+   "requisito": "I dati economici reali si caricano solo nel gestionale definitivo: mai nel repository, nelle fixture o nei log."
+  },
+  {
+   "id": "R-098",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/growth.js lead e pipeline; src/administration.js os_fin_contracts (inizio, fine, preavviso); src/agency/management.js 'sales-contracts' (manca 'Preventivi versionati, accettazione, firma e clausole di rinnovo automatico')",
+   "manca": "Preventivi e preventivi accettati come record, passaggio lead→preventivo→contratto collegato e flag del rinnovo automatico (motivo: da costruire).",
+   "area": "gestionale",
+   "requisito": "Modulo Commerciale: lead, preventivi, preventivi accettati e contratti con data di inizio, data di fine e segnalazione del rinnovo automatico."
+  },
+  {
+   "id": "R-099",
+   "stato": "DEMO",
+   "prova": "src/administration.js os_fin_invoices collegate a ditta, cliente, contratto e movimenti (paid/remaining); POST /contracts/:id/invoice; tests/administration.test.js 'incassi parziali, residuo fattura e blocco doppio saldo'; tests/contratti.test.js",
+   "manca": "Lo stato resta sempre 'draft': mancano gli stati espliciti emessa e incassata con passaggi registrati; emissione reale legata al software di fatturazione non scelto.",
+   "area": "gestionale",
+   "requisito": "Modulo Fatturazione e incassi: fatture collegate a cliente, ditta e movimenti di incasso, con stato da emettere, emessa, incassata."
+  },
+  {
+   "id": "R-100",
+   "stato": "DEMO",
+   "prova": "src/administration.js state().deadlines (incassi, pagamenti compensi/hosting/domini, abbonamenti, preavviso e fine contratti, canoni attesi, ordinati per data entro 90 giorni); tests/contratti.test.js 'R-015 … scadenze nello scadenziario unico'",
+   "manca": "Scadenze fiscali e contributive bloccate in attesa del commercialista (tax_reserve rifiutato); la lista unica non è mostrata nella dashboard (public/app.js non la usa); avvisi anticipati assenti.",
+   "area": "gestionale",
+   "requisito": "Modulo Scadenziario unico: scadenze fiscali, contratti, hosting e domini, abbonamenti e pagamenti ai collaboratori in un'unica lista."
+  },
+  {
+   "id": "R-101",
+   "stato": "DEMO",
+   "prova": "src/administration.js os_fin_accounts per ditta con saldo iniziale e POST /accounts; seed Banca A, Cassa A, Banca B DEMO; tests/administration.test.js 'seed idempotente, due ditte…'",
+   "manca": "Conti reali (cassa comune, conto Alfonso, conto Raffaele) non caricati; una cassa comune alle due ditte non è modellabile (trasferimenti tra ditte bloccati).",
+   "area": "gestionale",
+   "requisito": "Modulo Cassa e prima nota: elenco dei conti (cassa comune, conto di Alfonso, conto di Raffaele…) per ditta, base per movimenti e saldi."
+  },
+  {
+   "id": "R-102",
+   "stato": "DEMO",
+   "prova": "src/administration.js os_fin_hourly_rates, os_fin_work_allocations, marginState (stima e consuntivo per cliente e ditta); tests/administration.test.js 'tariffa confermata e scope ditta/cliente/persona/servizio…' e 'compensi a movimento non contati nuovamente…'",
+   "manca": "Costo degli agenti non attribuito ai clienti nel margine, margine per servizio assente, margine completo null (costi comuni non ripartiti).",
+   "area": "gestionale",
+   "requisito": "Modulo Lavoro e marginalità: ore e attività per cliente, incluse quelle degli agenti con il loro costo, e margine reale per cliente e per servizio."
+  },
+  {
+   "id": "R-103",
+   "stato": "DEMO",
+   "prova": "src/store.js os_tasks; src/production.js (task, contenuti, approvazioni); public/app.js workView e calendario; tests/core.test.js 'approvazione, feedback, revisione obsoleta e pianificazione interna senza pubblicare'",
+   "manca": "Decisione motivata e documentata se collegare o sostituire Trello assente (solo 'migrazione Trello' tra le mancanze in docs/PASSAGGIO-CONSEGNE.md); ricorrenze e dipendenze tra lavori assenti.",
+   "area": "gestionale",
+   "requisito": "Modulo Task e consegne, con decisione motivata e documentata se collegarlo a Trello o sostituirlo."
+  },
+  {
+   "id": "R-104",
+   "stato": "COLLEGAMENTO MANCANTE",
+   "prova": "src/registry.js integrazione 'sheets' 'Sola lettura iniziale' Non collegato; src/administration.js external.sheets 'not_connected' e regola tracker_mismatch 'not_connected'; docs/API-AMMINISTRAZIONE.md riga 204 e docs/REPORT-NOTTE.md riga 152 (fogli restano fonte)",
+   "manca": "Connettore in sola lettura ai fogli Prima Nota e Tracker (richiede accesso Google Sheets) e mappatura colonne→tabelle; vincolo di non scrittura rispettato perché nulla è collegato.",
+   "area": "integrazioni",
+   "requisito": "I fogli Google Prima Nota e Tracker restano fonte finché i soci non decidono la migrazione: si collegano solo in sola lettura, lo spegnimento si decide insieme."
+  },
+  {
+   "id": "R-105",
+   "stato": "OPERATIVO",
+   "prova": "src/administration.js: CHECK typeof(amount_cents)='integer', cents() intero, sum() con controllo di intero sicuro, costo ore in BigInt; tests/administration.test.js 'centesimi interi, date effettive e categorie obbligatorie' e 'tariffa confermata… costo ore arrotondato al centesimo'",
+   "manca": "Solo il costo orario (minuti × tariffa) è arrotondato al centesimo per costruzione; saldi e totali non arrotondano.",
+   "area": "gestionale",
+   "requisito": "Contabilità precisa al centesimo: importi gestiti in centesimi interi, senza arrotondamenti in calcoli e saldi."
+  },
+  {
+   "id": "R-106",
+   "stato": "DEMO",
+   "prova": "src/administration.js os_fin_movements (date, amount_cents, direction, kind, entity_id, account_id, category obbligatoria, counterparty/client, invoice_id/document_ref, method bank/cash/card); tests/administration.test.js 'centesimi interi, date effettive e categorie obbligatorie' e 'ditta, conto e documento non possono essere incrociati'",
+   "manca": "Documento facoltativo (solo segnalato come anomalia) e registrato come testo libero; movimenti solo DEMO.",
+   "area": "gestionale",
+   "requisito": "Ogni movimento registra data, importo, entrata/uscita, ditta, conto, categoria, cliente o fornitore, fattura o ricevuta e metodo (bonifico, contanti, carta)."
+  },
+  {
+   "id": "R-107",
+   "stato": "OPERATIVO",
+   "prova": "src/administration.js balance() ricalcola il saldo da saldo iniziale + movimenti a ogni lettura, entities.balance_cents per ditta; tests/administration.test.js 'trasferimento atomico conserva saldi totali e non produce ricavo o costo'; tests/backup.test.js (saldi conservati dopo ripristino)",
+   "manca": "Saldo contabile non riconciliato con la banca (estratto conto non collegato).",
+   "area": "gestionale",
+   "requisito": "Saldi per conto e per ditta calcolati dai movimenti e sempre aggiornati."
+  },
+  {
+   "id": "R-108",
+   "stato": "DEMO",
+   "prova": "src/administration.js POST /reconciliations (saldo calcolato vs reale, differenza, nota obbligatoria, chiusura solo a differenza zero, blocco retrodatazione); tests/administration.test.js 'quadratura per ditta e mese, differenza spiegata ma non corretta, chiusura blocca retrodatazione'",
+   "manca": "Chiusura mensile complessiva per ditta (tutti i conti insieme) non guidata; provata solo su dati DEMO.",
+   "area": "gestionale",
+   "requisito": "Chiusura mensile con quadratura: saldo calcolato confrontato con il saldo reale di conti e cassa, ogni differenza registrata con spiegazione."
+  },
+  {
+   "id": "R-109",
+   "stato": "DEMO",
+   "prova": "src/administration.js obligations kind 'collaborator' (importo, scadenza, document_ref, minuti, cliente) con pagato/residuo dai movimenti; tariffe e ore per cliente; tests/administration.test.js 'anagrafiche contratti bozze scadenze…' e 'tariffa confermata…'",
+   "manca": "Scheda dedicata per collaboratore, tipo di documento (fattura, ricevuta, prestazione occasionale) non tipizzato, riepilogo ore e attività per cliente per persona.",
+   "area": "gestionale",
+   "requisito": "Scheda collaboratori: compenso concordato, scadenza, pagato o da pagare, documento ricevuto (fattura, ricevuta, prestazione occasionale), ore e attività per cliente."
+  },
+  {
+   "id": "R-110",
+   "stato": "DEMO",
+   "prova": "src/administration.js regole obligation_overdue (compenso non saldato) e missing_document (movimento senza documento); probe: seed 'Compenso montaggio DEMO' scaduto genera anomalia high",
+   "manca": "Compenso senza documento non segnalato se non ancora pagato; avviso solo in lista anomalie (canale notifiche non collegato) e controllo giornaliero non attivo di default.",
+   "area": "automazioni",
+   "requisito": "Avviso automatico se un pagamento a un collaboratore è in ritardo o se manca il suo documento."
+  },
+  {
+   "id": "R-111",
+   "stato": "DEMO",
+   "prova": "src/administration.js owner_agreement e regola owner_overdraw (prelievi oltre accordo, conto sotto zero), prelievi distinti dai costi; tests/administration.test.js 'prelievi distinti dai costi, superamento accordo e documenti mancanti segnalati'",
+   "manca": "Confronto dei prelievi con l'utile reale prodotto da ciascuna ditta assente (management.js lo indica tra le mancanze).",
+   "area": "gestionale",
+   "requisito": "Prelievi di Raffaele e Alfonso confrontati con quanto concordato e con l'utile reale, per evitare prelievi oltre quanto l'azienda produce."
+  },
+  {
+   "id": "R-112",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/administration.js entities.tax {status:'awaiting_accountant', threshold_cents:null, provision_cents:null}; obligations tax_reserve rifiutate con 409",
+   "manca": "Calcolo per socio di contributi e tasse da accantonare (motivo: regole da confermare con il commercialista).",
+   "area": "gestionale",
+   "requisito": "Calcolo per ciascun socio dei contributi previdenziali e delle tasse da accantonare."
+  },
+  {
+   "id": "R-113",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/administration.js RULES tax_threshold 'awaiting_accountant'",
+   "manca": "Avviso di accantonamenti insufficienti rispetto alle prossime scadenze (dipende da R-112 e dalle scadenze fiscali confermate dal commercialista).",
+   "area": "automazioni",
+   "requisito": "Avviso se gli accantonamenti di un socio non bastano per le prossime scadenze fiscali e contributive."
+  },
+  {
+   "id": "R-114",
+   "stato": "OPERATIVO",
+   "prova": "src/administration.js: os_fin_entities.tax_rules_confirmed default 0, POST /obligations kind tax_reserve rifiutato 'Regole fiscali e accantonamenti da confermare con il commercialista'; tests/administration.test.js 'anagrafiche contratti bozze scadenze…' (assert rifiuto 409)",
+   "manca": "Manca il meccanismo per attivare le regole dopo la conferma (il flag tax_rules_confirmed non è usato).",
+   "area": "gestionale",
+   "requisito": "Regole fiscali su compensi e ritenute (occasionali, partita IVA, dipendenti, forfettario) applicate solo dopo conferma del commercialista; prima restano disattivate."
+  },
+  {
+   "id": "R-115",
+   "stato": "DEMO",
+   "prova": "src/administration.js analyze() deterministico; pianificazione 'daily'/'monthly' dell'agente administration in src/orchestrator.js (disattivata di default); tests/administration.test.js 'analisi deterministica non cambia conti…'",
+   "manca": "Esecuzione giornaliera non attiva di default; nessuna forma 'completa' distinta a fine mese; lista ordinata per priorità e data, non per importo.",
+   "area": "automazioni",
+   "requisito": "Controllo \"cosa non torna\" eseguito ogni giorno e in forma completa a fine mese, con lista anomalie ordinata per priorità e importo."
+  },
+  {
+   "id": "R-116",
+   "stato": "DEMO",
+   "prova": "src/administration.js regole invoice_overdue, partial_payment, payment_mismatch, missing_document; tests/scenario.test.js passo 12 ('Incasso diverso dall'importo dovuto: 9,00 €')",
+   "manca": "Confronto Tracker↔prima nota non collegato (tracker_mismatch); canone atteso da contratto non fatturato né incassato non genera anomalia; incasso con riferimento testuale ma senza fattura non segnalato.",
+   "area": "gestionale",
+   "requisito": "Controlli corrispondenze: incasso senza fattura e viceversa, pagato nel Tracker senza movimento e viceversa, canone non incassato a scadenza, incasso diverso dal dovuto."
+  },
+  {
+   "id": "R-117",
+   "stato": "DEMO",
+   "prova": "src/administration.js possible_duplicate (chiave senza conto), source_ref unico per ditta, missing_category, missing_document, entity_mismatch; tests/administration.test.js 'idempotenza atomica e riferimento duplicato anche su un altro conto' e 'ditta, conto e documento non possono essere incrociati'; tests/sciame.test.js 'giro completo…' (possible_duplicate)",
+   "manca": "Incasso su una ditta diversa da quella del contratto del cliente non rilevato senza fattura collegata; doppioni tra ditte diverse non rilevati.",
+   "area": "gestionale",
+   "requisito": "Controlli registrazione: movimenti doppi anche su conti diversi, movimenti senza categoria, ditta o documento, incasso attribuito alla ditta sbagliata."
+  },
+  {
+   "id": "R-118",
+   "stato": "DEMO",
+   "prova": "src/administration.js regole subscription_increase, subscription_duplicate, subscription_missing; tests/administration.test.js 'anagrafiche contratti…' (subscription_duplicate); tests/sciame.test.js (subscription_increase)",
+   "manca": "Spese insolite per importo o frequenza (unusual_expense 'not_implemented') e abbonamenti inutili non rilevati.",
+   "area": "gestionale",
+   "requisito": "Controlli costi: spese insolite per importo o frequenza, abbonamenti aumentati, doppi o inutili, costi spariti per rinnovo mancato o carta scaduta."
+  },
+  {
+   "id": "R-119",
+   "stato": "COLLEGAMENTO MANCANTE",
+   "prova": "src/administration.js owner_overdraw (prelievi oltre accordo e conto sotto zero); RULES unrecorded_payment 'needs_external_statement'; tests/administration.test.js 'prelievi distinti dai costi, superamento accordo…'",
+   "manca": "Compensi pagati ma non registrati richiedono l'estratto conto bancario in sola lettura, non collegato.",
+   "area": "gestionale",
+   "requisito": "Controlli soci e collaboratori: prelievi oltre il disponibile, compensi pagati ma non registrati."
+  },
+  {
+   "id": "R-120",
+   "stato": "DEMO",
+   "prova": "src/administration.js reconciliation_difference (saldo di cassa diverso dal conteggio reale); income_year_cents per ditta; tests/administration.test.js 'quadratura per ditta e mese…'",
+   "manca": "Avvicinamento alla soglia del forfettario non controllato (tax_threshold in attesa del commercialista).",
+   "area": "gestionale",
+   "requisito": "Controlli fisco e cassa: avvicinamento alla soglia del forfettario di una ditta, saldo di cassa che non quadra con il conteggio reale."
+  },
+  {
+   "id": "R-121",
+   "stato": "OPERATIVO",
+   "prova": "src/administration.js PATCH /anomalies/:id (stati open/in_review/resolved, responsabile socio attivo, nota obbligatoria per risolvere), os_fin_anomalies con assignee e resolution_note; tests/administration.test.js 'analisi deterministica non cambia conti; risoluzione necessita nota…'",
+   "manca": "Il responsabile può essere solo un socio, non un collaboratore.",
+   "area": "gestionale",
+   "requisito": "Ogni anomalia ha stato (aperta, in verifica, risolta), un responsabile e una nota su come è stata risolta."
+  },
+  {
+   "id": "R-122",
+   "stato": "OPERATIVO",
+   "prova": "src/administration.js trigger di immutabilità su os_fin_movements, analyze() senza scritture sui conti, /corrections solo su richiesta del socio; src/sciame/qualita.js e .claude/agents/bigant-amministrazione.md (correzione solo proposta); tests/administration.test.js 'prima nota immutabile anche dal database…' e 'analisi deterministica non cambia conti…'",
+   "manca": "La rettifica proposta dall'agente è testo: il socio deve poi registrarla a mano, senza conferma con un clic.",
+   "area": "gestionale",
+   "requisito": "Le anomalie non si correggono da sole: il sistema propone la rettifica e un socio la conferma."
+  },
+  {
+   "id": "R-123",
+   "stato": "DEMO",
+   "prova": "src/sciame/index.js flussoAmministrazione (visibilità admin) e .claude/agents/bigant-amministrazione.md; src/agents/core.js administration; endpoint /send /pay /sdi /connect rifiutati 409; tests/sciame.test.js 'giro completo…' e 'router HTTP dello sciame…'",
+   "manca": "L'agente spiega solo le anomalie: liste fatture da emettere, solleciti a scaglioni e pacchetto commercialista non preparati dagli agenti; nessuna prova di un giro reale con Claude Code.",
+   "area": "sciame",
+   "requisito": "Reparto Amministrazione nello sciame: agenti con SOP che lavorano sul gestionale e preparano liste e bozze senza effetti esterni."
+  },
+  {
+   "id": "R-124",
+   "stato": "SOLO STRUTTURA",
+   "prova": "src/administration.js entities.tax 'awaiting_accountant' con valori null; docs/PLAYBOOK.md sez. 10 (soglie come parametri con fonte e conferma)",
+   "manca": "Parametri per ditta (soglia ricavi, niente IVA, bollo sopra soglia) con fonte e data, e monitoraggio relativo (motivo: valori da verificare col commercialista).",
+   "area": "gestionale",
+   "requisito": "Monitoraggio per ditta delle regole del forfettario (soglia ricavi, niente IVA in fattura, bollo sopra soglia) con valori parametrici da verificare col commercialista."
+  },
+  {
+   "id": "R-125",
+   "stato": "DEMO",
+   "prova": "src/administration.js contractPlan (canone del mese 'da_emettere') e POST /contracts/:id/invoice (bozza idempotente, SDI bloccato); tests/contratti.test.js 'R-015: un contratto genera la fattura da emettere del mese…'",
+   "manca": "Lavori una tantum chiusi non entrano nella lista; manca il raggruppamento per cliente e per ditta e la vista mensile in dashboard.",
+   "area": "gestionale",
+   "requisito": "Lista mensile delle fatture da emettere (canoni e lavori chiusi), raggruppata per cliente e per ditta."
+  },
+  {
+   "id": "R-126",
+   "stato": "COLLEGAMENTO MANCANTE",
+   "prova": "src/registry.js integrazione 'invoicing' 'Software da identificare' Non collegato; src/administration.js bozze os_fin_invoices e /sdi rifiutato 409; tests/administration.test.js (rifiuto /sdi)",
+   "manca": "Scelta del software di fatturazione elettronica, connettore per le bozze, collaudo e autorizzazione dei soci.",
+   "area": "integrazioni",
+   "requisito": "Bozze di fattura per il software di fatturazione elettronica (da definire): connettore scollegato fino a scelta del software, collaudo e autorizzazione."
+  }
+ ]
+}

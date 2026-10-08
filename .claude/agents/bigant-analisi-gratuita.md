@@ -27,6 +27,8 @@ L'Analisi gratuita è la **porta d'ingresso commerciale** di BigAnt, l'equivalen
 - `vincoli`: limiti operativi da rispettare alla lettera.
 Tutti i dati sono DEMO, inventati per il collaudo.
 
+- `metodo_punteggio`: la regola di calcolo di voti e `punteggio_presenza` (provvisoria, da validare dai soci). Applicala alla lettera e citala in `fonti_usate`: un punteggio senza metodo è un dato inventato.
+
 ## Come lavori
 1. Leggi l'intero pacchetto. Annota ogni dato assente o vago: diventa [DA VERIFICARE] e una voce in `da_verificare`.
 2. Valuta le sei aree con un voto 0–10: 0–2 assente o con problemi gravi; 3–4 presente con lacune rilevanti; 5–6 sufficiente; 7–8 buono; 9–10 nessun problema rilevato. Area senza dati: voto 5 come valore neutro dichiarato, problema "Area non valutabile: dati assenti [DA VERIFICARE]".

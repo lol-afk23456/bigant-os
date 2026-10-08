@@ -15,6 +15,8 @@ import {createOrchestrator} from './src/orchestrator.js';
 import {createAgencyModule} from './src/agency/index.js';
 import {createSciame} from './src/sciame/index.js';
 import {createMotore} from './src/motori/index.js';
+import {createClientDashboard} from './src/cliente/dashboard.js';
+import {catalogoServizi,pacchetti} from './src/servizi/catalogo.js';
 const root=dirname(fileURLToPath(import.meta.url));
 const brandAssets=Object.freeze({
   '/brand/logo.png':{file:'logo.png.base64',sha256:'664e4ae8d8170427554fe36c2739562b71f24b8ed533f6068aa012b97ec2864c'},
@@ -40,6 +42,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const agency=createAgencyModule({store});
   const sciame=createSciame({store,production,administration,growth,orchestrator,root,env,clock,motore:motore?(typeof motore==='string'?createMotore({nome:motore,root,env}):motore):null});
   if(importaProveSciame)sciame.importaProve(resolve(root,'docs/demo-sciame'));
+  const cliente=createClientDashboard({store});
   const limits=new Map();
   function rate(key,max=120,window=60000) {let l=limits.get(key);if(!l||l.until<Date.now()){l={count:0,until:Date.now()+window};limits.set(key,l);}if(++l.count>max)throw new AppError('Troppe richieste: riprova tra poco.',429);if(limits.size>10000)for(const[k,v]of limits)if(v.until<Date.now())limits.delete(k);}
   function session(req) {const token=(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('bigant_os='))?.slice(10);if(!token)return null;return store.one('SELECT u.id,u.name,u.email,u.role,u.tenant_id,u.active,s.csrf,s.id session_id FROM os_sessions s JOIN os_users u ON u.id=s.user_id WHERE s.id=? AND s.expires_at>? AND u.active=1',digest(token),Date.now());}
@@ -102,6 +105,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
         const b=['GET','HEAD'].includes(method)?{}:await body(req);
         if(path==='/api/overview'&&method==='GET')return json(res,overview(u,clientId));
         if(path==='/api/clients'&&method==='GET')return json(res,{items:allClients(u)});
+        if(path==='/api/catalogo'&&method==='GET'){requireOwner(u);return json(res,{servizi:catalogoServizi,pacchetti});}
         if(path==='/api/clients'&&method==='POST') {requireOwner(u);const name=text(b.name,140),slug=text(b.slug,100);if(!name||!/^[a-z0-9-]{3,100}$/.test(slug))throw new AppError('Nome e identificativo attività non validi.');if(!Array.isArray(b.services)||b.services.some(x=>!services.some(y=>y.id===x)))throw new AppError('Seleziona servizi validi.');const id=uid();try{store.run('INSERT INTO os_clients(id,name,slug,industry,services_json,created_at) VALUES(?,?,?,?,?,?)',id,name.includes('DEMO')?name:name+' · DEMO',slug,text(b.industry,100),JSON.stringify([...new Set(b.services)]),now());}catch(e){if(String(e).includes('UNIQUE'))throw new AppError('Identificativo già utilizzato.',409);throw e;}store.audit(u,id,'Attività creata',id);orchestrator.event('client.created',id,id);return json(res,{id},201);}
         let m=path.match(/^\/api\/clients\/([^/]+)$/);if(m&&method==='PATCH'){requireOwner(u);const c=store.one('SELECT * FROM os_clients WHERE id=?',m[1]);if(!c)throw new AppError('Attività non trovata.',404);const selected=b.services??JSON.parse(c.services_json);if(!Array.isArray(selected)||selected.some(x=>!services.some(y=>y.id===x)))throw new AppError('Servizi non validi.');const risk=b.risk??c.risk;if(!['normal','watch','risk'].includes(risk))throw new AppError('Stato di rischio non valido.');store.run('UPDATE os_clients SET services_json=?,risk=? WHERE id=?',JSON.stringify(selected),risk,c.id);store.audit(u,c.id,'Servizi e rischio aggiornati',c.id);return json(res,{ok:true});}
         if(path==='/api/users'&&method==='GET'){requireOwner(u);return json(res,{items:store.query('SELECT id,name,email,role,tenant_id,active FROM os_users WHERE id!=?' , 'os-orchestrator'),assignments:store.query('SELECT * FROM os_assignments')});}
@@ -120,7 +124,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
           if(a.kind==='fidelity_campaign')return reply(res,await fidelity.handle({method:'POST',path:'/campaigns/'+a.entity_id+'/decision',body:{...b,version:a.version},user:u,clientId}));
           const decision=await production.handle({method:'POST',path:'/approvals/'+a.id,body:b,user:u,clientId});if(b.decision==='approved')orchestrator.event('content.approved',clientId,a.entity_id,a.version);return reply(res,decision);
         }
-        for(const [name,module]of Object.entries({growth,fidelity,administration,agents:orchestrator,production,agency,sciame}))if(path.startsWith('/api/'+name+'/')){
+        for(const [name,module]of Object.entries({growth,fidelity,administration,agents:orchestrator,production,agency,sciame,cliente}))if(path.startsWith('/api/'+name+'/')){
           if(['growth','administration','agents','sciame'].includes(name))requireOwner(u);
           if(name==='fidelity'&&u.role!=='owner'&&!JSON.parse(store.one('SELECT services_json FROM os_clients WHERE id=?',clientId).services_json).includes('fidelity'))throw new AppError('Servizio Fidelity non attivo.',403);
           const relative=path.slice(('/api/'+name).length)+(name==='fidelity'?url.search:'');
@@ -151,7 +155,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const server=http.createServer(handler);server.requestTimeout=30000;server.headersTimeout=15000;
   let workerError=null;
   const timer=worker?setInterval(()=>orchestrator.tick().then(()=>{workerError=null;}).catch(()=>{workerError='Controllo delle automazioni da verificare.';}),2000):null;timer?.unref();
-  return {server,store,production,growth,fidelity,administration,orchestrator,agency,sciame,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(server.listening)await new Promise(r=>server.close(r));store.close();}};
+  return {server,store,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(server.listening)await new Promise(r=>server.close(r));store.close();}};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   if(process.env.NODE_ENV==='production')throw new Error('Questa versione è un prototipo DEMO locale. Il rilascio richiede una fase autorizzata separata.');
