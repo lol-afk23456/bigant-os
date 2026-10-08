@@ -6,6 +6,13 @@ Ramo `bigant-os-notte-1`, PR #1 aperta e **non unita**. Nessun deploy, nessun in
 
 Ora BigAnt OS ha uno **sciame di agenti che lavora davvero con l'intelligenza artificiale** (motore Claude Code), con un controllo Qualità che ferma gli errori, un **ufficio virtuale** dove lo vedi al lavoro, uno **scenario completo a 13 passaggi** con un solo comando e una **dashboard cliente a 9 sezioni**. Test: **182 su 182 verdi**, controlli 5 su 5.
 
+## Provarlo online, senza installare nulla (aggiornamento 8 ottobre, ore 16)
+
+- Link privato: https://claude.ai/artifact/XmLAh53TMRvZQpEJ86BXRu. Le credenziali di prova le ha il proprietario; non sono nel repository.
+- È tutto BigAnt OS: dashboard dei soci con ufficio virtuale, e area cliente.
+- I giri reali dello sciame si vedono con il loro motore (Claude Code). I nuovi giri avviati online sono DEMO, cioè regole senza AI, e lo dichiarano.
+- Come funziona e quali sono i limiti: `docs/ONLINE.md`.
+
 ## Come provarlo (comandi esatti)
 
 Serve un computer con **Node 24.19.0** (sito ufficiale nodejs.org, versione 24) e accesso al repository.
