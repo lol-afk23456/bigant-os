@@ -104,3 +104,7 @@ test('QR tessera pubblica e iscrizione programma: PNG reali, isolamento e revoca
 test('memoria conserva testo e fonte delle versioni precedenti senza esporre versioni amministrative',()=>{
  const a=createApp();try{const u=a.store.one("SELECT * FROM os_users WHERE id='demo-owner'");a.production.saveMemory(u,'demo-bottega','dna','Prima voce','Brief DEMO');a.production.saveMemory(u,'demo-bottega','dna','Seconda voce','Feedback DEMO');const rows=a.store.query("SELECT * FROM os_memory_versions WHERE client_id='demo-bottega' AND kind='dna' ORDER BY version");assert.equal(rows.length,2);assert.equal(rows[0].content,'Prima voce');assert.equal(rows[1].source,'Feedback DEMO');assert.equal(rows[1].version,2);assert.throws(()=>a.store.run("UPDATE os_memory_versions SET content='alterato' WHERE kind='dna'"),/immutabile/);assert.throws(()=>a.store.run("DELETE FROM os_memory_versions WHERE kind='dna'"),/immutabile/);}finally{a.store.close();}
 });
+
+test('un cliente riuscito non nasconde il guasto Fidelity di un altro nel giro comune',async t=>{
+ const app=createApp(),s=app.store;t.after(()=>app.close());let broken=true;const o=createOrchestrator({store:s,production:createProduction({store:s}),fidelity:{tick:id=>{if(id==='demo-bigant'&&broken)throw Error('Errore fixture da verificare');return {prepared:[]};}}});const u=s.one("SELECT * FROM os_users WHERE id='demo-owner'");await o.tick();assert.match(o.state(u).moduleErrors.fidelity,/Errore fixture/);broken=false;await o.tick();assert.equal(o.state(u).moduleErrors.fidelity,null);
+});
