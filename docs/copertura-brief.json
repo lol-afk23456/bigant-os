@@ -1,7 +1,7 @@
 {
   "baselineCommit": "8750e80",
   "date": "2026-10-08",
-  "phase": "Dopo la correzione della struttura dell’intera agenzia, ancora DEMO",
+  "phase": "Passaggio a Claude Code: prove delle 32 procedure DEMO aggiunte; ultima copertura misurata riferita esclusivamente al brief originale di 567 righe",
   "requirements": [
     {
       "id": "AG-MET-01",
@@ -114,9 +114,10 @@
       "requirement": "Memoria completa per cliente: master, DNA, direttive, strategia, calendario, cruscotto, decisioni, feedback, brand e storico contratto.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/store.js os_memory/os_memory_versions; src/production.js ammette master,dna,strategy,feedback,report; tests/core.test.js storico immutabile"
+        "8750e80:src/store.js os_memory/os_memory_versions; src/production.js ammette master,dna,strategy,feedback,report; tests/core.test.js storico immutabile",
+        "src/agents/outputs.js: source_snapshot e os_agent_output_versions; tests/swarm.test.js: versioni e feedback"
       ],
-      "missing": "Versionamento ed export funzionano, ma mancano modelli specifici per direttive, asset, decisioni e raccordo completo a contratti/cruscotto/calendario.",
+      "missing": "Versionamento ed export funzionano; output degli agenti conservano fotografia degli input e feedback specifico. Mancano modelli completi per direttive, asset, decisioni e raccordo contratti/cruscotto/calendario.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -127,9 +128,10 @@
       "requirement": "Contenuti da approvare: coda unica cliente/soci con approva/rifiuta/modifica, autore/data/motivo, feedback e invalidazione della versione modificata.",
       "status": "FATTO e testato",
       "evidence": [
-        "8750e80:src/production.js handle /approvals e /contents; tests/core.test.js approvazione/feedback/versione obsoleta; docs/COLLAUDO-INTERFACCIA.md prova browser social"
+        "8750e80:src/production.js handle /approvals e /contents; tests/core.test.js approvazione/feedback/versione obsoleta; docs/COLLAUDO-INTERFACCIA.md prova browser social",
+        "src/agents/outputs.js: revise/decide; tests/swarm.test.js: revisioni immutabili e approvazioni obsolete"
       ],
-      "missing": "Nessun gap per il contenuto locale testuale; approvazioni di altri tipi di lavoro hanno righe separate.",
+      "missing": "Coda locale estesa agli elaborati dello sciame; versione e motivo conservati, revisioni obsolete bloccate. Non equivale a eseguire azioni esterne.",
       "baselineStatus": "FATTO e testato",
       "category": "funzionale"
     },
@@ -153,9 +155,10 @@
       "requirement": "Cancello umano versionato per ogni uscita: pubblicazione, spesa, account, messaggi, fatture e solleciti.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/store.js os_approvals; server.js dispatch kind content/growth_message/fidelity_campaign; src/administration.js blocco /send,/pay,/sdi"
+        "8750e80:src/store.js os_approvals; server.js dispatch kind content/growth_message/fidelity_campaign; src/administration.js blocco /send,/pay,/sdi",
+        "src/agents/outputs.js; src/agents/modules.js; tests/swarm.test.js; tests/module-agents.test.js"
       ],
-      "missing": "Sono disponibili tre tipi di approvazione; nessuna richiesta approvabile per spesa, modifica account, fattura o sollecito. Bloccare tutto non realizza il ciclo preparazione→approvazione→esecuzione.",
+      "missing": "Approvazioni comuni disponibili anche per elaborati dei 32 agenti, messaggi Growth e campagne Fidelity; mancano ancora cicli completi di spesa, modifica account, fattura e sollecito verso fornitori reali. Bloccare le uscite non realizza quei cicli.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -166,9 +169,10 @@
       "requirement": "Ogni output riconducibile alle proprie fonti, dati e versioni del metodo, senza risultati inventati.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/orchestrator.js base.sources e context; src/production.js source testuale; docs/PLAYBOOK.md richiede source_refs/SOP/versione"
+        "8750e80:src/orchestrator.js base.sources e context; src/production.js source testuale; docs/PLAYBOOK.md richiede source_refs/SOP/versione",
+        "src/agents/outputs.js: source_snapshot e storico immutabile; src/agents/core.js; src/agents/modules.js; src/agents/specialists.js; tests/swarm.test.js"
       ],
-      "missing": "Fonti come etichette esistono; mancano provenienza strutturata, snapshot degli input e versione SOP per tutti gli output e verifica automatica delle evidenze.",
+      "missing": "Fonti, input e versioni del metodo sono ora registrati per i 32 executor DEMO. Restano verifica delle evidenze reali e provenienza completa di tutti i deliverable dell’agenzia, non soltanto output di questo motore.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -192,9 +196,10 @@
       "requirement": "Permessi minimi per reparto e passaggio al Direttore dei soli KPI economici aggregati necessari.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/orchestrator.js context esclude visibility admin, robot è owner; director non chiama un aggregatore economico; tests/core.test.js contesto senza contabilità"
+        "8750e80:src/orchestrator.js context esclude visibility admin, robot è owner; director non chiama un aggregatore economico; tests/core.test.js contesto senza contabilità",
+        "src/agents/catalog.js: eligibleAgent; src/orchestrator.js: contesto e aggregati; tests/swarm.test.js: riservatezza, feedback amministrativo e revoca"
       ],
-      "missing": "Contabilità esclusa dal contesto generale, ma mancano capability per singolo agente e interfaccia aggregati amministrativi→Direzione.",
+      "missing": "Eligibility per agente/servizio e contesto separato funzionano localmente; il Direttore riceve aggregati DEMO senza prima nota grezza. La matrice di capacità dell’intera agenzia e i permessi dei provider reali restano incompleti.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -218,9 +223,12 @@
       "requirement": "Organigramma completo con responsabilità e specialisti per tutti i reparti, effettivamente eseguibili.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js departments/agentDefinitions; src/orchestrator.js resultFor"
+        "8750e80:src/registry.js departments/agentDefinitions; src/orchestrator.js resultFor",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni",
+        "src/agents/catalog.js; src/agents/core.js; src/agents/modules.js; src/registry.js"
       ],
-      "missing": "Otto reparti registrati; molti specialisti sono planned, e sette implementati sono regole ristrette o testi fissi, non l’intero lavoro del reparto.",
+      "missing": "Tutte le 32 definizioni hanno ora una procedura deterministica eseguibile: sette centrali, quattro adapter dei moduli e 21 specialisti. È operatività di preparazione/controllo DEMO, non l’intero lavoro richiesto ai reparti; restano validazione del pilota e capacità professionali/materiali. Stato conservativo del precedente perimetro mantenuto in questo passaggio documentale.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -244,9 +252,10 @@
       "requirement": "Calendari persistenti giornalieri, lunedì, venerdì e primo del mese, con fuso orario corretto.",
       "status": "FATTO e testato",
       "evidence": [
-        "8750e80:src/orchestrator.js nextRun/schedule; tests/core.test.js cambio ora Europe/Rome e calendari; docs/COLLAUDO-INTERFACCIA.md schede pianificazioni"
+        "8750e80:src/orchestrator.js nextRun/schedule; tests/core.test.js cambio ora Europe/Rome e calendari; docs/COLLAUDO-INTERFACCIA.md schede pianificazioni",
+        "tests/swarm.test.js: calendario/input/revoca; src/orchestrator.js: os_schedule_inputs"
       ],
-      "missing": "Motore calendari coperto; i reparti non implementati non diventano operativi grazie alla sola pianificazione.",
+      "missing": "Calendari locali disponibili per i 32 executor con input persistenti; il servizio revocato sospende la regola. L’esecuzione si ferma con il processo locale; nessun calendario cloud o provider reale attivato.",
       "baselineStatus": "FATTO e testato",
       "category": "funzionale"
     },
@@ -257,9 +266,11 @@
       "requirement": "Inneschi su nuovo lead, nuova recensione, contenuto approvato e nuovo cliente firmato.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/orchestrator.js whitelist content.ready,lead.created,client.created; server.js produce eventi su create e DA APPROVARE"
+        "8750e80:src/orchestrator.js whitelist content.ready,lead.created,client.created; server.js produce eventi su create e DA APPROVARE",
+        "src/agents/catalog.js: eventDefinitions; src/orchestrator.js: eventi/versioni/deduplica; tests/swarm.test.js: propagazione input, isolamento ed eventi social/lead",
+        "Verifica di consegna: 160/161 test; tests/agency.test.js:31-34 fallisce per aspettativa obsoleta"
       ],
-      "missing": "Mancano recensione nuova, approvazione completata e contratto firmato; creazione anagrafica non è firma, contenuto pronto non è approvato.",
+      "missing": "Otto tipi di evento sono ora registrati e accodabili localmente, inclusi recensione, contenuto approvato e contratto registrato DEMO. Non sono webhook di provider reali né prova di firma verificata. Il test agency con vecchia aspettativa false è ancora da riallineare.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -283,9 +294,10 @@
       "requirement": "Direttore: analisi settimanale di clienti, servizi, risultati, mercato e concorrenti con massimo tre priorità motivate.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/orchestrator.js case director produce tre frasi perlopiù fisse e conteggio clienti"
+        "8750e80:src/orchestrator.js case director produce tre frasi perlopiù fisse e conteggio clienti",
+        "src/agents/core.js: director; src/orchestrator.js: aggregati autorizzati; tests/swarm.test.js: giro completo"
       ],
-      "missing": "Mancano analisi dati/mercato, competitor, confronto obiettivi ed evidenze che giustifichino le priorità.",
+      "missing": "Il Direttore elabora tre priorità e aggregati DEMO; restano ricerca mercato/concorrenti, confronto obiettivi e business case con fonti reali che giustifichino le scelte.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -310,9 +322,11 @@
       "status": "SOLO STRUTTURA",
       "evidence": [
         "8750e80:src/registry.js verticals è scheda; src/store.js assenza tabelle offerte/pacchetti/partner; src/orchestrator.js director",
-        "Dopo audit: src/agency/foundations.js packages; src/agency/services.js verticals; tests/agency.test.js"
+        "Dopo audit: src/agency/foundations.js packages; src/agency/services.js verticals; tests/agency.test.js",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Contratto pacchetti/listini/upsell/partner e spazio visibile; mancano registri operativi, calcoli e proposte.",
+      "missing": "Verticals prepara matrice bisogni/servizi/capacità; il Direttore propone priorità. Mancano registri operativi di pacchetti/listini/partner, prezzi validati, calcolo integrale dei margini e workflow commerciale del pacchetto.",
       "baselineStatus": "ASSENTE",
       "category": "funzionale"
     },
@@ -336,9 +350,10 @@
       "requirement": "Marketing BigAnt: lavoro coordinato su Instagram, Facebook, LinkedIn agenzia/soci, TikTok, GBP, sito e reputazione.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/orchestrator.js case marketing restituisce suggerimento fisso portfolio; src/registry.js marketing"
+        "8750e80:src/orchestrator.js case marketing restituisce suggerimento fisso portfolio; src/registry.js marketing",
+        "src/agents/core.js: marketing; docs/SOP-REGIA-DEMO.md; tests/swarm.test.js: esecuzione comune"
       ],
-      "missing": "Nessun piano multicanale, obiettivi/profili, produzioni o misure per i canali elencati.",
+      "missing": "Marketing produce dodici proposte datate su otto canali e un piano trimestrale DEMO. Mancano piano validato completo, obiettivi/profili reali, asset, gestione reputazione e misure dei canali.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -349,9 +364,10 @@
       "requirement": "Commerciale: acquisizione locale, audit verificato e proposte/preventivi fino alla chiusura.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js agenti research/analyst/commercial delegati Growth; docs/API-GROWTH.md perimetro fixture"
+        "8750e80:src/registry.js agenti research/analyst/commercial delegati Growth; docs/API-GROWTH.md perimetro fixture",
+        "src/agents/modules.js; tests/module-agents.test.js; tests/swarm.test.js: prerequisiti, zero consensi inventati"
       ],
-      "missing": "Ricerca e audit solo fixture; manca preventivo completo. Dettaglio migrazione Growth escluso da questo audit e demandato all’altro agente.",
+      "missing": "Ricerca, analisi e bozza commerciale passano ora dalla coda comune ai dati Growth; prerequisiti/consensi assenti impediscono la bozza. Ricerca reale, preventivo completo e provider rimangono da completare.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -362,9 +378,10 @@
       "requirement": "Account/customer success: ciclo cliente eseguibile con onboarding, salute, rinnovo/upsell, rischio, portfolio e chiusura.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/orchestrator.js case account conteggia task/contenuti; src/store.js os_clients.risk manuale"
+        "8750e80:src/orchestrator.js case account conteggia task/contenuti; src/store.js os_clients.risk manuale",
+        "src/agents/core.js: account; docs/SOP-REGIA-DEMO.md; tests/swarm.test.js"
       ],
-      "missing": "Nessun onboarding, health assessment, registro autorizzazioni o workflow di rinnovo/retention. Mancano checklist di chiusura e passaggi verificabili fra le fasi.",
+      "missing": "Account prepara checklist di memoria/onboarding e segnala consegne in ritardo. Restano registri strutturati onboarding/portfolio, rinnovi, retention, chiusura e passaggi verificabili fra tutte le fasi.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -375,9 +392,10 @@
       "requirement": "Qualità/compliance: controlli su brand, veridicità, GDPR e pubblicità sanitaria prima delle uscite.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/orchestrator.js case quality controlla source/stato; docs/PLAYBOOK.md gate e rischi"
+        "8750e80:src/orchestrator.js case quality controlla source/stato; docs/PLAYBOOK.md gate e rischi",
+        "src/agents/core.js: quality; src/agents/specialists.js: accessibility; tests/specialists.test.js"
       ],
-      "missing": "Nessuna checklist eseguibile per brand/diritti/GDPR/sanità, fonti normative/versioni o escalation specialistica verificata.",
+      "missing": "Qualità rileva fonti mancanti e alcune promesse assolute nei testi; accessibilità controlla gli elementi forniti. Mancano valutazione creativa, diritti, consensi e verifica qualificata GDPR/sanità; nessuna conformità è certificata.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -388,9 +406,10 @@
       "requirement": "Reporter: report periodico per cliente con risultati, confronti, limiti e prossimi passi approvabili.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/orchestrator.js case reporter conta task/contenuti e scrive memoria internal"
+        "8750e80:src/orchestrator.js case reporter conta task/contenuti e scrive memoria internal",
+        "src/agents/core.js: reporter; src/agents/outputs.js; tests/swarm.test.js"
       ],
-      "missing": "Mancano serie metriche, confronto periodi/obiettivi, impaginazione/esportazione cliente e gate specifico per consegnare il report.",
+      "missing": "Reporter genera riepilogo operativo dai task/contenuti, con fonti e output approvabile. Restano metriche marketing reali, serie/confronti periodici, obiettivi ed esportazione/consegna cliente completa.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -401,9 +420,12 @@
       "requirement": "Ogni reparto dotato di test e checklist di accettazione eseguiti prima del rilascio.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:tests/core.test.js e tests/administration.test.js; docs/PLAYBOOK.md §12 checklist generale"
+        "8750e80:tests/core.test.js e tests/administration.test.js; docs/PLAYBOOK.md §12 checklist generale",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni",
+        "docs/SOP-REGIA-DEMO.md; docs/SOP-AGENTI-MODULI.md; tests/module-agents.test.js; tests/agency.test.js:31-34"
       ],
-      "missing": "Nessun collaudo specialistico per reparti pianificati; checklist generale e test motore non verificano qualità dei servizi.",
+      "missing": "Le procedure dei 32 agenti hanno SOP e test DEMO specifici/integrati, ma qualità dei servizi, accettazione umana del pilota e prove reali sono incomplete. Ultima suite 160/161: un test agency obsoleto rimane da riallineare; nessun rilascio eseguito.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -414,9 +436,10 @@
       "requirement": "Ogni giro dello sciame produce un log consultabile con agente, cliente, esito e costo.",
       "status": "FATTO e testato",
       "evidence": [
-        "8750e80:src/orchestrator.js audit completato/errore; tests/core.test.js coda e budget; public/app.js activityView/agentsView"
+        "8750e80:src/orchestrator.js audit completato/errore; tests/core.test.js coda e budget; public/app.js activityView/agentsView",
+        "src/orchestrator.js; src/agents/outputs.js; tests/swarm.test.js: giro di tutti gli agenti"
       ],
-      "missing": "Coperto per agenti implementati offline; costi API reali non misurati.",
+      "missing": "Registro esteso ai 32 executor offline con output e costo API zero; i consumi dei provider reali non sono misurati.",
       "baselineStatus": "FATTO e testato",
       "category": "funzionale"
     },
@@ -427,9 +450,11 @@
       "requirement": "Servizio 1: Presenza online/reputazione e risposte AI, directory autorizzate, chatbot e messaggistica.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js services.presence; docs/PLAYBOOK.md scheda 1; docs/ARCHITETTURA.md §7"
+        "8750e80:src/registry.js services.presence; docs/PLAYBOOK.md scheda 1; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Nessun dominio sedi/fonti/recensioni/risposte/chatbot; registro e SOP soltanto.",
+      "missing": "Local confronta NAP/orari; Reputation prepara risposte; Reception usa FAQ fornite. Mancano archivi e sincronizzazioni reali di directory, recensioni, chatbot e messaggi.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -440,9 +465,11 @@
       "requirement": "Servizio 2: Presenza multisede con coerenza dati e problemi per sede.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js services.multisite; docs/PLAYBOOK.md scheda 2; docs/ARCHITETTURA.md §7"
+        "8750e80:src/registry.js services.multisite; docs/PLAYBOOK.md scheda 2; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Nessun modello sedi/referenti, confronto directory o workflow anomalie multisede.",
+      "missing": "Multisite confronta schede DEMO per sede e rileva duplicati/fonti orfane. Mancano gestione persistente completa delle sedi, directory reali e workflow di correzione/verifica.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -453,9 +480,11 @@
       "requirement": "Servizio 3: Centralino AI chiamate/chat, raccolta contatti ed escalation.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js services.reception; docs/PLAYBOOK.md scheda 3; docs/ARCHITETTURA.md §7"
+        "8750e80:src/registry.js services.reception; docs/PLAYBOOK.md scheda 3; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Nessun dominio telefonia/conversazioni/FAQ/escalation né partner collegato.",
+      "missing": "Reception instrada scenari DEMO e risponde soltanto a FAQ marcate approvate. Telefonia, conversazioni reali, partner, consensi e raccolta contatti restano scollegati.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -466,9 +495,11 @@
       "requirement": "Servizio 4: Siti web con brief, pagine, asset, sviluppo, collaudo e manutenzione.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js services.website; docs/PLAYBOOK.md scheda 4; docs/ARCHITETTURA.md §7"
+        "8750e80:src/registry.js services.website; docs/PLAYBOOK.md scheda 4; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Task generici disponibili; nessun workspace commessa sito, inventario pagine, QA o manutenzioni ricorrenti.",
+      "missing": "Website produce sitemap, wireframe, testi iniziali e casi di collaudo form. Non costruisce un sito o un ambiente di prova: sviluppo, asset, QA reale e manutenzione restano mancanti.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -479,9 +510,11 @@
       "requirement": "Servizio 5: Audit e adeguamento accessibilità con verifiche manuali e correzioni.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js services.accessibility; docs/PLAYBOOK.md scheda 5; docs/ARCHITETTURA.md §7"
+        "8750e80:src/registry.js services.accessibility; docs/PLAYBOOK.md scheda 5; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Nessun inventario audit/criteri/evidenze/difetti o test specialistico.",
+      "missing": "Accessibility rileva problemi dagli elementi/test forniti e prepara una prova manuale. Non esegue audit live, correzioni, verifica legale dell’obbligo o dichiarazione di conformità.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -492,9 +525,11 @@
       "requirement": "Servizio 6: SEO sito/e-commerce/blog, audit, contenuti e monitoraggio.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js services.seo; docs/PLAYBOOK.md scheda 6; docs/ARCHITETTURA.md §7"
+        "8750e80:src/registry.js services.seo; docs/PLAYBOOK.md scheda 6; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Nessun dominio keyword/audit tecnico/posizioni/azioni o connettore Search Console.",
+      "missing": "SEO analizza pagine fixture per title/meta/H1/status/noindex e propone intenti. Mancano crawl, keyword research reale, contenuti completi, rilascio e misure Search Console.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -505,9 +540,11 @@
       "requirement": "Servizio 7: Progetti e-commerce con catalogo, ordini, resi e collaudo.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js services.ecommerce; docs/PLAYBOOK.md scheda 7; docs/ARCHITETTURA.md §7"
+        "8750e80:src/registry.js services.ecommerce; docs/PLAYBOOK.md scheda 7; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Nessun SKU/catalogo/ordine/reso o workflow di progetto dedicato.",
+      "missing": "Ecommerce controlla SKU/prezzo/scorte e calcola un carrello DEMO al centesimo. Mancano negozio, pagamenti, ordini/resi persistenti, logistica e collaudo del provider.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -518,9 +555,11 @@
       "requirement": "Servizio 8: Feed/catalo­go social e percorso di acquisto.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js services.social-commerce; docs/PLAYBOOK.md scheda 8; docs/ARCHITETTURA.md §7"
+        "8750e80:src/registry.js services.social-commerce; docs/PLAYBOOK.md scheda 8; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Nessun feed, convalida articoli, diagnostica o canale collegato.",
+      "missing": "Social commerce confronta feed e catalogo forniti, segnala prezzi/scorte/link e prepara copy. Mancano caricamento, diagnostica provider e percorso di acquisto reale.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -531,9 +570,11 @@
       "requirement": "Servizio 9: Prenotazioni per servizi/ristoranti con disponibilità e agenda.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js services.booking; docs/PLAYBOOK.md scheda 9; docs/ARCHITETTURA.md §7"
+        "8750e80:src/registry.js services.booking; docs/PLAYBOOK.md scheda 9; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Prenotazione commerciale Growth DEMO non realizza un gestionale agenda clienti/risorse/prenotazioni dei loro servizi.",
+      "missing": "Booking verifica intervalli con fuso e conflitti per risorsa, senza creare appuntamenti. Restano gestione completa agenda/risorse, disponibilità reale, conferme e collegamenti ufficiali.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -544,9 +585,11 @@
       "requirement": "Servizio 10: ADV multicanale da analisi a creatività, campagna e report.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js services.ads; docs/PLAYBOOK.md scheda 10; docs/ARCHITETTURA.md §7"
+        "8750e80:src/registry.js services.ads; docs/PLAYBOOK.md scheda 10; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Nessun brief Ads strutturato/mappa leve/budget per campagna/tracking o workspace canali; SOP testuale.",
+      "missing": "ADS produce undici leve, cluster, tre angoli creativi e CTR/CPL da fixture. Mancano setup e gestione account, tracking verificato, creatività complete, attivazione e report reali.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -557,9 +600,11 @@
       "requirement": "Servizio 11: Alternativa tramite partner al network proprietario: display/programmatic.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js services.display; docs/PLAYBOOK.md scheda 11; docs/ARCHITETTURA.md §7"
+        "8750e80:src/registry.js services.display; docs/PLAYBOOK.md scheda 11; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Manca piano media/preventivo partner/erogazione/consuntivo; rete proprietaria correttamente non replicata.",
+      "missing": "Display esclude categorie e ripartisce il budget DEMO esattamente; non è un preventivo partner. Mancano partner confermato, acquisto, erogazione e consuntivo verificato.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -570,9 +615,10 @@
       "requirement": "Servizio 12: Piani social con post/stories/video, sponsorizzate e report.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js services.social; docs/PLAYBOOK.md scheda 12; docs/ARCHITETTURA.md §7"
+        "8750e80:src/registry.js services.social; docs/PLAYBOOK.md scheda 12; docs/ARCHITETTURA.md §7",
+        "src/agents/core.js; src/agents/modules.js; tests/swarm.test.js; tests/module-agents.test.js"
       ],
-      "missing": "Bozze e calendario locale esistono; mancano piano quantitativo/asset/produzione per canale, pubblicazione e report reali.",
+      "missing": "Social prepara una bozza e Marketing dodici proposte datate. Restano piano contrattuale, asset/post/stories/video completi, pubblicazione, community e report reali.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -583,9 +629,11 @@
       "requirement": "Servizio 13: Produzione foto/video/drone: brief, storyboard, asset, diritti, versioni e consegna.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js services.video; docs/PLAYBOOK.md scheda 13; docs/ARCHITETTURA.md §7"
+        "8750e80:src/registry.js services.video; docs/PLAYBOOK.md scheda 13; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Solo SOP e task/testo generici; nessun modello storyboard/shot list/asset/master/adattamenti o QA tecnico.",
+      "missing": "Video genera storyboard di sei scene, tempi e piano riprese/montaggio. Non produce riprese/master/adattamenti né prova diritti o consegna; servono materiali e controllo tecnico umano.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -609,9 +657,11 @@
       "requirement": "Servizio 15: TV/cinema/DOOH tramite partner: creatività, diritti e piano uscite.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js services.tv; docs/PLAYBOOK.md scheda 15; docs/ARCHITETTURA.md §7"
+        "8750e80:src/registry.js services.tv; docs/PLAYBOOK.md scheda 15; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Nessun workspace spot/media o verifica erogazione partner.",
+      "missing": "TV confronta preventivi DEMO e specifiche dello spot, segnala difformità. Non realizza lo spot né acquista o verifica passaggi TV/cinema/DOOH.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -622,9 +672,11 @@
       "requirement": "Servizio 16: Abbigliamento e gadget su richiesta: quantità, costo fornitore e margine.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js services.merch; docs/PLAYBOOK.md scheda 16; docs/ARCHITETTURA.md §7"
+        "8750e80:src/registry.js services.merch; docs/PLAYBOOK.md scheda 16; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Solo SOP; nessuna distinta, offerta fornitore, bozza approvata, ordine umano e controllo consegna.",
+      "missing": "Merch genera distinta e costi/margine parziale da dati completi forniti. Restano preventivo reale, accordi, campione, ordine umano e verifica consegna. Acquisizione automatica esclusa.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -648,9 +700,11 @@
       "requirement": "Servizio 18: Pacchetti verticali, candidato sanità, composti da servizi e vincoli verificati.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js services.verticals; docs/PLAYBOOK.md scheda 18; docs/ARCHITETTURA.md §7"
+        "8750e80:src/registry.js services.verticals; docs/PLAYBOOK.md scheda 18; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Nessun compositore/versione pacchetto, inclusioni/listino/capacità o validazione sanitaria operativa.",
+      "missing": "Verticals compone una proposta da bisogni, servizi e capacità dichiarati. Mancano registro/listino versionato, costo completo, validazione sanitaria e pilotaggio dei componenti.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -661,9 +715,10 @@
       "requirement": "Servizio 19: Analisi gratuita presenza online/sito con evidenze e proposta commerciale.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js services.audit; docs/PLAYBOOK.md scheda 19; docs/ARCHITETTURA.md §7"
+        "8750e80:src/registry.js services.audit; docs/PLAYBOOK.md scheda 19; docs/ARCHITETTURA.md §7",
+        "src/agents/core.js; src/agents/modules.js; tests/swarm.test.js; tests/module-agents.test.js"
       ],
-      "missing": "Analisi fixture Growth non osserva siti reali; manca report audit con evidenze raccolte/verificate e percorso lead reale.",
+      "missing": "Gli adapter Growth eseguono analisi fixture; SEO/Local aggiungono controlli sui dati forniti. Manca raccolta/verifica di evidenze reali e report commerciale completo.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -674,9 +729,11 @@
       "requirement": "Branding e direzione creativa con brief, concept, sistema visivo, asset e manuale.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:src/registry.js branding; docs/PLAYBOOK.md Servizi distintivi trasversali"
+        "8750e80:src/registry.js branding; docs/PLAYBOOK.md Servizi distintivi trasversali",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Nessun dominio identità/concept/asset/design review/versione manuale; solo task generici e SOP.",
+      "missing": "Branding produce tre direzioni verbali; Creative Direction confronta concept/criteri forniti. Mancano identità visiva effettiva, asset, design review visiva e manuale completo.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -687,9 +744,11 @@
       "requirement": "Video AI e drone: gerarchia SOP-brand-feedback, protocollo pre-task, standard formati e controllo dei diritti.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:docs/PLAYBOOK.md scheda 13; src/registry.js video; src/orchestrator.js video planned"
+        "8750e80:docs/PLAYBOOK.md scheda 13; src/registry.js video; src/orchestrator.js video planned",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Nessuno specialista o workspace di pipeline Video AI/drone; non sono stati verificati i modelli originali.",
+      "missing": "Video AI prepara prompt/pre-task; Drone shot list e fascicolo di dati mancanti. Non genera video, non decide sicurezza/fattibilità del volo e non verifica gli originali completi della SOP.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -701,9 +760,11 @@
       "status": "SOLO STRUTTURA",
       "evidence": [
         "8750e80:src/registry.js non contiene servizio eventi; src/store.js solo task generici",
-        "Dopo audit: src/agency/services.js events; src/agency/swarm.js events; tests/agency.test.js"
+        "Dopo audit: src/agency/services.js events; src/agency/swarm.js events; tests/agency.test.js",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
       ],
-      "missing": "Spazio eventi con programma, fornitori, responsabili, scadenze e rendiconto predisposti; mancano gestione strutturata ed esecutore.",
+      "missing": "Events genera cronoprogramma relativo alla data e segnala fornitori/responsabili/scadenze scoperti. Restano registri operativi della commessa, accordi, produzione e consuntivo.",
       "baselineStatus": "ASSENTE",
       "category": "funzionale"
     },
@@ -1121,9 +1182,10 @@
       "requirement": "Registro unico filtrabile delle azioni, con data, agente/autore, cliente, output e costo.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:public/app.js activityView ricerca testuale; server.js overview.agency.activity; src/store.js os_audit"
+        "8750e80:public/app.js activityView ricerca testuale; server.js overview.agency.activity; src/store.js os_audit",
+        "public/app.js: openAgentOutput/showAgentOutput; src/agents/outputs.js; docs/COLLAUDO-SCIAME-UI.md"
       ],
-      "missing": "Registro presente e permessi provati, ma UI non espone collegamento all’output né filtri strutturati agente/cliente/periodo; tracciamento completo di ogni futuro reparto non presente.",
+      "missing": "La regia ora apre gli elaborati con fonti, dati mancanti, costo, modifica e decisione. Restano filtri completi per cliente/periodo e un registro unificato di tutte le attività future dell’agenzia.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -1383,9 +1445,10 @@
       "status": "SOLO STRUTTURA",
       "evidence": [
         "8750e80:src/orchestrator.js marketing/director frasi fisse; src/store.js nessun modello obiettivi/iniziative",
-        "Dopo audit: src/agency/marketing.js strategy; src/agency/foundations.js objectives; tests/agency.test.js"
+        "Dopo audit: src/agency/marketing.js strategy; src/agency/foundations.js objectives; tests/agency.test.js",
+        "src/agents/core.js: marketing; docs/SOP-REGIA-DEMO.md"
       ],
-      "missing": "Spazio strategia e contratto degli obiettivi predisposti; strategia compilata, iniziative e registro operativo ancora mancanti.",
+      "missing": "Marketing propone un percorso 1–30/31–60/61–90 giorni DEMO. Mancano strategia approvata del cliente zero, obiettivi misurabili, iniziative/responsabili e registro decisioni.",
       "baselineStatus": "ASSENTE",
       "category": "funzionale"
     },
@@ -1396,9 +1459,10 @@
       "requirement": "Calendario editoriale BigAnt e un mese completo di contenuti approvabili.",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "8750e80:public/app.js workCalendar; src/orchestrator.js social produce una bozza generica; seedCore nessun mese BigAnt"
+        "8750e80:public/app.js workCalendar; src/orchestrator.js social produce una bozza generica; seedCore nessun mese BigAnt",
+        "src/agents/core.js: marketing/social; src/agents/outputs.js; tests/swarm.test.js"
       ],
-      "missing": "Calendario funzionale vuoto/di prova; nessun piano mensile del cliente zero con canali, formati, frequenze e creatività.",
+      "missing": "Marketing prepara dodici proposte datate; Social una bozza approvabile. Non è ancora un mese completo validato di copy e creatività per tutti i canali, con frequenze/quantità concordate.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -1436,9 +1500,10 @@
       "status": "SOLO STRUTTURA",
       "evidence": [
         "8750e80:src/orchestrator.js director non produce questi deliverable; docs/ROADMAP.md tappe generiche",
-        "Dopo audit: src/agency/marketing.js growth-plan e ads-plan; src/agency/foundations.js packages; tests/agency.test.js"
+        "Dopo audit: src/agency/marketing.js growth-plan e ads-plan; src/agency/foundations.js packages; tests/agency.test.js",
+        "src/agents/core.js: director; src/agents/specialists.js: ads/verticals; tests/swarm.test.js"
       ],
-      "missing": "Spazi per due servizi/pacchetti e piano ADV; business case, listini verificati e piano compilato ancora da produrre.",
+      "missing": "Direttore, ADS e Verticali producono proposte DEMO; restano business case dei due prossimi servizi, listini/costi verificati e piano ADV BigAnt validato sui dati effettivi.",
       "baselineStatus": "ASSENTE",
       "category": "funzionale"
     },
@@ -3903,9 +3968,10 @@
         "8750e80:src/registry.js",
         "8750e80:public/app.js",
         "8750e80:docs/COME-AGGIUNGERE-UN-MODULO.md",
-        "Dopo audit: src/agency/*.js; public/app.js; tests/agency.test.js; docs/STRUTTURA-AGENZIA.md; docs/COLLAUDO-INTERFACCIA.md"
+        "Dopo audit: src/agency/*.js; public/app.js; tests/agency.test.js; docs/STRUTTURA-AGENZIA.md; docs/COLLAUDO-INTERFACCIA.md",
+        "src/agents/catalog.js; src/agency/swarm.js; tests/swarm.test.js; tests/agency.test.js:31-34"
       ],
-      "missing": "Nessuno per il requisito di struttura; implementazione operativa, provider e pilota restano incompleti nelle righe funzionali.",
+      "missing": "Nessun gap per il posto strutturale richiesto; 32 procedure DEMO aggiunte. La suite completa non è interamente verde (160/161): riallineare il test agency sugli eventi. Servizi reali e pilota restano incompleti.",
       "category": "fondazione strutturale"
     },
     {
@@ -3990,12 +4056,37 @@
     }
   ],
   "changes": [
-    "Baseline salvata prima delle modifiche nel commit 1635c8e; struttura aggiunta nel commit dacdc25. Nessun requisito funzionale marcato completo per la sola presenza di un nuovo pannello.",
-    "Otto reparti e 32 specialisti descritti con input/output, memoria, trigger reali o previsti, permessi, gate, audit, costo, fallimenti e checklist. Solo sette procedure centrali e quattro definizioni dei moduli sono disponibili in parte nella DEMO; 21 specialisti restano pianificati.",
-    "27 workspace: 19 voci del catalogo, comprese le due esclusioni, più specialità BigAnt e moduli integrati. Eventi, drone, Video AI e direzione creativa hanno uno spazio specifico.",
-    "Dieci moduli gestionali con contratti e sezioni; nove aree prima mancanti o generiche ora hanno un posto, ma nessun nuovo archivio operativo è stato inventato.",
-    "Vista Marketing BigAnt separata e fissa sul cliente zero; dashboard cliente con tutte le sezioni previste filtrate per i servizi acquistati.",
-    "114 test passati nella suite completa; rieseguiti gli 11 nuovi test dopo le tre correzioni della revisione indipendente. Prove browser su mappa, marketing, eventi e cliente, anche a 390 px. Nessun provider reale o invio.",
-    "Copertura funzionale invariata al 30,2%: le lacune ora predisposte passano da ASSENTE a SOLO STRUTTURA, non a FATTO e testato."
-  ]
+    "Ultima misura conservata del SOLO brief notturno originale (567 righe, ora docs/BRIEF-NOTTE-ORIGINALE.md): 30,2%, 62/205 requisiti; agenzia oltre Growth/Fidelity 14,9%, 17/114. Il nuovo integrale docs/BRIEF-BIGANT.md di 2184 righe NON è stato misurato e non eredita queste percentuali.",
+    "La baseline precedente distingueva sette procedure centrali, quattro definizioni dei moduli e 21 specialisti pianificati. Ora tutte le 32 definizioni hanno procedure DEMO eseguibili: sette centrali, quattro adapter e 21 executor specifici con SOP e fixture dichiarate. Nessun modello AI o provider reale è collegato.",
+    "Gli elaborati passano dall’archivio comune: fotografia degli input, fonti, SOP, versioni immutabili, approvazioni e feedback specifico. I risultati interni e amministrativi non sono esposti ai clienti. Consensi e prerequisiti non vengono inventati.",
+    "Otto eventi locali e quattro calendari sono configurabili con input persistenti, controlli dei servizi e deduplica. Eventi DEMO non equivalgono a webhook reali o a firme contrattuali verificate. Il processo resta locale e si ferma quando viene spento.",
+    "Prova isolata dei 32 agenti: 32 elaborati e approvazioni senza email, inviti, notifiche Fidelity o costi API. Ultima suite completa: 160 test superati su 161. Resta il test tests/agency.test.js:31-34 che pretende implemented:false per eventi ora disponibili in DEMO. Non è stato corretto nel passaggio solo documentale.",
+    "27 spazi di servizio, dieci moduli e dashboard rimangono registrati. I nuovi executor preparano piani, bozze e controlli: non completano materialmente siti, video, campagne, negozi, voli o conformità. Le righe dei servizi restano SOLO STRUTTURA con il lavoro parziale ora documentato.",
+    "Nessuno stato o denominatore viene promosso automaticamente in questa consegna a Claude Code. La copertura integrale aggiornata va rifatta sul nuovo brief; il 30,2% è il riferimento storico del perimetro originale, non una nuova misura del progetto ampliato.",
+    "Codice del primo salvataggio locale 569c70d, copia GitHub cc1585e. Nessun deploy, modifica Railway, dato reale o invio. Questa revisione aggiorna soltanto la documentazione di passaggio.",
+    "Consegna documentale: brief integrale copiato senza modifiche; check finale 4/5 perché 22 link relativi del testo sorgente puntano a schede playbook non ancora estratte. Dettagli in docs/ESITO-CONTROLLI-CONSEGNA.md. Nessuno stato promosso per questo salvataggio."
+  ],
+  "coverageScope": {
+    "brief": "docs/BRIEF-NOTTE-ORIGINALE.md",
+    "lines": 567,
+    "functionalRequirements": 205,
+    "lastMeasuredDone": 62,
+    "lastMeasuredPercent": 30.2,
+    "agencyRequirements": 114,
+    "lastMeasuredAgencyDone": 17,
+    "lastMeasuredAgencyPercent": 14.9,
+    "newFullBrief": "docs/BRIEF-BIGANT.md",
+    "newFullBriefLines": 2184,
+    "newFullBriefMeasured": false,
+    "note": "Il nuovo documento integrale non ha ancora una matrice requisito per requisito. Il 30,2% non va attribuito al suo perimetro. Gli stati precedenti sono conservati in questo passaggio documentale; nessuna promozione automatica per la sola disponibilità degli executor DEMO."
+  },
+  "verificationAtHandoff": {
+    "testsPassed": 160,
+    "testsTotal": 161,
+    "allTestsPassed": false,
+    "openFailure": "tests/agency.test.js:31-34 conserva la vecchia aspettativa implemented:false per review.created, content.approved e contract.signed, ora registrati come eventi DEMO locali. Da riallineare e rieseguire; non corretto nel passaggio solo documentale.",
+    "localCodeCommit": "569c70d",
+    "remoteCodeCommit": "cc1585e",
+    "externalProvidersVerified": false
+  }
 }

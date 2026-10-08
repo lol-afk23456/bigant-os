@@ -31,3 +31,20 @@ Decisioni provvisorie di implementazione ammesse dal brief notturno; pubblicazio
 L’audit precedente al nuovo codice è congelato su `8750e80` e salvato nel commit `1635c8e`. La copertura funzionale usa 205 requisiti, senza punti parziali: documentazione, esclusioni e segnaposto sono separati. Il denominatore resta invariato durante questa revisione.
 
 Prima ampliare la struttura a tutta l’agenzia: registro per dominio e workspace parametrico per servizio, con contratti distinti, anziché decine di cartelle vuote o app separate. I dieci moduli sono esattamente quelli del brief; compensi e quadratura sono sezioni. Mappa e Marketing sono riservati ai soci, Marketing è sempre sul cliente zero. Le nuove API leggono soltanto e non attivano agenti. Gli eventi futuri restano dichiarati non implementati; specialisti pianificati con costo sconosciuto, mai zero presunto. Prove e limiti sono in STRUTTURA-AGENZIA e VERIFICA-COPERTURA-BRIEF.
+
+
+## Passaggio a Claude Code — 8 ottobre 2026
+
+La richiesta finale del proprietario interrompe lo sviluppo e chiede due salvataggi e una consegna completa nel repository. Nessun nuovo goal viene attivato dal titolo del documento allegato. Il brief viene conservato come fonte del lavoro futuro; non autorizza a continuare sviluppo o deploy durante la consegna.
+
+- I 32 agenti ora hanno procedure DEMO locali; non sono 32 modelli AI collegati e non completano il catalogo. I vecchi stati di 7 eseguibili, 4 nel modulo e 21 pianificati sono storici e superati nel solo perimetro procedurale.
+- I rapporti agenti restano ai soci, perché includono memoria interna. Per Social, Growth e Fidelity si mantiene l'approvazione canonica nel modulo; nessuna doppia decisione. Un esito con prerequisiti non diventa approvabile modificandone il testo.
+- Calendari e otto eventi sono implementati localmente, ma richiedono regole attivate; recensioni, obiettivi e brief non hanno provider. Il nome evento `contract.signed` indica registrazione DEMO, non firma effettiva.
+- Il report restituisce l'esito reale: 160/161 test. Non si corregge il test durante l'incarico di sola consegna; il prossimo agente deve verificarlo e aggiornarlo. Il giro unico 32/32 non sostituisce lo scenario aziendale a 13 passaggi del nuovo documento.
+- Il documento integrale più recente (2.184 righe) sostituisce come fonte `BRIEF-BIGANT.md`; la copia originale di 567 righe resta in `BRIEF-NOTTE-ORIGINALE.md`. La matrice di 205 requisiti misura soltanto quest'ultima. Nuovo integrale non quantificato: non promuovere il 30,2% a copertura globale.
+- La consegna spiega la numerazione storica Italiaonline e la diversa numerazione S01–S19 del playbook esteso. Usare ID testuali finché non viene applicata la corrispondenza documentata.
+- Salvataggio GitHub tramite UI autorizzata, come nei cicli precedenti; copia locale senza remote e con commit diversi. Claude deve partire da un clone del ramo remoto, non forzare la storia locale.
+- Restano invariati il budget di 50 €/mese assunto complessivo, il divieto di deploy, merge e modifiche Railway, i soli dati DEMO e nessun invio, pagamento o Gmail. Nessun segreto salvato nel passaggio.
+
+
+Controllo documentale dopo il salvataggio del brief integrale: `npm run check` passa sintassi, registro, dipendenze e prototipo locale, ma segnala 22 riferimenti relativi del testo sorgente a schede playbook non ancora estratte. Il file integrale resta byte per byte uguale all’originale. Anche questo limite è consegnato a Claude, senza cambiare il testo sorgente o introdurre segnaposto vuoti.

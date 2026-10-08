@@ -1,5 +1,17 @@
 # BigAnt OS — report della sessione notturna
 
+## Aggiornamento finale di consegna — 8 ottobre 2026
+
+**Il lavoro passa a Claude Code, su richiesta del proprietario.** Leggere [PASSAGGIO-CONSEGNE](PASSAGGIO-CONSEGNE.md) e [DIARIO-LAVORO](DIARIO-LAVORO.md). Le sezioni storiche sotto documentano i cicli precedenti e non sostituiscono questo stato.
+
+- Salvate 32 procedure DEMO nella regia comune, con risultati, fonti, versioni, feedback e approvazioni. Nessun modello AI o connettore reale collegato.
+- Ultima suite: **161 test, 160 passati, 1 fallito** in `tests/agency.test.js:31–34` per aspettativa obsoleta sugli eventi. Anche un vecchio test sugli agenti pianificati è vacuo. La UI nuova richiede ancora collaudo browser completo.
+- Scenario isolato `npm run demo:agents`: **32/32**, 32 risultati, approvazioni, zero costo e nessun invio. Non è lo scenario aziendale a 13 passaggi del brief esteso.
+- Brief esteso di 2.184 righe copiato integralmente in `BRIEF-BIGANT.md`; vecchio brief salvato in `BRIEF-NOTTE-ORIGINALE.md`. Ultima copertura sul vecchio: 30,2% (62/205), agenzia 14,9% (17/114). **Nuovo integrale non ancora misurato.**
+- Metadati Railway letti senza mostrare valori; nessuna modifica, deploy, merge o azione esterna. Salvataggio del codice tramite UI GitHub sul ramo autorizzato; non push CLI. Dettagli e particolarità della cronologia nella consegna.
+
+
+
 **8 ottobre 2026 · Prototipo interno DEMO · revisione in corso, nessun rilascio online.**
 
 ## Correzione di direzione: copertura dell’intera agenzia
@@ -158,7 +170,7 @@ npm start
 
 Aprire [l’anteprima locale](http://127.0.0.1:4330/) e scegliere il profilo. Il server ascolta soltanto sull’interfaccia locale; rifiuta modalità produzione e richieste da host estranei. L’archivio DEMO è `.data/bigant-os.sqlite`, escluso da Git.
 
-**Esito aggiornato: 114 test superati, zero errori, zero test saltati; controllo del progetto superato.** Le prove coprono domini Growth/Fidelity/amministrazione, API comuni, isolamento ruoli e servizi, versioni approvate, memoria interna, sessioni, Origin/CSRF, budget, calendario, retry, concorrenza, QR e ripartenza. Otto prove riguardano backup e ripristino in copie isolate, senza sovrascrivere l’archivio in uso. Quattro prove aggiuntive verificano che le immagini BigAnt distribuite in formato testuale reversibile restituiscano esattamente i byte e il formato PNG originali.
+**Esito storico, prima delle 32 procedure: 114 test superati, zero errori, zero test saltati; controllo del progetto superato.** Le prove coprono domini Growth/Fidelity/amministrazione, API comuni, isolamento ruoli e servizi, versioni approvate, memoria interna, sessioni, Origin/CSRF, budget, calendario, retry, concorrenza, QR e ripartenza. Otto prove riguardano backup e ripristino in copie isolate, senza sovrascrivere l’archivio in uso. Quattro prove aggiuntive verificano che le immagini BigAnt distribuite in formato testuale reversibile restituiscano esattamente i byte e il formato PNG originali.
 
 Nel browser sono state aggiunte cinque aziende DEMO, accreditato un timbro con saldo da 4 a 5, aperta la tessera con QR PNG e completato il percorso agente social → revisione → richiesta di modifica. L’accesso cliente Aurora mostra soltanto la sua attività ed esclude l’amministrazione. La [matrice di collaudo](COLLAUDO-INTERFACCIA.md) separa prove browser, verifiche dei form e test del server, ed elenca i campi avanzati ancora non esposti nell’interfaccia. Fotocamera, telefono e fornitori esterni non sono stati collaudati.
 
@@ -169,7 +181,7 @@ Nel browser sono state aggiunte cinque aziende DEMO, accreditato un timbro con s
 - App cloud con accessi nominali, recupero password, HTTPS, backup fuori dal volume, osservabilità e procedura di incidente. Le identità rapide DEMO non devono arrivare in produzione.
 - Codice, schema e permessi del PED: è stata analizzata l’interfaccia autenticata, non la sua base dati o le regole interne. Il client Supabase è visibile, il resto non è verificato.
 - Completare e misurare il pilota BigAnt: DNA e strategia reali, fonti, quantità di lavoro, capacità e KPI. Dashboard esterne mostrano “non collegato”, non risultati stimati.
-- Specialisti futuri dei servizi e documenti fiscali: schede e SOP sono pronte, le esecuzioni specialistiche restano da sviluppare in fasi successive.
+- Erogazione completa dei servizi e documenti fiscali: esistono ora procedure specialistiche DEMO, ma produzione reale, integrazioni e validazione del pilota restano da sviluppare.
 
 ## Prossimi cinque passi consigliati
 
@@ -178,3 +190,6 @@ Nel browser sono state aggiunte cinque aziende DEMO, accreditato un timbro con s
 3. Aggiungere disponibilità del team, obiettivi e serie KPI, quindi il confronto mensile fra ore risparmiate e qualità.
 4. Far produrre al Direttore due business case di servizio, pacchetti/listino e opportunità di upsell basati su costi e capacità verificati.
 5. Completare la migrazione Growth/Fidelity funzione per funzione e affrontare un connettore per volta soltanto in una fase autorizzata. Nessun deploy o modifica Railway in questa sessione.
+
+
+Controllo documentale dopo il salvataggio del brief integrale: `npm run check` passa sintassi, registro, dipendenze e prototipo locale, ma segnala 22 riferimenti relativi del testo sorgente a schede playbook non ancora estratte. Il file integrale resta byte per byte uguale all’originale. Anche questo limite è consegnato a Claude, senza cambiare il testo sorgente o introdurre segnaposto vuoti.
