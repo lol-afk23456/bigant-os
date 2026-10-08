@@ -1,5 +1,15 @@
 # Verifica di copertura del brief BigAnt
 
+## Nuova matrice R-xxx sul brief integrale (sessione Claude Code, 8 ottobre 2026)
+
+- Il brief integrale è scomposto in **377 requisiti R-001…R-377**, con macro-area, tipo e righe del brief: [requisiti-brief.json](copertura/requisiti-brief.json).
+- Stati usati: **OPERATIVO** (funziona davvero, con test e prova), **DEMO** (procedura reale su dati finti), **COLLEGAMENTO MANCANTE** (servono accessi o API esterne), **SOLO STRUTTURA**, **ASSENTE**.
+- Valutazione **preliminare** di R-001…R-126 fatta da agenti indipendenti durante la sessione: [valutazione-preliminare.json](copertura/valutazione-preliminare.json). Risultato: 36 OPERATIVO, 39 DEMO, 5 COLLEGAMENTO MANCANTE, 43 SOLO STRUTTURA, 3 ASSENTE. **Non è ancora verificata** dal revisore scettico, che è stato interrotto per limiti di credito. Per scenario, contratti, catalogo S01–S19 e dashboard cliente gli stati possono essere più alti, perché costruiti dopo la valutazione.
+- R-127…R-377 sono ancora da valutare. **Nessuna percentuale ufficiale** sul brief integrale: va calcolata solo a valutazione completa e verificata.
+- Prove principali aggiunte nella sessione: `tests/sciame.test.js`, `tests/scenario.test.js`, `tests/contratti.test.js`, `tests/servizi.test.js`, `docs/demo-sciame/`, `docs/REPORT-CLAUDE.md`.
+
+## Matrice storica (brief notturno di 567 righe)
+
 **Copertura del nuovo brief integrale (2.184 righe): NON ANCORA MISURATA.**
 
 **Ultima misura sul brief notturno originale (567 righe): 30,2% — 62 requisiti funzionali su 205.**

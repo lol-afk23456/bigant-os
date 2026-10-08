@@ -8,6 +8,17 @@ Inizia da [Report della notte](docs/REPORT-NOTTE.md), [analisi](docs/ANALISI-INI
 
 Stato al passaggio: **32 procedure DEMO eseguibili**, non modelli AI collegati; **160/161 test passati**, con un test evento obsoleto in `tests/agency.test.js`. Il nuovo [brief integrale](docs/BRIEF-BIGANT.md) è conservato senza modifiche. La [copertura](docs/VERIFICA-COPERTURA-BRIEF.md) del documento esteso non è ancora misurata: il 30,2% storico (62/205) riguarda solo il vecchio brief notturno, conservato separatamente. La [struttura dell'agenzia](docs/STRUTTURA-AGENZIA.md) e i menu non equivalgono a servizi completi.
 
+## Aggiornamento sessione Claude Code — 8 ottobre 2026
+
+**Leggere prima [REPORT-CLAUDE.md](docs/REPORT-CLAUDE.md)**: stato area per area, comandi di prova, output reali dello sciame e cose da fare. Account e chiavi esterne in [DA-FARE-RAFFAELE.md](docs/DA-FARE-RAFFAELE.md).
+
+- Test: **182/182**, `npm run check` 5/5.
+- Sciame con motore AI intercambiabile (Claude Code / API / DEMO), 11 agenti in `.claude/agents/`, Qualità prima della coda approvazioni, azioni esterne bloccate. Prove reali in `docs/demo-sciame/`.
+- **Ufficio virtuale** nella dashboard soci (menu "Ufficio virtuale").
+- `npm run scenario`: i 13 passaggi del brief, dal lead all'upsell, con un comando.
+- `npm run sciame -- --motore claude-code`: un giro dello sciame con l'AI vera (serve Claude Code installato).
+- Dashboard cliente a 9 sezioni e catalogo S01–S19 letto dalle schede del playbook.
+
 ## Avvio locale
 
 Occorre Node **24.19.0** (serie24). Le sole dipendenze applicative sono sharp 0.34.5 per i loghi e qrcode 1.5.4 per le tessere, fissate nel lockfile. Non occorrono chiavi API o abbonamenti aggiuntivi.
