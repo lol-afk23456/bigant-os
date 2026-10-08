@@ -296,7 +296,7 @@ export function createAdministrationModule({store:s,clock=()=>new Date()}) {
           const replacement=body.replacement; if(!replacement||typeof replacement!=='object'||Array.isArray(replacement)) throw new AppError('Indicare il movimento corretto.');
           if(replacement.entityId&&replacement.entityId!==body.entityId) throw new AppError('La rettifica non può cambiare ditta.',409);
           if(replacement.date&&replacement.date!==body.date) throw new AppError('La rettifica deve usare la data del nuovo periodo indicato.');
-          result.replacement=insertMovement({entityId:body.entityId,accountId:original.account_id,counterpartyId:original.counterparty_id,clientId:original.client_id,invoiceId:original.invoice_id,obligationId:original.obligation_id,subscriptionId:original.subscription_id,direction:original.direction,kind:original.kind,category:original.category,method:original.method,...replacement,entityId:body.entityId,date:body.date,sourceRef:body.sourceRef+':replacement',documentRef:body.documentRef,note:body.reason});
+          result.replacement=insertMovement({accountId:original.account_id,counterpartyId:original.counterparty_id,clientId:original.client_id,invoiceId:original.invoice_id,obligationId:original.obligation_id,subscriptionId:original.subscription_id,direction:original.direction,kind:original.kind,category:original.category,method:original.method,...replacement,entityId:body.entityId,date:body.date,sourceRef:body.sourceRef+':replacement',documentRef:body.documentRef,note:body.reason});
         }
         return result;
       }

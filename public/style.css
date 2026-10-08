@@ -125,3 +125,7 @@ div.office-row{cursor:default}
 .desk-al_lavoro .live-dot,.live-transcript .live-dot,.list-item .live-dot{animation:desk-pulse 1.6s infinite}
 @keyframes caret-blink{50%{opacity:0}}
 @media (prefers-reduced-motion:reduce){.caret,.desk-al_lavoro .live-dot,.live-transcript .live-dot,.list-item .live-dot{animation:none}}
+
+/* Versione online: «riparti da zero» nella nota del menu laterale */
+.link-reset{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;text-align:left;text-decoration:underline;text-underline-offset:2px}
+.link-reset:focus-visible{outline:2px solid var(--orange);outline-offset:2px}

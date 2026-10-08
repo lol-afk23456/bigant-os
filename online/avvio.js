@@ -43,6 +43,17 @@ function installaFetch(){
  };
 }
 
+// Automazione della versione online: all'apertura, se oggi lo sciame non ha ancora lavorato, parte da solo
+// il giro del giorno con tutti i reparti. Motore DEMO a regole: nessun costo, gira solo mentre la pagina è aperta.
+function giroDelGiorno(app){
+ const giorno=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Rome'}).format(new Date());
+ if(app.store.getSetting('online_giro_del_giorno')===giorno)return;
+ const socio=app.store.one("SELECT * FROM os_users WHERE id='demo-owner' AND active=1");if(!socio)return;
+ app.store.setSetting('online_giro_del_giorno',giorno);
+ const giro=app.sciame.avviaGiro(socio,{richiesta:`Giro automatico del ${giorno}: priorità della settimana, piano marketing, ricerca commerciale, social, scheda Google e recensioni, controllo della prima nota.`,flussi:['crescita','marketing','commerciale','social','local','amministrazione']});
+ app.store.run("UPDATE os_sciame_giri SET origine='automatico' WHERE id=?",giro.id);
+}
+
 export async function avvia(){
  globalThis.__BIGANT_SQL=await globalThis.initSqlJs();
  const [db,sessione]=await Promise.all([leggi('database'),leggi('sessione')]);
@@ -54,6 +65,7 @@ export async function avvia(){
  // Password dei due accessi di prova (scelte alla costruzione della pagina, mai salvate nel repository).
  for(const [id,password] of Object.entries(CREDENZIALI))app.store.run('UPDATE os_users SET password_hash=? WHERE id=?',passwordHash(password),id);
  installaFetch();
+ giroDelGiorno(app);
  setInterval(()=>{if(!document.hidden)salva();},20000);
  addEventListener('pagehide',()=>{salva();});
  document.addEventListener('visibilitychange',()=>{if(document.hidden)salva();});

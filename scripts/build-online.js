@@ -87,16 +87,11 @@ const script=t=>`<script>${t.replace(/<\/script/gi,'<\\/script')}</script>`;
 const pagina=`<title>BigAnt OS</title>
 <meta name="theme-color" content="#F26B21">
 <style>${stile}
-.online-bar{position:fixed;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;display:flex;align-items:center;gap:8px;flex-wrap:wrap;max-width:calc(100vw - 24px);background:#141413;color:#f7f6f2;border-radius:999px;padding:6px 6px 6px 14px;font-size:12px;box-shadow:0 6px 24px rgba(20,20,19,.25)}
-.online-bar button{border:0;border-radius:999px;padding:6px 12px;font:inherit;font-weight:600;cursor:pointer;background:#F26B21;color:#141413}
-.online-bar button:focus-visible{outline:2px solid #fff;outline-offset:2px}
-@media(max-width:720px){.online-bar{left:12px;right:12px;border-radius:14px;justify-content:space-between}}
 </style>
 <a class="skip" href="#main">Vai al contenuto</a>
 <div id="app"><main class="loading" aria-live="polite"><p>Sto aprendo BigAnt OS nel tuo browser…</p></main></div>
 <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 <dialog id="dialog" aria-labelledby="dialog-title"><div id="dialog-content"></div></dialog>
-<div class="online-bar" id="online-bar" hidden><span>${pubblica?'Prova pubblica · dati inventati, restano nel tuo browser':'Versione online di prova · i dati restano in questo browser'}</span><button type="button" id="online-reset">Ricomincia da capo</button></div>
 ${script(`try{const o=history.replaceState.bind(history);history.replaceState=(...a)=>{try{o(...a);}catch{}};}catch{}`)}
 ${script(sqlJs)}
 ${script(server)}
@@ -108,8 +103,9 @@ ${script(`(async()=>{
   const b=atob(${JSON.stringify(logo)}),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);
   window.__BIGANT_LOGO=URL.createObjectURL(new Blob([u],{type:'image/png'}));
   const online=await BigAntOnline.avvia();
-  const barra=document.getElementById('online-bar'),tasto=document.getElementById('online-reset');barra.hidden=false;
-  tasto.addEventListener('click',()=>{if(tasto.dataset.conferma){tasto.textContent='Ricomincio…';online.ricomincia();return;}tasto.dataset.conferma='1';tasto.textContent='Conferma: cancella le prove';setTimeout(()=>{delete tasto.dataset.conferma;tasto.textContent='Ricomincia da capo';},5000);});
+  // «Riparti da zero» nel menu laterale: cancella le prove salvate in questo browser, con conferma.
+  window.__BIGANT_ONLINE=true;
+  Object.assign(ACTIONS,{'online-reset':()=>dialog('Ripartire dai dati di esempio?','<p>Le modifiche fatte in questo browser (lavori, approvazioni, giri dello sciame) vengono cancellate e l’app riparte dai dati di esempio iniziali.</p><div class="actions section"><button class="btn primary" data-action="online-reset-conferma">Sì, riparti da zero</button><button class="btn ghost" data-action="close">Annulla</button></div>'),'online-reset-conferma':()=>{toast('Riparto dai dati di esempio…');online.ricomincia();}});
   window.__BIGANT_START();
  }catch(e){document.getElementById('app').innerHTML='<main class="loading"><p>BigAnt OS non è riuscito a partire in questo browser.</p><p><small>'+String(e&&e.message||e).replace(/[<>&]/g,'')+'</small></p></main>';console.error(e);}
 })();`)}`;
