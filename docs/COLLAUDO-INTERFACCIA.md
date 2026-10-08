@@ -1,5 +1,48 @@
 # Collaudo dell’interfaccia BigAnt OS
 
+## Revisione dopo l’audit di copertura — 8 ottobre 2026
+
+Questa estensione segue il salvataggio di `docs/VERIFICA-COPERTURA-BRIEF.md` (audit `1635c8e`) e riguarda la **struttura visibile dell’intera agenzia**. Aggiungere schede e spazi non completa i requisiti operativi del brief e non aumenta automaticamente la percentuale di funzionalità realizzate.
+
+I precedenti risultati R/F/B e il congelamento delle 09:56:43 UTC, riportati più sotto, descrivono la versione precedente. **Non sono prove di funzionamento delle nuove viste.** Per questa revisione sono stati eseguiti soltanto lettura del contratto effettivo in `src/agency/`, confronto statico dei campi consumati dall’interfaccia e `node --check public/app.js`, passato. Nessun browser, rete, deploy, commit o collaudo mobile/fotocamera è stato eseguito da questo agente nella revisione. Le prove browser finali spettano al coordinatore.
+
+### Nuova copertura dell’interfaccia
+
+| Spazio / navigazione | Fonte API | Cosa espone | Prova e limite |
+|---|---|---|---|
+| Mappa agenzia, ingresso dei soci (`#agency`) | `GET /api/agency/state` | Otto reparti, 32 specialisti descritti, 27 servizi, dieci moduli gestionali e nove fondamenta secondo il registro. Reparti e contratti degli specialisti espandibili; input, output, inneschi, controlli, errori e perimetro locale. | Corrispondenza statica con i campi del backend. Nessuna esecuzione o attivazione dai nuovi pannelli. |
+| Dieci moduli del gestionale nella mappa | `state.management` | Anagrafiche; commerciale/contratti; fatturazione/incassi; scadenziario; cassa/prima nota; costi; lavoro/marginalità; task/consegne; documenti; direzione. Ogni scheda distingue parte disponibile e mancanze. | Link alla vista esistente soltanto quando il registro ne indica una. Documenti resta struttura, senza pulsante che simula un archivio. |
+| Fondamenta nella mappa | `state.foundations` | Onboarding, portfolio/autorizzazioni, capacità, obiettivi, KPI, pacchetti, pacchetto commercialista, spese insolite, custodia collegamenti. | Sezioni dichiarate «Solo struttura». Nessun archivio o operazione fittizia introdotti dalla UI. |
+| Regia e contratto orchestratore | `state.orchestrator` più viste esistenti | Ciclo, coda, esecuzione locale, approvazioni, errori e limite condiviso. | Le nuove schede leggono. I comandi già presenti restano in Sciame; nessun nuovo comando agente. |
+| Marketing BigAnt (`#marketing`) | `GET /api/agency/marketing` | Nove canali previsti, dieci aree, memoria, lavori e contenuti del cliente zero, assenza dichiarata di obiettivi registrati. | L’API vincola BigAnt; il selettore cliente è sostituito da un contesto fisso. «Apri lavori BigAnt» passa il `clientId` restituito dal server alla vista operativa esistente. Nessuna riscrittura di memoria dalla nuova vista. |
+| Servizi (`#catalog`) | Soci: `GET /api/agency/state`; altri: `GET /api/agency/dashboard` | Catalogo ricercabile per i soci; solo servizi acquistati per cliente/team. | Schede con stati del registro. Servizi esclusi restano consultabili dai soci con motivo dell’esclusione. |
+| Workspace unico di servizio (`#service:…`) | `GET /api/agency/services/:id?clientId=…` | Sezioni specifiche, lavori, contenuti, approvazioni, fonti e specialisti dello stesso cliente/servizio. | Mapping statico: i soci ricevono il contratto completo; cliente/team il DTO ridotto con `agentNames`, senza contratti/permessi amministrativi. Nessuna copia o secondo archivio. |
+| Dashboard cliente | `GET /api/agency/dashboard` e `/api/overview` | Sezioni previste dal brief, incluse quando pertinenti ai servizi acquistati; collegamenti ai workspace. Contenuti da approvare, richieste e materiali continuano a usare i dati comuni. | Sostituita la precedente lista fissa di sei schede con le sezioni filtrate dal server. Fonti non collegate e parti mancanti esplicite; nessun KPI inventato. |
+
+Le etichette **Solo struttura**, **Flusso DEMO parziale**, **Fonte non collegata** ed **Escluso** mantengono significati distinti. «32 specialisti descritti» non significa 32 agenti funzionanti; avere un workspace video, eventi, drone o Video AI non significa eseguire automaticamente quel servizio.
+
+Le schede pubbliche al cliente mostrano soltanto consegne, disponibilità parziale, mancanze, sezioni e nomi degli specialisti autorizzati dal DTO. Non vengono mostrati nomi di tabelle, identificativi interni, percorsi di codice o file di configurazione. I collegamenti operativi presenti aprono viste già esistenti; non introducono pulsanti di pubblicazione, attivazione, collegamento account o generazione inesistente.
+
+### Smartphone e limiti di verifica della revisione
+
+Il CSS prevede schede impilate, dettagli espandibili, testo che va a capo, collegamenti ampi e chiusura esplicita del menu mobile. La mappa non richiede un organigramma largo da trascinare. Questa è **predisposizione del layout**, non una prova su smartphone. Restano da verificare visualmente apertura di tutti i pannelli, navigazione tastiera, focus, contrasto, layout a 360/390 px e percorsi dei tre ruoli. Nessuna prova camera o provider esterno è stata aggiunta.
+
+I contratti delle nuove API sono di sola lettura. Restano mancanti gli specialisti esecutivi pianificati, dataset di canale, obiettivi/KPI operativi, autorizzazioni portfolio applicative, capacità del team, archivio documenti completo, collegamenti provider e autonomia cloud. Queste carenze sono rese visibili dalla nuova struttura, non dichiarate risolte.
+
+---
+
+## Verifica browser del coordinatore dopo la struttura completa
+
+Eseguita sull’anteprima locale, senza dati reali o provider. A 1440×1000: ingresso Mappa, apertura reparto Produzione e contratto Coordinatore eventi, workspace Eventi con acquisto assente dichiarato, selezione Bottega e successivo Marketing ancora fissato a BigAnt. A 390×844: Marketing, menu, uscita/cambio profilo, Cliente Aurora e workspace Social. Nessuno scorrimento orizzontale del documento rilevato nelle viste marketing e cliente controllate (larghezza documento 390 px).
+
+Nel cliente Aurora sono visibili soltanto quattro servizi acquistati e le sezioni pertinenti; la pubblicità non acquistata, Mappa, Marketing e Amministrazione sono assenti. I contratti interni e i costi non sono restituiti nel DTO del workspace cliente. I dati di lavoro provengono dal cliente comune; gli obiettivi marketing e le metriche dei canali restano vuoti.
+
+Nel controllo telefono è emersa l’assenza del cambio profilo nella barra compatta: aggiunti Aggiorna e Cambia profilo nel menu, provato il cambio al profilo cliente. Questa prova riguarda le nuove viste e la navigazione citata, non tutti i moduli su dispositivi fisici, tutte le dimensioni, tastiera o accessibilità completa. Nessuna nuova prova fotocamera/Wallet/provider.
+
+I controlli server della nuova struttura sono **11/11** e la suite completa aggiornata **114/114**. La revisione indipendente ha corretto trigger futuri presentati come configurabili, stati ottimistici di Documenti/Obiettivi e sezione contatti per Centralino AI.
+
+## Collaudo della versione precedente
+
 Data: 8 ottobre 2026. Ambito: prototipo DEMO locale, con un server, una sessione e un database comune. Nessun account esterno o dato di produzione è stato utilizzato per questi controlli.
 
 L’interfaccia è italiana, usa il logo BigAnt, arancione `#F26B21`, nero `#141413` e sfondi chiari. Le operazioni scrivono nelle API del server; lo stato di lavoro non è conservato in `localStorage`. Le sorgenti originali Growth e Fidelity restano separate e non vengono modificate dalla UI di OS.

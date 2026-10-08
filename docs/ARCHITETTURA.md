@@ -2,6 +2,12 @@
 
 8 ottobre 2026. Stato: **fondazione locale DEMO con moduli funzionanti e catalogo estensibile**. Nessun deploy o connettore reale. Il documento separa codice presente, adattamenti verificabili localmente e funzioni pianificate. Gli esiti finali dei test sono nel report notturno.
 
+## Revisione dopo l’audit del brief
+
+La [matrice di copertura](VERIFICA-COPERTURA-BRIEF.md) misura 30,2% di completamento funzionale, 14,9% oltre Growth/Fidelity. L’architettura prevista non è tutta implementata. La [struttura completa dell’agenzia](STRUTTURA-AGENZIA.md) aggiunge `src/agency/`: registro di contratti per 27 servizi, 32 specialisti, dieci moduli e tutte le sezioni dashboard; Marketing BigAnt dedicato e workspace filtrati per cliente/servizio. Le nove aree future hanno campi e sezioni espliciti, senza record o automazioni inventati.
+
+Gli specialisti pianificati sono ora 21; le quattro definizioni dei moduli includono Fidelity. Le schede distinguono trigger implementati da eventi previsti. I nuovi endpoint sono di sola lettura, la mappa/marketing sono riservati ai soci e il cliente vede soltanto workspace dei servizi acquistati. Documenti e obiettivi rimangono “Solo struttura”. Nessuna nuova integrazione è stata attivata.
+
 ## 1. Un solo sistema, tre ambiti
 
 BigAnt OS è una app interna per soci, collaboratori assegnati e titolari clienti. Un solo server, database, login e interfaccia ospitano:

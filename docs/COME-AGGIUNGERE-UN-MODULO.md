@@ -29,6 +29,18 @@ Le decisioni nuove vanno in `DECISIONI.md`; le informazioni mancanti in `DOMANDE
 
 ## 3. Registrare il servizio
 
+La struttura completa è descritta in [STRUTTURA-AGENZIA](STRUTTURA-AGENZIA.md). Il registro di sola lettura in `src/agency/index.js` viene validato all’avvio e da `npm run check`. Per un nuovo pezzo:
+
+1. Aggiungere l’ID e il reparto in `src/registry.js`; per un servizio aggiungere anche il contratto specifico in `src/agency/services.js`. Una voce senza contratto fa fallire l’avvio, così non resta una semplice etichetta.
+2. Dichiarare input, sezioni/output, specialisti, fonti, integrazioni, modalità di erogazione, gate, condizioni di attivazione, limiti e prove di accettazione. Gli identificativi dei connettori devono esistere nel registro.
+3. Aggiungere gli specialisti come `planned`; in `src/agency/swarm.js` completare trigger, memoria, permessi, costo/fallimento. Un trigger non implementato resta tale anche se l’agente dispone già di una procedura DEMO.
+4. Se è una parte di uno dei dieci moduli gestionali, aggiungere sezioni e contratto in `src/agency/management.js`, senza creare un undicesimo modulo per compensi o quadratura. Le aree trasversali pianificate sono in `foundations.js`.
+5. Se interessa la dashboard cliente, aggiornare `src/agency/dashboards.js` e la lista dei servizi che possono vederla. Provare anche il cliente che compra soltanto il nuovo servizio e la revoca dell’acquisto.
+6. La UI Servizi usa lo stesso workspace parametrico e riceve il DTO filtrato dal server. Mappa e Marketing restano riservati ai soci. Non aggiungere un secondo database, un login o un timer.
+7. Prima di passare da scheda a funzione, implementare l’handler, i dati necessari e test di comportamento. Solo dopo aggiornarne lo stato e la [copertura del brief](VERIFICA-COPERTURA-BRIEF.md). L’attivazione esterna non è autorizzata da un cambio di stato nel registro.
+
+I file `services.js`, `management.js`, `marketing.js` e `foundations.js` sono contratti distinti anche quando condividono un file: non sono esecutori. Il validatore intercetta duplicati, agenti/reparti orfani, connettori sconosciuti, moduli mancanti e privilegi amministrativi impropri. I test verificano che gli specialisti pianificati siano rifiutati dall’orchestratore.
+
 Aggiornare `src/registry.js` con ID univoco, reparto, deliverable, stato, integrazioni previste e riferimento SOP. Aggiungere/estendere la scheda nel playbook. Marcare `implemented` solo quando il relativo flusso è presente e verificato. Per il catalogo Italiaonline conservare l'identificativo, senza attribuire a BigAnt partnership o capacità proprietarie altrui.
 
 Il servizio acquistato è elencato in `os_clients.services_json`. Il backend controlla tale abilitazione dove pertinente; il menu non è un confine di sicurezza. Un servizio amministrativo rimane riservato ai soci anche se il cliente acquista una prestazione commerciale simile.

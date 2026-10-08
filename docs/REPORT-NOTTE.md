@@ -2,6 +2,22 @@
 
 **8 ottobre 2026 · Prototipo interno DEMO · revisione in corso, nessun rilascio online.**
 
+## Correzione di direzione: copertura dell’intera agenzia
+
+**Copertura funzionale verificata: 30,2% (62 requisiti su 205). Per l’agenzia oltre Growth/Fidelity: 14,9% (17 su 114).** La [verifica completa del brief](VERIFICA-COPERTURA-BRIEF.md) contiene 239 righe con stato, prova, mancanze e confronto prima/dopo. Il conteggio esclude documenti e segnaposto dalla percentuale funzionale. Il numero dei test non è la percentuale di progetto finito.
+
+Il dubbio del titolare era fondato: la versione precedente aveva approfondito Growth, Fidelity e contabilità, lasciando buona parte dell’agenzia in schede generiche. Ho riletto tutto il brief (567 righe), salvato prima l’audit e poi corretto la struttura. Il lavoro precedente era già salvato e concluso.
+
+Adesso la **Mappa agenzia** riunisce otto reparti, 32 specialisti descritti, 27 spazi di servizio e **i dieci moduli gestionali esatti**. Per ogni specialista sono indicati input, output, memoria per cliente, inneschi effettivi o futuri, controllo umano, registro, costo, gestione errori e prove da soddisfare. I 21 specialisti pianificati non si possono avviare. Le sette procedure centrali e le quattro definizioni che rimandano ai moduli restano DEMO e parziali.
+
+**Marketing BigAnt** ha una vista propria con tutti i canali (anche LinkedIn dei soci), DNA, strategia a 90 giorni, calendario, mese di contenuti, portfolio, Google, sito, acquisizione, ADV, prossimi servizi e KPI. Legge sempre il cliente zero. I documenti ancora da produrre e i dati non collegati rimangono espliciti.
+
+Ogni servizio ha uno spazio specifico nello stesso archivio, anche eventi, drone, Video AI e direzione creativa. I moduli mancanti hanno contratti e sezioni: documenti, autorizzazioni portfolio, onboarding, capacità del team, obiettivi, KPI, pacchetti/listini, pacchetto commercialista e spese insolite. **Questi sono segnaposto documentati e navigabili, non nuove funzioni operative concluse.** Per questo la percentuale funzionale resta al 30,2%.
+
+La dashboard cliente ora usa il registro completo delle sezioni e mostra solo i servizi acquistati, con controlli server anche sugli accessi diretti. La guida per aggiungere moduli descrive i nuovi contratti e il validatore che impedisce riferimenti mancanti o specialisti con privilegi impropri. [Mappa tecnica e limiti](STRUTTURA-AGENZIA.md).
+
+**Verifica della revisione:** 114 test passati; undici nuovi controlli su struttura, permessi, eventi, servizi acquistati e rifiuto di esecuzioni fittizie. Una revisione indipendente ha trovato e fatto correggere tre incongruenze di stato/visibilità. Nel browser sono stati provati mappa, reparto Produzione e specialista Eventi, workspace Eventi, marketing dopo selezione di un altro cliente e vista Cliente Aurora. A 390 px è stato controllato il layout e reso disponibile il cambio profilo nel menu. Nessun test di fornitori reali o di tutti i percorsi mobile.
+
 ## Da leggere per primo
 
 È stata costruita una prima applicazione unica BigAnt OS: gli stessi clienti, accessi, database, approvazioni e registro collegano Growth, Fidelity, produzione e amministrazione. Non sono collegamenti a quattro app: le operazioni locali scrivono davvero nello stesso archivio. Il logo è quello BigAnt; il colore segue il nuovo brief, **#F26B21**.
@@ -113,7 +129,7 @@ Dettagli e versione originale in [FIDELITY-INVENTARIO](../research/FIDELITY-INVE
 | Bootstrap e fixture | Avvio unico OS | Seed idempotente verificato |
 | Backup/ripristino | Procedure del nucleo | Collaudo separato in copia; mai su database originali |
 
-**Le funzioni di dominio locali elencate sono state verificate; gli effetti dei fornitori esterni restano da collaudare.** Le parti esterne non sono certificate come “già funzionanti”: il vincolo notturno vieta di collegarle e provarle. Le vecchie app restano operative fino a una migrazione separata.
+**Questa tabella è una sintesi delle parti locali; lo stato rigoroso delle 91 funzioni originali è nella matrice di copertura.** Alcune funzioni restano parziali anche localmente (campi avanzati UI, operatori, password, offerta sulla carta). Le parti esterne non sono certificate come “già funzionanti”: il vincolo notturno vieta di collegarle e provarle. Le vecchie app restano operative fino a una migrazione separata.
 
 ## Amministrazione e limiti economici
 
@@ -142,7 +158,7 @@ npm start
 
 Aprire [l’anteprima locale](http://127.0.0.1:4330/) e scegliere il profilo. Il server ascolta soltanto sull’interfaccia locale; rifiuta modalità produzione e richieste da host estranei. L’archivio DEMO è `.data/bigant-os.sqlite`, escluso da Git.
 
-**Esito finale: 103 test superati, zero errori, zero test saltati; controllo del progetto superato.** Le prove coprono domini Growth/Fidelity/amministrazione, API comuni, isolamento ruoli e servizi, versioni approvate, memoria interna, sessioni, Origin/CSRF, budget, calendario, retry, concorrenza, QR e ripartenza. Otto prove riguardano backup e ripristino in copie isolate, senza sovrascrivere l’archivio in uso. Quattro prove aggiuntive verificano che le immagini BigAnt distribuite in formato testuale reversibile restituiscano esattamente i byte e il formato PNG originali.
+**Esito aggiornato: 114 test superati, zero errori, zero test saltati; controllo del progetto superato.** Le prove coprono domini Growth/Fidelity/amministrazione, API comuni, isolamento ruoli e servizi, versioni approvate, memoria interna, sessioni, Origin/CSRF, budget, calendario, retry, concorrenza, QR e ripartenza. Otto prove riguardano backup e ripristino in copie isolate, senza sovrascrivere l’archivio in uso. Quattro prove aggiuntive verificano che le immagini BigAnt distribuite in formato testuale reversibile restituiscano esattamente i byte e il formato PNG originali.
 
 Nel browser sono state aggiunte cinque aziende DEMO, accreditato un timbro con saldo da 4 a 5, aperta la tessera con QR PNG e completato il percorso agente social → revisione → richiesta di modifica. L’accesso cliente Aurora mostra soltanto la sua attività ed esclude l’amministrazione. La [matrice di collaudo](COLLAUDO-INTERFACCIA.md) separa prove browser, verifiche dei form e test del server, ed elenca i campi avanzati ancora non esposti nell’interfaccia. Fotocamera, telefono e fornitori esterni non sono stati collaudati.
 
@@ -157,8 +173,8 @@ Nel browser sono state aggiunte cinque aziende DEMO, accreditato un timbro con s
 
 ## Prossimi cinque passi consigliati
 
-1. Provare insieme i tre ruoli, la revisione di un contenuto, un lead e una tessera DEMO; annotare le parti che rendono il lavoro più semplice o più lento.
-2. Validare con i soci il playbook e il pilota BigAnt, i servizi prioritari, le responsabilità e la matrice degli accessi.
-3. Ottenere da Alfonso il codice e lo schema del PED in sola lettura, per progettare una migrazione o integrazione conservativa.
-4. Con il commercialista, confermare anagrafiche, saldi di apertura e regole delle due ditte; preparare un import controllato dei fogli, senza spegnerli.
-5. Dopo una decisione esplicita, autorizzare un rilascio cloud separato e **un solo connettore alla volta**, con tetti di costo, dati minimi, approvazioni e possibilità di tornare indietro.
+1. Validare con i soci il metodo e il pilota BigAnt, poi compilare DNA, strategia a 90 giorni e un mese editoriale approvabile nei rispettivi spazi.
+2. Implementare documenti e autorizzazioni portfolio insieme al workflow di onboarding: oggi sono contratti e sezioni, non archivi operativi.
+3. Aggiungere disponibilità del team, obiettivi e serie KPI, quindi il confronto mensile fra ore risparmiate e qualità.
+4. Far produrre al Direttore due business case di servizio, pacchetti/listino e opportunità di upsell basati su costi e capacità verificati.
+5. Completare la migrazione Growth/Fidelity funzione per funzione e affrontare un connettore per volta soltanto in una fase autorizzata. Nessun deploy o modifica Railway in questa sessione.

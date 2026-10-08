@@ -1,5 +1,10 @@
 # Roadmap BigAnt OS
 
+## Priorità corrette dopo la verifica del brief
+
+La struttura dell’intera agenzia è ora navigabile: non proseguire soltanto sui tre moduli già più avanzati. Il riferimento è `VERIFICA-COPERTURA-BRIEF.md`, con baseline e stato attuale. Prima: metodo/pilota BigAnt compilati; poi documenti e portfolio/onboarding, capacità e obiettivi/KPI, business case e pacchetti del Direttore. La migrazione completa Growth/Fidelity resta un filone distinto da chiudere funzione per funzione. I nuovi spazi non cambiano la copertura funzionale del 30,2%. Nessun rilascio autorizzato.
+
+
 ## Notte 1 — fondazioni (8 ottobre 2026)
 
 Inventario GitHub, metodo e catalogo, architettura, prototipo locale unificato, dati DEMO, test, report, PR senza merge. Nessuna attivazione reale.

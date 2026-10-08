@@ -25,3 +25,9 @@
 | Salvataggio remoto tramite interfaccia GitHub | La sessione autorizzata è nel browser. I commit remoti raccolgono gli stessi file per cartella e non hanno gli stessi identificativi dei commit tecnici locali. Nessuna riscrittura della storia o force push. Prima di proseguire in una sessione futura, usare come base il ramo remoto e confrontare i file. |
 
 Decisioni provvisorie di implementazione ammesse dal brief notturno; pubblicazione, acquisti e migrazione reale richiedono la decisione successiva dei soci.
+
+## Correzione dopo verifica integrale del brief
+
+L’audit precedente al nuovo codice è congelato su `8750e80` e salvato nel commit `1635c8e`. La copertura funzionale usa 205 requisiti, senza punti parziali: documentazione, esclusioni e segnaposto sono separati. Il denominatore resta invariato durante questa revisione.
+
+Prima ampliare la struttura a tutta l’agenzia: registro per dominio e workspace parametrico per servizio, con contratti distinti, anziché decine di cartelle vuote o app separate. I dieci moduli sono esattamente quelli del brief; compensi e quadratura sono sezioni. Mappa e Marketing sono riservati ai soci, Marketing è sempre sul cliente zero. Le nuove API leggono soltanto e non attivano agenti. Gli eventi futuri restano dichiarati non implementati; specialisti pianificati con costo sconosciuto, mai zero presunto. Prove e limiti sono in STRUTTURA-AGENZIA e VERIFICA-COPERTURA-BRIEF.
