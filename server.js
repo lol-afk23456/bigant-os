@@ -13,6 +13,17 @@ import {createFidelityModule} from './src/fidelity.js';
 import {createAdministrationModule} from './src/administration.js';
 import {createOrchestrator} from './src/orchestrator.js';
 const root=dirname(fileURLToPath(import.meta.url));
+const brandAssets=Object.freeze({
+  '/brand/logo.png':{file:'logo.png.base64',sha256:'664e4ae8d8170427554fe36c2739562b71f24b8ed533f6068aa012b97ec2864c'},
+  '/brand/icon.png':{file:'icon.png.base64',sha256:'be66a098b2a5ffa99187279e7c606d24129fc13d34b865a17dcf530506ca0009'}
+});
+export function decodeBrandAsset(encoded,expectedSha256){
+  if(typeof encoded!=='string'||encoded.length>1000000||/[^A-Za-z0-9+/=\r\n]/.test(encoded))throw new Error('Codifica base64 del brand non valida.');
+  const compact=encoded.replace(/[\r\n]/g,''),bytes=Buffer.from(compact,'base64');
+  if(!compact||compact.length%4!==0||bytes.toString('base64')!==compact)throw new Error('Codifica base64 del brand non valida.');
+  if(!/^[a-f0-9]{64}$/.test(expectedSha256)||createHash('sha256').update(bytes).digest('hex')!==expectedSha256)throw new Error('Integrità SHA-256 del brand non valida.');
+  return bytes;
+}
 const digest=value=>createHash('sha256').update(String(value)).digest('hex');
 const safeEqual=(a,b)=>{const x=Buffer.from(String(a||'')),y=Buffer.from(String(b||''));return x.length===y.length&&timingSafeEqual(x,y);};
 const profiles=['demo-owner','demo-collaborator','demo-client','demo-client-other'];
@@ -114,6 +125,10 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
         throw new AppError('Funzione non trovata.',404);
       }
       if(method==='GET'||method==='HEAD'){
+        if(Object.hasOwn(brandAssets,path)){
+          const asset=brandAssets[path],bytes=decodeBrandAsset(readFileSync(resolve(root,'public/brand',asset.file),'utf8'),asset.sha256);
+          res.writeHead(200,{'Content-Type':'image/png','Content-Length':bytes.length,'Cache-Control':'no-store'});return res.end(method==='HEAD'?undefined:bytes);
+        }
         const appPage=path==='/'||path.startsWith('/fidelity/')||path.startsWith('/growth/');
         const file=appPage?resolve(root,'public/index.html'):resolve(root,'public','.'+decodeURIComponent(path));const publicRoot=resolve(root,'public')+'/';
         if(!file.startsWith(publicRoot)||!existsSync(file)||!statSync(file).isFile())throw new AppError('Pagina non trovata.',404);
