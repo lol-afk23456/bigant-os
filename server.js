@@ -50,7 +50,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
     const clients=allClients(user),currentClient=clients.find(c=>c.id===clientId),ownedServices=JSON.parse(currentClient.services_json);
     const tasks=store.query('SELECT * FROM os_tasks WHERE client_id=? ORDER BY due',clientId).filter(t=>user.role!=='client'||ownedServices.includes(t.service)||t.service==='account');
     const contents=store.query('SELECT * FROM os_contents WHERE client_id=? ORDER BY updated_at DESC',clientId).filter(c=>user.role!=='client'||ownedServices.includes(c.service));
-    const approvals=store.query('SELECT * FROM os_approvals WHERE client_id=? ORDER BY created_at DESC',clientId).filter(a=>user.role==='owner'||(a.kind==='content'&&contents.some(c=>c.id===a.entity_id))||(a.kind==='fidelity_campaign'&&ownedServices.includes('fidelity')));
+    const approvals=store.query('SELECT * FROM os_approvals WHERE client_id=? ORDER BY created_at DESC',clientId).filter(a=>user.role==='owner'||(a.kind==='content'&&contents.some(c=>c.id===a.entity_id))||(a.kind==='fidelity_campaign'&&ownedServices.includes('fidelity'))||(a.kind==='agent_output'&&!!store.one("SELECT 1 FROM os_agent_outputs WHERE id=? AND client_id=? AND visibility='client'",a.entity_id,clientId)&&ownedServices.includes(store.one('SELECT service FROM os_agent_outputs WHERE id=?',a.entity_id).service)));
     const activity=store.query(`SELECT * FROM os_audit WHERE client_id=? ${user.role==='owner'?'':user.role==='client'?"AND visibility='client'":"AND visibility!='admin'"} ORDER BY created_at DESC LIMIT 100`,clientId).map(a=>({...a,detail:JSON.parse(a.detail)}));
     const memory=store.query(`SELECT * FROM os_memory WHERE client_id=? AND ${user.role==='client'?"visibility='client'":"visibility!='admin'"}`,clientId);
     const agency=user.role==='owner'?{
@@ -109,10 +109,11 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
           if(a.status!=='pending')throw new AppError('Richiesta già decisa o superata.',409);
           if(!['approved','rejected','changes'].includes(b.decision))throw new AppError('Decisione non valida.');
           if(b.decision!=='approved'&&!text(b.reason))throw new AppError('Indica il motivo della richiesta.');
+          if(a.kind==='agent_output')return json(res,orchestrator.outputs.decide(u,a,b));
           if(a.kind==='growth_message'){requireOwner(u);const current=store.one("SELECT MAX(version) version FROM os_approvals WHERE kind='growth_message' AND entity_id=?",a.entity_id);if(current.version!==a.version)throw new AppError('Versione superata.',409);return reply(res,await growth.handle({method:'PATCH',path:'/messages/'+a.entity_id,body:{status:b.decision==='approved'?'approved':b.decision==='changes'?'draft':'cancelled',reason:b.reason},user:u,clientId}));}
           if(a.kind==='fidelity_campaign'&&u.role!=='owner'&&!JSON.parse(store.one('SELECT services_json FROM os_clients WHERE id=?',clientId).services_json).includes('fidelity'))throw new AppError('Servizio Fidelity non attivo.',403);
           if(a.kind==='fidelity_campaign')return reply(res,await fidelity.handle({method:'POST',path:'/campaigns/'+a.entity_id+'/decision',body:{...b,version:a.version},user:u,clientId}));
-          return reply(res,await production.handle({method:'POST',path:'/approvals/'+a.id,body:b,user:u,clientId}));
+          const decision=await production.handle({method:'POST',path:'/approvals/'+a.id,body:b,user:u,clientId});if(b.decision==='approved')orchestrator.event('content.approved',clientId,a.entity_id,a.version);return reply(res,decision);
         }
         for(const [name,module]of Object.entries({growth,fidelity,administration,agents:orchestrator,production,agency}))if(path.startsWith('/api/'+name+'/')){
           if(name==='growth'||name==='administration'||name==='agents')requireOwner(u);
@@ -121,6 +122,8 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
           if(name==='fidelity'&&method==='GET'&&/^\/programs\/[^/]+\/qr$/.test(relative.split('?')[0])){const programId=relative.split('/')[2];const program=store.one('SELECT id FROM fi_programs WHERE id=? AND tenant_id=? AND active=1',programId,clientId);if(!program)throw new AppError('Programma non disponibile.',404);const slug=store.one('SELECT slug FROM os_clients WHERE id=?',clientId).slug;return reply(res,{data:await QRCode.toBuffer(runtimeOrigin+'/fidelity/join/'+encodeURIComponent(slug)+'?program='+encodeURIComponent(programId),{type:'png',width:280,margin:2,errorCorrectionLevel:'M'}),contentType:'image/png'});}
           const result=await module.handle({method,path:relative,body:b,user:u,clientId});
           if(result&&method==='POST'&&name==='growth'&&relative==='/leads')orchestrator.event('lead.created',clientId,result.data.id);
+          if(result&&method==='POST'&&name==='administration'&&relative==='/contracts')orchestrator.event('contract.signed',result.data.client_id,result.data.id);
+          if(result&&method==='POST'&&name==='growth'&&/\/leads\/[^/]+\/convert$/.test(relative))orchestrator.event('client.created',result.data.client.id,result.data.client.id);
           if(result&&method==='PATCH'&&name==='production'&&b.state==='DA APPROVARE')orchestrator.event('content.ready',clientId,result.data.id,result.data.version);
           return reply(res,result);
         }
