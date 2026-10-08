@@ -73,7 +73,7 @@ test('coda persistente: lease interrotta, retry limitato, deduplica e contesto s
  const u=s.one("SELECT * FROM os_users WHERE id='demo-owner'");const j=o.enqueue(u,'demo-bottega','account',{},'same');assert.equal(o.enqueue(u,'demo-bottega','account',{},'same').id,j.id);
  await o.tick();assert.equal(s.one('SELECT attempts FROM os_jobs WHERE id=?',j.id).attempts,1);
  date=new Date(date.getTime()+31000);await o.tick();date=new Date(date.getTime()+61000);await o.tick();assert.equal(s.one('SELECT status FROM os_jobs WHERE id=?',j.id).status,'failed');
- fail=false;await o.handle({method:'POST',path:'/jobs/'+j.id+'/retry',body:{},user:u});await o.tick();assert.equal(s.one('SELECT status FROM os_jobs WHERE id=?',j.id).status,'done');
+ fail=false;await o.handle({method:'POST',path:'/jobs/'+j.id+'/retry',body:{},user:u,clientId:'demo-bottega'});await o.tick();assert.equal(s.one('SELECT status FROM os_jobs WHERE id=?',j.id).status,'done');
  const interrupted=o.enqueue(u,'demo-bottega','social',{},'interrupted');s.run("UPDATE os_jobs SET status='running',attempts=1,lease_until=? WHERE id=?",new Date(date.getTime()-1000).toISOString(),interrupted.id);await o.tick();await o.tick();assert.equal(s.one("SELECT count(*) n FROM os_contents WHERE id=?",'agent-content-'+interrupted.id).n,1);assert.equal(s.one('SELECT attempts FROM os_jobs WHERE id=?',interrupted.id).attempts,2);
 });
 test('budget centralizzato e pausa comune fermano i lavori senza falsi costi',async t=>{
