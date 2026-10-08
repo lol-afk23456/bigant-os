@@ -10,7 +10,7 @@ const iniziali=nome=>String(nome||'?').replace(/[^A-Za-zÀ-ÿ ]/g,' ').split(/\s
 const toneMotore=stato=>stato==='OPERATIVO'?'green':stato==='DEMO'?'orange':'red';
 
 // Il motore scrive JSON: per la diretta si mostrano le parole, senza parentesi e virgolette.
-const leggibile=t=>String(t||'').replace(/\\n/g,' ').replace(/\\"/g,'’').replace(/"([a-z_]+)"\s*:/gi,(m,k)=>' '+k.replaceAll('_',' ')+': ').replace(/[{}\[\]"]/g,' ').replace(/\s+/g,' ').trim();
+const leggibile=t=>String(t||'').replace(/\\n/g,' ').replace(/\\"/g,'’').replace(/"([a-z_]+)"\s*:/gi,(m,k)=>' '+k.replaceAll('_',' ')+': ').replace(/[{}\[\]"]/g,' ').replace(/\s+/g,' ').replace(/\s+([,.:;])/g,'$1').trim();
 const durata=da=>{const s=Math.max(0,Math.round((Date.now()-new Date(da))/1000));return s<60?`${s} s`:`${Math.floor(s/60)} min ${s%60} s`;};
 const FASI={in_attesa:'si collega al motore…',ragionamento:'sta ragionando…',scrittura:'sta scrivendo',finito:'ha finito, passa a Qualità'};
 function diretta(d){

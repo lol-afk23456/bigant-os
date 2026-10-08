@@ -100,10 +100,15 @@ function motoreApi({root,env,importSdk=()=>import('@anthropic-ai/sdk')}){
   }};
 }
 
-function motoreDemo(){
+function motoreDemo({env={}}={}){
+ // BIGANT_DEMO_RITMO_MS (solo versione online): il testo già pronto compare a velocità di lettura per mostrare il flusso.
+ const ritmo=Math.min(Number(env.BIGANT_DEMO_RITMO_MS||0),60000);
  return {id:'demo',etichetta:ETICHETTE.demo,
-  stato:()=>({disponibile:true,statoCollegamento:'DEMO',motivo:'Regole deterministiche per i test automatici: non è intelligenza artificiale.'}),
-  async esegui({agente,pacchetto,onProgresso=()=>{}}){const inizio=Date.now(),output=cervelloDemo(agente,pacchetto);onProgresso({fase:'scrittura',testo:JSON.stringify(output)});return {output,meta:{motore:'demo',durataMs:Date.now()-inizio,costoUsdMicro:0,costoNota:'Nessun costo: regole locali'}};}};
+  stato:()=>({disponibile:true,statoCollegamento:'DEMO',motivo:'Regole deterministiche, non è intelligenza artificiale.'+(ritmo?' Il testo compare a velocità di lettura per mostrarti il flusso del lavoro.':'')}),
+  async esegui({agente,pacchetto,onProgresso=()=>{}}){const inizio=Date.now(),output=cervelloDemo(agente,pacchetto),testo=JSON.stringify(output);
+   if(ritmo>0)for(let i=1;i<=24;i++){await new Promise(r=>setTimeout(r,ritmo/24));onProgresso({fase:'scrittura',testo:testo.slice(0,Math.ceil(testo.length*i/24))});}
+   else onProgresso({fase:'scrittura',testo});
+   return {output,meta:{motore:'demo',durataMs:Date.now()-inizio,costoUsdMicro:0,costoNota:'Nessun costo: regole locali'}};}};
 }
 
 function motoreNessuno(){
@@ -116,6 +121,6 @@ export function createMotore({nome,root,env=process.env,...opzioni}={}){
  const id=nome||scegliMotore(env);
  if(id==='claude-code')return motoreClaudeCode({root,env,...opzioni});
  if(id==='api')return motoreApi({root,env,...opzioni});
- if(id==='demo')return motoreDemo();
+ if(id==='demo')return motoreDemo({env});
  return motoreNessuno();
 }
