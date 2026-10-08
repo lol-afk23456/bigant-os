@@ -12,6 +12,7 @@ import {createGrowthModule} from './src/growth.js';
 import {createFidelityModule} from './src/fidelity.js';
 import {createAdministrationModule} from './src/administration.js';
 import {createOrchestrator} from './src/orchestrator.js';
+import {createAgencyModule} from './src/agency/index.js';
 const root=dirname(fileURLToPath(import.meta.url));
 const brandAssets=Object.freeze({
   '/brand/logo.png':{file:'logo.png.base64',sha256:'664e4ae8d8170427554fe36c2739562b71f24b8ed533f6068aa012b97ec2864c'},
@@ -34,6 +35,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const production=createProduction({store}),growth=createGrowthModule({store,origin}),fidelity=createFidelityModule({store,origin}),administration=createAdministrationModule({store,clock});
   growth.seed();fidelity.seed();administration.seed();
   const orchestrator=createOrchestrator({store,production,administration,growth,fidelity,clock});
+  const agency=createAgencyModule({store});
   const limits=new Map();
   function rate(key,max=120,window=60000) {let l=limits.get(key);if(!l||l.until<Date.now()){l={count:0,until:Date.now()+window};limits.set(key,l);}if(++l.count>max)throw new AppError('Troppe richieste: riprova tra poco.',429);if(limits.size>10000)for(const[k,v]of limits)if(v.until<Date.now())limits.delete(k);}
   function session(req) {const token=(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('bigant_os='))?.slice(10);if(!token)return null;return store.one('SELECT u.id,u.name,u.email,u.role,u.tenant_id,u.active,s.csrf,s.id session_id FROM os_sessions s JOIN os_users u ON u.id=s.user_id WHERE s.id=? AND s.expires_at>? AND u.active=1',digest(token),Date.now());}
@@ -112,7 +114,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
           if(a.kind==='fidelity_campaign')return reply(res,await fidelity.handle({method:'POST',path:'/campaigns/'+a.entity_id+'/decision',body:{...b,version:a.version},user:u,clientId}));
           return reply(res,await production.handle({method:'POST',path:'/approvals/'+a.id,body:b,user:u,clientId}));
         }
-        for(const [name,module]of Object.entries({growth,fidelity,administration,agents:orchestrator,production}))if(path.startsWith('/api/'+name+'/')){
+        for(const [name,module]of Object.entries({growth,fidelity,administration,agents:orchestrator,production,agency}))if(path.startsWith('/api/'+name+'/')){
           if(name==='growth'||name==='administration'||name==='agents')requireOwner(u);
           if(name==='fidelity'&&u.role!=='owner'&&!JSON.parse(store.one('SELECT services_json FROM os_clients WHERE id=?',clientId).services_json).includes('fidelity'))throw new AppError('Servizio Fidelity non attivo.',403);
           const relative=path.slice(('/api/'+name).length)+(name==='fidelity'?url.search:'');
@@ -141,7 +143,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const server=http.createServer(handler);server.requestTimeout=30000;server.headersTimeout=15000;
   let workerError=null;
   const timer=worker?setInterval(()=>orchestrator.tick().then(()=>{workerError=null;}).catch(()=>{workerError='Controllo delle automazioni da verificare.';}),2000):null;timer?.unref();
-  return {server,store,production,growth,fidelity,administration,orchestrator,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(server.listening)await new Promise(r=>server.close(r));store.close();}};
+  return {server,store,production,growth,fidelity,administration,orchestrator,agency,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(server.listening)await new Promise(r=>server.close(r));store.close();}};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   if(process.env.NODE_ENV==='production')throw new Error('Questa versione è un prototipo DEMO locale. Il rilascio richiede una fase autorizzata separata.');

@@ -4,6 +4,8 @@ Il laboratorio interno di BigAnt per riunire lavoro, clienti, agenti e amministr
 
 Inizia da [Report della notte](docs/REPORT-NOTTE.md), [analisi](docs/ANALISI-INIZIALE.md), [architettura](docs/ARCHITETTURA.md) e [playbook operativo](docs/PLAYBOOK.md).
 
+La [verifica completa del brief](docs/VERIFICA-COPERTURA-BRIEF.md) misura **30,2% di copertura funzionale**, e **14,9% dell’agenzia oltre Growth/Fidelity**. La nuova [struttura dell’agenzia](docs/STRUTTURA-AGENZIA.md) dà uno spazio a tutti i pezzi: non significa che tutti i servizi siano operativi.
+
 ## Avvio locale
 
 Occorre Node **24.19.0** (serie24). Le sole dipendenze applicative sono sharp 0.34.5 per i loghi e qrcode 1.5.4 per le tessere, fissate nel lockfile. Non occorrono chiavi API o abbonamenti aggiuntivi.
@@ -25,6 +27,7 @@ Il database di prova resta nella cartella tecnica `.data`, esclusa da Git. Le fo
 ## Struttura
 
 - `src`: nucleo comune, moduli Growth/Fidelity/amministrazione, registro servizi e orchestratore.
+- `src/agency`: contratti e spazi dell’intera agenzia, marketing BigAnt, 27 servizi, 32 specialisti, dieci moduli e dashboard.
 - `public`: dashboard italiana unica per soci, collaboratori e clienti.
 - `tests`: controlli di comportamento, isolamento, importi, approvazioni e integrazione.
 - `docs`: brief, metodo, decisioni, API, collaudo e percorso di attivazione.
@@ -38,7 +41,7 @@ Le funzioni esterne rimangono scollegate. La tabella nel report distingue funzio
 
 ## Prima prova in cinque minuti
 
-1. Entra come **Socio DEMO** e apri Direzione: sei domande, decisioni in attesa, dati di esempio.
+1. Entra come **Socio DEMO** e apri **Mappa agenzia**: reparti, servizi, dieci moduli e aree ancora da costruire. **Marketing BigAnt** contiene il piano del cliente zero; **Direzione** le sei domande e le decisioni.
 2. In **Sciame di agenti**, avvia Social sull’attività BigAnt e leggi l’esito. Apri l’approvazione prodotta.
 3. In **Growth**, prova la ricerca DEMO: i nuovi contatti hanno fonti ed email inventate; apri analisi e bozza.
 4. Seleziona **Bottega Aurora DEMO**, apri Fidelity e accredita un timbro all’iscritto inventato.
