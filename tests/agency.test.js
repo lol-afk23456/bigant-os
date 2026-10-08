@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {createApp} from '../server.js';
 import {agencyRegistry,validateAgencyRegistry} from '../src/agency/index.js';
 import {marketingChannels} from '../src/agency/marketing.js';
+import {coreAgentIds} from '../src/agents/core.js';
+import {specialistIds} from '../src/agents/specialists.js';
 
 function fixture(t){const a=createApp();t.after(()=>a.close());const user=id=>a.store.one('SELECT * FROM os_users WHERE id=?',id);return {...a,user,owner:user('demo-owner'),client:user('demo-client'),team:user('demo-collaborator')};}
 test('intera agenzia: diciannove servizi di riferimento, specialità e dieci moduli distinti senza orfani',()=>{
@@ -19,22 +21,32 @@ test('il registro rifiuta omissioni, ID duplicati, riferimenti errati e privileg
   assert.throws(()=>validateAgencyRegistry(r),/Registro agenzia/);
  }
 });
-test('ogni specialista predisposto resta non eseguibile e non pianificabile',async t=>{
+test('tutti i 32 agenti hanno una procedura eseguibile; ID sconosciuti restano rifiutati senza creare job',async t=>{
  const a=fixture(t),before=a.store.one('SELECT COUNT(*) n FROM os_jobs').n;
- for(const agent of agencyRegistry.agents.filter(x=>x.status==='planned')){
-  assert.throws(()=>a.orchestrator.enqueue(a.owner,'demo-bigant',agent.id),/predisposto/);
-  await assert.rejects(a.orchestrator.handle({method:'POST',path:'/schedules',body:{agent:agent.id,trigger:'daily',enabled:true},user:a.owner,clientId:'demo-bigant'}),/non ancora attivo/);
-  assert.equal(agent.costCents,null);assert.equal(agent.permissions.externalActions,false);
+ const executors=new Set([...coreAgentIds,...specialistIds,'research','analyst','commercial','fidelity']);
+ assert.equal(agencyRegistry.agents.length,32);
+ for(const agent of agencyRegistry.agents){
+  assert.equal(agent.status,'implemented',agent.id);assert.ok(executors.has(agent.id),'executor mancante per '+agent.id);
+  assert.equal(agent.execution.implemented,true);assert.equal(agent.costCents,0);assert.equal(agent.permissions.externalActions,false);
+ }
+ for(const id of ['assente','../director','director;drop','']){
+  assert.throws(()=>a.orchestrator.enqueue(a.owner,'demo-bigant',id),/predisposto/);
+  await assert.rejects(a.orchestrator.handle({method:'POST',path:'/schedules',body:{agent:id,trigger:'daily',enabled:true},user:a.owner,clientId:'demo-bigant'}),/non ancora attivo/);
  }
  assert.equal(a.store.one('SELECT COUNT(*) n FROM os_jobs').n,before);
 });
-test('i trigger previsti e quelli implementati restano distinti; nessuna pianificazione si attiva leggendo la mappa',t=>{
- const a=fixture(t),before=a.store.query('SELECT * FROM os_schedules');
+test('calendari ed eventi DEMO sono implementati ma nessuna pianificazione si attiva leggendo la mappa o ricevendo un evento',t=>{
+ const a=fixture(t),before=a.store.query('SELECT * FROM os_schedules'),jobs=a.store.one('SELECT COUNT(*) n FROM os_jobs').n;
  const r=a.agency.state(a.owner);
- for(const id of ['review.created','content.approved','contract.signed'])assert.equal(r.triggers.find(v=>v.id===id).implemented,false);
- for(const id of ['lead.created','client.created','content.ready'])assert.equal(r.triggers.find(v=>v.id===id).implemented,true);
- for(const agent of r.agents)for(const trigger of agent.triggers)if(!trigger.implemented)assert.match(trigger.execution,/non è ancora implementato/);
+ for(const id of ['daily','weekly-monday','weekly-friday','monthly']){const c=r.triggers.find(v=>v.id===id);assert.equal(c.kind,'calendar');assert.equal(c.implemented,true);assert.equal(c.enabledByDefault,false);assert.equal(c.timezone,'Europe/Rome');}
+ for(const id of ['lead.created','client.created','content.ready','content.approved','contract.signed','review.created','objective.changed','brief.approved']){
+  const e=r.triggers.find(v=>v.id===id);assert.equal(e.kind,'event');assert.equal(e.implemented,true);assert.equal(e.simulation,true);assert.equal(e.externalSourceConnected,false);assert.equal(e.enabledByDefault,false);
+ }
+ for(const id of ['review.created','objective.changed','brief.approved'])assert.match(r.triggers.find(v=>v.id===id).source,/provider scollegato/);
+ for(const agent of r.agents)for(const trigger of agent.triggers)assert.match(trigger.execution,/regola esplicitamente attivata/);
+ for(const name of ['review.created','content.approved','contract.signed'])assert.deepEqual(a.orchestrator.event(name,'demo-bigant','entita-demo-'+name).jobs,[]);
  assert.deepEqual(a.store.query('SELECT * FROM os_schedules'),before);assert.ok(before.every(s=>s.enabled===0));
+ assert.equal(a.store.one('SELECT COUNT(*) n FROM os_jobs').n,jobs);
 });
 test('mappa e marketing sono riservati ai soci; marketing ignora il cliente selezionato e legge solo BigAnt',async t=>{
  const a=fixture(t);

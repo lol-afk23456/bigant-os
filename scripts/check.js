@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { PROJECT_ROOT, safePath, validateDatabase } from './backup.js';
 import { services, departments, agentDefinitions, integrations } from '../src/registry.js';
 import {validateAgencyRegistry} from '../src/agency/index.js';
+import { extractPlaybook } from './estrai-playbook.js';
 
 const run = promisify(execFile);
 const pinned = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
@@ -61,20 +62,28 @@ async function checkDocumentation() {
     // Prose and templates can contain untrusted examples. Inspect actual Markdown
     // links only; do not flag URLs, quoted instructions or provider names as code.
     const markdown = (await readFile(file, 'utf8')).replace(/^\s*(```|~~~)[\s\S]*?^\s*\1[^\n]*$/gm, '');
-    for (const match of markdown.matchAll(/!?\[[^\]\n]*\]\(\s*(<[^>]*>|[^\s)]+)(?:\s+"[^"]*")?\s*\)/g)) {
+    // Un documento che incorpora altri file con <!-- FILE: percorso --> (il brief integrale)
+    // ha collegamenti relativi alla cartella del file incorporato, non alla propria.
+    const chunks = markdown.split(/^<!-- FILE: (docs\/[A-Za-z0-9_./-]+\.md) -->$/m);
+    for (let index = 0; index < chunks.length; index += 2) {
+    const base = index ? dirname(resolve(PROJECT_ROOT, chunks[index - 1])) : dirname(file);
+    for (const match of chunks[index].matchAll(/!?\[[^\]\n]*\]\(\s*(<[^>]*>|[^\s)]+)(?:\s+"[^"]*")?\s*\)/g)) {
       const link = match[1].replace(/^<|>$/g, '');
       if (/^[a-z][a-z0-9+.-]*:/i.test(link) || link.startsWith('#') || link.startsWith('//')) continue;
       try {
         const target = decodeURIComponent(link.split(/[?#]/)[0]);
         if (!target) continue;
-        const path = await safePath(resolve(dirname(file), target), PROJECT_ROOT);
+        const path = await safePath(resolve(base, target), PROJECT_ROOT);
         const stat = await lstat(path);
         demand(stat.isFile() || stat.isDirectory(), 'La destinazione non è un file o una cartella.'); checked++;
       } catch (error) { problems.push(`${relative(PROJECT_ROOT, file)} → ${link}: ${error.code === 'ENOENT' ? 'destinazione mancante' : error.message}`); }
     }
+    }
   }
+  const extracted = await extractPlaybook({ verify: true });
+  for (const path of extracted.problems) problems.push(`${path}: diverso dalla sezione del brief integrale (rigenera con node scripts/estrai-playbook.js)`);
   demand(!problems.length, problems.join('\n'));
-  return `${files.length} documenti letti; ${checked} collegamenti locali verificati. Fonti web non interrogate.`;
+  return `${files.length} documenti letti; ${checked} collegamenti locali verificati; ${extracted.files.length} documenti del playbook identici al brief. Fonti web non interrogate.`;
 }
 
 async function checkDependencies() {
