@@ -1,4 +1,5 @@
 import {managementBlueprints} from './agency/management.js';
+import {agentServices} from './agents/catalog.js';
 export const services = [
   ['presence','Presenza online e reputazione','local','GBP, directory autorizzate, recensioni','Da attivare','Google Business Profile'],
   ['multisite','Presenza multisede','local','Sedi, coerenza anagrafica, segnalazioni','Da attivare','Google Business Profile'],
@@ -63,7 +64,7 @@ export const agentDefinitions=[
   ['video-ai','Specialista Video AI','production','Segue SOP, brand cliente e feedback, con controllo diritti','planned'],
   ['creative-direction','Direttore creativo','production','Verifica concept e coerenza visiva del lavoro','planned'],
   ['fidelity','Specialista Fidelity','account','Prepara campagne DEMO e controlli delle tessere nel modulo comune','module']
-].map(([id,name,department,purpose,status])=>({id,name,department,purpose,status,mode:status==='planned'?'Solo struttura: nessuna esecuzione':'Regole locali DEMO',costCents:status==='planned'?null:0,source:'Playbook BigAnt',runsOn:status==='planned'?'Non eseguito; futuro worker OS':'Processo OS locale; cloud non attivo',failure:'Tre tentativi soltanto per attività idempotenti; esito incerto da riconciliare; poi verifica dei soci',reads:department==='administration'?['admin']:['master','dna','feedback','strategy','report']}));
+].map(([id,name,department,purpose])=>({id,name,department,purpose:purpose.includes('da implementare')?'Esegue una procedura specialistica DEMO con fonti e approvazione':purpose,status:Object.hasOwn(agentServices,id)?'implemented':'planned',mode:'Procedura DEMO offline · nessun modello AI collegato',costCents:0,source:'SOP versionata BigAnt',runsOn:'Processo OS locale; cloud non attivo',failure:'Tre tentativi idempotenti; errori e prerequisiti visibili; nessuna uscita esterna',reads:department==='administration'?['admin']:['master','dna','feedback','strategy','report']}));
 // Un solo elenco autorevole degli specialisti: i reparti non possono perderne uno.
 for(const department of departments)department.agents=agentDefinitions.filter(a=>a.department===department.id).map(a=>a.id);
 export const integrations=[
