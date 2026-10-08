@@ -11,6 +11,7 @@
 - Stato e cose da fare: `docs/REPORT-CLAUDE.md`; account e chiavi: `docs/DA-FARE-RAFFAELE.md`; requisiti: `docs/copertura/requisiti-brief.json` (R-001…R-377) e `docs/copertura/valutazione-preliminare.json` (solo R-001…R-126, da verificare).
 - Sciame: `npm run sciame -- --motore claude-code [--flussi ...] --salva-prove` (agenti in `.claude/agents/`, contratti in `src/sciame/schemi.js`); scenario: `npm run scenario`.
 - Versione online (pagina privata claude.ai): `node scripts/build-online.js`, poi ripubblicare `.cache/online/BigAnt-OS.html` sullo stesso artifact. Guida: `docs/ONLINE.md`.
+- **Prossimo lavoro autorizzato:** `docs/FASE-1-SERVER-REALE.md` (server reale su Railway, autorizzato dal proprietario l'8 ottobre 2026). Prima di iniziare verifica che `RAILWAY_TOKEN` sia presente e che `backboard.railway.com` sia raggiungibile.
 - Prossimo passo indicato nel report: rifare Commerciale e Social con il motore Claude Code, poi completare la matrice con il revisore scettico.
 
 ## Ambiente
