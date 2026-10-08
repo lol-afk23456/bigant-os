@@ -13,6 +13,8 @@ import {createFidelityModule} from './src/fidelity.js';
 import {createAdministrationModule} from './src/administration.js';
 import {createOrchestrator} from './src/orchestrator.js';
 import {createAgencyModule} from './src/agency/index.js';
+import {createSciame} from './src/sciame/index.js';
+import {createMotore} from './src/motori/index.js';
 const root=dirname(fileURLToPath(import.meta.url));
 const brandAssets=Object.freeze({
   '/brand/logo.png':{file:'logo.png.base64',sha256:'664e4ae8d8170427554fe36c2739562b71f24b8ed533f6068aa012b97ec2864c'},
@@ -29,13 +31,15 @@ const digest=value=>createHash('sha256').update(String(value)).digest('hex');
 const safeEqual=(a,b)=>{const x=Buffer.from(String(a||'')),y=Buffer.from(String(b||''));return x.length===y.length&&timingSafeEqual(x,y);};
 const profiles=['demo-owner','demo-collaborator','demo-client','demo-client-other'];
 const publicUser={id:'os-public',role:'owner',name:'Visitatore DEMO',active:1};
-export function createApp({database=':memory:',origin='http://127.0.0.1:4330',worker=false,clock=()=>new Date()}={}) {
+export function createApp({database=':memory:',origin='http://127.0.0.1:4330',worker=false,clock=()=>new Date(),motore=null,importaProveSciame=false,env=process.env}={}) {
   const base=new URL(origin);if(base.protocol!=='http:'||!['localhost','127.0.0.1'].includes(base.hostname))throw new Error('Prototipo DEMO: è consentito soltanto un indirizzo HTTP locale.');
   const store=openStore(database);seedCore(store);
   const production=createProduction({store}),growth=createGrowthModule({store,origin}),fidelity=createFidelityModule({store,origin}),administration=createAdministrationModule({store,clock});
   growth.seed();fidelity.seed();administration.seed();
   const orchestrator=createOrchestrator({store,production,administration,growth,fidelity,clock});
   const agency=createAgencyModule({store});
+  const sciame=createSciame({store,production,administration,growth,orchestrator,root,env,clock,motore:motore?(typeof motore==='string'?createMotore({nome:motore,root,env}):motore):null});
+  if(importaProveSciame)sciame.importaProve(resolve(root,'docs/demo-sciame'));
   const limits=new Map();
   function rate(key,max=120,window=60000) {let l=limits.get(key);if(!l||l.until<Date.now()){l={count:0,until:Date.now()+window};limits.set(key,l);}if(++l.count>max)throw new AppError('Troppe richieste: riprova tra poco.',429);if(limits.size>10000)for(const[k,v]of limits)if(v.until<Date.now())limits.delete(k);}
   function session(req) {const token=(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('bigant_os='))?.slice(10);if(!token)return null;return store.one('SELECT u.id,u.name,u.email,u.role,u.tenant_id,u.active,s.csrf,s.id session_id FROM os_sessions s JOIN os_users u ON u.id=s.user_id WHERE s.id=? AND s.expires_at>? AND u.active=1',digest(token),Date.now());}
@@ -110,13 +114,14 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
           if(!['approved','rejected','changes'].includes(b.decision))throw new AppError('Decisione non valida.');
           if(b.decision!=='approved'&&!text(b.reason))throw new AppError('Indica il motivo della richiesta.');
           if(a.kind==='agent_output')return json(res,orchestrator.outputs.decide(u,a,b));
+          if(a.kind==='sciame_output')return json(res,sciame.decide(u,a,b));
           if(a.kind==='growth_message'){requireOwner(u);const current=store.one("SELECT MAX(version) version FROM os_approvals WHERE kind='growth_message' AND entity_id=?",a.entity_id);if(current.version!==a.version)throw new AppError('Versione superata.',409);return reply(res,await growth.handle({method:'PATCH',path:'/messages/'+a.entity_id,body:{status:b.decision==='approved'?'approved':b.decision==='changes'?'draft':'cancelled',reason:b.reason},user:u,clientId}));}
           if(a.kind==='fidelity_campaign'&&u.role!=='owner'&&!JSON.parse(store.one('SELECT services_json FROM os_clients WHERE id=?',clientId).services_json).includes('fidelity'))throw new AppError('Servizio Fidelity non attivo.',403);
           if(a.kind==='fidelity_campaign')return reply(res,await fidelity.handle({method:'POST',path:'/campaigns/'+a.entity_id+'/decision',body:{...b,version:a.version},user:u,clientId}));
           const decision=await production.handle({method:'POST',path:'/approvals/'+a.id,body:b,user:u,clientId});if(b.decision==='approved')orchestrator.event('content.approved',clientId,a.entity_id,a.version);return reply(res,decision);
         }
-        for(const [name,module]of Object.entries({growth,fidelity,administration,agents:orchestrator,production,agency}))if(path.startsWith('/api/'+name+'/')){
-          if(name==='growth'||name==='administration'||name==='agents')requireOwner(u);
+        for(const [name,module]of Object.entries({growth,fidelity,administration,agents:orchestrator,production,agency,sciame}))if(path.startsWith('/api/'+name+'/')){
+          if(['growth','administration','agents','sciame'].includes(name))requireOwner(u);
           if(name==='fidelity'&&u.role!=='owner'&&!JSON.parse(store.one('SELECT services_json FROM os_clients WHERE id=?',clientId).services_json).includes('fidelity'))throw new AppError('Servizio Fidelity non attivo.',403);
           const relative=path.slice(('/api/'+name).length)+(name==='fidelity'?url.search:'');
           if(name==='fidelity'&&method==='GET'&&/^\/programs\/[^/]+\/qr$/.test(relative.split('?')[0])){const programId=relative.split('/')[2];const program=store.one('SELECT id FROM fi_programs WHERE id=? AND tenant_id=? AND active=1',programId,clientId);if(!program)throw new AppError('Programma non disponibile.',404);const slug=store.one('SELECT slug FROM os_clients WHERE id=?',clientId).slug;return reply(res,{data:await QRCode.toBuffer(runtimeOrigin+'/fidelity/join/'+encodeURIComponent(slug)+'?program='+encodeURIComponent(programId),{type:'png',width:280,margin:2,errorCorrectionLevel:'M'}),contentType:'image/png'});}
@@ -146,7 +151,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const server=http.createServer(handler);server.requestTimeout=30000;server.headersTimeout=15000;
   let workerError=null;
   const timer=worker?setInterval(()=>orchestrator.tick().then(()=>{workerError=null;}).catch(()=>{workerError='Controllo delle automazioni da verificare.';}),2000):null;timer?.unref();
-  return {server,store,production,growth,fidelity,administration,orchestrator,agency,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(server.listening)await new Promise(r=>server.close(r));store.close();}};
+  return {server,store,production,growth,fidelity,administration,orchestrator,agency,sciame,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(server.listening)await new Promise(r=>server.close(r));store.close();}};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   if(process.env.NODE_ENV==='production')throw new Error('Questa versione è un prototipo DEMO locale. Il rilascio richiede una fase autorizzata separata.');
@@ -154,7 +159,7 @@ if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const data=resolve(process.env.DATA_DIR||resolve(root,'.data'));if(!data.startsWith(root+'/'))throw new Error('I dati devono restare nella cartella tecnica del repository.');await safePath(data,root);
   const databasePath=resolve(data,'bigant-os.sqlite');for(const suffix of ['', '-wal', '-shm', '-journal'])await safePath(databasePath+suffix,root,{file:existsSync(databasePath+suffix)});
   mkdirSync(data,{recursive:true,mode:0o700});
-  const app=createApp({database:resolve(data,'bigant-os.sqlite'),origin:`http://127.0.0.1:${port}`,worker:true});
+  const app=createApp({database:resolve(data,'bigant-os.sqlite'),origin:`http://127.0.0.1:${port}`,worker:true,importaProveSciame:true});
   app.server.listen(port,'127.0.0.1',()=>console.info(`BigAnt OS · DEMO locale · http://127.0.0.1:${port}`));
   for(const signal of ['SIGTERM','SIGINT'])process.on(signal,()=>app.close().then(()=>process.exit(0)));
 }
