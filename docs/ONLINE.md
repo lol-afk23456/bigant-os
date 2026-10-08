@@ -8,7 +8,9 @@ Aggiornato l'8 ottobre 2026.
 - **Cosa c'è dentro**: l'intero BigAnt OS, cioè lo stesso codice di `server.js`, `src/` e `public/`. Ci sono la dashboard dei soci (agenzia, marketing, direzione, amministrazione, clienti, lavori, Growth, Fidelity, ufficio virtuale, sciame, approvazioni, registro, servizi, collegamenti, accessi) e l'area cliente.
 - **Dove gira**: dentro il browser di chi apre il link. Il database SQLite vive nella pagina e si salva solo in quel browser. Nessun dato passa da un server e nessun dato reale entra mai.
 - **Accessi**: email e password di prova per il socio (`socio@bigant.example`) e per il cliente (`cliente@aurora.example`, attività *Bottega Aurora DEMO*). Le password si generano quando si costruisce la pagina e restano in `.cache/online/credenziali.json`, cartella esclusa da Git: non sono nel repository. Restano anche i pulsanti di accesso rapido dei profili DEMO.
-- **Ricomincia da capo**: il pulsante in basso a destra cancella le prove salvate nel browser e riparte dai dati DEMO iniziali.
+- **Sito pubblico per tutti**: https://lol-afk23456.github.io/bigant-os-prova/ (repository pubblico `bigant-os-prova`, aggiornato con `node scripts/build-online.js --pubblica`). Si entra con i profili DEMO, senza password.
+- **Giro del giorno automatico**: all'apertura, se oggi lo sciame non ha ancora lavorato, parte da solo un giro con tutti i reparti (motore DEMO, costo zero).
+- **Riparti da zero**: il collegamento «Dati di esempio · riparti da zero» nel menu cancella, con conferma, le prove salvate nel browser.
 
 ## Lo sciame nella versione online
 
