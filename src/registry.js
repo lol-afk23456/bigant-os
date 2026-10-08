@@ -1,3 +1,4 @@
+import {managementBlueprints} from './agency/management.js';
 export const services = [
   ['presence','Presenza online e reputazione','local','GBP, directory autorizzate, recensioni','Da attivare','Google Business Profile'],
   ['multisite','Presenza multisede','local','Sedi, coerenza anagrafica, segnalazioni','Da attivare','Google Business Profile'],
@@ -21,7 +22,11 @@ export const services = [
   ['branding','Brand e direzione creativa','production','Posizionamento, identità, linee guida','Metodo disponibile','Figma, Canva e Adobe'],
   ['growth','Growth e ricerca clienti','sales','Ricerca, CRM, proposte, conversazioni e appuntamenti','Modulo locale','Brave, OpenAI, Gmail e Calendar'],
   ['fidelity','Fidelity','account','Carte, timbri, punti, premi e campagne','Modulo locale','Apple e Google Wallet'],
-  ['local','Google Business Profile','local','Scheda, aggiornamenti, recensioni e report','Metodo disponibile','Google Business Profile']
+  ['local','Google Business Profile','local','Scheda, aggiornamenti, recensioni e report','Metodo disponibile','Google Business Profile'],
+  ['events','Gestione eventi','production','Programma, fornitori, responsabilità e rendiconto','Da attivare','Partner e calendario'],
+  ['drone','Riprese con drone','production','Brief, piano riprese, autorizzazioni e montaggio','Da attivare','Operatore e strumenti video'],
+  ['video-ai','Video AI','production','SOP master, brand, storyboard e log feedback','Da attivare','Runway e Artlist'],
+  ['creative-direction','Direzione creativa','production','Concept, coerenza visiva e revisione dei materiali','Da attivare','Figma, Canva e Adobe']
 ].map(([id,name,department,deliverables,status,integration],index)=>({id,name,department,deliverables,status,integration,catalogue:index<19?index+1:null,sop:'docs/PLAYBOOK.md',data:['client_id','source','version','approval','cost'],activation:'SOP validata, responsabile, margine, fonte autorizzata e test sul pilota',implemented:['social','growth','fidelity','booking','audit'].includes(id)}));
 export const departments=[
   {id:'direction',name:'Direzione e crescita',agents:['director'],trigger:'Venerdì · massimo tre priorità',visibility:'aggregates'},
@@ -44,9 +49,24 @@ export const agentDefinitions=[
   ['research','Ricerca commerciale','sales','Ricerca fixture Growth','module'],
   ['analyst','Analista commerciale','sales','Analisi fixture Growth','module'],
   ['commercial','Commerciale','sales','Bozze, proposte e follow-up Growth','module'],
-  ...['video','ads','seo','website','ecommerce','booking','reception','local','reputation'].map(id=>[id,({ads:'Specialista ADV',seo:'SEO e sito',local:'Google Business Profile',reputation:'Reputazione',video:'Produzione video',website:'Siti web',ecommerce:'E-commerce',booking:'Prenotazioni',reception:'Centralino AI'})[id],['local','reputation'].includes(id)?'local':'production','SOP e spazio pronti; connettore da attivare','planned'])
-].map(([id,name,department,purpose,status])=>({id,name,department,purpose,status,mode:'Regole locali DEMO',costCents:0,source:'Playbook BigAnt',runsOn:'Processo OS: locale nel prototipo, server dopo approvazione',failure:'Tre tentativi per attività idempotenti; poi verifica dei soci',reads:department==='administration'?['admin']:['master','dna','feedback','strategy','report']}));
+  ...['video','ads','seo','website','ecommerce','booking','reception','local','reputation'].map(id=>[id,({ads:'Specialista ADV',seo:'SEO e sito',local:'Google Business Profile',reputation:'Reputazione',video:'Produzione video',website:'Siti web',ecommerce:'E-commerce',booking:'Prenotazioni',reception:'Centralino AI'})[id],['local','reputation'].includes(id)?'local':'production','SOP da validare sul pilota; specialista da implementare','planned']),
+  ['multisite','Specialista multisede','local','Confronta sedi, anagrafiche e anomalie','planned'],
+  ['accessibility','Specialista accessibilità','quality','Prepara audit e correzioni, da verificare anche manualmente','planned'],
+  ['social-commerce','Specialista social commerce','production','Coordina catalogo social e percorso di acquisto','planned'],
+  ['display','Specialista display e partner','production','Prepara piano media, partner e controlli risultati','planned'],
+  ['tv','Specialista TV, cinema e DOOH','production','Coordina spot, diritti e piano del partner','planned'],
+  ['merch','Produzione merchandising','production','Prepara specifiche, preventivo fornitore e campione','planned'],
+  ['verticals','Pacchetti e partnership','direction','Prepara perimetro, capacità e decisioni sui pacchetti','planned'],
+  ['branding','Specialista branding','production','Traduce posizionamento e brief in identità visiva','planned'],
+  ['events','Coordinatore eventi','production','Coordina programma, consegne, fornitori e responsabili','planned'],
+  ['drone','Produzione drone','production','Prepara piano riprese e verifiche dell’operatore qualificato','planned'],
+  ['video-ai','Specialista Video AI','production','Segue SOP, brand cliente e feedback, con controllo diritti','planned'],
+  ['creative-direction','Direttore creativo','production','Verifica concept e coerenza visiva del lavoro','planned'],
+  ['fidelity','Specialista Fidelity','account','Prepara campagne DEMO e controlli delle tessere nel modulo comune','module']
+].map(([id,name,department,purpose,status])=>({id,name,department,purpose,status,mode:status==='planned'?'Solo struttura: nessuna esecuzione':'Regole locali DEMO',costCents:status==='planned'?null:0,source:'Playbook BigAnt',runsOn:status==='planned'?'Non eseguito; futuro worker OS':'Processo OS locale; cloud non attivo',failure:'Tre tentativi soltanto per attività idempotenti; esito incerto da riconciliare; poi verifica dei soci',reads:department==='administration'?['admin']:['master','dna','feedback','strategy','report']}));
+// Un solo elenco autorevole degli specialisti: i reparti non possono perderne uno.
+for(const department of departments)department.agents=agentDefinitions.filter(a=>a.department===department.id).map(a=>a.id);
 export const integrations=[
   ['google-ads','Google Ads','Report e campagne','Lettura iniziale'],['meta','Meta Ads e social','Campagne e contenuti','Lettura iniziale'],['ga4','Google Analytics','Traffico e conversioni','Lettura'],['gsc','Search Console','Ricerca e salute del sito','Lettura'],['gbp','Google Business Profile','Scheda e recensioni','Lettura iniziale'],['postiz','Postiz','Programmazione contenuti','Approvazione prima di pubblicare'],['gmail','Gmail','Conversazioni commerciali','Approvazione prima degli invii'],['calendar','Google Calendar','Disponibilità e appuntamenti','Lettura, scrittura approvata'],['sheets','Prima Nota e Tracker','Migrazione e riconciliazione','Sola lettura iniziale'],['drive','Google Drive','Documenti e riferimenti','Per cartella autorizzata'],['trello','Trello','Task e assegnazioni','Sola lettura iniziale'],['openai','OpenAI','Analisi e bozze','Budget e permessi minimi'],['brave','Brave Search','Ricerca commerciale','Ricerca autorizzata'],['wallet','Apple e Google Wallet','Carte e aggiornamenti','Certificati e approvazione'],['ped','PED BigAnt','Calendario e approvazioni','API e sorgente da verificare'],['invoicing','Fatturazione elettronica','Bozze fatture','Software da identificare'],['notifications','Notifiche ai soci','Avvisi di blocco','Canale da autorizzare']
 ].map(([id,name,purpose,permission])=>({id,name,purpose,permission,status:'Non collegato',lastSync:null}));
-export const managementModules=['Anagrafiche','Contratti e preventivi','Fatturazione e incassi','Scadenziario','Prima nota e cassa','Costi e abbonamenti','Ore e marginalità','Task e consegne','Documenti e autorizzazioni','Direzione','Compensi e prelievi','Quadratura e anomalie'];
+export const managementModules=managementBlueprints.map(m=>m.name);
