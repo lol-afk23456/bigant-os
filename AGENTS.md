@@ -1,5 +1,7 @@
 # BigAnt OS — regole per gli agenti
 
+**Punto di partenza (9 ottobre 2026): `docs/PASSAGGIO-CODEX.md`** — accessi, server reale su Railway, stato, priorità e regole.
+
 Prima di ogni sessione rileggere `docs/BRIEF-BIGANT.md`, `docs/VERIFICA-COPERTURA-BRIEF.md` e `docs/PASSAGGIO-CONSEGNE.md`. Il brief esteso è conservato integralmente; la matrice storica non ne misura ancora tutto il perimetro. Per proseguire usare il ramo remoto, senza forzare la storia locale.
 
 Leggere README, docs/BRIEF-BIGANT.md, docs/DECISIONI.md e docs/REPORT-NOTTE.md prima di modificare.
