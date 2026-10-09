@@ -45,7 +45,8 @@ Per ora servono **tre tipi di accesso**:
 | ID | Pagina / percorso | Problema osservato | Conseguenza per l'utente | Modifica proposta | Priorità | Come verificare che sia risolto |
 |---|---|---|---|---|---|---|
 | UI-001 | Accesso | Il login non sembra professionale [R]. Nel codice il pannello reale mostra prima un pulsante e solo dopo il modulo (`public/app.js`, `login()`) [C] | Prima impressione debole, un passaggio in più a ogni accesso | Login definitivo: logo BigAnt, campi email e password subito visibili, pulsante unico "Accedi", messaggio d'errore chiaro, "Password dimenticata?" (vedi FUN-003). Colori BigAnt #F26B21 e #141413 | P1 · preferenza + difetto | Da telefono e da PC: si accede con email e password in un solo passaggio, senza diciture DEMO |
-| UI-002 | Accesso | Si vedono gli "account demo" [R]. In modalità reale il codice li nasconde: compaiono solo se il server risponde `demo:true` (`public/app.js:62`) [C]. Il server reale risponde `demo:false` [C, verificato dal vivo il 9/10] | Se è il server reale, è un difetto grave; se è il sito di prova, è il comportamento previsto | Chiarire su quale indirizzo è stata vista (domanda 1). Sul server reale: nessun profilo dimostrativo, nessuna "ANTEPRIMA INTERATTIVA", nessun testo "dati inventati" | P1 · [DV] | Su `bigant-os-server-production.up.railway.app` il login non mostra profili DEMO |
+| UI-002 | Accesso | Si vedono diciture "demo" [R]. I profili dimostrativi del login il codice li nasconde già in modalità reale (`public/app.js:62`) [C]; le altre diciture DEMO restano in tutta l'app (vedi UI-006) | Testi da prototipo nella versione definitiva | Confluisce in UI-006 | P1 | Vedi UI-006 |
+| UI-006 | Tutta l'app | Diciture "DEMO" in tutta l'app. Estensione [C]: **157** in `public/app.js` (molte fisse, per esempio "Apri la regia DEMO", "Accoda procedura DEMO", "Azienda DEMO"), 3 in `public/cliente.js`, 6 in `public/ufficio.js` e **578** nei testi generati dal server in `src/`. **Regola decisa [R]:** la dicitura DEMO si toglie **solo dalla funzione che è stata configurata e funziona davvero**, man mano che si avanza. Quello che non è ancora configurato resta segnato DEMO | Distinguere sempre ciò che è vero da ciò che è ancora una prova | Per ogni funzione portata a regime: togliere le sue diciture DEMO (interfaccia e testi del server) **nello stesso intervento** che la rende reale, e aggiornare la pagina Avanzamento (FUN-004). Nessuna rimozione in blocco | P1 · regola di lavoro | Ogni funzione senza DEMO ha una prova che funziona sul server reale; ogni funzione non ancora configurata riporta ancora DEMO |
 | FUN-001 | Accessi | Servono gli accessi definitivi: amministrazione, collaboratore Vincenzo, cliente BigAnt [R] | Senza, il collaboratore e il cliente non possono essere collaudati | Creare da *Accessi*: utente collaboratore (Vincenzo) e utente cliente collegato al cliente di prova "BigAnt" (vedi DAT-001). Account nominali, password scelte dai titolari, mai scritte in chat o nei documenti | P1 · funzione esistente da usare | Tre accessi distinti entrano e ciascuno vede solo il proprio spazio |
 | DAT-001 | Clienti / Accessi | Oggi l'unico cliente nel database reale è "BigAnt", ed è l'agenzia stessa ("cliente zero" del Marketing BigAnt) [C: `src/store.js`, `seedRealCore`] | Usare quel record come cliente di prova mescolerebbe i dati dell'agenzia con quelli del cliente | Creare un cliente separato, per esempio "BigAnt (cliente di prova)", con servizi attivi propri, e collegarci l'utente cliente | P1 · decisione + dati | Il cliente di prova ha una scheda propria; la vista cliente non mostra dati interni dell'agenzia |
 | FUN-002 | Dopo il login | Si entra in automatico su *Mappa agenzia* [R] [C: `public/app.js`, `S.view=isOwner()?'agency':…`] | La prima schermata non risponde alla domanda "cosa devo fare oggi?" | **Una home diversa per ogni ruolo**, come prima pagina dopo il login (proposta di contenuti sotto) | P1 · nuova funzione | Ogni ruolo entra sulla propria home, la Mappa agenzia non è più la pagina d'ingresso |
@@ -105,7 +106,8 @@ Un'unica pagina lunga:
 | FUN-005 | Mappa agenzia → Reparti e specialisti | È lo schema degli agenti per reparto; non ha senso come prima cosa vista dall'amministrazione [R] | Informazione tecnica in primo piano | Spostare in **Sciame di agenti** come "Struttura dello sciame" (reparti, specialisti, procedure) | P2 · preferenza strutturale | La struttura per reparto si trova solo dentro Sciame di agenti |
 | FUN-006 | Mappa agenzia → "Un workspace per ogni servizio" | Utile, ma configurare un agente AI per ogni servizio richiede molto tempo. Potrebbe servire come **promemoria per la crescita dell'agenzia** oppure come base per costruire gli agenti [R] | Oggi è un elenco senza un uso chiaro | Spostare in **Sciame di agenti**, insieme a FUN-005. Il catalogo commerciale resta nella voce *Servizi*. L'uso da dare (promemoria di crescita o piano di costruzione degli agenti) è una decisione dei soci (D-02) | P3 · decisione | Un solo posto per "servizi e agenti che li seguono"; nessun doppione con *Servizi* |
 | FUN-007 | Mappa agenzia → I 10 moduli del gestionale | La sezione non è interessante così; i moduli vanno distribuiti dove servono [R] | Dieci moduli presentati in astratto, staccati dal lavoro | Ripartizione decisa dal proprietario: tabella "Dove finiscono i 10 moduli" qui sotto | P2 · preferenza strutturale | La sezione "Gestionale" non esiste più come elenco astratto; ogni modulo tenuto vive nella sua pagina |
-| FUN-008 | Mappa agenzia → Fondamenta da completare | Portfolio e autorizzazioni, capacità del team, obiettivi a 90 giorni, spese insolite, pacchetto per il commercialista, custodia dei collegamenti, onboarding: giudicate inutili da eliminare, o da ricollocare [R] [C: `src/agency/foundations.js`] | Lista di cantieri aperti che appesantisce la pagina | Proposta per ciascuna nella tabella "Fondamenta" qui sotto: togliere dalla vista e ricollocare solo quelle utili | P3 · preferenza | Nessuna "fondamenta da completare" visibile ai soci nelle pagine di lavoro |
+| FUN-008 | Mappa agenzia → Fondamenta da completare | Portfolio e autorizzazioni, capacità del team, obiettivi a 90 giorni, spese insolite, pacchetto per il commercialista, custodia dei collegamenti, onboarding [C: `src/agency/foundations.js`]. **Decisione [R]:** non si eliminano; sono interessanti come elenco di cose da costruire e si spostano in **Avanzamento BigAnt OS**, come il resto della Mappa agenzia | Lista di cantieri aperti in una pagina di lavoro | Spostare l'intera sezione in Avanzamento (FUN-004) | P3 · decisa | Le Fondamenta si trovano solo in Avanzamento |
+| FUN-009 | Nuova voce di menu: **Fatturazione** | Il proprietario vuole tenere sotto controllo soprattutto due cose: il **saldo dei clienti** della gestione social (quanto pagano e cosa resta da incassare) e i **costi degli abbonamenti** dell'agenzia [R] | Oggi questi dati sono sparsi tra Amministrazione e Gestionale | Una sola sezione **Fatturazione**, visibile **solo all'accesso amministrazione**, **ultima voce del menu**, in secondo piano. Raccoglie cassa, prima nota, fatture, incassi, saldo per cliente, costi e abbonamenti. Prima schermata: saldo per cliente e abbonamenti in scadenza | P3 · decisa | Collaboratore e cliente non vedono la voce né i dati (verifica sul server, non solo nel menu); l'amministrazione la trova in fondo al menu |
 | COL-001 | Task e consegne | Oggi i task si gestiscono su **Trello**, e funziona bene [R] | Doppio lavoro se BigAnt OS replica Trello | Valutare un collegamento a Trello in sola lettura: lavori e scadenze dei clienti visibili in BigAnt OS, mentre si continua a lavorare su Trello. Da progettare e autorizzare come ogni collegamento | P3 · collegamento mancante | Decisione dei soci (D-03); se approvato, i lavori Trello di un cliente compaiono nella sua scheda senza essere riscritti |
 
 ### Dove finiscono i 10 moduli del gestionale
@@ -114,27 +116,28 @@ Un'unica pagina lunga:
 |---|---|---|---|
 | Anagrafiche | Tenere | **Clienti**: anagrafica di ogni cliente dell'agenzia | Sono i clienti di BigAnt, non gli utenti del gestionale |
 | Commerciale e contratti | Tenere il contratto | **Clienti → scheda cliente → Contratto**, "sempre a portata di mano" | Il contratto si carica come documento (PDF), con data di inizio, durata e rinnovo |
-| Accessi del cliente (nuovo) | Aggiungere | **Clienti → scheda cliente → Accessi** | Vedi D-01: elenco di **quali** accessi esistono (Meta, Google, sito…), chi li possiede e dove sono custoditi. **Non** le password, che restano nel gestore di password |
-| Fatturazione e incassi | Secondo piano | **Amministrazione**, solo per l'accesso amministrazione | Collaboratori e clienti non la vedono. Attivazione futura |
-| Cassa e prima nota | Secondo piano | **Amministrazione → Fatturazione interna BigAnt** | Come sopra |
-| Costi e abbonamenti | Tenere, secondo piano | **Amministrazione** (costi e abbonamenti dell'agenzia) | Come sopra |
+| Accessi del cliente (nuovo) | Aggiungere, **con le credenziali** (D-01 decisa) | **Clienti → scheda cliente → Accessi**, visibile ad amministrazione e collaboratori, **mai ai clienti** | Vedi FUN-010 |
+| Fatturazione e incassi | Secondo piano | **Fatturazione** (FUN-009), solo amministrazione | |
+| Cassa e prima nota | Secondo piano | **Fatturazione** (FUN-009) | |
+| Costi e abbonamenti | Tenere, secondo piano | **Fatturazione** (FUN-009) | Priorità interna: abbonamenti sotto controllo |
 | Lavoro e marginalità | **Togliere** | — | Si nasconde; il codice resta finché non si decide |
 | Task e consegne | Da valutare | Clienti / Lavori, oppure collegamento Trello (COL-001) | Decisione D-03 |
 | Documenti e autorizzazioni | In dubbio | Probabilmente **Clienti → scheda cliente → Documenti** (contratti, liberatorie) | Decisione D-04 |
 | Cruscotto di direzione | **Eliminabile** | La sua funzione utile passa alla home dell'amministrazione (FUN-002) | Da riverificare quando si analizza la voce *Direzione* |
 | Scadenziario unico | Non commentato | [DV] | Proposta: le scadenze di contratti e rinnovi nella scheda cliente; quelle fiscali in Amministrazione |
 
-### Fondamenta da completare: proposta
+### Fondamenta da completare
 
-| Voce attuale | Proposta |
-|---|---|
-| Onboarding e salute cliente | Ricollocare: nella scheda cliente come "Avvio cliente" (checklist dei primi giorni) |
-| Portfolio e autorizzazioni | Togliere per ora (si può unire a Documenti, D-04) |
-| Capacità del team | Togliere: con due soci e un collaboratore non serve ora |
-| Obiettivi a 90 giorni | Togliere da qui; se servono, un riquadro nella home dell'amministrazione |
-| Spese insolite | Togliere da qui; rientra in Amministrazione quando la fatturazione sarà attiva |
-| Pacchetto per il commercialista | Come sopra: in Amministrazione, secondo piano |
-| Custodia dei collegamenti | Togliere da qui; vive già nella voce *Collegamenti* |
+**Decisione [R]:** l'intera sezione si sposta in **Avanzamento BigAnt OS** (FUN-008), senza eliminare nulla. Quando una fondamenta viene costruita, finisce nella pagina dove serve:
+- Onboarding e salute cliente → scheda cliente, "Avvio cliente";
+- Spese insolite e Pacchetto per il commercialista → Fatturazione;
+- Custodia dei collegamenti → Collegamenti.
+
+### Altre voci di questo blocco
+
+| ID | Pagina / percorso | Problema osservato | Conseguenza per l'utente | Modifica proposta | Priorità | Come verificare che sia risolto |
+|---|---|---|---|---|---|---|
+| FUN-010 | Clienti → scheda cliente → Accessi | **Decisione del proprietario [R]:** nella scheda cliente vanno anche le **credenziali** degli account del cliente (Meta, Google, sito…). Le vedono **amministrazione e collaboratori**, **mai i clienti**. Rischio noto e accettato per ora; la messa in sicurezza si completa più avanti | Le credenziali sono a portata di mano per chi lavora sul cliente | Requisiti minimi raccomandati fin dalla prima versione, perché costano poco e riducono molto il danno di un furto del database: (1) credenziali **cifrate** nel database; (2) password **nascosta** di default, si mostra con un clic; (3) ogni visualizzazione registrata nel **Registro attività** (chi, quando, quale); (4) controllo del ruolo **sul server**, non solo nel menu; (5) mai nei log, negli export o nei backup in chiaro | P2 · nuova funzione · rischio accettato | Un utente cliente non ottiene le credenziali nemmeno chiamando l'API direttamente; nel database non compaiono in chiaro; ogni visualizzazione lascia una riga nel Registro |
 
 ---
 
@@ -142,12 +145,12 @@ Un'unica pagina lunga:
 
 | ID | Decisione | Contesto |
 |---|---|---|
-| D-01 | "Accessi del cliente" nella scheda cliente: solo l'elenco (quali account, chi li ha, dove sono custoditi) o anche le credenziali? | Raccomandazione: **solo l'elenco**. Le password dei clienti in un gestionale web sono un rischio grave e una responsabilità verso il cliente |
+| D-01 | "Accessi del cliente": solo l'elenco o anche le credenziali? | **DECISA [R]:** anche le credenziali, visibili ad amministrazione e collaboratori, mai ai clienti. Rischio accettato; requisiti minimi in FUN-010 |
 | D-02 | "Un workspace per ogni servizio": promemoria per la crescita dell'agenzia o piano per costruire gli agenti? | Cambia dove va e cosa mostra |
-| D-03 | Task e consegne: restare su Trello con un collegamento in lettura, o gestirli in BigAnt OS? | Raccomandazione: restare su Trello e collegarlo dopo; non duplicare uno strumento che funziona |
+| D-03 | Task e consegne: Trello o BigAnt OS? | **DECISA [R]:** si resta su Trello; il collegamento si valuta in futuro (COL-001) |
 | D-04 | Documenti e autorizzazioni: servono in BigAnt OS? | Proposta minima: solo contratti e liberatorie nella scheda cliente |
 | D-05 | Le parti tolte vanno nascoste o eliminate dal codice? | Raccomandazione: nasconderle ora ed eliminarle dopo il collaudo della nuova struttura |
 
 ## Domande aperte
 
-1. Gli "account demo" nel login li hai visti sul server reale (`bigant-os-server-production.up.railway.app`) o sul sito di prova? (UI-002)
+Nessuna per questo blocco.
