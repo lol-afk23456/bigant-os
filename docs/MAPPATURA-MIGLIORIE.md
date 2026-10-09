@@ -295,7 +295,7 @@ Fonte storica: un foglio Google "Tracker abbonamenti".
 | D-02 | "Un workspace per ogni servizio": promemoria per la crescita dell'agenzia o piano per costruire gli agenti? | **DECISA [R]:** serve ad attivare, passo dopo passo ed entro un anno, i servizi che BigAnt oggi non offre. Diventa il Piano di attivazione dei servizi (FUN-014) |
 | D-06 | Nome della nuova sezione dei profili | **DECISA [R]:** "Profili" (per il cliente: "I tuoi profili") |
 | D-07 | Aggiornamento dei dati dei profili | **DECISA [R]:** una volta al giorno più "Aggiorna ora" |
-| D-09 | Registro ufficiale di incassi, canoni e saldi: Trello (bacheca Fatturazione) o BigAnt OS? | Raccomandazione: **finché la Fatturazione resta in secondo piano, Trello è il registro ufficiale**. BigAnt OS lo sostituisce solo quando il tracker (FUN-028) è collaudato, con un'importazione una tantum e un mese di prova in parallelo |
+| D-09 | Registro ufficiale di incassi, canoni e saldi: Trello (bacheca Fatturazione) o BigAnt OS? | **DECISA [R]: per ora resta Trello.** Percorso futuro: **finché la Fatturazione resta in secondo piano, Trello è il registro ufficiale**. BigAnt OS lo sostituisce solo quando il tracker (FUN-028) è collaudato, con un'importazione una tantum e un mese di prova in parallelo |
 | D-08 | Riquadro "obiettivo di fatturato" nella home dell'amministrazione | **DECISA [R]:** non si fa |
 | D-03 | Task e consegne: Trello o BigAnt OS? | **DECISA [R]:** si resta su Trello; il collegamento si valuta in futuro (COL-001) |
 | D-04 | Documenti e autorizzazioni: servono in BigAnt OS? | Proposta minima: solo contratti e liberatorie nella scheda cliente |
