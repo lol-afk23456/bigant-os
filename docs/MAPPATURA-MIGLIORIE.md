@@ -27,7 +27,8 @@ Sessione di mappatura con il proprietario (Raffaele), iniziata il 9 ottobre 2026
 | Amministrazione | Esaminata [R] [C]; bacheca Trello Fatturazione letta in sola lettura (solo struttura) |
 | Clienti (elenco, nuova attività, apri attività) e vista cliente (tutte le sezioni) | Esaminata [R] [C] |
 | Lavori e contenuti | Esaminata [R] [C] |
-| Growth, Fidelity, Ufficio virtuale, Sciame di agenti, Approvazioni, Registro attività, Servizi, Collegamenti, Accessi | Da esaminare |
+| Growth (e verifica del trasferimento di Fidelity sugli inventari) | Esaminata [R] [C]; confronto con il codice originale non fatto (i repository originali non sono in questa sessione) |
+| Fidelity (interfaccia), Ufficio virtuale, Sciame di agenti, Approvazioni, Registro attività, Servizi, Collegamenti, Accessi | Da esaminare |
 | Vista collaboratore | Da esaminare |
 | Vista cliente con un vero login da cliente | Rinviata: il proprietario la controllerà entrando con le credenziali del cliente (FUN-045) |
 | Uso da telefono | Da esaminare |
@@ -358,6 +359,57 @@ Lavori (task) e contenuti (piano editoriale, versioni, approvazioni) dell'attivi
 
 ---
 
+## 8. Growth (e verifica del trasferimento di Fidelity)
+
+### Visione del proprietario [R]
+
+Growth è un **progetto-prodotto** come Fidelity, e come sarà il futuro **Menu digitale**. Si appoggia allo sciame di agenti, va tenuto **in evidenza** e va **attivato davvero**. Oggi, cercando attività locali, restituisce solo risultati "DEMO". L'app originale BigAnt Growth esiste ed è online su un progetto Railway separato. Fidelity è stata collaudata molte volte, lato amministrazione e lato utente, quando era il progetto separato "BigAnt Fidelity", e funzionava. Va verificato che il trasferimento in BigAnt OS sia corretto. In Fidelity manca ancora l'inserimento in **Apple Wallet e Google Wallet**.
+
+### Cosa risulta dal codice e dagli inventari del trasferimento [C]
+
+Fonti: `research/GROWTH-INVENTARIO.md`, `research/FIDELITY-INVENTARIO.md`, `src/growth-providers.js`.
+
+**Growth.** La logica è stata trasferita quasi tutta e passa i suoi **24 test**:
+- CRM a 8 fasi, deduplica, punteggio, bozze, consensi, disiscrizioni;
+- import/export, budget, job con ripresa, conversione da lead a cliente.
+
+Però **tutte le funzioni esterne sono state sostituite da simulatori senza rete**: `src/growth-providers.js` non fa nessuna chiamata. Per questo la ricerca restituisce attività inventate. Mancano:
+- ricerca web reale (Brave Search);
+- lettura dei siti veri;
+- analisi con l'AI;
+- invio con Gmail;
+- calendario Google.
+
+L'inventario dice esplicitamente: «l'OS non è ancora un sostituto pronto della produzione Growth». Il collaudo dell'interfaccia completa non è stato fatto.
+
+**Fidelity.** La logica è stata trasferita e passa i suoi **27 test**:
+- programmi a timbri, punti e coupon; iscritti e consensi;
+- accrediti, riscatti e storni; carta pubblica e iscrizione;
+- export, anonimizzazione, campagne in bozza, automazioni, loghi, QR.
+
+Restano **non verificati di persona nell'interfaccia di BigAnt OS**:
+- scanner con la fotocamera;
+- carta pubblica;
+- iscrizione;
+- schermate dell'amministrazione.
+
+L'**emissione dei pass Wallet** (Apple e Google), le notifiche e i reinvii sono **bloccati** (rispondono "409"). Esistono solo i generatori dei contenuti del pass. Nell'originale l'Apple Wallet era fermo per un blocco del deployment Apple, non risolto.
+
+**Modalità reale.** Sul server reale i dati DEMO di Growth e Fidelity non vengono caricati: i due moduli partono vuoti.
+
+### Voci
+
+| ID | Pagina / percorso | Problema osservato | Conseguenza per l'utente | Modifica proposta | Priorità | Come verificare che sia risolto |
+|---|---|---|---|---|---|---|
+| FUN-049 | Menu → Growth, Fidelity, Menu digitale | Growth e Fidelity sono **prodotti** BigAnt, non pagine di gestione [R] | Oggi stanno mescolati alle altre voci | Gruppo di menu **"Prodotti"**, in evidenza: Growth, Fidelity, in futuro Menu digitale. Ogni prodotto si attiva per cliente come un servizio (FUN-041) | P2 · decisa | I prodotti sono raggruppati e riconoscibili nel menu |
+| COL-005 | Growth → ricerca attività locali | La ricerca restituisce solo risultati DEMO [R]. Causa: i fornitori esterni sono simulatori senza rete [C] | Growth non serve ancora al lavoro vero | **Attivazione a fasi**, ciascuna con chiavi, tetto di spesa, test e ok dei soci: **(1)** ricerca reale delle attività (Brave Search o fonte equivalente) e lettura dei siti, solo lettura; **(2)** analisi e punteggio con l'AI (`BIGANT_ANTHROPIC_API_KEY` con tetto); **(3)** bozze dei messaggi, sempre approvate da un socio; **(4)** invio da Gmail **solo manuale**, dopo l'approvazione, con consenso e disiscrizione già gestiti dal codice; **(5)** Google Calendar per gli appuntamenti. Il codice dei fornitori reali si recupera dall'originale `bigant-growth` (in sola lettura) e si ricollauda | P1 · collegamento mancante | Fase 1: una ricerca su "ristoranti Caserta" restituisce attività vere con fonte e data; nessun invio parte senza un'approvazione registrata |
+| FUN-050 | Growth → verifica del trasferimento | Il proprietario vuole la certezza che il trasferimento sia corretto [R] | — | **Collaudo completo sul server reale**, percorso per percorso: lead → analisi → bozza → approvazione → (invio simulato) → appuntamento → conversione in cliente. Confronto voce per voce con l'inventario e con l'app originale | P1 · verifica | Ogni riga dell'inventario Growth risulta provata nell'interfaccia, con esito scritto |
+| FUN-051 | Fidelity → verifica del trasferimento | Fidelity funzionava come progetto separato; non è dimostrato che funzioni uguale dentro BigAnt OS [R] [C] | Rischio di regressioni non viste | **Collaudo completo sul server reale**, lato amministrazione e lato iscritto: creare il programma, iscriversi dalla carta pubblica, accreditare con lo scanner (fotocamera, da telefono), riscattare, stornare, esportare. Stessa lista di prove usata in passato sull'originale | P1 · verifica | La lista di prove dell'originale passa tutta su BigAnt OS, anche da telefono |
+| COL-006 | Fidelity → Apple Wallet e Google Wallet | Manca l'inserimento nel Wallet [R]. Nel codice l'emissione è bloccata; esistono solo i generatori dei contenuti del pass [C] | La carta non si può salvare nel telefono | **Google Wallet:** emittente e account di servizio Google (variabili già previste nell'originale), poi attivazione e prova su un telefono Android. **Apple Wallet:** serve sbloccare l'account Apple Developer (Pass Type ID e certificati), problema aperto anche nell'originale. Certificati e chiavi solo nelle variabili di Railway, mai nel repository | P2 · collegamento mancante | Una carta di prova si aggiunge a Google Wallet e ad Apple Wallet e si aggiorna dopo un accredito |
+| DAT-003 | Growth e Fidelity → dati esistenti | Le app originali hanno dati veri (lead, iscritti, transazioni); BigAnt OS parte vuoto [C] | Passare a BigAnt OS significherebbe ripartire da zero | **Piano di importazione** dal database originale al server reale, fuori dal repository, con backup prima e confronto dei totali dopo. Solo dopo il collaudo (FUN-050, FUN-051) e con autorizzazione | P2 · da pianificare | I totali (lead, iscritti, saldi punti) coincidono tra originale e BigAnt OS dopo l'importazione |
+
+---
+
 ## Decisioni che spettano ai soci
 
 | ID | Decisione | Contesto |
@@ -368,6 +420,8 @@ Lavori (task) e contenuti (piano editoriale, versioni, approvazioni) dell'attivi
 | D-07 | Aggiornamento dei dati dei profili | **DECISA [R]:** una volta al giorno più "Aggiorna ora" |
 | D-09 | Registro ufficiale di incassi, canoni e saldi: Trello (bacheca Fatturazione) o BigAnt OS? | **DECISA [R]: per ora resta Trello.** Percorso futuro: **finché la Fatturazione resta in secondo piano, Trello è il registro ufficiale**. BigAnt OS lo sostituisce solo quando il tracker (FUN-028) è collaudato, con un'importazione una tantum e un mese di prova in parallelo |
 | D-10 | Fatture e pagamenti visibili al cliente (FUN-039), visto che il registro ufficiale resta Trello (D-09) | **DECISA [R]:** per ora il cliente vede **solo il contratto**; fatture e pagamenti quando la Fatturazione di BigAnt OS diventerà il registro ufficiale |
+| D-11 | Mentre Growth e Fidelity vengono attivati e collaudati in BigAnt OS, si continua a usare le app originali su Railway? | Raccomandazione: **sì**. Le originali restano in uso finché il collaudo (FUN-050, FUN-051) e l'importazione dei dati (DAT-003) non sono completati; poi si spengono con una data decisa |
+| D-12 | Ordine di attivazione | Proposta: prima il **collaudo di Fidelity** (già funzionante nell'originale, rischio basso), poi **Growth fase 1-2** (ricerca e analisi, senza invii), poi Google Wallet, poi gli invii Growth |
 | D-08 | Riquadro "obiettivo di fatturato" nella home dell'amministrazione | **DECISA [R]:** non si fa |
 | D-03 | Task e consegne: Trello o BigAnt OS? | **DECISA [R]:** si resta su Trello; il collegamento si valuta in futuro (COL-001) |
 | D-04 | Documenti e autorizzazioni: servono in BigAnt OS? | Proposta minima: solo contratti e liberatorie nella scheda cliente |
