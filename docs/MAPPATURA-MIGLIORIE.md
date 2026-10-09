@@ -24,7 +24,8 @@ Sessione di mappatura con il proprietario (Raffaele), iniziata il 9 ottobre 2026
 | Mappa agenzia, tutte e quattro le parti (Reparti e specialisti, Servizi, Gestionale, Fondamenta) | Esaminata [R] [C] |
 | Marketing BigAnt | Esaminata [R] [C] |
 | Direzione | Esaminata [R] [C] |
-| Amministrazione, Clienti, Lavori e contenuti, Growth, Fidelity, Ufficio virtuale, Sciame di agenti, Approvazioni, Registro attività, Servizi, Collegamenti, Accessi, Vista cliente | Da esaminare |
+| Amministrazione | Esaminata [R] [C]; bacheca Trello Fatturazione letta in sola lettura (solo struttura) |
+| Clienti, Lavori e contenuti, Growth, Fidelity, Ufficio virtuale, Sciame di agenti, Approvazioni, Registro attività, Servizi, Collegamenti, Accessi, Vista cliente | Da esaminare |
 | Vista collaboratore, vista cliente | Da esaminare |
 | Uso da telefono | Da esaminare |
 
@@ -219,6 +220,73 @@ La pagina mescola due cose diverse:
 
 ---
 
+## 5. Amministrazione
+
+### Cosa contiene oggi [C: `public/app.js`, vista amministrazione]
+
+- Quattro numeri: incassi del mese, arretrati, bozze da emettere, cosa non torna.
+- Le due ditte, una scheda per ciascuna.
+- Pannelli:
+  - Cosa non torna;
+  - Prima nota;
+  - Documenti e incassi;
+  - Scadenze e compensi;
+  - Cassa a 30, 60 e 90 giorni;
+  - Conti e quadrature;
+  - Abbonamenti;
+  - Contributo di cassa per cliente;
+  - Ore e margini gestionali;
+  - Tariffe confermate;
+  - Ore attribuite;
+  - Contratti e rinnovi;
+  - Storico delle quadrature.
+
+**Significato verificato nel codice di due voci poco chiare:**
+- **"Bozze da emettere"** non sono preventivi: sono **bozze di fattura** non ancora emesse ("Nessuna trasmissione allo SDI").
+- **"Documenti e incassi"** è la tabella di quelle bozze, con importo da incassare e scadenza.
+- **"Tariffe confermate"** oggi è un **costo orario** per cliente e servizio, non un listino prezzi.
+
+### Come si lavora oggi davvero: bacheca Trello "Fatturazione" [osservata in sola lettura il 9/10]
+
+Solo la struttura; nessun dato reale riportato qui.
+
+| Lista Trello | Contenuto tipo |
+|---|---|
+| Canoni ricorrenti (attivi) | Una card per cliente: importo mensile, metodo (bonifico o contanti), data del prossimo saldo, arretrati, scadenza del contratto |
+| Canone ricorrente: non fatturato | Come sopra, per gli importi senza fattura |
+| Hosting / canoni annuali | Una card per sito: dominio, fornitore dell'hosting, prezzo annuale, scadenza; alcuni sono "solo hosting" (non clienti dell'agenzia) |
+| Prelievi di materiale (una lista per fornitura) | Card "saldo residuo" di una fornitura concordata, più una card per ogni prelievo (data, materiale, importo) |
+| Siti, Foto/Video, Promozionale: non fatturati | Lavori una tantum da incassare |
+| Gestione social a pacchetto: fatturati | Pacchetti di più mesi, con la ditta che fattura e la data della fattura |
+
+**Regole scritte nella bacheca:**
+- la scadenza si spunta solo quando il cliente ha pagato;
+- per le voci "non fatturate" la bacheca è l'unico registro ufficiale dei saldi;
+- le fatture si emettono con Aruba.
+
+Fonte storica: un foglio Google "Tracker abbonamenti".
+
+**Nota del consulente:** questa bacheca è già, di fatto, il "tracker delle lavorazioni e degli incassi" che il proprietario descrive. Il rischio principale è avere **due registri** dello stesso denaro (Trello e BigAnt OS) che divergono. Prima di costruire la Fatturazione va deciso quale dei due è quello ufficiale (D-09).
+
+### Voci
+
+| ID | Pagina / percorso | Problema osservato | Conseguenza per l'utente | Modifica proposta | Priorità | Come verificare che sia risolto |
+|---|---|---|---|---|---|---|
+| FUN-024 | Amministrazione | Quasi tutto il contenuto va nella **Fatturazione** in secondo piano (FUN-009) [R] | Due voci (Amministrazione, Fatturazione) per la stessa materia | La voce **Amministrazione diventa Fatturazione**: una sola voce, solo amministrazione, ultima del menu | P3 · decisa | Esiste una sola voce per soldi e costi |
+| FUN-025 | Amministrazione → Incassi del mese, Arretrati | Piacciono [R] | — | **Tenere** come numeri principali in testa alla Fatturazione | P3 · da conservare | I due numeri sono la prima cosa visibile in Fatturazione |
+| UI-009 | Amministrazione → "Bozze da emettere" | Non si capisce cosa sia; sembra "preventivi" [R]. Sono bozze di fattura non emesse [C] | Nome ambiguo | Rinominare **"Da fatturare"**: lavori e canoni conclusi senza fattura emessa. Le fatture vere restano su Aruba (COL-003) | P3 · difetto di testo | Il nome descrive cosa contiene senza bisogno di spiegazioni |
+| FUN-026 | Amministrazione → "Cosa non torna", "Conti e quadrature", "Storico delle quadrature", "Ore attribuite", "Ore e margini gestionali" | Da eliminare [R] | Pannelli che nessuno usa | Togliere dalla vista | P3 · decisa | I pannelli non compaiono |
+| FUN-027 | Amministrazione → Prima nota, Cassa a 30/60/90 giorni | La prima nota piace. La cassa a 30, 60 e 90 giorni piace, ma va **dentro la prima nota**, non in tre pannelli separati [R] | Tre riquadri dove ne basta uno | **Prima nota** con, in testa, la previsione di cassa a 30, 60 e 90 giorni | P3 · decisa | Un solo pannello mostra movimenti e previsione |
+| FUN-028 | Amministrazione → "Documenti e incassi", "Contributo di cassa per cliente" | Va trasformato nel **tracker delle lavorazioni e degli incassi**, diviso per tipo di lavoro, come la bacheca Trello Fatturazione. Il contributo di cassa per cliente va lì dentro [R] | — | **Tracker incassi** con le stesse categorie della bacheca Trello: canoni ricorrenti (fatturati e non), hosting e canoni annuali, siti, foto e video, promozionale, gestione social a pacchetto, forniture con saldo residuo e prelievi. Per ogni voce: cliente, importo, metodo, scadenza, pagato sì/no, ditta che fattura. Per ogni cliente il totale incassato (ex "contributo di cassa") | P3 · nuova funzione, dipende da D-09 | Ogni categoria della bacheca Trello ha il suo corrispettivo e il saldo per cliente torna con quello della bacheca |
+| FUN-029 | Amministrazione → "Scadenze e compensi" | Interessanti soprattutto i **compensi**: registrare mese per mese quanto si deve ai collaboratori (Vincenzo, Giovanni, fotografo esterno…) [R] | Oggi non c'è un posto per i compensi | Pannello **Compensi collaboratori**: persona, mese, lavoro, importo, pagato sì/no. Sta nella stessa area di **Costi e abbonamenti** | P3 · nuova funzione | Si registra il compenso del mese di un collaboratore e risulta nel totale dei costi del mese |
+| FUN-030 | Amministrazione → Abbonamenti | Va bene, ma si ripete con "Costi e abbonamenti" del gestionale (FUN-007) [R] | Doppione | **Un solo pannello "Costi e abbonamenti"** in Fatturazione, insieme ai compensi (FUN-029) | P3 · decisa | Un solo elenco degli abbonamenti in tutta l'app |
+| FUN-031 | Amministrazione → "Tariffe confermate" | Interessa, ma come **listino**: ogni giorno si creano tariffe nuove (un abbonamento, il costo dei QR code, delle fidelity, di 100 penne, un pacchetto di abbigliamento promozionale per Natale) [R]. Oggi è un costo orario [C] | Il pannello attuale non serve a questo | Trasformare in **Listino**: prodotto o servizio, prezzo, unità (mese, pezzo, pacchetto), note e data. Si aggiungono voci in un attimo. Valutare il collegamento con il Catalogo servizi | P3 · nuova funzione | Si aggiunge una voce di listino in meno di un minuto e la si ritrova cercandola |
+| FUN-032 | Amministrazione → "Contratti e rinnovi" | Si ripete: va in **Clienti** [R] | Doppione | Spostare nella scheda cliente (FUN-007) e nell'avviso dei contratti in scadenza (FUN-023) | P3 · decisa | I contratti si trovano solo in Clienti |
+| COL-003 | Fatturazione → fatture | Le fatture si emettono con **Aruba** (dalla bacheca Trello) | BigAnt OS non trasmette allo SDI | BigAnt OS **non emette fatture**: segna "da fatturare" e "fatturato". Un collegamento ad Aruba si valuta in futuro | P3 · collegamento mancante | Nessuna funzione di BigAnt OS promette l'emissione di fatture elettroniche |
+| DAT-002 | Fatturazione | Il registro ufficiale oggi è Trello (più un foglio Google storico) | Rischio di due registri divergenti | Decidere la fonte ufficiale (D-09). Se diventa BigAnt OS: importazione una tantum dalla bacheca, poi la bacheca resta in sola lettura. Se resta Trello: BigAnt OS la legge e la mostra (COL-001) | P2 · decisione | Esiste un solo registro ufficiale dichiarato |
+
+---
+
 ## Decisioni che spettano ai soci
 
 | ID | Decisione | Contesto |
@@ -227,6 +295,7 @@ La pagina mescola due cose diverse:
 | D-02 | "Un workspace per ogni servizio": promemoria per la crescita dell'agenzia o piano per costruire gli agenti? | **DECISA [R]:** serve ad attivare, passo dopo passo ed entro un anno, i servizi che BigAnt oggi non offre. Diventa il Piano di attivazione dei servizi (FUN-014) |
 | D-06 | Nome della nuova sezione dei profili | **DECISA [R]:** "Profili" (per il cliente: "I tuoi profili") |
 | D-07 | Aggiornamento dei dati dei profili | **DECISA [R]:** una volta al giorno più "Aggiorna ora" |
+| D-09 | Registro ufficiale di incassi, canoni e saldi: Trello (bacheca Fatturazione) o BigAnt OS? | Raccomandazione: **finché la Fatturazione resta in secondo piano, Trello è il registro ufficiale**. BigAnt OS lo sostituisce solo quando il tracker (FUN-028) è collaudato, con un'importazione una tantum e un mese di prova in parallelo |
 | D-08 | Riquadro "obiettivo di fatturato" nella home dell'amministrazione | **DECISA [R]:** non si fa |
 | D-03 | Task e consegne: Trello o BigAnt OS? | **DECISA [R]:** si resta su Trello; il collegamento si valuta in futuro (COL-001) |
 | D-04 | Documenti e autorizzazioni: servono in BigAnt OS? | Proposta minima: solo contratti e liberatorie nella scheda cliente |
