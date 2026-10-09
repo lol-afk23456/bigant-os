@@ -39,7 +39,7 @@ test('servizi non acquistati non compaiono né nella panoramica né nelle API di
  assert.equal((await a.request('/api/production/ask?clientId=demo-bottega',{user:u,method:'POST',body:{question:'Come va?'}})).body.answer.includes('0 contenuti'),true);
 });
 test('approvazione, feedback, revisione obsoleta e pianificazione interna senza pubblicare',async t=>{
- const a=await setup(t),u=await a.profile('demo-owner'),client=await a.profile('demo-client');
+ const a=await setup(t),u=await a.profile('demo-owner'),client=await a.profile('demo-collaborator');
  const req=(path,body,user=u)=>a.request('/api/'+path+'?clientId=demo-bottega',{user,method:'POST',body});
  assert.equal((await req('approvals/approval-demo',{decision:'changes',reason:'Mostrare i materiali.'},client)).status,200);
  const memory=a.store.one("SELECT * FROM os_memory WHERE kind='feedback' AND client_id='demo-bottega'");assert.match(memory.content,/Mostrare i materiali/);

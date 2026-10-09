@@ -87,3 +87,7 @@ Il riferimento principale è `MAPPATURA-FINALE-CODEX.md`; il piano a fasi guida 
 Fase 0: backup giornaliero sul volume configurato, 14 copie conservate, rotazione solo dopo una copia verificata, ripristino in archivio nuovo. Stato riservato ai soci. Le copie sullo stesso volume non costituiscono un backup remoto indipendente.
 
 FUN-003: password provvisoria obbligatoriamente sostituita per nuovi account reali e reset del socio; il socio iniziale è marcato se usa ancora la password iniziale. Il cambio verifica la password corrente, chiude tutte le sessioni precedenti e ne emette una nuova. I profili rapidi DEMO restano utilizzabili. Recupero assistito da un socio, senza invii email automatici.
+
+### Applicazione D-15 ai percorsi esistenti
+
+L'approvazione dei contenuti social è riservata a soci e collaboratori assegnati. Gli altri contenuti richiedono un socio. Le campagne Fidelity richiedono un socio anche sulla rotta diretta del modulo; Growth mantiene il controllo esistente. Il cliente non prende queste decisioni. Lo scenario dimostrativo a 13 passaggi è aggiornato al nuovo decisore, conservando i controlli sulla versione e il divieto di pubblicazione.

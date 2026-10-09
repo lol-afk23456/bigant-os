@@ -50,11 +50,12 @@ export function createProduction({store:s}) {
     }
     m=path.match(/^\/approvals\/([^/]+)$/);
     if(m&&method==='POST') {
-      if(user.role==='collaborator')throw new AppError('La decisione spetta al cliente o a un socio.',403);
+      if(user.role==='client')throw new AppError('La decisione spetta al team BigAnt.',403);
       const a=s.one('SELECT * FROM os_approvals WHERE id=? AND client_id=?',m[1],clientId);if(!a)throw new AppError('Approvazione non trovata.',404);
       if(a.kind!=='content') {requireOwner(user);throw new AppError('Usa il modulo responsabile per questa decisione.',409);}
       const c=s.one('SELECT * FROM os_contents WHERE id=? AND client_id=?',a.entity_id,clientId);
-      if(c&&user.role==='client')serviceAllowed(clientId,c.service);
+      if(user.role==='collaborator'&&c?.service!=='social')requireOwner(user);
+      if(c)serviceAllowed(clientId,c.service);
       if(!c||a.status!=='pending'||c.version!==a.version||c.state!=='DA APPROVARE')throw new AppError('Richiesta già decisa o versione superata.',409);
       if(!['approved','rejected','changes'].includes(body.decision))throw new AppError('Decisione non valida.');if(body.decision!=='approved'&&!text(body.reason))throw new AppError('Indica il motivo: tornerà nel feedback al team.');
       return {data:s.transaction(()=>{

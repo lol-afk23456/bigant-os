@@ -195,6 +195,7 @@ export function createFidelityModule({ store: s, origin = 'http://127.0.0.1:4330
     });
   }
   function decideCampaign(t, id, b, u) {
+    requireOwner(u);
     const decision = choice(b.decision, ['approved', 'rejected', 'changes'], 'Decisione'), reason = str(b.reason ?? '', 'Motivo', decision === 'approved' ? 0 : 3, 2000);
     return s.transaction(() => {
       const c = needed(s.one('SELECT * FROM fi_campaigns WHERE id=? AND tenant_id=?', id, t));

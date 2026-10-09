@@ -217,16 +217,17 @@ test('Export neutralizza formule e registro clienti non include audit amministra
   assert.ok(!(await call('GET', '/audit')).items.some(x => x.action === 'finance.private'));
 });
 
-test('Decisione campagna comune: titolare corretto approva, una sola decisione e nessun invio', async t => {
-  const { store, client, collaborator, call } = fixture(t);
+test('Decisione campagna comune: solo socio approva, una sola decisione e nessun invio', async t => {
+  const { store, owner, client, collaborator, call } = fixture(t);
   const c = await call('POST', '/campaigns', { name: 'Approvazione DEMO', title: 'Titolo DEMO', body: 'Bozza da verificare.' });
   await call('POST', `/campaigns/${c.id}/prepare`);
   await fails(() => call('POST', `/campaigns/${c.id}/decision`, { decision: 'approved', version: 1 }, collaborator), 403);
-  await fails(() => call('POST', `/campaigns/${c.id}/decision`, { decision: 'approved', version: 2 }, client), 409);
-  const approved = await call('POST', `/campaigns/${c.id}/decision`, { decision: 'approved', version: 1 }, client);
+  await fails(() => call('POST', `/campaigns/${c.id}/decision`, { decision: 'approved', version: 1 }, client), 403);
+  await fails(() => call('POST', `/campaigns/${c.id}/decision`, { decision: 'approved', version: 2 }), 409);
+  const approved = await call('POST', `/campaigns/${c.id}/decision`, { decision: 'approved', version: 1 });
   assert.equal(approved.campaign.status, 'approved'); assert.equal(approved.externalSent, 0);
-  assert.equal(store.one("SELECT decision_by FROM os_approvals WHERE kind='fidelity_campaign' AND entity_id=?", c.id).decision_by, client.id);
-  await fails(() => call('POST', `/campaigns/${c.id}/decision`, { decision: 'rejected', reason: 'Seconda decisione', version: 1 }, client), 409);
+  assert.equal(store.one("SELECT decision_by FROM os_approvals WHERE kind='fidelity_campaign' AND entity_id=?", c.id).decision_by, owner.id);
+  await fails(() => call('POST', `/campaigns/${c.id}/decision`, { decision: 'rejected', reason: 'Seconda decisione', version: 1 }), 409);
   await fails(() => call('PATCH', `/campaigns/${c.id}`, { title: 'Cambio non approvato' }), 409);
   await fails(() => call('POST', `/campaigns/${c.id}/send`), 409);
 });
@@ -236,7 +237,7 @@ test('Richiesta modifiche persistita nella memoria giusta; revisione richiede nu
   const c = await call('POST', '/campaigns', { name: 'Feedback DEMO', title: 'Titolo prima', body: 'Prima bozza DEMO.' });
   await call('POST', `/campaigns/${c.id}/prepare`);
   await fails(() => call('POST', `/campaigns/${c.id}/decision`, { decision: 'changes', reason: '', version: 1 }), 400);
-  const changed = await call('POST', `/campaigns/${c.id}/decision`, { decision: 'changes', reason: 'Usare un tono più semplice.', version: 1 }, client);
+  const changed = await call('POST', `/campaigns/${c.id}/decision`, { decision: 'changes', reason: 'Usare un tono più semplice.', version: 1 });
   assert.equal(changed.campaign.status, 'changes_requested');
   const memory = store.one("SELECT * FROM os_memory WHERE client_id='demo-bottega' AND kind='fidelity-feedback'"); assert.ok(memory.content.includes('Usare un tono più semplice.'));
   assert.equal(store.one("SELECT count(*) n FROM os_memory WHERE client_id='demo-studio' AND kind='fidelity-feedback'").n, 0);

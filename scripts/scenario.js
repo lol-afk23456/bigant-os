@@ -69,15 +69,15 @@ export async function eseguiScenario({motore='demo',database=':memory:',log=()=>
    const dati={cliente:{id:ctx.clientId,nome:ctx.lead.company,settore:ctx.lead.sector,citta:ctx.lead.city},scheda_google:d.scheda_google||{nota:'[DA VERIFICARE] scheda non ancora analizzata'},dati_sito:{nome:ctx.lead.company,indirizzo:d.coerenza_dati?.indirizzo_sito||'[DA VERIFICARE]',telefono:d.coerenza_dati?.telefono_sito||'[DA VERIFICARE]',sito:ctx.lead.website},recensioni:[]};
    const r=await app.sciame.flussi.local(giro,{dati,attendiCliente:true});
    if(!r.approvato||!r.contenuti?.length)throw new Error(`Contenuti non prodotti (${r.passo?.stato}): ${r.passo?.errore||r.passo?.esito_qualita||''}`);
-   ctx.contenuti=r.contenuti;return `${r.contenuti.length} post Google Business Profile passati da Qualità e in attesa del cliente · motore ${r.passo.motore}`;
+   ctx.contenuti=r.contenuti;return `${r.contenuti.length} post Google Business Profile passati da Qualità e in attesa del socio · motore ${r.passo.motore}`;
   });
-  await passo(7,'Il cliente approva i contenuti dalla sua dashboard',async()=>{
-   const vista=await http('/api/overview?clientId='+ctx.clientId,{sessione:ctx.sessioneCliente});
-   const daApprovare=vista.approvals.filter(a=>a.status==='pending'&&ctx.contenuti.includes(a.entity_id));if(daApprovare.length!==ctx.contenuti.length)throw new Error(`Il cliente vede ${daApprovare.length} contenuti da approvare su ${ctx.contenuti.length}.`);
-   for(const a of daApprovare)await http('/api/approvals/'+a.id+'?clientId='+ctx.clientId,{method:'POST',body:{decision:'approved'},sessione:ctx.sessioneCliente});
+  await passo(7,'Il socio approva i contenuti dalla coda comune',async()=>{
+   const vista=await http('/api/overview?clientId='+ctx.clientId,{sessione:ctx.sessioneSocio});
+   const daApprovare=vista.approvals.filter(a=>a.status==='pending'&&ctx.contenuti.includes(a.entity_id));if(daApprovare.length!==ctx.contenuti.length)throw new Error(`Il socio vede ${daApprovare.length} contenuti da approvare su ${ctx.contenuti.length}.`);
+   for(const a of daApprovare)await http('/api/approvals/'+a.id+'?clientId='+ctx.clientId,{method:'POST',body:{decision:'approved'},sessione:ctx.sessioneSocio});
    const decisi=s.query(`SELECT * FROM os_approvals WHERE id IN (${daApprovare.map(()=>'?').join(',')})`,...daApprovare.map(a=>a.id));
-   if(!decisi.every(a=>a.status==='approved'&&a.decision_by===ctx.sessioneCliente.user.id&&a.decision_at))throw new Error('Approvazione non registrata con nome e data del cliente.');
-   return `${decisi.length} approvazioni registrate con l’identità del cliente e la data`;
+   if(!decisi.every(a=>a.status==='approved'&&a.decision_by===ctx.sessioneSocio.user.id&&a.decision_at))throw new Error('Approvazione non registrata con nome e data del socio.');
+   return `${decisi.length} approvazioni registrate con l’identità del socio e la data`;
   });
   await passo(8,'I contenuti vengono programmati (solo simulazione)',async()=>{
    const p=passoSciame('local-gbp');let n=0;

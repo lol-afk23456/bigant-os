@@ -11,7 +11,7 @@ test('R-017: scenario dimostrativo a 13 passaggi con un comando, dal lead all’
  assert.deepEqual(r.passi.map(p=>p.n),[1,2,3,4,5,6,7,8,9,10,11,12,13]);
  const prova=n=>r.passi.find(p=>p.n===n).prova;
  assert.match(prova(3),/DA VALIDARE.*invio email bloccato/);
- assert.match(prova(7),/identità del cliente e la data/);
+ assert.match(prova(7),/identità del socio e la data/);
  assert.match(prova(8),/PUBBLICATO è rifiutato/);
  assert.match(prova(10),/SDI bloccato/);
  assert.match(prova(12),/Incasso diverso dall’importo dovuto: 9,00 €/);

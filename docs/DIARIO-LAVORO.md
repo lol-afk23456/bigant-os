@@ -76,3 +76,7 @@ Nessun dato reale di clienti è stato inserito. Nessuna email, messaggio o pubbl
 - Browser integrato: login reale con campi subito visibili; larghezza 390 px senza scorrimento orizzontale (clientWidth e scrollWidth entrambi 390). Flussi HTTP reali verificati su istanze isolate, senza dati di produzione.
 - Il certificato dell'anteprima HTTPS locale non è accettato dal Browser: nessun avviso aggirato. La verifica visiva usa una vista locale; HTTPS, cookie e operazioni di autenticazione sono verificati dai test HTTP.
 - **Nessun rilascio Railway eseguito**: modifiche ancora non operative sul server online.
+
+### D-15 — permessi di approvazione
+
+Aggiornate le decisioni su contenuti e Fidelity e i relativi test: collaboratore solo sui post social assegnati, Fidelity solo socio, cliente escluso. Restano obbligatori feedback, versione corrente e blocco degli invii. Scenario dimostrativo aggiornato al socio come decisore. Verifica della suite durante il riordino: 203 test verdi; sei nuovi test coprono anche i percorsi HTTP comuni e diretti.
