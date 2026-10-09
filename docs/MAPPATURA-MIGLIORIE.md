@@ -23,7 +23,8 @@ Sessione di mappatura con il proprietario (Raffaele), iniziata il 9 ottobre 2026
 | Pagina d'ingresso dopo il login | Esaminata [R] [C] |
 | Mappa agenzia, tutte e quattro le parti (Reparti e specialisti, Servizi, Gestionale, Fondamenta) | Esaminata [R] [C] |
 | Marketing BigAnt | Esaminata [R] [C] |
-| Direzione, Amministrazione, Clienti, Lavori e contenuti, Growth, Fidelity, Ufficio virtuale, Sciame di agenti, Approvazioni, Registro attività, Servizi, Collegamenti, Accessi, Vista cliente | Da esaminare |
+| Direzione | Esaminata [R] [C] |
+| Amministrazione, Clienti, Lavori e contenuti, Growth, Fidelity, Ufficio virtuale, Sciame di agenti, Approvazioni, Registro attività, Servizi, Collegamenti, Accessi, Vista cliente | Da esaminare |
 | Vista collaboratore, vista cliente | Da esaminare |
 | Uso da telefono | Da esaminare |
 
@@ -180,6 +181,40 @@ Così com'è la pagina va eliminata o trasformata, e il nome "Marketing BigAnt" 
 | Obiettivi e risultati | Vista cliente, con i report (FUN-015) |
 | Lavori e contenuti registrati | Tolti (FUN-016) |
 | Memoria del cliente zero | Scheda cliente in *Clienti* (FUN-017) |
+
+---
+
+## 4. Direzione
+
+### Cosa contiene oggi [C: `public/app.js`, `directionView()`]
+
+- Titolo "Una regia. Tutta BigAnt.", la data e il pulsante "Apri le approvazioni".
+- Riquadro **"La tua cabina di regia"**: «La testa resta umana. Il lavoro trova il suo ritmo…», con il pulsante "Esplora lo sciame" e il contatore dei lavori aperti.
+- Quattro numeri: attività nel sistema, lavori in corso, decisioni in attesa, cassa registrata.
+- "Le tre priorità proposte dal Direttore" (agente Direttore Crescita, segnato DEMO).
+- **"Le sei domande della settimana":** quanta cassa abbiamo, quanto dobbiamo incassare, quali clienti e consegne sono a rischio, quali contratti scadono, chi è sovraccarico, quali decisioni dobbiamo prendere.
+- **"Serve il tuo sguardo"** (approvazioni in attesa) e **"Il prossimo passo"**.
+
+### Giudizio del proprietario [R]
+
+Il riquadro "cabina di regia" è **bello, anche esteticamente**. Il resto della pagina non ha un senso chiaro. Di fatto è la direzione dello **sciame di agenti**, e quindi va lì.
+
+### Nota del consulente
+
+La pagina mescola due cose diverse:
+1. **La regia degli agenti** (cabina di regia, "assegna il prossimo passo agli agenti", priorità del Direttore): è materia dello Sciame. Qui il proprietario ha ragione.
+2. **Le sei domande e "Serve il tuo sguardo"**: non riguardano gli agenti, ma la gestione dell'agenzia (soldi, clienti a rischio, contratti, decisioni). Sono esattamente il contenuto previsto per la **home dell'amministrazione** (FUN-002). Non vanno buttate: vanno spostate lì, tranne i soldi (in Fatturazione) e il sovraccarico (tolto).
+
+### Voci
+
+| ID | Pagina / percorso | Problema osservato | Conseguenza per l'utente | Modifica proposta | Priorità | Come verificare che sia risolto |
+|---|---|---|---|---|---|---|
+| FUN-018 | Direzione | Pagina senza uno scopo chiaro, doppione della regia dello sciame [R] | Un'altra voce di menu che non porta a un'azione | **Eliminare la voce "Direzione"**. I contenuti si ridistribuiscono come nella tabella sotto | P2 · decisa | La voce non c'è più; nessun contenuto utile è andato perso |
+| UI-008 | Direzione → "La tua cabina di regia" | Piace, anche esteticamente [R] | — | **Conservare lo stile** di questo riquadro come riferimento grafico: in testa a *Sciame di agenti* e come modello per la testata delle home (FUN-002) | P2 · da conservare | Il riquadro esiste in Sciame di agenti, con lo stesso aspetto |
+| FUN-019 | Direzione → cabina di regia, "Esplora lo sciame", priorità del Direttore | Riguardano gli agenti [R] | — | Spostare in **Sciame di agenti** | P2 · decisa | Questi blocchi si trovano solo in Sciame di agenti |
+| FUN-020 | Direzione → quattro numeri (attività nel sistema, lavori in corso, decisioni in attesa, cassa registrata) | Inutili qui [R] | Numeri senza azione collegata | Togliere. "Decisioni in attesa" sopravvive come contatore nella home dell'amministrazione, con il collegamento alle Approvazioni | P3 · decisa | Nessuna fila di numeri senza azione |
+| FUN-021 | Direzione → "Le sei domande della settimana" | Non è chiaro a cosa servano [R] | Domande utili, ma nel posto sbagliato | Ripartizione proposta: cassa e incassi → **Fatturazione** (secondo piano, FUN-009); clienti e consegne a rischio, contratti in scadenza, decisioni da prendere → **home dell'amministrazione** (FUN-002); "chi è sovraccarico" → **tolta** (coerente con la rimozione della capacità del team) | P2 · proposta del consulente, da confermare | Ogni domanda tenuta ha una risposta nella home o in Fatturazione |
+| FUN-022 | Sciame di agenti: chi lo vede | Lo sciame lo controlla **solo l'amministrazione**; i collaboratori vedono al massimo le cose da approvare, come i post [R] | — | Già così nel codice [C: `allowedNav()`, il collaboratore ha *Approvazioni* ma non *Sciame di agenti* né *Ufficio virtuale*]. Da mantenere e da verificare anche sul server (le rotte dello sciame devono rifiutare il collaboratore) | P2 · da verificare | Un collaboratore che chiama le rotte dello sciame riceve un rifiuto; vede i post da approvare in *Approvazioni* |
 
 ---
 
