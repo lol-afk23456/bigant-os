@@ -2,6 +2,8 @@ import http from 'node:http';
 import QRCode from 'qrcode';
 import {safePath} from './scripts/backup.js';
 import {createBackupScheduler} from './src/backups.js';
+import {createClientRecords} from './src/client-records.js';
+import {createWorkspace,navigationFor} from './src/workspace.js';
 import {readFileSync,mkdirSync,statSync,existsSync} from 'node:fs';
 import {resolve,dirname,extname} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -47,7 +49,9 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const agency=createAgencyModule({store});
   const sciame=createSciame({store,production,administration,growth,orchestrator,root,env,clock,motore:motore?(typeof motore==='string'?createMotore({nome:motore,root,env}):motore):null});
   if(importaProveSciame)sciame.importaProve(resolve(root,'docs/demo-sciame'));
-  const cliente=createClientDashboard({store});
+  const records=createClientRecords({store,production,env,clock});
+  const cliente=createClientDashboard({store,records});
+  const workspace=createWorkspace({store,clock,budget:()=>orchestrator.budget(),expiring:records.expiring});
   const limits=new Map();
   function rate(key,max=120,window=60000) {let l=limits.get(key);if(!l||l.until<Date.now()){l={count:0,until:Date.now()+window};limits.set(key,l);}if(++l.count>max)throw new AppError('Troppe richieste: riprova tra poco.',429);if(limits.size>10000)for(const[k,v]of limits)if(v.until<Date.now())limits.delete(k);}
   function session(req) {const token=(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('bigant_os='))?.slice(10);if(!token)return null;return store.one('SELECT u.id,u.name,u.email,u.role,u.tenant_id,u.active,u.must_change_password,s.csrf,s.id session_id FROM os_sessions s JOIN os_users u ON u.id=s.user_id WHERE s.id=? AND s.expires_at>? AND u.active=1',digest(token),Date.now());}
@@ -55,14 +59,14 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   function login(res,u) {const token=randomBytes(32).toString('base64url'),csrf=randomBytes(32).toString('base64url');store.run('INSERT INTO os_sessions VALUES(?,?,?,?)',digest(token),u.id,csrf,Date.now()+8*3600000);res.setHeader('Set-Cookie',`bigant_os=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=28800${realMode?'; Secure':''}`);store.audit(u,u.tenant_id,'Accesso effettuato',u.id);return {user:safeUser(u),csrf,demo:!realMode};}
   async function body(req) {let length=0;const chunks=[];for await(const chunk of req){length+=chunk.length;if(length>800000)throw new AppError('Richiesta troppo grande.',413);chunks.push(chunk);}if(!length)return{};if(!req.headers['content-type']?.includes('application/json'))throw new AppError('Formato della richiesta non supportato.',415);try{return JSON.parse(Buffer.concat(chunks).toString('utf8'));}catch{throw new AppError('Dati non validi.');}}
   const json=(res,data,status=200)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
-  function reply(res,result){if(!result)throw new AppError('Funzione non trovata.',404);if(result.contentType&&!result.contentType.startsWith('application/json')){res.writeHead(result.status||200,{'Content-Type':result.contentType,'Cache-Control':'no-store'});return res.end(result.data);}return json(res,result.data,result.status||200);}
+  function reply(res,result){if(!result)throw new AppError('Funzione non trovata.',404);if(result.contentType&&!result.contentType.startsWith('application/json')){res.writeHead(result.status||200,{'Content-Type':result.contentType,'Cache-Control':'no-store',...result.headers});return res.end(result.data);}return json(res,result.data,result.status||200);}
   function allClients(user){return store.query('SELECT * FROM os_clients WHERE active=1').filter(c=>canAccessClient(store,user,c.id));}
-  function clientFrom(url,user) {const id=url.searchParams.get('clientId')||user.tenant_id||(user.role==='owner'?'demo-bigant':allClients(user)[0]?.id);if(!id)throw new AppError('Nessuna attività assegnata.',403);requireClient(store,user,id);return id;}
+  function clientFrom(url,user,{optional=false}={}) {const id=url.searchParams.get('clientId')||user.tenant_id||(user.role==='owner'?'demo-bigant':allClients(user)[0]?.id);if(!id){if(optional)return null;throw new AppError('Nessuna attività assegnata.',403);}requireClient(store,user,id);return id;}
   function overview(user,clientId){
-    const clients=allClients(user),currentClient=clients.find(c=>c.id===clientId),ownedServices=JSON.parse(currentClient.services_json);
+    const clients=allClients(user),currentClient=clients.find(c=>c.id===clientId)||null,ownedServices=JSON.parse(currentClient?.services_json||'[]');
     const tasks=store.query('SELECT * FROM os_tasks WHERE client_id=? ORDER BY due',clientId).filter(t=>user.role!=='client'||ownedServices.includes(t.service)||t.service==='account');
     const contents=store.query('SELECT * FROM os_contents WHERE client_id=? ORDER BY updated_at DESC',clientId).filter(c=>user.role!=='client'||ownedServices.includes(c.service));
-    const approvals=store.query('SELECT * FROM os_approvals WHERE client_id=? ORDER BY created_at DESC',clientId).filter(a=>user.role==='owner'||(a.kind==='content'&&contents.some(c=>c.id===a.entity_id))||(a.kind==='fidelity_campaign'&&ownedServices.includes('fidelity'))||(a.kind==='agent_output'&&!!store.one("SELECT 1 FROM os_agent_outputs WHERE id=? AND client_id=? AND visibility='client'",a.entity_id,clientId)&&ownedServices.includes(store.one('SELECT service FROM os_agent_outputs WHERE id=?',a.entity_id).service)));
+    const approvals=store.query('SELECT * FROM os_approvals WHERE client_id=? ORDER BY created_at DESC',clientId).filter(a=>user.role==='owner'||(user.role==='collaborator'?(a.kind==='content'&&contents.some(c=>c.id===a.entity_id&&c.service==='social')):(a.kind==='content'&&contents.some(c=>c.id===a.entity_id))||(a.kind==='fidelity_campaign'&&ownedServices.includes('fidelity'))||(a.kind==='agent_output'&&!!store.one("SELECT 1 FROM os_agent_outputs WHERE id=? AND client_id=? AND visibility='client'",a.entity_id,clientId)&&ownedServices.includes(store.one('SELECT service FROM os_agent_outputs WHERE id=?',a.entity_id).service))));
     const activity=store.query(`SELECT * FROM os_audit WHERE client_id=? ${user.role==='owner'?'':user.role==='client'?"AND visibility='client'":"AND visibility!='admin'"} ORDER BY created_at DESC LIMIT 100`,clientId).map(a=>({...a,detail:JSON.parse(a.detail)}));
     const memory=store.query(`SELECT * FROM os_memory WHERE client_id=? AND ${user.role==='client'?"visibility='client'":"visibility!='admin'"}`,clientId);
     const agency=user.role==='owner'?{
@@ -74,7 +78,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
       activity:store.query('SELECT a.*,u.name actor_name FROM os_audit a LEFT JOIN os_users u ON u.id=a.user_id ORDER BY a.created_at DESC LIMIT 150').map(a=>({...a,detail:JSON.parse(a.detail)})),
       priorities:store.query("SELECT * FROM os_jobs WHERE agent='director' AND status='done' ORDER BY finished_at DESC LIMIT 1").flatMap(j=>JSON.parse(j.result).priorities||[])
     }:null;
-    return {user:safeUser(user),demo:!realMode,workerError,backup:user.role==='owner'?(backups?.status()||{enabled:false}):undefined,agency,clients,currentClient,currentClientServices:ownedServices,tasks,contents,approvals,activity,memory,
+    return {user:safeUser(user),demo:!realMode,navigation:navigationFor(user,ownedServices),workerError,backup:user.role==='owner'?(backups?.status()||{enabled:false}):undefined,agency,clients,currentClient,currentClientServices:ownedServices,tasks,contents,approvals,activity,memory,
       summary:{tasksOpen:tasks.filter(t=>t.status!=='done').length,late:tasks.filter(t=>t.status!=='done'&&t.due&&t.due<now()).length,approvalsPending:approvals.filter(a=>a.status==='pending').length,clientsActive:clients.length},
       registry:{services:user.role==='client'?services.filter(x=>ownedServices.includes(x.id)):services,departments:user.role==='owner'?departments:[],agents:user.role==='owner'?agentDefinitions:[],integrations,managementModules:user.role==='owner'?managementModules:[]},
       admin:user.role==='owner'?administration.state(clientId,user):null};
@@ -119,12 +123,16 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
           return json(res,login(res,store.one('SELECT * FROM os_users WHERE id=?',u.id)));
         }
         if(u.must_change_password)throw new AppError('Cambia la password provvisoria prima di continuare.',403);
-        const clientId=clientFrom(url,u);
+        const clientId=clientFrom(url,u,{optional:method==='GET'&&['/api/overview','/api/clients','/api/workspace/home','/api/workspace/approvals','/api/workspace/contracts'].includes(path)});
         const b=['GET','HEAD'].includes(method)?{}:await body(req);
+        if(path==='/api/workspace/approvals'&&method==='GET')return json(res,{items:workspace.approvals(u)});
+        if(path==='/api/workspace/contracts'&&method==='GET')return json(res,{items:records.expiring(u)});
+        if(path==='/api/workspace/home'&&method==='GET')return json(res,workspace.home(u));
+        if(path==='/api/workspace/profiles'&&method==='GET')return json(res,workspace.profiles(u,clientId));
         if(path==='/api/overview'&&method==='GET')return json(res,overview(u,clientId));
         if(path==='/api/clients'&&method==='GET')return json(res,{items:allClients(u)});
         if(path==='/api/catalogo'&&method==='GET'){requireOwner(u);return json(res,{servizi:catalogoServizi,pacchetti});}
-        if(path==='/api/clients'&&method==='POST') {requireOwner(u);const name=text(b.name,140),slug=text(b.slug,100);if(!name||!/^[a-z0-9-]{3,100}$/.test(slug))throw new AppError('Nome e identificativo attività non validi.');if(!Array.isArray(b.services)||b.services.some(x=>!services.some(y=>y.id===x)))throw new AppError('Seleziona servizi validi.');const id=uid();const storedName=realMode?name:(name.includes('DEMO')?name:name+' · DEMO');try{store.run('INSERT INTO os_clients(id,name,slug,industry,services_json,created_at) VALUES(?,?,?,?,?,?)',id,storedName,slug,text(b.industry,100),JSON.stringify([...new Set(b.services)]),now());}catch(e){if(String(e).includes('UNIQUE'))throw new AppError('Identificativo già utilizzato.',409);throw e;}store.audit(u,id,'Attività creata',id);orchestrator.event('client.created',id,id);return json(res,{id},201);}
+        if(path==='/api/clients'&&method==='POST') {requireOwner(u);const name=text(b.name,140);let slug=text(b.slug,100);if(!slug){const base=(name.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,80)||'attivita').padEnd(3,'-');slug=base;let suffix=2;while(store.one('SELECT id FROM os_clients WHERE slug=?',slug))slug=base+'-'+suffix++;}if(!name||!/^[a-z0-9-]{3,100}$/.test(slug))throw new AppError('Nome e identificativo attività non validi.');if(!Array.isArray(b.services)||b.services.some(x=>!services.some(y=>y.id===x)))throw new AppError('Seleziona servizi validi.');const id=uid();const storedName=realMode?name:(name.includes('DEMO')?name:name+' · DEMO');try{store.run('INSERT INTO os_clients(id,name,slug,industry,services_json,created_at) VALUES(?,?,?,?,?,?)',id,storedName,slug,text(b.industry,100),JSON.stringify([...new Set(b.services)]),now());}catch(e){if(String(e).includes('UNIQUE'))throw new AppError('Identificativo già utilizzato.',409);throw e;}store.audit(u,id,'Attività creata',id);orchestrator.event('client.created',id,id);return json(res,{id},201);}
         let m=path.match(/^\/api\/clients\/([^/]+)$/);if(m&&method==='PATCH'){requireOwner(u);const c=store.one('SELECT * FROM os_clients WHERE id=?',m[1]);if(!c)throw new AppError('Attività non trovata.',404);const selected=b.services??JSON.parse(c.services_json);if(!Array.isArray(selected)||selected.some(x=>!services.some(y=>y.id===x)))throw new AppError('Servizi non validi.');const risk=b.risk??c.risk;if(!['normal','watch','risk'].includes(risk))throw new AppError('Stato di rischio non valido.');store.run('UPDATE os_clients SET services_json=?,risk=? WHERE id=?',JSON.stringify(selected),risk,c.id);store.audit(u,c.id,'Servizi e rischio aggiornati',c.id);return json(res,{ok:true});}
         if(path==='/api/users'&&method==='GET'){requireOwner(u);return json(res,{items:store.query('SELECT id,name,email,role,tenant_id,active,must_change_password FROM os_users WHERE id!=?' , 'os-orchestrator'),assignments:store.query('SELECT * FROM os_assignments')});}
         if(path==='/api/users'&&method==='POST'){requireOwner(u);const emailOk=realMode?/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(text(b.email,254)):/^([^\s@]+)@[^\s@]+\.example$/.test(text(b.email,254));if(!['owner','collaborator','client'].includes(b.role)||!text(b.name,100)||!emailOk||typeof b.password!=='string'||b.password.length<14||b.password.length>256)throw new AppError(realMode?'Nome, email valida, ruolo e password di almeno 14 caratteri sono obbligatori.':'Nome, email .example, ruolo e password di almeno 14 caratteri sono obbligatori.');const tenant=b.role==='client'?b.clientId:null;if(tenant)requireClient(store,u,tenant);else if(b.role==='client')throw new AppError('Assegna il cliente.');const assignments=b.role==='collaborator'?(b.clientIds||[]):[];if(!Array.isArray(assignments))throw new AppError('Assegnazioni non valide.');assignments.forEach(id=>requireClient(store,u,id));const id=uid();store.transaction(()=>{store.run('INSERT INTO os_users(id,tenant_id,name,email,password_hash,role,created_at) VALUES(?,?,?,?,?,?,?)',id,tenant,text(b.name,100),text(b.email,254).toLowerCase(),passwordHash(b.password),b.role,now());for(const c of new Set(assignments))store.run('INSERT INTO os_assignments VALUES(?,?)',id,c);store.run('UPDATE os_users SET must_change_password=? WHERE id=?',realMode?1:0,id);store.audit(u,null,realMode?'Accesso creato':'Accesso DEMO creato',id,{role:b.role},'admin');});return json(res,{id},201);}
@@ -132,6 +140,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
         m=path.match(/^\/api\/approvals\/([^/]+)$/);if(m&&method==='POST'){
           const a=store.one('SELECT * FROM os_approvals WHERE id=?',m[1]);if(!a)throw new AppError('Richiesta non trovata.',404);requireClient(store,u,a.client_id);
           if(a.client_id!==clientId)throw new AppError('Seleziona l’attività della richiesta.',403);
+          if(u.role!=='owner'&&a.kind!=='content')requireOwner(u);
           if(a.status!=='pending')throw new AppError('Richiesta già decisa o superata.',409);
           if(!['approved','rejected','changes'].includes(b.decision))throw new AppError('Decisione non valida.');
           if(b.decision!=='approved'&&!text(b.reason))throw new AppError('Indica il motivo della richiesta.');
@@ -142,8 +151,8 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
           if(a.kind==='fidelity_campaign')return reply(res,await fidelity.handle({method:'POST',path:'/campaigns/'+a.entity_id+'/decision',body:{...b,version:a.version},user:u,clientId}));
           const decision=await production.handle({method:'POST',path:'/approvals/'+a.id,body:b,user:u,clientId});if(b.decision==='approved')orchestrator.event('content.approved',clientId,a.entity_id,a.version);return reply(res,decision);
         }
-        for(const [name,module]of Object.entries({growth,fidelity,administration,agents:orchestrator,production,agency,sciame,cliente}))if(path.startsWith('/api/'+name+'/')){
-          if(['growth','administration','agents','sciame'].includes(name))requireOwner(u);
+        for(const [name,module]of Object.entries({growth,fidelity,administration,agents:orchestrator,production,agency,sciame,cliente,'client-record':records}))if(path.startsWith('/api/'+name+'/')){
+          if(['growth','administration','agents','sciame'].includes(name)||(['fidelity','agency','cliente'].includes(name)&&u.role==='collaborator'))requireOwner(u);
           if(name==='fidelity'&&u.role!=='owner'&&!JSON.parse(store.one('SELECT services_json FROM os_clients WHERE id=?',clientId).services_json).includes('fidelity'))throw new AppError('Servizio Fidelity non attivo.',403);
           const relative=path.slice(('/api/'+name).length)+(name==='fidelity'?url.search:'');
           if(name==='fidelity'&&method==='GET'&&/^\/programs\/[^/]+\/qr$/.test(relative.split('?')[0])){const programId=relative.split('/')[2];const program=store.one('SELECT id FROM fi_programs WHERE id=? AND tenant_id=? AND active=1',programId,clientId);if(!program)throw new AppError('Programma non disponibile.',404);const slug=store.one('SELECT slug FROM os_clients WHERE id=?',clientId).slug;return reply(res,{data:await QRCode.toBuffer(runtimeOrigin+'/fidelity/join/'+encodeURIComponent(slug)+'?program='+encodeURIComponent(programId),{type:'png',width:280,margin:2,errorCorrectionLevel:'M'}),contentType:'image/png'});}

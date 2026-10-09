@@ -69,7 +69,7 @@ function mostraPasso(p){
   <details><summary>Dati di input (DEMO) passati all’agente</summary>${valore(p.input)}</details>`);
 }
 async function aggiornaUfficio(){
- if(S.view!=='ufficio')return;
+ if(!(S.view==='agents'&&S.section==='office'))return;
  S.module=await api('/api/sciame/ufficio',{scoped:false});S.lastRefresh=Date.now();
  const root=$('#ufficio-root');if(root)root.innerHTML=ufficioCorpo();
 }
@@ -84,4 +84,4 @@ async function aggiornaDiretta(){
  const p=await api('/api/sciame/passi/'+encodeURIComponent(id),{scoped:false});
  if(S.passoAperto===id&&$('#dialog').open&&$('#dialog-title')?.textContent===p.compito){const prima=$('.live-transcript');if(prima||['al_lavoro','controllo_qualita'].includes(p.stato))mostraPasso(p);}
 }
-setInterval(()=>{if(!S.session?.user||S.view!=='ufficio'||document.hidden||S.refreshing)return;S.refreshing=true;($('#dialog').open?aggiornaDiretta():aggiornaUfficio()).catch(()=>{}).finally(()=>{S.refreshing=false;});},2000);
+setInterval(()=>{if(!S.session?.user||!(S.view==='agents'&&S.section==='office')||document.hidden||S.refreshing)return;S.refreshing=true;($('#dialog').open?aggiornaDiretta():aggiornaUfficio()).catch(()=>{}).finally(()=>{S.refreshing=false;});},2000);

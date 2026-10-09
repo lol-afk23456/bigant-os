@@ -80,3 +80,15 @@ Nessun dato reale di clienti è stato inserito. Nessuna email, messaggio o pubbl
 ### D-15 — permessi di approvazione
 
 Aggiornate le decisioni su contenuti e Fidelity e i relativi test: collaboratore solo sui post social assegnati, Fidelity solo socio, cliente escluso. Restano obbligatori feedback, versione corrente e blocco degli invii. Scenario dimostrativo aggiornato al socio come decisore. Verifica della suite durante il riordino: 203 test verdi; sei nuovi test coprono anche i percorsi HTTP comuni e diretti.
+
+## 10 ottobre 2026 — menu, home e scheda cliente in locale
+
+Menu socio a 12 voci; collaboratore provvisorio a tre voci, con rifiuto server delle aree riservate. Home per socio e collaboratore; conteggi delle approvazioni assegnate e contratti con scadenza inclusiva entro 30 giorni. Sciame con Ufficio iniziale, griglia a sei schede e unica coda filtrabile. Accessi diviso in Persone e Registro. Profili senza numeri inventati e Avanzamento separato. Codice e tabelle delle vecchie viste conservati.
+
+Scheda agenzia a otto sezioni (sei per collaboratore: niente contratti o documenti). Creazione cliente con link generato e disambiguazione degli omonimi; anagrafica modificabile; scheda informativa versionata con rifiuto dei conflitti; avvio con note e stato. Contratti: date, rinnovo, preavviso, allegato PDF fino a 500 KB; download riservato a socio e cliente interessato. Contratti amministrativi esistenti restano leggibili come date, senza canone. La vista cliente non mostra le fatture: Trello resta ufficiale. Anteprima socio in sola lettura e stessi filtri sui servizi del cliente.
+
+Accessi del cliente: cifratura AES-256-GCM con contesto autenticato per cliente e record; chiave `BIGANT_SECRET_KEY` esterna al database, nessun valore nel repository. Senza chiave archivio disabilitato. Apertura tramite richiesta autenticata con CSRF, controllo dell'assegnazione a ogni richiesta e audit senza credenziali. La finestra cancella i dati mostrati quando viene chiusa. Prove: password non presente in tabella, audit o panoramica; rifiuto di cliente, altro cliente, collaboratore revocato, chiave errata e contesto scambiato.
+
+Verifica: **203/203 test**, controllo progetto **5/5**; costruzione della pagina DEMO offline riuscita con gli strumenti fissati. Browser: menu socio, home, cliente→contratto→Indietro, Sciame→Ufficio→Indietro→Da approvare; profilo collaboratore senza aree riservate, modulo revisione, scheda assegnata; viewport 390 px con contenuto largo 390 px. Il giro completo lato cliente e il collaudo su telefono fisico restano da fare.
+
+Limiti espliciti: non tutti i pannelli adottano ancora il componente a card; gli avvisi strutturali delle vecchie pagine Servizi devono ancora confluire in Avanzamento. Profili e Risultati sono predisposti senza fonti collegate. Report per servizio, configurazione/stato degli agenti, storico e costi per agente, Listino, integrazioni, Fatturazione e collaudo prodotti restano nel piano. I contratti aggiunti non hanno ancora modifica/revisione del PDF; si conserva l'originale. Nessuna attivazione AI, nessun invio e **nessun rilascio Railway**.

@@ -7,8 +7,10 @@
       "area": "Tutta l'app",
       "modifica": "Una sezione alla volta: griglia di card, il clic apre solo quella sezione, \"Indietro\" chiaro. Componente unico riusato ovunque",
       "criterio": "Nessuna pagina mostra più di una sezione completa alla volta",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+      ]
     },
     {
       "id": "UI-001",
@@ -59,8 +61,11 @@
       "area": "Dopo il login",
       "modifica": "**Una home diversa per ogni ruolo**, come prima pagina dopo il login, scegliendo solo ciò che conta davvero a primo impatto. **Estetica [R]:** amministrazione e collaboratore soprattutto **funzionali**; cliente **bella esteticamente e allo stesso tempo funzionale**. Tutte \"almeno un minimo belle\", nello stile della cabina di regia (contenuti in §13.3 e §13.4)",
       "criterio": "Ogni ruolo entra sulla propria home, la Mappa agenzia non è più la pagina d'ingresso",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
     },
     {
       "id": "FUN-003",
@@ -78,24 +83,30 @@
       "area": "Mappa agenzia",
       "modifica": "Trasformarla in **\"Avanzamento BigAnt OS\"**: una pagina che mostra lo stato di costruzione della piattaforma (cosa è operativo, demo o da collegare). Spostarla in un'area **Avanzate / Sistema**, fuori dal menu principale",
       "criterio": "La voce non è più nel menu principale; in Avanzate una pagina mostra l'avanzamento con i tre stati",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+      ]
     },
     {
       "id": "UI-003",
       "area": "Mappa agenzia",
       "modifica": "Una pagina per ogni argomento, oppure schede che mostrano un argomento alla volta. In gran parte però queste parti si spostano altrove (FUN-005…FUN-008)",
       "criterio": "Nessuna pagina del socio richiede di scorrere quattro argomenti diversi",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+      ]
     },
     {
       "id": "UI-004",
       "area": "Mappa agenzia",
       "modifica": "Togliere dalle pagine di lavoro. Gli stati di avanzamento compaiono solo nella pagina \"Avanzamento BigAnt OS\" (FUN-004), con tre etichette semplici: Funziona · Prova · Da collegare",
       "criterio": "Nessun avviso tecnico nelle pagine operative",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+      ]
     },
     {
       "id": "UI-005",
@@ -110,8 +121,10 @@
       "area": "Mappa agenzia → Reparti e specialisti",
       "modifica": "Spostare in **Sciame di agenti** come \"Struttura dello sciame\" (reparti, specialisti, procedure)",
       "criterio": "La struttura per reparto si trova solo dentro Sciame di agenti",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+      ]
     },
     {
       "id": "FUN-006",
@@ -126,16 +139,20 @@
       "area": "Mappa agenzia → I 10 moduli del gestionale",
       "modifica": "Ripartizione decisa dal proprietario: tabella \"Dove finiscono i 10 moduli\" qui sotto",
       "criterio": "La sezione \"Gestionale\" non esiste più come elenco astratto; ogni modulo tenuto vive nella sua pagina",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+      ]
     },
     {
       "id": "FUN-008",
       "area": "Mappa agenzia → Fondamenta da completare",
       "modifica": "Spostare l'intera sezione in Avanzamento (FUN-004)",
       "criterio": "Le Fondamenta si trovano solo in Avanzamento",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+      ]
     },
     {
       "id": "FUN-009",
@@ -158,24 +175,31 @@
       "area": "Clienti → scheda cliente → Accessi",
       "modifica": "Requisiti minimi raccomandati fin dalla prima versione, perché costano poco e riducono molto il danno di un furto del database: (1) credenziali **cifrate** nel database; (2) password **nascosta** di default, si mostra con un clic; (3) ogni visualizzazione registrata nel **Registro** delle persone (Sistema → Accessi → Registro, FUN-059, FUN-066); (4) controllo del ruolo **sul server**, non solo nel menu; (5) mai nei log, negli export o nei backup in chiaro",
       "criterio": "Un utente cliente non ottiene le credenziali nemmeno chiamando l'API direttamente; nel database non compaiono in chiaro; ogni visualizzazione lascia una riga nel Registro",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
     },
     {
       "id": "FUN-011",
       "area": "Marketing BigAnt",
       "modifica": "**Eliminare la voce \"Marketing BigAnt\"** e sostituirla con la nuova sezione **Profili** (FUN-012). Il resto si sposta o si toglie come indicato sotto",
       "criterio": "La voce \"Marketing BigAnt\" non c'è più nel menu",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+      ]
     },
     {
       "id": "FUN-012",
       "area": "Nuova sezione **Profili** (\"Profili\"; per il cliente \"I tuoi profili\", D-06)",
       "modifica": "Una sezione per **l'agenzia e per ogni cliente** (il cliente vede solo i propri). Per ogni profilo: stato del collegamento, ultimi dati, crescita dei follower e insight. Profili: Instagram, Facebook, LinkedIn aziendale, TikTok, **Google Business Profile** (con dentro le recensioni, FUN-013), **Sito**",
       "criterio": "Ogni profilo collegato mostra dati veri con la data dell'ultimo aggiornamento; il cliente vede solo i propri profili (verifica sul server)",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+      ]
     },
     {
       "id": "UI-007",
@@ -230,32 +254,42 @@
       "area": "Marketing BigAnt → Memoria del cliente zero",
       "modifica": "Nella **scheda cliente** di *Clienti* ci sono: anagrafica, contratto, quanto paga, accessi (FUN-010) e la **scheda informativa del cliente** (memoria: brief, tono di voce, note)",
       "criterio": "Tutte le informazioni di un cliente sono in un'unica scheda",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
     },
     {
       "id": "FUN-018",
       "area": "Direzione",
       "modifica": "**Eliminare la voce \"Direzione\"**. I contenuti si ridistribuiscono come nella tabella sotto",
       "criterio": "La voce non c'è più; nessun contenuto utile è andato perso",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
     },
     {
       "id": "UI-008",
       "area": "Direzione → \"La tua cabina di regia\"",
       "modifica": "**Conservare lo stile** di questo riquadro come riferimento grafico: in testa a *Sciame di agenti* e come modello per la testata delle home (FUN-002)",
       "criterio": "Il riquadro esiste in Sciame di agenti, con lo stesso aspetto",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+      ]
     },
     {
       "id": "FUN-019",
       "area": "Direzione → cabina di regia, \"Esplora lo sciame\", priorità del Direttore",
       "modifica": "Spostare in **Sciame di agenti**",
       "criterio": "Questi blocchi si trovano solo in Sciame di agenti",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+      ]
     },
     {
       "id": "FUN-020",
@@ -278,16 +312,22 @@
       "area": "Clienti → pagina iniziale",
       "modifica": "In cima alla pagina *Clienti*, un **avviso** con i contratti che scadono nei prossimi 30 giorni (cliente, data, collegamento alla scheda). Richiede che il contratto in scheda cliente abbia data di inizio, durata e scadenza (FUN-007)",
       "criterio": "Con un contratto che scade entro 30 giorni, aprendo *Clienti* compare l'avviso con il nome del cliente e la data",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
     },
     {
       "id": "FUN-022",
       "area": "Sciame di agenti: chi lo vede",
       "modifica": "Oggi il collaboratore ha *Approvazioni* ma non *Sciame di agenti* né *Ufficio virtuale* [C: `allowedNav()`]. Con il riordino (FUN-048, FUN-061) il collaboratore vede **solo la scheda Da approvare** dello Sciame. Le altre rotte dello sciame devono rifiutarlo **sul server**",
       "criterio": "Un collaboratore che chiama le rotte dello sciame (tranne Da approvare) riceve un rifiuto",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
     },
     {
       "id": "FUN-024",
@@ -390,16 +430,22 @@
       "area": "Clienti → elenco e \"Nuova attività\"",
       "modifica": "**Tenere** l'elenco a card e il modulo. Il nome per il link si genera da solo dal nome dell'attività. Dopo la creazione si completa la scheda (FUN-034)",
       "criterio": "Una nuova attività si crea con nome, settore e servizi; il link si genera senza intervento",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
     },
     {
       "id": "FUN-034",
       "area": "Clienti → \"Apri attività\"",
       "modifica": "**Scheda cliente dell'amministrazione**, separata dalla vista cliente, organizzata a card (PRINC-01): **Anagrafica** · **Contratto** (FUN-007, FUN-023) · **Accessi** (FUN-010) · **Scheda informativa**, cioè brief, tono di voce e note (FUN-017) · **Servizi attivi con i loro report** (FUN-036) · **Documenti**, cioè contratto, fatture e pagamenti (FUN-039) · **Avvio cliente** (FUN-008) · **Risultati** (FUN-035)",
       "criterio": "\"Apri attività\" apre la scheda dell'agenzia; nessun elemento della vista cliente compare al suo posto",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
     },
     {
       "id": "UI-010",
@@ -414,8 +460,10 @@
       "area": "\"I tuoi risultati\"",
       "modifica": "Due livelli. **Amministrazione:** una vista **\"Risultati dei clienti\"** con i risultati di ogni cliente in un unico posto. **Cliente:** \"I tuoi risultati\", solo i propri. **Ordine di rilascio deciso [R]:** prima solo nella dashboard dell'amministrazione; quando è configurata bene, anche nella dashboard del cliente",
       "criterio": "L'amministrazione vede i risultati di tutti i clienti in una pagina; il cliente, quando abilitato, vede solo i suoi",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+      ]
     },
     {
       "id": "FUN-036",
@@ -454,8 +502,10 @@
       "area": "\"Documenti e amministrazione\"",
       "modifica": "Card **Documenti** su entrambi i lati, ciascuno limitato al proprio cliente. **Dipendenza:** finché il registro ufficiale dei pagamenti è Trello (D-09), in BigAnt OS i pagamenti non ci sono; vedi D-10",
       "criterio": "Il cliente vede solo i propri documenti, verificato sul server",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+      ]
     },
     {
       "id": "FUN-040",
@@ -502,40 +552,53 @@
       "area": "Vista cliente dal pannello dell'amministrazione",
       "modifica": "Tenere \"Vista cliente\" nel gruppo **Sistema**, con la scelta del cliente; in più un pulsante **\"Guarda come il cliente\"** nella scheda cliente",
       "criterio": "Dall'amministrazione si vede la piattaforma esattamente come la vede un cliente scelto, senza poter modificare nulla per suo conto",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
     },
     {
       "id": "FUN-046",
       "area": "Lavori e contenuti",
       "modifica": "**Togliere la voce** dai menu di amministrazione, collaboratore e cliente. Il codice resta (D-05) perché ci si appoggiano lo sciame e le approvazioni",
       "criterio": "La voce non compare in nessun menu; sciame e approvazioni funzionano ancora (test verdi)",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+      ]
     },
     {
       "id": "FUN-047",
       "area": "Collaboratore → pagina d'ingresso",
       "modifica": "La **home del collaboratore** (FUN-002) va ripensata senza task e senza piano editoriale: per esempio clienti assegnati, accessi e scheda informativa dei clienti, approvazioni. Da decidere a fine giro, insieme al menu del collaboratore",
       "criterio": "Il collaboratore entra su una home utile senza passare da *Lavori e contenuti*",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
     },
     {
       "id": "FUN-048",
       "area": "Bozze dello sciame",
       "modifica": "Dentro *Sciame di agenti*, una scheda **\"Da approvare\"** con le bozze prodotte dagli agenti (testo, agente, cliente, esito del controllo qualità, approva o rimanda con nota). Il **collaboratore** vede solo questa scheda dello sciame (coerente con FUN-022). Cosa fare della voce *Approvazioni* si decide quando la analizziamo",
       "criterio": "Una bozza di un agente si approva da Sciame → Da approvare; il collaboratore vede quella scheda e nient'altro dello sciame (verifica sul server)",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Coda unica e permessi verificati; dettagli autore e controllo qualità da completare nella fase Sciame"
+      ]
     },
     {
       "id": "FUN-049",
       "area": "Menu → Growth, Fidelity, Menu digitale",
       "modifica": "Gruppo di menu **\"Prodotti\"**, in evidenza: Growth, Fidelity, in futuro Menu digitale. Ogni prodotto si attiva per cliente come un servizio (FUN-041)",
       "criterio": "I prodotti sono raggruppati e riconoscibili nel menu",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
     },
     {
       "id": "COL-005",
@@ -590,16 +653,21 @@
       "area": "Ufficio virtuale + Sciame di agenti",
       "modifica": "**Una sola voce \"Sciame di agenti\"** con schede (PRINC-01): **Ufficio** (dal vivo, la prima scheda) · **Agenti** (elenco e configurazione) · **Da approvare** (FUN-048) · **Storico** · **Budget**. In testa il riquadro \"cabina di regia\" (UI-008)",
       "criterio": "Una sola voce nel menu; l'Ufficio si apre per primo",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
     },
     {
       "id": "UI-011",
       "area": "Ufficio virtuale",
       "modifica": "**Conservare** l'aspetto e la diretta così come sono",
       "criterio": "Nessuna regressione dell'Ufficio dopo il riordino",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+      ]
     },
     {
       "id": "FUN-053",
@@ -662,8 +730,11 @@
       "area": "Registro attività → voce di menu",
       "modifica": "Togliere la voce dal menu di tutti i ruoli. Il **registro delle persone** (accessi, credenziali viste, utenti, approvazioni) resta, **solo per l'amministrazione**, nella voce **Accessi** come scheda **Registro** (gruppo **Sistema**, FUN-066). Non si cancella nessuna riga",
       "criterio": "La voce non è nel menu; dall'area Avanzate l'amministrazione ritrova \"chi ha visto le credenziali di X\"",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
     },
     {
       "id": "FUN-060",
@@ -686,8 +757,11 @@
       "area": "Approvazioni → voce di menu",
       "modifica": "Togliere la voce \"Approvazioni\": tutto confluisce nella scheda **Da approvare** dello Sciame (FUN-048), con un filtro per tipo (post, messaggi Growth, campagne Fidelity) e il contatore nella home dell'amministrazione",
       "criterio": "Una sola coda \"Da approvare\", dentro lo Sciame",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
     },
     {
       "id": "FUN-062",
@@ -702,8 +776,11 @@
       "area": "Chi approva cosa",
       "modifica": "Proposta: **post social** → socio **o** collaboratore; **messaggi commerciali Growth** e **campagne Fidelity** → **solo soci** (oggi il codice di Growth richiede già un socio [C]). Da confermare (D-15)",
       "criterio": "Un collaboratore può approvare un post ma non un messaggio commerciale (verifica sul server)",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
     },
     {
       "id": "FUN-064",
@@ -726,8 +803,11 @@
       "area": "Accessi",
       "modifica": "Tenere nel gruppo **Sistema**, con due schede: **Persone** (soci, collaboratori, clienti, assegnazione dei clienti ai collaboratori, \"Nuova password\", disattiva) e **Registro** (chi è entrato, chi ha visto le credenziali di un cliente, chi ha creato o disattivato utenti: FUN-059)",
       "criterio": "Dalla stessa voce si gestiscono gli utenti e si consulta il registro",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
     },
     {
       "id": "UI-014",
@@ -744,8 +824,11 @@
       "area": "Vista cliente",
       "modifica": "Nel gruppo **Sistema**: si sceglie il cliente e si vede la sua dashboard **in sola lettura**. Riflette sempre la nuova dashboard cliente (UI-010, FUN-036…044). Pulsante \"Guarda come il cliente\" anche nella scheda cliente",
       "criterio": "Scelto un cliente, la vista coincide con quella che il cliente vede entrando con le sue credenziali",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
     }
   ]
 }

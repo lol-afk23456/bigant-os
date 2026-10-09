@@ -69,8 +69,9 @@ test('FUN-003: cliente e collaboratore senza assegnazioni cambiano password prim
     assert.equal(ready.status, 200); assert.equal(ready.data.user.mustChangePassword, false);
     assert.equal((await f.request('/api/users', { session: ready })).status, 403);
     const overview = await f.request('/api/overview', { session: ready });
-    assert.equal(overview.status, role === 'client' ? 200 : 403);
-    if (role === 'client') assert.equal(overview.data.admin, null);
+    assert.equal(overview.status, 200);
+    assert.equal(overview.data.admin, null);
+    if (role === 'collaborator') assert.deepEqual(overview.data.clients, []);
   }
 });
 

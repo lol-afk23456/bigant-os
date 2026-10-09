@@ -22,21 +22,21 @@ const FAMIGLIE=[
 // Numeri chiave della Home: KPI precisi delle schede (codice e posizione nella sezione 7).
 const CHIAVE_HOME=[['Contatti','S14',0],['Chiamate','S06',1],['Prenotazioni','S12',0],['Recensioni','S08',0],['Spesa ADV','S03',4]];
 
-export function createClientDashboard({store:s}){
+export function createClientDashboard({store:s,records}){
  function dashboard(user,clientId){
   requireClient(s,user,clientId);
   const c=s.one('SELECT * FROM os_clients WHERE id=? AND active=1',clientId);if(!c)throw new AppError('Attività non disponibile.',404);
   const servizi=JSON.parse(c.services_json),codici=codiciPerServiziRegistro(servizi),mese=new Date().toISOString().slice(0,7);
   const demo=c.name.includes('DEMO')||/^demo-/.test(c.id);
   const kpi=codici.map(cod=>kpiServizio(s,clientId,cod,{demo}));
-  const contenuti=s.query('SELECT id,title,service,state,scheduled_at,version,updated_at FROM os_contents WHERE client_id=? ORDER BY COALESCE(scheduled_at,updated_at)',clientId).filter(x=>user.role!=='client'||servizi.includes(x.service));
+  const contenuti=s.query('SELECT id,title,service,state,scheduled_at,version,updated_at FROM os_contents WHERE client_id=? ORDER BY COALESCE(scheduled_at,updated_at)',clientId).filter(x=>servizi.includes(x.service));
   const approvazioni=s.query("SELECT a.id,a.entity_id,a.title,a.status,a.version,a.decision_by,a.decision_at,a.reason,a.created_at,u.name decisore FROM os_approvals a LEFT JOIN os_users u ON u.id=a.decision_by WHERE a.client_id=? AND a.kind='content' ORDER BY a.created_at DESC",clientId).filter(a=>contenuti.some(x=>x.id===a.entity_id));
-  const lavori=s.query('SELECT id,title,service,status,due,assignee FROM os_tasks WHERE client_id=? ORDER BY due',clientId).filter(t=>user.role!=='client'||servizi.includes(t.service)||t.service==='account');
-  const memoria=k=>s.one("SELECT content,source,updated_at,visibility FROM os_memory WHERE client_id=? AND kind=?",clientId,k);
+  const lavori=s.query('SELECT id,title,service,status,due,assignee FROM os_tasks WHERE client_id=? ORDER BY due',clientId).filter(t=>servizi.includes(t.service)||t.service==='account');
+  const memoria=k=>s.one("SELECT content,source,updated_at,visibility FROM os_memory WHERE client_id=? AND kind=? AND visibility='client'",clientId,k);
   const report=memoria('report'),consigliati=memoria('servizi-consigliati');
   const avvisiRecensioni=s.query("SELECT output_json FROM os_sciame_passi WHERE client_id=? AND agente='reputazione' AND stato IN('completato','in_attesa_approvazione') ORDER BY created_at DESC LIMIT 1",clientId).flatMap(r=>JSON.parse(r.output_json).avvisi);
   const contratti=s.query("SELECT c.id,c.service,c.start_date,c.end_date,c.notice_days,c.status,c.amount_cents,e.name ditta FROM os_fin_contracts c JOIN os_fin_entities e ON e.id=c.entity_id WHERE c.client_id=?",clientId);
-  const fatture=s.query("SELECT i.id,i.number,i.amount_cents,i.issue_date,i.due_date,i.status,e.name ditta,COALESCE((SELECT SUM(m.amount_cents) FROM os_fin_movements m WHERE m.invoice_id=i.id AND m.direction='in'),0) pagato_cents FROM os_fin_invoices i JOIN os_fin_entities e ON e.id=i.entity_id WHERE i.client_id=? ORDER BY i.issue_date DESC",clientId).map(f=>({...f,residuo_cents:f.amount_cents-f.pagato_cents,stato_pagamento:f.pagato_cents>=f.amount_cents?'Pagata':f.pagato_cents>0?'Pagata in parte':'Da pagare'}));
+  const fatture=[]; // Trello remains the official invoicing register.
   const utenti=s.query("SELECT name,role FROM os_users WHERE tenant_id=? AND active=1",clientId);
   const fonteNonCollegata=id=>({id,nome:integrations.find(i=>i.id===id)?.name||id,stato:'COLLEGAMENTO MANCANTE',nota:'Serve l’autorizzazione OAuth del cliente in sola lettura, non ancora attiva.'});
   // Solo le piattaforme dei dati del cliente (autorizzazione OAuth in sola lettura); gli strumenti interni di BigAnt restano fuori.
@@ -57,7 +57,7 @@ export function createClientDashboard({store:s}){
    {id:'servizi',nome:'I tuoi servizi',attivi:catalogoServizi.filter(x=>codici.includes(x.codice)).map(x=>({codice:x.codice,nome:x.nome,include:x.include,consegneDelMese:{fatte:fatto.filter(t=>x.registro.includes(t.service)).length,inCorso:inCorso.filter(t=>x.registro.includes(t.service)).length}})),
     consigliati:consigliati&&consigliati.visibility==='client'?{testo:consigliati.content,fonte:consigliati.source}:null},
    {id:'report',nome:'Report',report:report?[{titolo:'Report operativo del mese',testo:report.content,aggiornato:report.updated_at}]:[],invioAutomatico:{stato:'COLLEGAMENTO MANCANTE',nota:'Invio email programmato non collegato: nessun messaggio parte dal sistema.'},pdf:{stato:'SOLO STRUTTURA',nota:'Esportazione PDF da costruire.'}},
-   ...(user.role==='collaborator'?[]:[{id:'documenti',nome:'Documenti e amministrazione',contratti:contratti.map(({amount_cents,...x})=>({...x,canone_cents:amount_cents})),fatture,preventivi:[],materiali:{stato:'SOLO STRUTTURA',nota:'Archivio dei materiali consegnati (loghi, foto, video) da costruire.'}}]),
+   ...(user.role==='collaborator'?[]:[{id:'documenti',nome:'Documenti e amministrazione',contratti:records?records.contracts(user,clientId):contratti.map(({amount_cents,...x})=>({...x,title:x.service,has_document:false})),fatture,preventivi:[],materiali:{stato:'SOLO STRUTTURA',nota:'Archivio dei materiali consegnati (loghi, foto, video) da costruire.'}}]),
    ...(codici.includes('S14')?[{id:'crm',nome:'Contatti e clienti (CRM)',contatti:s.query('SELECT COUNT(*) n FROM gr_leads WHERE workspace=?',clientId)[0].n,iscrittiFidelity:s.query('SELECT COUNT(*) n FROM fi_members WHERE tenant_id=?',clientId)[0].n,campagne:{stato:'COLLEGAMENTO MANCANTE',nota:'Email, SMS e Wallet non collegati.'}}]:[]),
    {id:'chiedi',nome:'Chiedi all’agenzia',endpoint:'/api/production/ask',stato:'DEMO',nota:'Le richieste diventano lavori per il team; la risposta usa solo i dati registrati. WhatsApp non collegato.'},
    {id:'profilo',nome:'Il tuo profilo',azienda:{nome:c.name,settore:c.industry,indirizzo:c.address},utenti,notifiche:{stato:'SOLO STRUTTURA',nota:'Preferenze di notifica da costruire.'},fonti:integrazioniCliente.map(fonteNonCollegata)}

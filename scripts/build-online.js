@@ -46,8 +46,10 @@ const pluginOnline={name:'bigant-online',setup(b){
  b.onResolve({filter:/^(sharp|qrcode|@anthropic-ai\/sdk)$/},a=>({path:a.path,namespace:'sostituto'}));
  b.onLoad({filter:/.*/,namespace:'sostituto'},a=>({contents:`export {${predefiniti[a.path]} as default} from ${JSON.stringify(shim('varie.js'))};`,resolveDir:root}));
  // safePath serve solo all'avvio da riga di comando (cartella dati su disco).
+ b.onResolve({filter:/\/vault\.js$/},()=>({path:'vault',namespace:'sostituto-vault'}));
+ b.onLoad({filter:/.*/,namespace:'sostituto-vault'},()=>({contents:'export function createVault(){const blocked=()=>{throw Object.assign(new Error("Archivio protetto disponibile solo sul server configurato."),{status:409})};return {ready:false,seal:blocked,open:blocked}}',loader:'js'}));
  b.onResolve({filter:/scripts\/backup\.js$/},()=>({path:'backup',namespace:'sostituto-backup'}));
- b.onLoad({filter:/.*/,namespace:'sostituto-backup'},()=>({contents:'export async function safePath(){}',loader:'js'}));
+ b.onLoad({filter:/.*/,namespace:'sostituto-backup'},()=>({contents:'export async function safePath(){};export async function createBackup(){throw new Error("Backup su disco non disponibile nel browser.")};export async function rotateBackups(){throw new Error("Backup su disco non disponibile nel browser.")}',loader:'js'}));
  b.onResolve({filter:/^virtual:vfs$/},()=>({path:'vfs',namespace:'vfs'}));
  b.onLoad({filter:/.*/,namespace:'vfs'},()=>({contents:JSON.stringify(vfs),loader:'json'}));
  // Ogni file del server conosce il proprio percorso sotto /app; il blocco di avvio da riga di comando non serve.
@@ -98,6 +100,7 @@ ${script(server)}
 ${script(app)}
 ${script(readFileSync(resolve(root,'public/ufficio.js'),'utf8'))}
 ${script(readFileSync(resolve(root,'public/cliente.js'),'utf8'))}
+${script(readFileSync(resolve(root,'public/workspace.js'),'utf8'))}
 ${script(`(async()=>{
  try{
   const b=atob(${JSON.stringify(logo)}),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);

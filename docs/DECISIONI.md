@@ -91,3 +91,7 @@ FUN-003: password provvisoria obbligatoriamente sostituita per nuovi account rea
 ### Applicazione D-15 ai percorsi esistenti
 
 L'approvazione dei contenuti social è riservata a soci e collaboratori assegnati. Gli altri contenuti richiedono un socio. Le campagne Fidelity richiedono un socio anche sulla rotta diretta del modulo; Growth mantiene il controllo esistente. Il cliente non prende queste decisioni. Lo scenario dimostrativo a 13 passaggi è aggiornato al nuovo decisore, conservando i controlli sulla versione e il divieto di pubblicazione.
+
+### Scheda cliente e credenziali
+
+Confermata la separazione tra scheda agenzia e anteprima cliente. Contratti e documenti restano esclusi dal collaboratore in attesa del suo giro. L'anteprima socio applica gli stessi filtri del cliente e non offre azioni a suo nome. La password di piattaforme del cliente è cifrata con AES-256-GCM e una chiave del server indipendente da SQLite: nessuna chiave generata/salvata implicitamente nel database. L'archivio resta disabilitato finché la chiave non è predisposta nell'ambiente. Un ripristino richiede anche la chiave corretta, da custodire separatamente; il cambio della chiave richiederà una migrazione esplicita. Contratti PDF scaricati come allegato, non eseguiti nell'interfaccia.
