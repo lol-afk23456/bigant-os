@@ -1,6 +1,37 @@
 # Report della sessione Claude Code — 8 ottobre 2026
 
-Ramo `bigant-os-notte-1`, PR #1 aperta e **non unita**. Nessun deploy, nessun invio, nessuna pubblicazione, nessun dato reale. Tutto è salvato su GitHub (ultimo commit della sessione nel ramo).
+Ramo `bigant-os-notte-1`, PR #1 aperta e **non unita**. Nessun invio, nessuna pubblicazione, nessun dato reale di clienti. Tutto è salvato su GitHub (ultimo commit della sessione nel ramo). **Aggiornamento 9 ottobre:** il server reale è stato distribuito su Railway, vedi la sezione "Fase 1 · Server reale" qui sotto — da quel momento il deploy esiste ed è descritto con le relative prove.
+
+## Fase 1 · Server reale su Railway — OPERATIVA (9 ottobre 2026)
+
+Eseguita `docs/FASE-1-SERVER-REALE.md` come autorizzato dal proprietario l'8 ottobre 2026. Lavoro fatto dal Mac del proprietario (Node, GitHub CLI e Railway CLI installati durante la sessione; Docker non necessario perché la build gira su Railway), non da un ambiente cloud Claude Code.
+
+**Cosa è OPERATIVO, con prova:**
+
+- **Server condiviso vero**, non più un prototipo locale per ogni browser. URL attuale: `https://bigant-os-server-production.up.railway.app` (dominio definitivo `os.bigant.it` non ancora collegato, vedi "Resta da fare").
+- **Login reale con email e password**, nessun profilo DEMO: la modalità reale (`BIGANT_MODALITA=reale`) toglie `/api/demo/login`, i quattro profili dimostrativi e il vincolo email `.example` sulla creazione utenti. Provato: login del primo socio con email e password vere, risposta `demo:false`.
+- **Cookie di sessione protetto** (`Secure`, oltre a `HttpOnly`/`SameSite=Strict`) e controllo dell'host sul dominio pubblico al posto del controllo "solo locale". Provato: una richiesta con host sconosciuto riceve 403; il login reale imposta `Secure` nel cookie (verificato negli header HTTP della risposta).
+- **Dati persistenti su volume Railway** montato su `/data`. Provato due volte: creato un utente di prova, riavviato il servizio (`railway redeploy`), rifatto login con lo stesso utente — riuscito. (Il primo tentativo di collaudo è fallito per un problema di permessi, corretto subito, vedi "Problemi incontrati e risolti".)
+- **Primo socio creato da variabili d'ambiente** (`BIGANT_SOCIO_EMAIL`, `BIGANT_SOCIO_PASSWORD_INIZIALE`), non da seed DEMO. Nessuna azienda o utente finto nel database reale: provato che `os_clients` contiene solo "BigAnt" e `os_users` solo il socio creato.
+- **I semi DEMO non partono in modalità reale**: `growth.seed()`, `fidelity.seed()`, `administration.seed()` ora si fermano subito se `BIGANT_MODALITA=reale`, altrimenti l'avvio del server sarebbe andato in errore (alcuni semi DEMO inserivano righe collegate a clienti DEMO inesistenti nel database reale, violando i vincoli di integrità).
+- **183 test automatici esistenti ancora tutti verdi**, più **5 test nuovi** dedicati alla modalità reale (`tests/modalita-reale.test.js`): host sconosciuto rifiutato, login DEMO assente, cookie `Secure`, primo socio funzionante, nessun dato DEMO creato. Totale: **188/188**.
+
+**Problemi incontrati e risolti durante il collaudo su Railway (non solo in locale):**
+
+1. Il `Dockerfile` non copiava `docs/playbook`: il catalogo servizi S01–S19 lo legge all'avvio e il server andava in crash immediato. Corretto aggiungendo la cartella alla build.
+2. Il container girava con un utente non privilegiato (`USER node`), ma il volume Railway si monta di proprietà di `root`: il database non riusciva ad aprirsi (`unable to open database file`), crash ripetuto. Corretto facendo girare il container come `root` (scelta pragmatica per un servizio interno a un solo container; non è un server multi-tenant esposto a codice di terzi).
+
+Questi due problemi **non si vedono testando solo in locale**: sono emersi soltanto distribuendo davvero su Railway, dentro un container con volume vero.
+
+**Cosa resta da fare per la Fase 1 (dichiarato, non nascosto):**
+
+- **Dominio `os.bigant.it`**: non ancora collegato. Serve impostare il DNS del dominio (CNAME verso Railway) e aggiungerlo come dominio personalizzato del servizio, poi aggiornare `BIGANT_ORIGINE`. Azione che tocca il dominio: da fare con l'autorizzazione esplicita del proprietario.
+- **Accessi di Alfonso e Vincenzo**: non ancora creati. Si fanno dalla sezione Accessi una volta entrati come socio (vedi istruzioni a parte).
+- **Copia di sicurezza del volume**: `scripts/backup.js` assume ancora la cartella tecnica del repository (`.data`), non il volume Railway montato fuori dal repository (`/data`). **[DA VERIFICARE]**: un backup automatico giornaliero del volume reale non è stato implementato in questa sessione; resta un rischio da chiudere prima di fidarsi del server per lavoro quotidiano continuativo.
+- **Cambio password obbligatorio al primo accesso**: non implementato come meccanismo forzato. Il socio può cambiare la propria password dalla sezione Accessi (già possibile con l'API esistente), ma nessun codice lo obbliga al primo login. **[DA VERIFICARE]**, gap dichiarato.
+- **Motore AI (`BIGANT_MOTORE=api`)**: il codice per leggerlo già esisteva ma non veniva mai passato all'avvio del server reale; corretto in questa sessione (ora il bootstrap passa `motore` da `BIGANT_MOTORE`). La chiave `BIGANT_ANTHROPIC_API_KEY` non è stata impostata: l'AI resta spenta finché il proprietario non la inserisce direttamente su Railway, come previsto.
+- **Vincoli DEMO non toccati, per scelta**: le email `.example` restano obbligatorie nei moduli Growth (lead) e Fidelity (iscritti), e le risposte simulate di `src/growth-providers.js` restano invariate. Motivo: quei vincoli proteggono contro l'uso accidentale di funzioni che restano solo simulate (nessun collegamento esterno reale, Fase 2). Toccarli non era necessario per il criterio di fine Fase 1 (login reale con dati condivisi) e avrebbe allargato il rischio. Riga di riferimento nel piano: "35 punti... email `.example`" — di questi, solo quelli che riguardano la creazione di account veri (`/api/users`, pagina Accessi) sono stati tolti in modalità reale.
+- **Spegnere i due account di collaudo**: creati e già disattivati (`active:false`) durante le prove di persistenza (`collaudo-persistenza@bigant.it`, `collaudo-volume-2@bigant.it`). Restano nel database come utenti disattivati, visibili nella sezione Accessi: si possono eliminare manualmente se si preferisce non vederli in lista.
 
 ## In una frase
 
