@@ -25,8 +25,10 @@ Sessione di mappatura con il proprietario (Raffaele), iniziata il 9 ottobre 2026
 | Marketing BigAnt | Esaminata [R] [C] |
 | Direzione | Esaminata [R] [C] |
 | Amministrazione | Esaminata [R] [C]; bacheca Trello Fatturazione letta in sola lettura (solo struttura) |
-| Clienti, Lavori e contenuti, Growth, Fidelity, Ufficio virtuale, Sciame di agenti, Approvazioni, Registro attività, Servizi, Collegamenti, Accessi, Vista cliente | Da esaminare |
-| Vista collaboratore, vista cliente | Da esaminare |
+| Clienti (elenco, nuova attività, apri attività) e vista cliente (tutte le sezioni) | Esaminata [R] [C] |
+| Lavori e contenuti, Growth, Fidelity, Ufficio virtuale, Sciame di agenti, Approvazioni, Registro attività, Servizi, Collegamenti, Accessi | Da esaminare |
+| Vista collaboratore | Da esaminare |
+| Vista cliente con un vero login da cliente | Rinviata: il proprietario la controllerà entrando con le credenziali del cliente (FUN-045) |
 | Uso da telefono | Da esaminare |
 
 ---
@@ -287,6 +289,54 @@ Fonte storica: un foglio Google "Tracker abbonamenti".
 
 ---
 
+## 6. Clienti (lato amministrazione) e dashboard del cliente
+
+### Cosa succede oggi [C]
+
+- *Clienti* mostra le **card dei clienti**, con il pulsante **"Nuova attività"**. Il modulo chiede: nome dell'attività, nome per il link (campo tecnico), settore e servizi attivi.
+- **"Apri attività"** porta l'amministratore nella **vista cliente**, cioè la dashboard che vede il cliente stesso (`public/cliente.js`, `src/cliente/dashboard.js`).
+- La vista cliente è **un'unica pagina lunga**, con le sezioni una sotto l'altra:
+  - Home;
+  - I tuoi risultati;
+  - Approvazioni e calendario;
+  - I tuoi servizi (con "Servizi consigliati per te" e "Report mensili");
+  - Documenti e amministrazione;
+  - Contatti e clienti;
+  - Iscritti Fidelity;
+  - Chiedi all'agenzia;
+  - Il tuo profilo;
+  - Collegamento alla fonte dei dati.
+
+### Giudizio del proprietario [R]
+
+Le card dei clienti e la creazione di una nuova attività piacciono. Non va bene che l'amministrazione, aprendo un cliente, finisca nella vista del cliente. La pagina lunga "a vetrina" è poco professionale e confusa. **La parola d'ordine per tutta l'app è "ordine".**
+
+### Principio di impaginazione per tutta l'app
+
+**PRINC-01 · Una sezione alla volta.** Niente pagine lunghe con tutte le sezioni in fila. Ogni pagina mostra una griglia di **card piccole** (nome della sezione e un dato di sintesi). Il clic apre **solo quella sezione**, con un "Indietro" chiaro. Vale per la scheda cliente dell'amministrazione, per la dashboard del cliente e, quando serve, per le altre pagine (vedi anche UI-003).
+
+### Voci
+
+| ID | Pagina / percorso | Problema osservato | Conseguenza per l'utente | Modifica proposta | Priorità | Come verificare che sia risolto |
+|---|---|---|---|---|---|---|
+| FUN-033 | Clienti → elenco e "Nuova attività" | Card dei clienti e creazione rapida (nome, settore, servizi attivi) piacciono [R]. Il modulo chiede anche "Nome per il link dell'attività", un campo tecnico [C] | Un campo che l'utente non sa come riempire | **Tenere** l'elenco a card e il modulo. Il nome per il link si genera da solo dal nome dell'attività. Dopo la creazione si completa la scheda (FUN-034) | P2 · da conservare + difetto minore | Una nuova attività si crea con nome, settore e servizi; il link si genera senza intervento |
+| FUN-034 | Clienti → "Apri attività" | Apre la **vista del cliente** invece di una scheda di lavoro per l'agenzia [R] [C] | L'amministrazione vede quello che vede il cliente, non quello che serve all'agenzia | **Scheda cliente dell'amministrazione**, separata dalla vista cliente, organizzata a card (PRINC-01): **Anagrafica** · **Contratto** (FUN-007, FUN-023) · **Accessi** (FUN-010) · **Scheda informativa**, cioè brief, tono di voce e note (FUN-017) · **Servizi attivi con i loro report** (FUN-036) · **Documenti**, cioè contratto, fatture e pagamenti (FUN-039) · **Avvio cliente** (FUN-008) · **Risultati** (FUN-035) | P1 · nuova funzione | "Apri attività" apre la scheda dell'agenzia; nessun elemento della vista cliente compare al suo posto |
+| UI-010 | Vista cliente | Pagina vetrina che scende "tantissimo" con 9-10 sezioni insieme [R] [C] | Poco professionale, difficile trovare le cose | Applicare PRINC-01: home del cliente a card, ogni sezione si apre da sola | P1 · preferenza strutturale | Nessuna pagina del cliente mostra più di una sezione completa alla volta |
+| FUN-035 | "I tuoi risultati" | È una sezione **per il login del cliente**, non per l'amministrazione [R] | — | Due livelli. **Amministrazione:** una vista **"Risultati dei clienti"** con i risultati di ogni cliente in un unico posto. **Cliente:** "I tuoi risultati", solo i propri. **Ordine di rilascio deciso [R]:** prima solo nella dashboard dell'amministrazione; quando è configurata bene, anche nella dashboard del cliente | P2 · decisa | L'amministrazione vede i risultati di tutti i clienti in una pagina; il cliente, quando abilitato, vede solo i suoi |
+| FUN-036 | Report (presenza, scheda Google, clic al sito, report mensili…) | Report sparsi "senza senso" [R] | Non si capisce a quale servizio si riferisca un dato | **I report stanno dentro il servizio attivo a cui si riferiscono**, sia nella scheda cliente dell'amministrazione sia in "I tuoi servizi" del cliente. Esempi [R]: Sito e SEO → report; **Reputazione e recensioni** → report più elenco delle recensioni; **Email marketing** → report più gestione delle email; **Meta Ads** → report; **Google Ads** → report (**molto importante**). Si toglie "Report mensili" come sezione separata | P1 · decisa | Ogni report si raggiunge solo dal servizio corrispondente; nessuna sezione "report" generica |
+| COL-004 | Approvazioni e calendario, Storico delle decisioni | Il piano editoriale e le approvazioni dei contenuti si presentano già ai clienti con il **PED** (`ped.bigantagency.it`) [R] | Doppio lavoro se BigAnt OS replica il PED | **Mettere da parte** queste sezioni. In futuro **collegare il PED** (prima in sola lettura) per mostrare piano e approvazioni in BigAnt OS. Il PED originale non si tocca senza autorizzazione | P3 · collegamento mancante | Decisione futura; nel frattempo le sezioni non compaiono |
+| FUN-037 | "I tuoi servizi" | Piace: il cliente vede i servizi attivati con BigAnt e l'amministrazione vede gli stessi servizi nella scheda del cliente [R] | — | **Tenere** su entrambi i lati, come contenitore dei report (FUN-036) | P1 · da conservare | Lo stesso elenco di servizi attivi compare nei due lati |
+| FUN-038 | "Servizi consigliati per te" | Da eliminare per ora [R] | — | Togliere | P3 · decisa | La sezione non compare |
+| FUN-039 | "Documenti e amministrazione" | Giusto che l'agenzia veda contratti, fatture e pagamenti del cliente, e che **anche il cliente** veda il proprio contratto, le fatture e i pagamenti fatti [R] | — | Card **Documenti** su entrambi i lati, ciascuno limitato al proprio cliente. **Dipendenza:** finché il registro ufficiale dei pagamenti è Trello (D-09), in BigAnt OS i pagamenti non ci sono; vedi D-10 | P2 · decisa, con dipendenza | Il cliente vede solo i propri documenti, verificato sul server |
+| FUN-040 | "Contatti e clienti" | Va dentro il servizio **Email marketing**: lì si raccolgono i contatti che danno il consenso [R] | Sezione isolata senza un servizio di riferimento | Spostare nel servizio Email marketing, visibile solo a chi lo ha attivo | P3 · decisa | La sezione compare solo dentro Email marketing |
+| FUN-041 | "Iscritti Fidelity" e moduli futuri | Si sblocca **solo** per chi ha attivato il piano Fidelity, e così in futuro il menu digitale e gli altri moduli [R] | — | Regola generale: **ogni sezione legata a un servizio compare solo se il servizio è attivo** per quel cliente. Nel menu del cliente la regola esiste già per Fidelity [C: `allowedNav()`]; nella dashboard cliente è [DV] | P2 · decisa | Un cliente senza Fidelity non vede la sezione né riceve i dati dal server |
+| FUN-042 | "Chiedi all'agenzia" | I clienti scrivono quasi sempre su **WhatsApp** [R] | Funzione che nessuno userebbe | Togliere | P3 · decisa | La sezione non compare |
+| FUN-043 | "Il tuo profilo / La tua attività" | Da togliere [R] | — | Togliere | P3 · decisa | La sezione non compare |
+| FUN-044 | "Collegamento alla fonte dei dati" | **Piace molto:** il cliente vede da dove arrivano i dati e che sono veri, non inventati [R] | Fiducia del cliente | **Tenere solo nella vista cliente**, accanto a ogni report: fonte, data dell'ultimo aggiornamento e collegamento all'originale. Non serve nel lato amministrazione | P2 · da conservare | Ogni dato mostrato al cliente ha la sua fonte e la data |
+| FUN-045 | Vista cliente dal pannello dell'amministrazione | Non serve l'anteprima della vista cliente: per controllarla, l'amministrazione entra con l'email e la password del cliente, conservate in Accessi [R] | — | Togliere **"Vista cliente"** dal menu dell'amministrazione e "Apri attività → vista cliente". Le credenziali dell'account BigAnt OS del cliente stanno nella card Accessi (FUN-010) | P2 · decisa | La voce non c'è più nel menu; la vista cliente si raggiunge solo entrando come cliente |
+
+---
+
 ## Decisioni che spettano ai soci
 
 | ID | Decisione | Contesto |
@@ -296,6 +346,7 @@ Fonte storica: un foglio Google "Tracker abbonamenti".
 | D-06 | Nome della nuova sezione dei profili | **DECISA [R]:** "Profili" (per il cliente: "I tuoi profili") |
 | D-07 | Aggiornamento dei dati dei profili | **DECISA [R]:** una volta al giorno più "Aggiorna ora" |
 | D-09 | Registro ufficiale di incassi, canoni e saldi: Trello (bacheca Fatturazione) o BigAnt OS? | **DECISA [R]: per ora resta Trello.** Percorso futuro: **finché la Fatturazione resta in secondo piano, Trello è il registro ufficiale**. BigAnt OS lo sostituisce solo quando il tracker (FUN-028) è collaudato, con un'importazione una tantum e un mese di prova in parallelo |
+| D-10 | Fatture e pagamenti visibili al cliente (FUN-039), visto che il registro ufficiale resta Trello (D-09) | Proposta: per ora il cliente vede **solo il contratto**; fatture e pagamenti quando la Fatturazione di BigAnt OS diventerà il registro ufficiale |
 | D-08 | Riquadro "obiettivo di fatturato" nella home dell'amministrazione | **DECISA [R]:** non si fa |
 | D-03 | Task e consegne: Trello o BigAnt OS? | **DECISA [R]:** si resta su Trello; il collegamento si valuta in futuro (COL-001) |
 | D-04 | Documenti e autorizzazioni: servono in BigAnt OS? | Proposta minima: solo contratti e liberatorie nella scheda cliente |
