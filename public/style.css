@@ -129,3 +129,7 @@ div.office-row{cursor:default}
 /* Versione online: «riparti da zero» nella nota del menu laterale */
 .link-reset{background:none;border:0;padding:0;font:inherit;color:inherit;cursor:pointer;text-align:left;text-decoration:underline;text-underline-offset:2px}
 .link-reset:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+
+/* Accesso reale e cambio password — UI-001, UI-002, FUN-003 */
+.account-form .btn.primary{color:var(--ink)}.account-form .field>label{font-size:14px}.account-form .btn.ghost{color:#625f58}
+.account-form{display:grid;gap:20px;width:100%;max-width:430px;margin-top:28px}.account-form .field{display:grid;gap:7px}.account-form input{min-width:0;min-height:48px;font-size:16px}.account-form .btn{min-height:48px}.account-form small{color:#625f58}.account-page{min-height:100dvh;display:grid;place-items:center;padding:32px 20px;background:var(--ink)}.account-card{width:min(100%,520px);background:var(--paper);border-radius:24px;padding:40px}.account-card>img{width:150px;margin-bottom:28px}.account-card h1{font-size:32px;line-height:1.1;letter-spacing:-1px}.account-card p{color:#625f58}.account-form .form-error{margin:0}.account-form .form-error[hidden]{display:none}@media(max-width:520px){.account-card{padding:26px 22px}.account-page{padding:16px}.account-card h1{font-size:28px}.login-panel .account-form{max-width:none}}

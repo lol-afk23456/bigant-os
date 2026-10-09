@@ -77,3 +77,13 @@ Controllo documentale dopo il salvataggio del brief integrale: `npm run check` p
 | Passaggio alla versione reale chiesto dal proprietario (8 ottobre 2026: «non voglio una demo, passiamo alla versione reale») | La strada è in `docs/verifica/BigAnt-OS-roadmap-servizi.pdf`: base (server, AI con tetto, dati veri di BigAnt e di clienti pilota con consenso, richieste di accesso a Google e Meta), poi quattro onde, servizio per servizio. La regola «solo dati DEMO» cade con la Fase 1, sul server condiviso. I dati reali restano fuori dal repository. |
 | Server reale su Railway autorizzato dal proprietario (8 ottobre 2026) | Non eseguibile in questa sessione: nessuna chiave Railway, rete verso Railway bloccata, CLI assente. Il piano esatto è in `docs/FASE-1-SERVER-REALE.md`, da eseguire in una sessione nuova con `RAILWAY_TOKEN` salvato nelle impostazioni dell'ambiente e i domini Railway consentiti. |
 
+
+## Riordino autorizzato — 10 ottobre 2026
+
+Il proprietario ha autorizzato tutte le modifiche del piano e confermato in chat: **nascondere** le sezioni tolte (D-05), **Servizi come Piano di attivazione con Listino** (FUN-060/FUN-031), **post approvabili dai soci o dai collaboratori; Growth e Fidelity solo dai soci** (D-15). La scelta del fornitore AI è rinviata: **predisporre sia Anthropic sia OpenAI** (aggiornamento D-14), lasciando chiavi, modello, budget e attivazione espliciti.
+
+Il riferimento principale è `MAPPATURA-FINALE-CODEX.md`; il piano a fasi guida esecuzione e verifiche. L'autorizzazione al lavoro copre le fasi senza ripetere la domanda di avvio; rilascio Railway e azioni esterne restano soggetti alle autorizzazioni specifiche previste. Le viste cliente e collaboratore non ancora analizzate non diventano implicitamente definitive.
+
+Fase 0: backup giornaliero sul volume configurato, 14 copie conservate, rotazione solo dopo una copia verificata, ripristino in archivio nuovo. Stato riservato ai soci. Le copie sullo stesso volume non costituiscono un backup remoto indipendente.
+
+FUN-003: password provvisoria obbligatoriamente sostituita per nuovi account reali e reset del socio; il socio iniziale è marcato se usa ancora la password iniziale. Il cambio verifica la password corrente, chiude tutte le sessioni precedenti e ne emette una nuova. I profili rapidi DEMO restano utilizzabili. Recupero assistito da un socio, senza invii email automatici.

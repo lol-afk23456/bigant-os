@@ -36,10 +36,13 @@ test('modalità reale: host sconosciuto rifiutato, login DEMO assente, cookie Se
   const session=await request('/api/session');
   assert.equal(session.body.demo,false);
   assert.deepEqual(session.body.profiles,[]);
-  const login=await request('/api/login',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`},body:{email:SOCIO_EMAIL,password:SOCIO_PASSWORD}});
+  let login=await request('/api/login',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`},body:{email:SOCIO_EMAIL,password:SOCIO_PASSWORD}});
   assert.equal(login.status,200);
   assert.equal(login.body.user.role,'owner');
   assert.match(login.headers['set-cookie'][0],/Secure/);
+  assert.equal(login.body.user.mustChangePassword,true);
+  login=await request('/api/account/password',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`,Cookie:login.headers['set-cookie'][0].split(';')[0],'X-CSRF-Token':login.body.csrf},body:{currentPassword:SOCIO_PASSWORD,newPassword:'personale-collaudo-aggiornata-02',confirmPassword:'personale-collaudo-aggiornata-02'}});
+  assert.equal(login.status,200);
   const cookie=login.headers['set-cookie'][0].split(';')[0];
   const overview=await request('/api/overview',{headers:{Cookie:cookie,'X-CSRF-Token':login.body.csrf}});
   assert.equal(overview.status,200);
@@ -57,7 +60,10 @@ test('modalità reale: origine non https rifiutata in fase di creazione',async t
 
 test('modalità reale: nuovo utente con email reale (non .example) viene creato',async t=>{
   const {request}=await setupReale(t);
-  const login=await request('/api/login',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`},body:{email:SOCIO_EMAIL,password:SOCIO_PASSWORD}});
+  let login=await request('/api/login',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`},body:{email:SOCIO_EMAIL,password:SOCIO_PASSWORD}});
+  assert.equal(login.body.user.mustChangePassword,true);
+  login=await request('/api/account/password',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`,Cookie:login.headers['set-cookie'][0].split(';')[0],'X-CSRF-Token':login.body.csrf},body:{currentPassword:SOCIO_PASSWORD,newPassword:'personale-collaudo-aggiornata-02',confirmPassword:'personale-collaudo-aggiornata-02'}});
+  assert.equal(login.status,200);
   const cookie=login.headers['set-cookie'][0].split(';')[0];
   const created=await request('/api/users',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`,Cookie:cookie,'X-CSRF-Token':login.body.csrf},body:{name:'Alfonso',email:'alfonso@bigant.it',role:'owner',password:'password-reale-alfonso-02'}});
   assert.equal(created.status,201);
@@ -65,7 +71,10 @@ test('modalità reale: nuovo utente con email reale (non .example) viene creato'
 
 test('modalità reale: non crea aziende o utenti DEMO',async t=>{
   const {request}=await setupReale(t);
-  const login=await request('/api/login',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`},body:{email:SOCIO_EMAIL,password:SOCIO_PASSWORD}});
+  let login=await request('/api/login',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`},body:{email:SOCIO_EMAIL,password:SOCIO_PASSWORD}});
+  assert.equal(login.body.user.mustChangePassword,true);
+  login=await request('/api/account/password',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`,Cookie:login.headers['set-cookie'][0].split(';')[0],'X-CSRF-Token':login.body.csrf},body:{currentPassword:SOCIO_PASSWORD,newPassword:'personale-collaudo-aggiornata-02',confirmPassword:'personale-collaudo-aggiornata-02'}});
+  assert.equal(login.status,200);
   const cookie=login.headers['set-cookie'][0].split(';')[0];
   const overview=await request('/api/overview',{headers:{Cookie:cookie,'X-CSRF-Token':login.body.csrf}});
   assert.equal(overview.body.clients.length,1);

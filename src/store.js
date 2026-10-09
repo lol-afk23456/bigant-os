@@ -40,6 +40,9 @@ export function openStore(path=':memory:') {
   CREATE INDEX IF NOT EXISTS os_audit_client ON os_audit(client_id,created_at);
   `);
   const query=(sql,...p)=>db.prepare(sql).all(...p),one=(sql,...p)=>db.prepare(sql).get(...p),run=(sql,...p)=>db.prepare(sql).run(...p);
+  // Additive migration: existing identities remain intact. Real bootstrap
+  // passwords still matching their initial value are marked below on startup.
+  if(!query('PRAGMA table_info(os_users)').some(column=>column.name==='must_change_password'))db.exec('ALTER TABLE os_users ADD COLUMN must_change_password INTEGER NOT NULL DEFAULT 0 CHECK(must_change_password IN(0,1))');
   let depth=0;
   function transaction(fn) {
     const n=depth++; const name='os_nested_'+n;
@@ -66,8 +69,9 @@ export function seedRealCore(s,{socioEmail,socioPassword}={}) {
   s.transaction(()=>{
     s.run('INSERT OR IGNORE INTO os_clients(id,name,slug,industry,services_json,created_at) VALUES(?,?,?,?,?,?)','demo-bigant','BigAnt','bigant','Agenzia',JSON.stringify(['growth','social','video','ads','local','seo','fidelity']),now());
     s.run('INSERT OR IGNORE INTO os_users(id,name,email,role,created_at) VALUES(?,?,?,?,?)','os-orchestrator','Orchestratore','orchestratore@sistema.interno','owner',now());
-    const existing=s.one('SELECT id FROM os_users WHERE email=?',socioEmail.toLowerCase());
-    if(!existing) s.run('INSERT INTO os_users(id,tenant_id,name,email,password_hash,role,created_at) VALUES(?,?,?,?,?,?,?)',uid(),null,'Socio',socioEmail.toLowerCase(),passwordHash(socioPassword),'owner',now());
+    const existing=s.one('SELECT id,password_hash FROM os_users WHERE email=?',socioEmail.toLowerCase());
+    if(!existing) s.run('INSERT INTO os_users(id,tenant_id,name,email,password_hash,role,created_at,must_change_password) VALUES(?,?,?,?,?,?,?,1)',uid(),null,'Socio',socioEmail.toLowerCase(),passwordHash(socioPassword),'owner',now());
+    else if(verifyPassword(socioPassword,existing.password_hash))s.run('UPDATE os_users SET must_change_password=1 WHERE id=?',existing.id);
     if(!s.one('SELECT id FROM os_memory WHERE client_id=? AND kind=?','demo-bigant','master')) s.run('INSERT OR IGNORE INTO os_memory VALUES(?,?,?,?,?,?,?,?)',uid(),'demo-bigant','master','# BigAnt\n\nSpazio di lavoro reale dell\'agenzia. Nessun dato di esempio.','internal',1,'Avvio server reale',now());
   });
 }

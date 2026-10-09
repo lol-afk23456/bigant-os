@@ -337,3 +337,9 @@ Come funzioneranno i 7 percorsi completi dopo il riordino, e cosa manca per arri
 | Percorsi completi (sezione 4) | **Ricostruiti dalle decisioni, non collaudati** fino alla fine: il collaudo si fa dopo ogni fase |
 
 **Limite dichiarato:** Claude non ha navigato l'interfaccia di persona. Le osservazioni visive sono del proprietario [R]; Claude le ha confermate o corrette sul codice [C].
+
+## Aggiornamento Codex — 10 ottobre 2026
+
+Confermate in chat: **D-05: nascondere**; **D-15: post social anche ai collaboratori, Growth e Fidelity solo ai soci**; **FUN-060: Servizi come Piano di attivazione, con Listino**. **D-14: scelta rinviata; predisporre Anthropic e OpenAI**, senza attivazione implicita. Questo aggiornamento prevale sulle precedenti proposte per queste sole decisioni.
+
+FUN-003, UI-014, UI-001 e UI-002 implementate in locale; backup Fase 0 provato su un volume temporaneo esterno. Suite 197/197 e controlli 5/5. **Rilascio e collaudo sul server ancora da fare**. Esecuzione delle 92 voci tracciata in `copertura/riordino.json`; dettagli in `DIARIO-LAVORO.md`.

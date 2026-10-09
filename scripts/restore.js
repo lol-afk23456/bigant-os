@@ -3,9 +3,10 @@ import { resolve, dirname, basename, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { technicalPaths, safePath, assertAbsent, assertNoSidecars, sqliteSnapshot, uniqueName, parseArguments } from './backup.js';
 
-export async function restoreBackup({ backupPath, targetDirectory, fixtureRoot } = {}) {
-  const { dataRoot, backupDirectory } = await technicalPaths(fixtureRoot);
-  const source = await safePath(backupPath, backupDirectory, { file: true });
+export async function restoreBackup({ backupPath, targetDirectory, fixtureRoot, env = {} } = {}) {
+  const { dataRoot, backupDirectory, pathRoot } = await technicalPaths(fixtureRoot, env);
+  const within = (path, scope, options = {}) => safePath(path, scope, { ...options, root: pathRoot });
+  const source = await within(backupPath, backupDirectory, { file: true });
   if (!source.endsWith('.sqlite')) throw new Error('Seleziona un backup .sqlite.');
   await assertNoSidecars(source);
   // Our completed backups use rollback-journal format and need no external WAL.
@@ -17,16 +18,16 @@ export async function restoreBackup({ backupPath, targetDirectory, fixtureRoot }
     if (bytesRead !== 100 || header.subarray(0, 16).toString('binary') !== 'SQLite format 3\0') throw new Error('Il file non è un backup SQLite valido.');
     if (header[18] !== 1 || header[19] !== 1) throw new Error('Il file richiede WAL: crea un backup completato con lo script del progetto.');
   } finally { await file.close(); }
-  const directory = await safePath(targetDirectory ?? resolve(dataRoot, uniqueName('restored')), dataRoot);
+  const directory = await within(targetDirectory ?? resolve(dataRoot, uniqueName('restored')), dataRoot);
   if (dirname(directory) !== dataRoot || !/^restored-[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(basename(directory))) throw new Error('Usa una nuova cartella restored-… direttamente nella cartella tecnica dei dati.');
   await assertAbsent(directory);
   await mkdir(dataRoot, { recursive: true, mode: 0o700 });
-  await safePath(dataRoot, dataRoot);
+  await within(dataRoot, dataRoot);
   await mkdir(directory, { mode: 0o700 });
   const destination = resolve(directory, 'bigant-os.sqlite');
   let published = false;
   try {
-    const result = await sqliteSnapshot(source, destination, { beforePublish(db) {
+    const result = await sqliteSnapshot(source, destination, { scope: dataRoot, root: pathRoot, beforePublish(db) {
       db.exec('BEGIN IMMEDIATE');
       try {
         const removedSessions = Number(db.prepare('DELETE FROM os_sessions').run().changes);
@@ -48,7 +49,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     else {
       const args = parseArguments(process.argv.slice(2), ['--backup', '--target-dir']);
       if (!args['--backup']) throw new Error('Indica --backup .data/backups/nome.sqlite; usa --help per le istruzioni.');
-      const result = await restoreBackup({ backupPath: args['--backup'], targetDirectory: args['--target-dir'] });
+      const result = await restoreBackup({ backupPath: args['--backup'], targetDirectory: args['--target-dir'], env: process.env });
       const shellQuote = value => `'${value.replaceAll("'", "'\\''")}'`;
       console.info(`Copia ripristinata e verificata: ${result.path}\nSessioni rimosse nella sola copia: ${result.removedSessions}. Occorrerà accedere di nuovo.\nIl database attivo e il backup non sono stati sostituiti. Nessun provider collegato.\nPer provare la copia, arresta manualmente l'app locale e, dalla cartella del progetto, esegui:\nDATA_DIR=${shellQuote(result.directory)} npm start\nPer tornare al database precedente, riavvia con il precedente DATA_DIR (senza DATA_DIR per .data${sep}bigant-os.sqlite).`);
     }

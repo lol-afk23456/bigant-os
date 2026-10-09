@@ -65,3 +65,14 @@ Fase 1 (`docs/FASE-1-SERVER-REALE.md`), autorizzata l'8 ottobre. Lavoro fatto da
 
 Nessun dato reale di clienti è stato inserito. Nessuna email, messaggio o pubblicazione esterna. Il dominio `os.bigant.it` non è stato toccato (serve un'azione DNS separata, da autorizzare). La chiave AI non è stata impostata, come da istruzione del proprietario.
 
+
+## 10 ottobre 2026 — Codex, avvio del riordino
+
+- Integrato con fast-forward il ramo Claude `d3b4461` nel ramo `bigant-os-notte-1`, senza modificare main.
+- Letti i cinque documenti richiesti; creata la matrice `docs/copertura/riordino.json` per tutte le 92 voci.
+- Fase 0 implementata: backup reale su volume esterno con rotazione e ripristino isolato; scheduler persistente ogni 24 ore; stato riservato ai soci. FUN-003: obbligo cambio password, verifica corrente, invalidazione delle vecchie sessioni; UI-014: testi e creazione Accessi coerenti con la modalità reale.
+- Anticipati UI-001/UI-002: modulo email/password direttamente nella schermata reale e recupero assistito.
+- Prove: **197/197 test**, `node scripts/check.js` **5/5**. Nuove prove in `tests/accessi.test.js` e `tests/backup-reale.test.js`; aggiornati i test reali per attraversare il cambio obbligatorio.
+- Browser integrato: login reale con campi subito visibili; larghezza 390 px senza scorrimento orizzontale (clientWidth e scrollWidth entrambi 390). Flussi HTTP reali verificati su istanze isolate, senza dati di produzione.
+- Il certificato dell'anteprima HTTPS locale non è accettato dal Browser: nessun avviso aggirato. La verifica visiva usa una vista locale; HTTPS, cookie e operazioni di autenticazione sono verificati dai test HTTP.
+- **Nessun rilascio Railway eseguito**: modifiche ancora non operative sul server online.
