@@ -30,7 +30,8 @@ Sessione di mappatura con il proprietario (Raffaele), iniziata il 9 ottobre 2026
 | Growth (e verifica del trasferimento di Fidelity sugli inventari) | Esaminata [R] [C]; Growth confrontato con il codice originale; Fidelity originale non ancora letto (accesso al repository bloccato dal controllo di sicurezza della sessione) |
 | Ufficio virtuale e Sciame di agenti | Esaminata [R] [C] |
 | Registro attività, Servizi | Esaminate [R] [C] |
-| Fidelity (interfaccia, rinviata dal proprietario), Approvazioni, Collegamenti, Accessi | Da esaminare |
+| Approvazioni | Esaminata [R] [C] |
+| Fidelity (interfaccia, rinviata dal proprietario), Collegamenti, Accessi | Da esaminare |
 | Vista collaboratore | Da esaminare |
 | Vista cliente con un vero login da cliente | Rinviata: il proprietario la controllerà entrando con le credenziali del cliente (FUN-045) |
 | Uso da telefono | Da esaminare |
@@ -501,7 +502,24 @@ Il proprietario non vuole guardare Fidelity adesso, ma va messo in lista per Cod
 | FUN-060 | Servizi | Non si capisce quali servizi siano. È il **terzo posto** che parla dei servizi, dopo "Un workspace per ogni servizio" (Mappa agenzia) e "Le aree del marketing" (Marketing BigAnt) [R] [C] | Tre pagine per lo stesso argomento | **Una sola voce "Servizi"** per l'amministrazione, che è il **Piano di attivazione dei servizi** (FUN-014): elenco dei servizi BigAnt con stato (**Attivo · In preparazione · Futuro**), cosa manca per attivarlo, data obiettivo, agenti che lo seguono (stato da FUN-053) e voce di **Listino** (FUN-031). La pagina di dettaglio resta, a card (PRINC-01). Lato cliente, "Servizi" è "I tuoi servizi" con i report (FUN-036, FUN-037) | P2 · proposta, da confermare | Un solo posto spiega quali servizi offre BigAnt e a che punto è ciascuno |
 | UI-013 | Servizi | Avviso «Le schede descrivono il perimetro. "Solo struttura" significa…» [C] | Linguaggio tecnico | Sostituire con i tre stati semplici del Piano di attivazione (UI-004) | P2 · difetto di testo | Nessun avviso tecnico nella pagina |
 
-**Approvazioni:** non ancora esaminata (il giro è passato da Sciame a Registro). Da riprendere.
+
+---
+
+## 11. Approvazioni
+
+### Cosa contiene oggi [C]
+
+Una **coda unica** di tutte le decisioni in sospeso (`os_approvals`). Ci finiscono le bozze dello sciame (`src/sciame/index.js`), i messaggi commerciali di Growth (`src/growth-store.js`) e le campagne Fidelity. Ogni approvazione è legata alla versione del testo: se il testo cambia, l'approvazione vecchia non vale più.
+
+### Decisione del proprietario [R]
+
+Le approvazioni si gestiscono **dentro lo Sciame di agenti**. Regola: quello che gli agenti preparano in autonomia, per esempio i post, **deve essere approvato da una persona** (un socio o un collaboratore BigAnt). Solo dopo l'approvazione si **pubblica in automatico**. **Senza approvazione umana non si pubblica nulla.**
+
+| ID | Pagina / percorso | Problema osservato | Conseguenza per l'utente | Modifica proposta | Priorità | Come verificare che sia risolto |
+|---|---|---|---|---|---|---|
+| FUN-061 | Approvazioni → voce di menu | Le approvazioni vanno nello Sciame [R] | Una voce in più nel menu | Togliere la voce "Approvazioni": tutto confluisce nella scheda **Da approvare** dello Sciame (FUN-048), con un filtro per tipo (post, messaggi Growth, campagne Fidelity) e il contatore nella home dell'amministrazione | P2 · decisa | Una sola coda "Da approvare", dentro lo Sciame |
+| FUN-062 | Regola di pubblicazione | **Nessuna pubblicazione senza approvazione umana**; dopo l'approvazione, pubblicazione automatica [R] | Garanzia per l'agenzia e per i clienti | Regola **applicata dal server**, non solo dall'interfaccia: una pubblicazione parte solo se esiste un'approvazione di una persona, sulla **stessa versione** del testo (il codice già annulla le approvazioni dei testi modificati [C]). La pubblicazione automatica richiede il collegamento al canale (Meta, PED, o un programmatore di post: COL-002, COL-004) ed è **spenta finché non viene collaudata e autorizzata** | P1 · decisa | Un tentativo di pubblicare senza approvazione, o con un'approvazione su una versione precedente, viene rifiutato dal server (test automatico) |
+| FUN-063 | Chi approva cosa | Approvano soci o collaboratori [R] | Serve chiarezza sui permessi | Proposta: **post social** → socio **o** collaboratore; **messaggi commerciali Growth** e **campagne Fidelity** → **solo soci** (oggi il codice di Growth richiede già un socio [C]). Da confermare (D-15) | P2 · proposta | Un collaboratore può approvare un post ma non un messaggio commerciale (verifica sul server) |
 
 ---
 
@@ -519,6 +537,7 @@ Il proprietario non vuole guardare Fidelity adesso, ma va messo in lista per Cod
 | D-12 | Ordine di attivazione | **DECISA [R]:** prima il **collaudo di Fidelity** (già funzionante nell'originale, rischio basso), poi **Growth fase 1-2** (ricerca e analisi, senza invii), poi Google Wallet, poi gli invii Growth |
 | D-13 | Growth e Fidelity: un'unica piattaforma (BigAnt OS) o app separate? | **DECISA [R]: piattaforma unica.** Chiarimento dato al proprietario: in BigAnt OS Growth e Fidelity **girano completamente dentro** (codice copiato, stesso database), non sono un collegamento alle app originali. Le app originali sono **copie separate**, con database e dati propri, ancora online. Raccomandazione: **un'unica piattaforma**. Il cliente che compra solo Fidelity riceve un accesso BigAnt OS con il solo servizio Fidelity attivo (FUN-041); gli iscritti usano la carta pubblica. Dopo il collaudo (FUN-050, FUN-051) le originali si spengono. Siccome nessuno le usa (D-11), non ci sono tessere o link già distribuiti da preservare |
 | D-14 | Growth: analisi AI con OpenAI (come nell'originale) o con Anthropic (come lo sciame di BigAnt OS)? | Proposta: **un solo fornitore AI per tutta la piattaforma** (Anthropic, già usato dallo sciame, con un solo tetto di spesa). Da confermare |
+| D-15 | Chi può approvare cosa | Proposta: post social → socio o collaboratore; messaggi commerciali Growth e campagne Fidelity → solo soci |
 | D-08 | Riquadro "obiettivo di fatturato" nella home dell'amministrazione | **DECISA [R]:** non si fa |
 | D-03 | Task e consegne: Trello o BigAnt OS? | **DECISA [R]:** si resta su Trello; il collegamento si valuta in futuro (COL-001) |
 | D-04 | Documenti e autorizzazioni: servono in BigAnt OS? | Proposta minima: solo contratti e liberatorie nella scheda cliente |
