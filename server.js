@@ -2,6 +2,7 @@ import http from 'node:http';
 import QRCode from 'qrcode';
 import {safePath} from './scripts/backup.js';
 import {createBackupScheduler} from './src/backups.js';
+import {createAgentConfig} from './src/agent-config.js';
 import {createClientRecords} from './src/client-records.js';
 import {createWorkspace,navigationFor} from './src/workspace.js';
 import {readFileSync,mkdirSync,statSync,existsSync} from 'node:fs';
@@ -45,13 +46,14 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   if(realMode)seedRealCore(store,{socioEmail:env.BIGANT_SOCIO_EMAIL,socioPassword:env.BIGANT_SOCIO_PASSWORD_INIZIALE});else seedCore(store);
   const production=createProduction({store}),growth=createGrowthModule({store,origin}),fidelity=createFidelityModule({store,origin}),administration=createAdministrationModule({store,clock});
   growth.seed(realMode);fidelity.seed(realMode);administration.seed(realMode);
-  const orchestrator=createOrchestrator({store,production,administration,growth,fidelity,clock});
+  const agentConfig=createAgentConfig({store,root,env,clock});
+  const orchestrator=createOrchestrator({store,production,administration,growth,fidelity,clock,guard:realMode?(id,options)=>agentConfig.requireRun(id,options):null});
   const agency=createAgencyModule({store});
   const sciame=createSciame({store,production,administration,growth,orchestrator,root,env,clock,motore:motore?(typeof motore==='string'?createMotore({nome:motore,root,env}):motore):null});
   if(importaProveSciame)sciame.importaProve(resolve(root,'docs/demo-sciame'));
   const records=createClientRecords({store,production,env,clock});
   const cliente=createClientDashboard({store,records});
-  const workspace=createWorkspace({store,clock,budget:()=>orchestrator.budget(),expiring:records.expiring});
+  const workspace=createWorkspace({store,clock,budget:()=>orchestrator.budget(),expiring:records.expiring,agentConfig});
   const limits=new Map();
   function rate(key,max=120,window=60000) {let l=limits.get(key);if(!l||l.until<Date.now()){l={count:0,until:Date.now()+window};limits.set(key,l);}if(++l.count>max)throw new AppError('Troppe richieste: riprova tra poco.',429);if(limits.size>10000)for(const[k,v]of limits)if(v.until<Date.now())limits.delete(k);}
   function session(req) {const token=(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('bigant_os='))?.slice(10);if(!token)return null;return store.one('SELECT u.id,u.name,u.email,u.role,u.tenant_id,u.active,u.must_change_password,s.csrf,s.id session_id FROM os_sessions s JOIN os_users u ON u.id=s.user_id WHERE s.id=? AND s.expires_at>? AND u.active=1',digest(token),Date.now());}
@@ -125,6 +127,8 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
         if(u.must_change_password)throw new AppError('Cambia la password provvisoria prima di continuare.',403);
         const clientId=clientFrom(url,u,{optional:method==='GET'&&['/api/overview','/api/clients','/api/workspace/home','/api/workspace/approvals','/api/workspace/contracts'].includes(path)});
         const b=['GET','HEAD'].includes(method)?{}:await body(req);
+        if(path==='/api/agent-config/state'&&method==='GET')return json(res,agentConfig.state(u));
+        const agentMatch=path.match(/^\/api\/agent-config\/([^/]+)$/);if(agentMatch&&method==='PATCH')return json(res,agentConfig.save(u,agentMatch[1],b));
         if(path==='/api/workspace/approvals'&&method==='GET')return json(res,{items:workspace.approvals(u)});
         if(path==='/api/workspace/contracts'&&method==='GET')return json(res,{items:records.expiring(u)});
         if(path==='/api/workspace/home'&&method==='GET')return json(res,workspace.home(u));
@@ -183,7 +187,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const backups=realMode&&worker&&database!==':memory:'?createBackupScheduler({store,sourcePath:database,env,clock}):null;
   let workerError=null;
   const timer=worker?setInterval(()=>orchestrator.tick().then(()=>{workerError=null;}).catch(()=>{workerError='Controllo delle automazioni da verificare.';}),2000):null;timer?.unref();
-  return {server,store,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);await backups?.close();if(server.listening)await new Promise(r=>server.close(r));store.close();}};
+  return {server,store,agentConfig,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);await backups?.close();if(server.listening)await new Promise(r=>server.close(r));store.close();}};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const modalitaReale=process.env.BIGANT_MODALITA==='reale';

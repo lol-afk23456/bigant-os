@@ -33,7 +33,7 @@ export function createSciame({store:s,production,administration,growth,orchestra
  s.run("UPDATE os_sciame_passi SET stato='errore',errore='Interrotto: processo riavviato durante il lavoro',finished_at=? WHERE stato IN('in_coda','al_lavoro','controllo_qualita')",now());
  s.run("UPDATE os_sciame_giri SET stato='errore',errore='Interrotto: processo riavviato',finished_at=? WHERE stato IN('in_coda','in_corso')",now());
  const robot=()=>s.one("SELECT * FROM os_users WHERE id='os-orchestrator'");
- const autoDemo=()=>env.BIGANT_APPROVAZIONE_AUTOMATICA_DEMO!=='false';
+ const autoDemo=()=>env.BIGANT_MODALITA!=='reale'&&env.BIGANT_APPROVAZIONE_AUTOMATICA_DEMO!=='false';
  const oggi=()=>romeDate.format(clock());
  let motoreCorrente=motoreIniziale;
  const mot=()=>motoreCorrente||(motoreCorrente=createMotore({root,env}));
@@ -45,11 +45,12 @@ export function createSciame({store:s,production,administration,growth,orchestra
  function feedback(clientId,agente){const reg=agentiSciame[agente]?.registro;return (s.one('SELECT content FROM os_memory WHERE client_id=? AND kind=?',clientId,'agent-feedback:'+reg)?.content||'').split('\n').filter(x=>x&&!x.startsWith('#')).slice(-10);}
 
  // ---------- Costi: tetto mensile comune (os_costs). 1 USD conteggiato come 1 € (prudenziale). ----------
- function prenota(clientId,agente){const stima=mot().id==='demo'?0:Number(env.BIGANT_SCIAME_STIMA_CENT||40);const b=orchestrator.budget();if(stima>b.availableCents)throw new AppError(`Tetto di spesa mensile raggiunto: disponibili ${euro(b.availableCents)}. Lo sciame si ferma e avvisa i soci.`,409);return orchestrator.reserve(clientId,'sciame:'+agente,stima);}
+ function prenota(clientId,agente){const stima=mot().id==='demo'?0:Math.max(Number(env.BIGANT_SCIAME_STIMA_CENT||40),Number(mot().costoMassimoCent||0));const b=orchestrator.budget();if(stima>b.availableCents)throw new AppError(`Tetto di spesa mensile raggiunto: disponibili ${euro(b.availableCents)}. Lo sciame si ferma e avvisa i soci.`,409);return orchestrator.reserve(clientId,'sciame:'+agente,stima);}
  function addebita(costId,usdMicro){s.run("UPDATE os_costs SET cents=?,status='charged' WHERE id=?",Math.ceil(usdMicro/10000),costId);}
 
  // ---------- Esecuzione di un agente con il motore ----------
  async function chiamaMotore(passo,{agente,compito,pacchetto}){
+  if(env.BIGANT_MODALITA==='reale')throw new AppError('Percorso AI reale da collaudare: i giri dimostrativi sono disponibili soltanto in DEMO.',409);
   const costo=prenota(passo.client_id,agente);
   try{
    let scritto=0,ultimo=null;
@@ -284,7 +285,7 @@ export function createSciame({store:s,production,administration,growth,orchestra
 
  // ---------- Giro completo ----------
  function creaGiro(user,{richiesta,flussi=null}){
-  requireOwner(user);const req=text(richiesta,1500);if(!req)throw new AppError('Scrivi la richiesta per lo sciame.');
+  requireOwner(user);if(env.BIGANT_MODALITA==='reale')throw new AppError('Lo sciame reale richiede agenti attivi e un percorso collaudato sui dati autorizzati.',409);const req=text(richiesta,1500);if(!req)throw new AppError('Scrivi la richiesta per lo sciame.');
   if(flussi&&(!Array.isArray(flussi)||flussi.some(f=>!FLUSSI.includes(f))))throw new AppError('Flussi non validi.');
   const stato=mot().stato();if(!stato.disponibile)throw new AppError(`Motore non disponibile: ${stato.motivo}`,409);
   if(s.getSetting('paused')==='true')throw new AppError('Regia in pausa: lo sciame non avvia nuovi lavori.',409);

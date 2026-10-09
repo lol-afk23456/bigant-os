@@ -95,3 +95,7 @@ L'approvazione dei contenuti social è riservata a soci e collaboratori assegnat
 ### Scheda cliente e credenziali
 
 Confermata la separazione tra scheda agenzia e anteprima cliente. Contratti e documenti restano esclusi dal collaboratore in attesa del suo giro. L'anteprima socio applica gli stessi filtri del cliente e non offre azioni a suo nome. La password di piattaforme del cliente è cifrata con AES-256-GCM e una chiave del server indipendente da SQLite: nessuna chiave generata/salvata implicitamente nel database. L'archivio resta disabilitato finché la chiave non è predisposta nell'ambiente. Un ripristino richiede anche la chiave corretta, da custodire separatamente; il cambio della chiave richiederà una migrazione esplicita. Contratti PDF scaricati come allegato, non eseguiti nell'interfaccia.
+
+### Riordino 10 ottobre — D-14 e stati agenti
+
+Predisporre Anthropic e OpenAI come confermato in chat. Nessuna scelta automatica di modello, chiave o attivazione. Istruzioni presenti e chiave disponibile non certificano il collaudo. I percorsi DEMO restano bloccati sul server reale; le attivazioni reali richiedono percorso collaudato e autorizzazione.

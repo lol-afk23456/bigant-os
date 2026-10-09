@@ -674,8 +674,10 @@
       "area": "Sciame → Agenti",
       "modifica": "Per ogni agente uno **stato chiaro**: **Da configurare** → **Base** (procedura senza AI) → **AI pronta** (istruzioni, fonti, prova superata) → **Attivo** (usato nel lavoro vero). Una **scheda di configurazione** per agente: compito, servizio a cui serve, istruzioni, fonti di dati, controllo qualità, costo stimato, \"quando lavora\". Si usano solo gli agenti **Attivi**",
       "criterio": "L'elenco mostra lo stato di ciascun agente; un agente non Attivo non parte nel lavoro vero",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo."
+      ]
     },
     {
       "id": "FUN-054",
@@ -690,40 +692,50 @@
       "area": "Sciame → \"Giri dell'attività\"",
       "modifica": "Rinominare **\"Storico\"**: cosa ha fatto ogni agente, quando, con quale esito, con il collegamento al risultato",
       "criterio": "Il nome si capisce senza spiegazioni",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo."
+      ]
     },
     {
       "id": "FUN-055",
       "area": "Sciame → \"Automatismi pianificati\"",
       "modifica": "Togliere il pannello. La regola \"quando lavora\" diventa un campo della **configurazione del singolo agente** (FUN-053), disattivato finché l'agente non è **Attivo** e i soci non lo autorizzano",
       "criterio": "Nessun pannello di automatismi; nessun agente parte da solo se non è Attivo e autorizzato",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo."
+      ]
     },
     {
       "id": "FUN-056",
       "area": "Sciame → \"Budget del pilota\"",
       "modifica": "**Tenere** come scheda **Budget**: tetto mensile, speso, costo per agente",
       "criterio": "Il budget mostra speso e tetto aggiornati",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo."
+      ]
     },
     {
       "id": "FUN-057",
       "area": "Sciame → \"Attività dei moduli collegati\"",
       "modifica": "Spostare in **Growth** e in **Fidelity**, ciascuno con la propria coda (FUN-049)",
       "criterio": "La coda di Growth si vede in Growth, quella di Fidelity in Fidelity",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo."
+      ]
     },
     {
       "id": "FUN-058",
       "area": "Registro attività → parte agenti",
       "modifica": "Nella scheda di ogni agente (FUN-053) e nello **Storico** dello Sciame (UI-012): cosa ha fatto, quando, con quale esito",
       "criterio": "Aprendo un agente si vede il suo registro",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo."
+      ]
     },
     {
       "id": "FUN-059",

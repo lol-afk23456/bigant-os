@@ -10,6 +10,7 @@ import {cervelloDemo} from './demo.js';
 export const ETICHETTE={
  'claude-code':'Claude Code (sottoagenti .claude/agents, sessione cloud)',
  api:'API Anthropic (variabili d’ambiente)',
+ openai:'API OpenAI (variabili d’ambiente)',
  demo:'Motore DEMO deterministico (solo test, nessuna AI)',
  nessuno:'Nessun motore AI disponibile'
 };
@@ -40,7 +41,8 @@ export function claudeDisponibile(bin='claude'){
 
 export function scegliMotore(env=process.env){
  const richiesto=env.BIGANT_MOTORE;
- if(richiesto){if(!Object.hasOwn(ETICHETTE,richiesto))throw new Error('BIGANT_MOTORE non valido: usare claude-code, api, demo o nessuno.');return richiesto;}
+ if(richiesto){if(!Object.hasOwn(ETICHETTE,richiesto))throw new Error('BIGANT_MOTORE non valido: usare claude-code, api, openai, demo o nessuno.');return richiesto;}
+ if(env.BIGANT_MODALITA==='reale')return 'nessuno';
  return claudeDisponibile(env.BIGANT_CLAUDE_BIN||'claude')?'claude-code':'nessuno';
 }
 
@@ -84,10 +86,11 @@ function motoreClaudeCode({root,env,spawnImpl=spawn}){
 function motoreApi({root,env,importSdk=()=>import('@anthropic-ai/sdk')}){
  // Chiave e modello dedicati: non si usa ANTHROPIC_API_KEY per non interferire con Claude Code.
  const chiave=env.BIGANT_ANTHROPIC_API_KEY,modello=env.BIGANT_API_MODELLO,maxCent=Number(env.BIGANT_API_COSTO_MAX_CENT||25);
- return {id:'api',etichetta:ETICHETTE.api,
-  stato(){const mancanti=[!chiave&&'BIGANT_ANTHROPIC_API_KEY',!modello&&'BIGANT_API_MODELLO'].filter(Boolean);return {disponibile:!mancanti.length,statoCollegamento:mancanti.length?'COLLEGAMENTO MANCANTE':'OPERATIVO',motivo:mancanti.length?'Impostare '+mancanti.join(' e ')+' nelle impostazioni dell’ambiente.':'Chiave e modello configurati.'};},
+ return {id:'api',etichetta:ETICHETTE.api,costoMassimoCent:maxCent,
+  stato(){const mancanti=[!chiave&&'BIGANT_ANTHROPIC_API_KEY',!modello&&'BIGANT_API_MODELLO',(!Number.isSafeInteger(maxCent)||maxCent<1||maxCent>5000)&&'BIGANT_API_COSTO_MAX_CENT valido'].filter(Boolean);return {disponibile:!mancanti.length,statoCollegamento:mancanti.length?'COLLEGAMENTO MANCANTE':'OPERATIVO',motivo:mancanti.length?'Impostare '+mancanti.join(' e ')+' nelle impostazioni dell’ambiente.':'Chiave e modello configurati.'};},
   async esegui({agente,compito,pacchetto,schema}){
    if(!chiave||!modello)throw new Error('Motore API non configurato: servono BIGANT_ANTHROPIC_API_KEY e BIGANT_API_MODELLO.');
+   if(!Number.isSafeInteger(maxCent)||maxCent<1||maxCent>5000)throw new Error('Costo massimo API non valido.');
    const {default:Anthropic}=await importSdk(),client=new Anthropic({apiKey:chiave,baseURL:env.BIGANT_API_URL||'https://api.anthropic.com'});
    const inizio=Date.now();
    const r=await client.messages.create({model:modello,max_tokens:16000,system:istruzioniAgente(root,agente),messages:[{role:'user',content:promptPasso({compito,pacchetto})}],output_config:{format:{type:'json_schema',schema}}});
@@ -98,6 +101,34 @@ function motoreApi({root,env,importSdk=()=>import('@anthropic-ai/sdk')}){
    // Il costo reale dipende dal listino del modello scelto: si addebita prudenzialmente il tetto per chiamata.
    return {output,meta:{motore:'api',durataMs:Date.now()-inizio,costoUsdMicro:maxCent*10000,costoNota:'Tetto prudenziale per chiamata (BIGANT_API_COSTO_MAX_CENT); consumo reale da verificare sul pannello Anthropic',token:{input:r.usage?.input_tokens??null,output:r.usage?.output_tokens??null}}};
   }};
+}
+
+function motoreOpenAI({root,env,fetchImpl=globalThis.fetch}){
+ const chiave=env.BIGANT_OPENAI_API_KEY,modello=env.BIGANT_OPENAI_MODELLO,maxCent=Number(env.BIGANT_OPENAI_COSTO_MAX_CENT||25);
+ return {id:'openai',etichetta:ETICHETTE.openai,costoMassimoCent:maxCent,
+  stato(){const disponibile=!!chiave&&!!modello&&Number.isSafeInteger(maxCent)&&maxCent>0&&maxCent<=5000;return {disponibile,statoCollegamento:disponibile?'OPERATIVO':'COLLEGAMENTO MANCANTE',motivo:disponibile?'Chiave e modello configurati.':'Configurare chiave OpenAI, modello e tetto per chiamata.'};},
+  async esegui({agente,compito,pacchetto,schema}){
+   if(!this.stato().disponibile)throw new Error('Motore OpenAI non configurato: servono chiave, modello e tetto validi.');
+   const inizio=Date.now();
+   let response;
+   try{response=await fetchImpl('https://api.openai.com/v1/responses',{
+    method:'POST',redirect:'error',signal:AbortSignal.timeout(120000),
+    headers:{Authorization:`Bearer ${chiave}`,'Content-Type':'application/json'},
+    body:JSON.stringify({model:modello,store:false,instructions:istruzioniAgente(root,agente),
+     input:promptPasso({compito,pacchetto}),max_output_tokens:16000,
+     text:{format:{type:'json_schema',name:'bigant_output',strict:true,schema}}})
+   });}catch{throw new Error('OpenAI non raggiungibile o tempo di risposta scaduto. Nessun nuovo tentativo automatico.');}
+   if(!response.ok)throw new Error(`OpenAI: richiesta non completata (${response.status}). Verifica il collegamento.`);
+   let result;try{result=await response.json();}catch{throw new Error('Risposta OpenAI non leggibile.');}
+   if(result.status!=='completed')throw new Error('Risposta OpenAI incompleta. Il risultato non entra nelle approvazioni.');
+   const content=(result.output||[]).filter(item=>item.type==='message').flatMap(item=>item.content||[]);
+   if(content.some(item=>item.type==='refusal'))throw new Error('Il modello ha rifiutato la richiesta.');
+   let output;try{output=JSON.parse(content.filter(item=>item.type==='output_text').map(item=>item.text).join(''));}catch{throw new Error('Risposta OpenAI non in formato JSON.');}
+   return {output,meta:{motore:'openai',durataMs:Date.now()-inizio,costoUsdMicro:maxCent*10000,
+    costoNota:'Tetto prudenziale per chiamata; consumo effettivo da verificare sul pannello OpenAI',
+    token:{input:result.usage?.input_tokens??null,output:result.usage?.output_tokens??null}}};
+  }
+ };
 }
 
 function motoreDemo({env={}}={}){
@@ -121,6 +152,7 @@ export function createMotore({nome,root,env=process.env,...opzioni}={}){
  const id=nome||scegliMotore(env);
  if(id==='claude-code')return motoreClaudeCode({root,env,...opzioni});
  if(id==='api')return motoreApi({root,env,...opzioni});
+ if(id==='openai')return motoreOpenAI({root,env,...opzioni});
  if(id==='demo')return motoreDemo({env});
  return motoreNessuno();
 }

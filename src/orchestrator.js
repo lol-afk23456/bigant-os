@@ -15,7 +15,7 @@ export function nextRun(trigger,after=new Date()) {
   for(let i=0;i<46081;i++,t+=60000){const p=romeParts(new Date(t));if(p.hour!=='09'||p.minute!=='00')continue;if(trigger==='weekly-monday'&&p.weekday!=='Mon')continue;if(trigger==='weekly-friday'&&p.weekday!=='Fri')continue;if(trigger==='monthly'&&p.day!=='01')continue;return new Date(t).toISOString();}
   throw new AppError('Impossibile calcolare la prossima esecuzione.');
 }
-export function createOrchestrator({store:s,production,administration,growth=null,fidelity=null,clock=()=>new Date(),testHandlers={}}) {
+export function createOrchestrator({store:s,production,administration,growth=null,fidelity=null,clock=()=>new Date(),testHandlers={},guard=null}) {
   const instant=()=>clock().toISOString();
   const month=()=>{const p=romeParts(clock());return `${p.year}-${p.month}`;};
   let ticking=false;
@@ -23,7 +23,7 @@ export function createOrchestrator({store:s,production,administration,growth=nul
   const moduleRunner=createModuleAgentRunner({store:s,growth,fidelity});
   s.db.exec(`CREATE TABLE IF NOT EXISTS os_agent_events(id TEXT PRIMARY KEY,client_id TEXT NOT NULL REFERENCES os_clients(id),name TEXT NOT NULL,entity_id TEXT NOT NULL,version INTEGER NOT NULL,payload TEXT NOT NULL,created_at TEXT NOT NULL,UNIQUE(client_id,name,entity_id,version));
   CREATE TABLE IF NOT EXISTS os_schedule_inputs(schedule_id TEXT PRIMARY KEY REFERENCES os_schedules(id),input TEXT NOT NULL);`);
-  function eligibility(clientId,agent) {const c=s.one('SELECT id,name,services_json FROM os_clients WHERE id=? AND active=1',clientId);if(!c)throw new AppError('Attività non disponibile.',403);const r=eligibleAgent(agent,c);if(!r.eligible)throw new AppError(r.unavailableReason,403);return c;}
+  function eligibility(clientId,agent) {guard?.(agent);const c=s.one('SELECT id,name,services_json FROM os_clients WHERE id=? AND active=1',clientId);if(!c)throw new AppError('Attività non disponibile.',403);const r=eligibleAgent(agent,c);if(!r.eligible)throw new AppError(r.unavailableReason,403);return c;}
   function checkedInput(input) {if(!input||typeof input!=='object'||Array.isArray(input)||JSON.stringify(input).length>40000)throw new AppError('Input della procedura non valido.');if(input.fixture&&input.fixture.demo!==true)throw new AppError('Sono ammessi solo dati di esempio marcati DEMO.');return structuredClone(input);} 
 
   function budget() {const used=s.one("SELECT COALESCE(SUM(cents),0) n FROM os_costs WHERE month=? AND status IN('reserved','charged')",month()).n;const cap=Number(s.getSetting('budget_cents')),fixed=Number(s.getSetting('fixed_cents'));return {capCents:cap,fixedCents:fixed,usedCents:used,availableCents:Math.max(0,cap-fixed-used),month:month(),simulation:true};}
@@ -63,6 +63,7 @@ export function createOrchestrator({store:s,production,administration,growth=nul
   function schedule() {
     for(const row of s.query('SELECT * FROM os_schedules WHERE enabled=1 AND next_at<=?',instant())) {
       const def=agentMap.get(row.agent);if(def?.status!=='implemented')continue;
+      try{guard?.(row.agent,{automatic:true});}catch{s.run('UPDATE os_schedules SET enabled=0 WHERE id=?',row.id);continue;}
       if(!s.one('SELECT id FROM os_clients WHERE id=? AND active=1',row.client_id)){s.run('UPDATE os_schedules SET enabled=0 WHERE id=?',row.id);s.audit(robot,row.client_id,'Pianificazione sospesa',row.id,{reason:'Attività disattivata'});continue;}
       try{eligibility(row.client_id,row.agent);}catch(e){s.run('UPDATE os_schedules SET enabled=0 WHERE id=?',row.id);s.audit(robot,row.client_id,'Pianificazione sospesa',row.id,{reason:e.message});continue;}
       s.transaction(()=>{enqueue(robot,row.client_id,row.agent,JSON.parse(s.one('SELECT input FROM os_schedule_inputs WHERE schedule_id=?',row.id)?.input||'{}'),`schedule:${row.id}:${row.next_at}`);s.run('UPDATE os_schedules SET last_at=?,next_at=? WHERE id=?',instant(),nextRun(row.trigger,clock()),row.id);});
@@ -75,7 +76,7 @@ export function createOrchestrator({store:s,production,administration,growth=nul
       const id=uid();s.run('INSERT OR IGNORE INTO os_agent_events VALUES(?,?,?,?,?,?,?)',id,clientId,name,text(entityId,180),version,JSON.stringify(clean),instant());
       const record=s.one('SELECT * FROM os_agent_events WHERE client_id=? AND name=? AND entity_id=? AND version=?',clientId,name,text(entityId,180),version);
       const jobs=[];for(const row of s.query('SELECT * FROM os_schedules WHERE enabled=1 AND trigger=? AND client_id=?','event:'+name,clientId)){
-        try{eligibility(clientId,row.agent);}catch{continue;}
+        try{guard?.(row.agent,{automatic:true});eligibility(clientId,row.agent);}catch{continue;}
         jobs.push(enqueue(robot,clientId,row.agent,{...JSON.parse(s.one('SELECT input FROM os_schedule_inputs WHERE schedule_id=?',row.id)?.input||'{}'),...clean,entityId,...(name==='lead.created'?{leadId:entityId}:{})},`event:${row.id}:${record.id}`));
       }return {eventId:record.id,jobs};
     });

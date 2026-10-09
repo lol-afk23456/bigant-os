@@ -23,7 +23,7 @@ export function navigationFor(user, activeServices = []) {
   ] };
 }
 
-export function createWorkspace({ store, clock = () => new Date(), budget, expiring }) {
+export function createWorkspace({ store, clock = () => new Date(), budget, expiring, agentConfig }) {
   function assignedClients(user) {
     return store.query('SELECT * FROM os_clients WHERE active=1 ORDER BY name').filter(client => canAccessClient(store, user, client.id));
   }
@@ -44,7 +44,7 @@ export function createWorkspace({ store, clock = () => new Date(), budget, expir
     const month = today.slice(0, 7), customers = clients.filter(client => client.id !== 'demo-bigant');
     const spending = budget();
     return { ...base, expiringContracts, customers: { active: customers.length, newThisMonth: customers.filter(client => client.created_at.startsWith(month)).length },
-      swarm: { active: 0, blocked: store.one("SELECT count(*) n FROM os_jobs WHERE status='failed'").n,
+      swarm: { active: agentConfig.state(user).items.filter(agent=>agent.operationalStatus==='Attivo').length, blocked: store.one("SELECT count(*) n FROM os_jobs WHERE status='failed'").n,
         qualityBlocked: store.one("SELECT count(*) n FROM os_sciame_passi WHERE stato='bloccato_qualita'").n,
         usedCents: spending.usedCents, capCents: spending.capCents },
       growth: { connected: false, newLeads: null }, connections: { errors: 0, connected: 0, total: integrations.length } };

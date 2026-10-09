@@ -1,5 +1,9 @@
 # BigAnt OS — report della sessione notturna
 
+## Stato corrente — riordino Codex, 10 ottobre 2026
+
+Fasi 0–4 in lavorazione sul ramo bigant-os-notte-1: backup, password, navigazione, home, scheda cliente, permessi e configurazione Sciame. **209 test verdi**, controllo 5/5. Modifiche locali, nessun rilascio. La matrice [riordino.json](copertura/riordino.json) segue tutte le 92 voci; non sono tutte completate. Il [diario](DIARIO-LAVORO.md) riporta prove e limiti. Le sezioni seguenti sono storiche.
+
 ## Aggiornamento finale di consegna — 8 ottobre 2026
 
 **Il lavoro passa a Claude Code, su richiesta del proprietario.** Leggere [PASSAGGIO-CONSEGNE](PASSAGGIO-CONSEGNE.md) e [DIARIO-LAVORO](DIARIO-LAVORO.md). Le sezioni storiche sotto documentano i cicli precedenti e non sostituiscono questo stato.
