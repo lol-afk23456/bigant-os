@@ -22,7 +22,8 @@ Sessione di mappatura con il proprietario (Raffaele), iniziata il 9 ottobre 2026
 | Accesso (login) | Esaminata [R] [C] |
 | Pagina d'ingresso dopo il login | Esaminata [R] [C] |
 | Mappa agenzia, tutte e quattro le parti (Reparti e specialisti, Servizi, Gestionale, Fondamenta) | Esaminata [R] [C] |
-| Marketing BigAnt, Direzione, Amministrazione, Clienti, Lavori e contenuti, Growth, Fidelity, Ufficio virtuale, Sciame di agenti, Approvazioni, Registro attività, Servizi, Collegamenti, Accessi, Vista cliente | Da esaminare |
+| Marketing BigAnt | Esaminata [R] [C] |
+| Direzione, Amministrazione, Clienti, Lavori e contenuti, Growth, Fidelity, Ufficio virtuale, Sciame di agenti, Approvazioni, Registro attività, Servizi, Collegamenti, Accessi, Vista cliente | Da esaminare |
 | Vista collaboratore, vista cliente | Da esaminare |
 | Uso da telefono | Da esaminare |
 
@@ -104,7 +105,7 @@ Un'unica pagina lunga:
 | UI-004 | Mappa agenzia | Avviso «"Solo struttura" descrive lo spazio e il metodo. "Flusso DEMO parziale" indica funzioni locali limitate…» [R] [C] | Linguaggio tecnico; nella versione definitiva confonde | Togliere dalle pagine di lavoro. Gli stati di avanzamento compaiono solo nella pagina "Avanzamento BigAnt OS" (FUN-004), con tre etichette semplici: Funziona · Prova · Da collegare | P2 · difetto di testo | Nessun avviso tecnico nelle pagine operative |
 | UI-005 | Mappa agenzia | Pulsante "Apri la regia DEMO" in testata [C] | Dicitura DEMO nella versione reale, e un collegamento allo sciame dalla pagina sbagliata | Togliere. L'accesso allo sciame resta dalla sua voce di menu | P2 · difetto | Nessun pulsante "DEMO" in modalità reale |
 | FUN-005 | Mappa agenzia → Reparti e specialisti | È lo schema degli agenti per reparto; non ha senso come prima cosa vista dall'amministrazione [R] | Informazione tecnica in primo piano | Spostare in **Sciame di agenti** come "Struttura dello sciame" (reparti, specialisti, procedure) | P2 · preferenza strutturale | La struttura per reparto si trova solo dentro Sciame di agenti |
-| FUN-006 | Mappa agenzia → "Un workspace per ogni servizio" | Utile, ma configurare un agente AI per ogni servizio richiede molto tempo. Potrebbe servire come **promemoria per la crescita dell'agenzia** oppure come base per costruire gli agenti [R] | Oggi è un elenco senza un uso chiaro | Spostare in **Sciame di agenti**, insieme a FUN-005. Il catalogo commerciale resta nella voce *Servizi*. L'uso da dare (promemoria di crescita o piano di costruzione degli agenti) è una decisione dei soci (D-02) | P3 · decisione | Un solo posto per "servizi e agenti che li seguono"; nessun doppione con *Servizi* |
+| FUN-006 | Mappa agenzia → "Un workspace per ogni servizio" | Utile, ma configurare un agente AI per ogni servizio richiede molto tempo [R]. **Aggiornato con la sezione 3:** lo scopo è attivare i servizi dell'agenzia entro un anno (D-02 decisa) | Oggi è un elenco senza un uso chiaro, doppione delle "aree del marketing" | Confluisce nel **Piano di attivazione dei servizi** (FUN-014). Gli agenti di ciascun servizio restano in *Sciame di agenti* | P2 · decisa | Un solo posto per lo stato di attivazione dei servizi |
 | FUN-007 | Mappa agenzia → I 10 moduli del gestionale | La sezione non è interessante così; i moduli vanno distribuiti dove servono [R] | Dieci moduli presentati in astratto, staccati dal lavoro | Ripartizione decisa dal proprietario: tabella "Dove finiscono i 10 moduli" qui sotto | P2 · preferenza strutturale | La sezione "Gestionale" non esiste più come elenco astratto; ogni modulo tenuto vive nella sua pagina |
 | FUN-008 | Mappa agenzia → Fondamenta da completare | Portfolio e autorizzazioni, capacità del team, obiettivi a 90 giorni, spese insolite, pacchetto per il commercialista, custodia dei collegamenti, onboarding [C: `src/agency/foundations.js`]. **Decisione [R]:** non si eliminano; sono interessanti come elenco di cose da costruire e si spostano in **Avanzamento BigAnt OS**, come il resto della Mappa agenzia | Lista di cantieri aperti in una pagina di lavoro | Spostare l'intera sezione in Avanzamento (FUN-004) | P3 · decisa | Le Fondamenta si trovano solo in Avanzamento |
 | FUN-009 | Nuova voce di menu: **Fatturazione** | Il proprietario vuole tenere sotto controllo soprattutto due cose: il **saldo dei clienti** della gestione social (quanto pagano e cosa resta da incassare) e i **costi degli abbonamenti** dell'agenzia [R] | Oggi questi dati sono sparsi tra Amministrazione e Gestionale | Una sola sezione **Fatturazione**, visibile **solo all'accesso amministrazione**, **ultima voce del menu**, in secondo piano. Raccoglie cassa, prima nota, fatture, incassi, saldo per cliente, costi e abbonamenti. Prima schermata: saldo per cliente e abbonamenti in scadenza | P3 · decisa | Collaboratore e cliente non vedono la voce né i dati (verifica sul server, non solo nel menu); l'amministrazione la trova in fondo al menu |
@@ -141,12 +142,56 @@ Un'unica pagina lunga:
 
 ---
 
+## 3. Marketing BigAnt
+
+### Cosa contiene oggi [C: `public/app.js`, `marketingView()`; `src/agency/marketing.js`]
+
+- Titolo "BigAnt è il nostro primo caso studio", pulsante "Apri i lavori BigAnt" e l'avviso «profili non collegati».
+- Quattro numeri: canali previsti, lavori BigAnt, contenuti BigAnt, obiettivi registrati.
+- **I canali dell'agenzia e dei soci:** Instagram, Facebook, LinkedIn agenzia, LinkedIn Raffaele, LinkedIn Alfonso, TikTok, Google Business Profile, Sito BigAnt, Recensioni e reputazione. Tutti con lo stato "da collegare".
+- **Le aree del marketing BigAnt:** DNA BigAnt, Strategia a 90 giorni, Calendario e mese di contenuti, Portfolio e case study, Presenza Google e recensioni, Sito e SEO, Ricerca e analisi gratuita, Piano ADV BigAnt, Due prossimi servizi e pacchetti, KPI e obiettivi.
+- **Obiettivi e risultati**, **Lavori e contenuti registrati**, **Memoria del cliente zero**.
+
+### Giudizio del proprietario [R]
+
+Così com'è la pagina va eliminata o trasformata, e il nome "Marketing BigAnt" non va bene. Si tiene solo l'idea dei profili da tenere sotto controllo.
+
+### Voci
+
+| ID | Pagina / percorso | Problema osservato | Conseguenza per l'utente | Modifica proposta | Priorità | Come verificare che sia risolto |
+|---|---|---|---|---|---|---|
+| FUN-011 | Marketing BigAnt | La pagina mescola profili, aree di sviluppo, obiettivi, lavori e memoria [R] | Non si capisce a cosa serva | **Eliminare la voce "Marketing BigAnt"** e sostituirla con la nuova sezione **Profili** (FUN-012). Il resto si sposta o si toglie come indicato sotto | P2 · decisa | La voce "Marketing BigAnt" non c'è più nel menu |
+| FUN-012 | Nuova sezione **Profili** (nome provvisorio: "I nostri profili" per l'agenzia, "I tuoi profili" per il cliente) | Il proprietario vuole un posto dove **tenere sotto controllo tutti i profili** e averli "in linea" [R] | — | Una sezione per **l'agenzia e per ogni cliente** (il cliente vede solo i propri). Per ogni profilo: stato del collegamento, ultimi dati, crescita dei follower e insight. Profili: Instagram, Facebook, LinkedIn aziendale, TikTok, **Google Business Profile** (con dentro le recensioni, FUN-013), **Sito** | P2 · nuova funzione | Ogni profilo collegato mostra dati veri con la data dell'ultimo aggiornamento; il cliente vede solo i propri profili (verifica sul server) |
+| UI-007 | Profili | I **canali personali dei soci** (LinkedIn Raffaele, LinkedIn Alfonso) [R] [C] | Profili personali mescolati con quelli aziendali | Togliere i canali dei soci; restano solo i canali dell'agenzia | P2 · decisa | Nessun profilo personale nella sezione |
+| FUN-013 | Profili → Google Business Profile | "Recensioni e reputazione" è una voce separata, ma le recensioni si raccolgono quasi solo da Google [R] | Doppione | Le recensioni stanno **dentro Google Business Profile** | P3 · decisa | Nessuna voce "Recensioni" separata; le recensioni si leggono nella scheda GBP |
+| COL-002 | Profili | Insight "in tempo reale" e report dei follower [R] | Serve un collegamento vero a Meta, Google, TikTok e LinkedIn | Nota del consulente: le API di Meta, Google Business Profile, LinkedIn e TikTok richiedono app approvate e verifiche aziendali (`docs/DA-FARE-RAFFAELE.md`). Il "tempo reale" vero non è realistico né necessario: proposta **aggiornamento automatico una volta al giorno** più il pulsante "Aggiorna ora". Ordine consigliato: GBP, poi Instagram/Facebook, poi gli altri | P3 · collegamento mancante | Decisione D-07; poi, per ogni canale collegato, dati confrontati con quelli della piattaforma originale |
+| FUN-014 | Marketing BigAnt → Le aree del marketing BigAnt | Va eliminata: si è confusa con "Un workspace per ogni servizio". **Intenzione vera [R]:** l'app deve aiutare BigAnt a **configurare e attivare, passo dopo passo, i servizi che oggi l'agenzia non offre**, con l'obiettivo di offrirli tutti **entro un anno** (analisi gratuita, piano ADV, sito e SEO, portfolio, strategia a 90 giorni…) | Oggi l'idea è dispersa in due pagine con nomi diversi | **Eliminare le "aree".** Al loro posto un unico **Piano di attivazione dei servizi**: per ogni servizio lo stato (Attivo · In preparazione · Futuro), cosa manca per attivarlo e la data obiettivo. Si costruisce dal catalogo esistente (`src/servizi/catalogo.js`) | P2 · decisa (risolve D-02) | Un solo posto mostra quali servizi BigAnt offre oggi, quali sono in preparazione e cosa manca per ciascuno |
+| FUN-015 | Marketing BigAnt → Obiettivi e risultati | Interessante, ma **per i clienti**, non per l'agenzia [R] | — | Obiettivi e risultati vanno **nella vista cliente**, insieme ai **report**: un report generale di tutto quello che è stato fatto per il cliente. Per l'agenzia, al massimo un riquadro "obiettivo di fatturato" nella home dell'amministrazione, facoltativo (D-08) | P2 · decisa | Il cliente vede obiettivi, risultati e report nella sua area; l'agenzia non ha più questa sezione |
+| FUN-016 | Marketing BigAnt → Lavori registrati, Contenuti registrati | Da eliminare in questa pagina [R] | Doppione di *Lavori e contenuti* | Togliere | P3 · decisa | La pagina non esiste più (FUN-011) |
+| FUN-017 | Marketing BigAnt → Memoria del cliente zero | La memoria del cliente va **solo nella sezione Clienti** [R] | Dati del cliente sparsi in più pagine | Nella **scheda cliente** di *Clienti* ci sono: anagrafica, contratto, quanto paga, accessi (FUN-010) e la **scheda informativa del cliente** (memoria: brief, tono di voce, note) | P2 · decisa | Tutte le informazioni di un cliente sono in un'unica scheda |
+
+### Dove finisce Marketing BigAnt
+
+| Parte attuale | Destinazione |
+|---|---|
+| Canali dell'agenzia | **Profili** (FUN-012), senza i canali dei soci |
+| Recensioni e reputazione | Dentro Google Business Profile (FUN-013) |
+| Le aree del marketing BigAnt | Eliminate; l'intenzione diventa il **Piano di attivazione dei servizi** (FUN-014) |
+| Obiettivi e risultati | Vista cliente, con i report (FUN-015) |
+| Lavori e contenuti registrati | Tolti (FUN-016) |
+| Memoria del cliente zero | Scheda cliente in *Clienti* (FUN-017) |
+
+---
+
 ## Decisioni che spettano ai soci
 
 | ID | Decisione | Contesto |
 |---|---|---|
 | D-01 | "Accessi del cliente": solo l'elenco o anche le credenziali? | **DECISA [R]:** anche le credenziali, visibili ad amministrazione e collaboratori, mai ai clienti. Rischio accettato; requisiti minimi in FUN-010 |
-| D-02 | "Un workspace per ogni servizio": promemoria per la crescita dell'agenzia o piano per costruire gli agenti? | Cambia dove va e cosa mostra |
+| D-02 | "Un workspace per ogni servizio": promemoria per la crescita dell'agenzia o piano per costruire gli agenti? | **DECISA [R]:** serve ad attivare, passo dopo passo ed entro un anno, i servizi che BigAnt oggi non offre. Diventa il Piano di attivazione dei servizi (FUN-014) |
+| D-06 | Nome della nuova sezione dei profili | Proposta: **"Profili"** (per il cliente: "I tuoi profili") |
+| D-07 | Aggiornamento dei dati dei profili | Proposta: una volta al giorno più "Aggiorna ora", invece del tempo reale |
+| D-08 | Riquadro "obiettivo di fatturato" nella home dell'amministrazione | Facoltativo; utile solo quando la Fatturazione sarà attiva |
 | D-03 | Task e consegne: Trello o BigAnt OS? | **DECISA [R]:** si resta su Trello; il collegamento si valuta in futuro (COL-001) |
 | D-04 | Documenti e autorizzazioni: servono in BigAnt OS? | Proposta minima: solo contratti e liberatorie nella scheda cliente |
 | D-05 | Le parti tolte vanno nascoste o eliminate dal codice? | Raccomandazione: nasconderle ora ed eliminarle dopo il collaudo della nuova struttura |
