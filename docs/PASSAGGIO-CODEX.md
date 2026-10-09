@@ -157,7 +157,7 @@ Per provare la **modalità reale** in locale: `tests/modalita-reale.test.js` mos
 
 ## 9-bis. Mappatura con il proprietario e lavoro su Growth e Fidelity
 
-**Il piano di lavoro sull'interfaccia è `docs/MAPPATURA-MIGLIORIE.md`**, aggiornato con il proprietario pagina per pagina: voci UI/FUN/DAT/COL, decisioni D-xx, principio PRINC-01. Prevale sulla proposta a 7 destinazioni della sezione 9.
+**Il piano di lavoro passo per passo è `docs/PIANO-RIORDINO-CODEX.md`** (fasi 0-7, criteri di accettazione, prime 10 modifiche). Le voci di dettaglio sono in `docs/MAPPATURA-MIGLIORIE.md`, aggiornato con il proprietario pagina per pagina: voci UI/FUN/DAT/COL, decisioni D-xx, principio PRINC-01. Prevale sulla proposta a 7 destinazioni della sezione 9.
 
 **Growth e Fidelity girano dentro BigAnt OS**: il codice è stato copiato, non è un collegamento alle app originali. Le app originali non sono usate da nessuno (D-11): niente dati da importare. Si spengono dopo il collaudo.
 

@@ -31,10 +31,12 @@ Sessione di mappatura con il proprietario (Raffaele), iniziata il 9 ottobre 2026
 | Ufficio virtuale e Sciame di agenti | Esaminata [R] [C] |
 | Registro attività, Servizi | Esaminate [R] [C] |
 | Approvazioni | Esaminata [R] [C] |
-| Fidelity (interfaccia, rinviata dal proprietario), Collegamenti, Accessi | Da esaminare |
-| Vista collaboratore | Da esaminare |
-| Vista cliente con un vero login da cliente | Rinviata: il proprietario la controllerà entrando con le credenziali del cliente (FUN-045) |
-| Uso da telefono | Da esaminare |
+| Collegamenti, Accessi, Vista cliente (dal pannello dell'amministrazione) | Esaminate [R] [C] |
+| **Giro lato amministrazione** | **Completato il 9/10** |
+| Fidelity (interfaccia) | Rinviata dal proprietario; lavoro da fare in sezione 8 |
+| Lato cliente, con un vero login da cliente | **In programma il 10/10** |
+| Lato collaboratore | **In programma l'11/10** |
+| Uso da telefono | Da esaminare durante i giri lato cliente e collaboratore |
 
 ---
 
@@ -60,9 +62,9 @@ Per ora servono **tre tipi di accesso**:
 | FUN-001 | Accessi | Servono gli accessi definitivi: amministrazione, collaboratore Vincenzo, cliente BigAnt [R] | Senza, il collaboratore e il cliente non possono essere collaudati | Creare da *Accessi*: utente collaboratore (Vincenzo) e utente cliente collegato al cliente di prova "BigAnt" (vedi DAT-001). Account nominali, password scelte dai titolari, mai scritte in chat o nei documenti | P1 · funzione esistente da usare | Tre accessi distinti entrano e ciascuno vede solo il proprio spazio |
 | DAT-001 | Clienti / Accessi | Oggi l'unico cliente nel database reale è "BigAnt", ed è l'agenzia stessa ("cliente zero" del Marketing BigAnt) [C: `src/store.js`, `seedRealCore`] | Usare quel record come cliente di prova mescolerebbe i dati dell'agenzia con quelli del cliente | Creare un cliente separato, per esempio "BigAnt (cliente di prova)", con servizi attivi propri, e collegarci l'utente cliente | P1 · decisione + dati | Il cliente di prova ha una scheda propria; la vista cliente non mostra dati interni dell'agenzia |
 | FUN-002 | Dopo il login | Si entra in automatico su *Mappa agenzia* [R] [C: `public/app.js`, `S.view=isOwner()?'agency':…`] | La prima schermata non risponde alla domanda "cosa devo fare oggi?" | **Una home diversa per ogni ruolo**, come prima pagina dopo il login (proposta di contenuti sotto) | P1 · nuova funzione | Ogni ruolo entra sulla propria home, la Mappa agenzia non è più la pagina d'ingresso |
-| FUN-003 | Accesso | Non esiste il recupero della password né il cambio obbligatorio al primo accesso [C, già dichiarato nel report della Fase 1] | Se la password si perde, oggi serve un intervento tecnico su Railway | Cambio password obbligatorio al primo accesso e recupero password gestito da un socio dalla sezione Accessi (nessuna email automatica finché le email sono spente) | P1 · nuova funzione | Un nuovo utente deve cambiare la password al primo accesso; un socio può reimpostare quella di un altro |
+| FUN-003 | Accesso | Un socio può già impostare una **nuova password** a un utente dalla sezione Accessi [C: pulsante "Nuova password"]. Manca il **cambio obbligatorio al primo accesso** [C, già dichiarato nel report della Fase 1] | Se la password si perde, oggi serve un intervento tecnico su Railway | Cambio password **obbligatorio al primo accesso** e dopo ogni "Nuova password" impostata da un socio. Il recupero resta gestito da un socio (nessuna email automatica finché le email sono spente) | P1 · nuova funzione | Un nuovo utente deve cambiare la password al primo accesso; un socio può reimpostare quella di un altro |
 
-### Proposta di home per ruolo (da validare con i soci)
+### Proposta di home per ruolo · **superata**: la versione aggiornata alle decisioni è nella sezione 13
 
 **Amministrazione: funzionale, "cosa richiede attenzione oggi"** · [DV] da rivedere a fine giro: dopo le decisioni D-03 e FUN-021 (rischi e decisioni restano su Trello, soldi in Fatturazione) i punti 2 e 5 vanno probabilmente tolti
 1. Da approvare: numero e collegamento diretto alla coda.
@@ -147,7 +149,7 @@ Un'unica pagina lunga:
 
 | ID | Pagina / percorso | Problema osservato | Conseguenza per l'utente | Modifica proposta | Priorità | Come verificare che sia risolto |
 |---|---|---|---|---|---|---|
-| FUN-010 | Clienti → scheda cliente → Accessi | **Decisione del proprietario [R]:** nella scheda cliente vanno anche le **credenziali** degli account del cliente (Meta, Google, sito…). Le vedono **amministrazione e collaboratori**, **mai i clienti**. Rischio noto e accettato per ora; la messa in sicurezza si completa più avanti | Le credenziali sono a portata di mano per chi lavora sul cliente | Requisiti minimi raccomandati fin dalla prima versione, perché costano poco e riducono molto il danno di un furto del database: (1) credenziali **cifrate** nel database; (2) password **nascosta** di default, si mostra con un clic; (3) ogni visualizzazione registrata nel **Registro attività** (chi, quando, quale); (4) controllo del ruolo **sul server**, non solo nel menu; (5) mai nei log, negli export o nei backup in chiaro | P2 · nuova funzione · rischio accettato | Un utente cliente non ottiene le credenziali nemmeno chiamando l'API direttamente; nel database non compaiono in chiaro; ogni visualizzazione lascia una riga nel Registro |
+| FUN-010 | Clienti → scheda cliente → Accessi | **Decisione del proprietario [R]:** nella scheda cliente vanno anche le **credenziali** degli account del cliente (Meta, Google, sito…). Le vedono **amministrazione e collaboratori**, **mai i clienti**. Rischio noto e accettato per ora; la messa in sicurezza si completa più avanti | Le credenziali sono a portata di mano per chi lavora sul cliente | Requisiti minimi raccomandati fin dalla prima versione, perché costano poco e riducono molto il danno di un furto del database: (1) credenziali **cifrate** nel database; (2) password **nascosta** di default, si mostra con un clic; (3) ogni visualizzazione registrata nel **Registro** delle persone (Sistema → Accessi → Registro, FUN-059, FUN-066); (4) controllo del ruolo **sul server**, non solo nel menu; (5) mai nei log, negli export o nei backup in chiaro | P2 · nuova funzione · rischio accettato | Un utente cliente non ottiene le credenziali nemmeno chiamando l'API direttamente; nel database non compaiono in chiaro; ogni visualizzazione lascia una riga nel Registro |
 
 ---
 
@@ -220,10 +222,10 @@ La pagina mescola due cose diverse:
 | FUN-018 | Direzione | Pagina senza uno scopo chiaro, doppione della regia dello sciame [R] | Un'altra voce di menu che non porta a un'azione | **Eliminare la voce "Direzione"**. I contenuti si ridistribuiscono come nella tabella sotto | P2 · decisa | La voce non c'è più; nessun contenuto utile è andato perso |
 | UI-008 | Direzione → "La tua cabina di regia" | Piace, anche esteticamente [R] | — | **Conservare lo stile** di questo riquadro come riferimento grafico: in testa a *Sciame di agenti* e come modello per la testata delle home (FUN-002) | P2 · da conservare | Il riquadro esiste in Sciame di agenti, con lo stesso aspetto |
 | FUN-019 | Direzione → cabina di regia, "Esplora lo sciame", priorità del Direttore | Riguardano gli agenti [R] | — | Spostare in **Sciame di agenti** | P2 · decisa | Questi blocchi si trovano solo in Sciame di agenti |
-| FUN-020 | Direzione → quattro numeri (attività nel sistema, lavori in corso, decisioni in attesa, cassa registrata) | Inutili qui [R] | Numeri senza azione collegata | Togliere. "Decisioni in attesa" sopravvive come contatore nella home dell'amministrazione, con il collegamento alle Approvazioni | P3 · decisa | Nessuna fila di numeri senza azione |
+| FUN-020 | Direzione → quattro numeri (attività nel sistema, lavori in corso, decisioni in attesa, cassa registrata) | Inutili qui [R] | Numeri senza azione collegata | Togliere. "Decisioni in attesa" sopravvive come contatore **Da approvare** nella home dell'amministrazione, con il collegamento a Sciame → Da approvare (FUN-061) | P3 · decisa | Nessuna fila di numeri senza azione |
 | FUN-021 | Direzione → "Le sei domande della settimana" | Non è chiaro a cosa servano [R] | Domande utili in parte, ma nel posto sbagliato | **Decisione [R]:** cassa e incassi → **Fatturazione** (secondo piano, FUN-009); clienti e consegne a rischio → **Trello** (non in BigAnt OS, D-03); **contratti in scadenza → pagina iniziale di *Clienti*** come avviso in evidenza (FUN-023); decisioni da prendere → **Trello**, come task; "chi è sovraccarico" → **tolta** | P2 · decisa | Nessuna delle sei domande resta in una pagina a sé; i contratti in scadenza compaiono come avviso aprendo *Clienti* |
 | FUN-023 | Clienti → pagina iniziale | I contratti in scadenza devono essere visibili appena si apre l'anagrafica clienti [R] | Un rinnovo dimenticato è un cliente perso o un servizio non pagato | In cima alla pagina *Clienti*, un **avviso** con i contratti che scadono nei prossimi 30 giorni (cliente, data, collegamento alla scheda). Richiede che il contratto in scheda cliente abbia data di inizio, durata e scadenza (FUN-007) | P2 · decisa | Con un contratto che scade entro 30 giorni, aprendo *Clienti* compare l'avviso con il nome del cliente e la data |
-| FUN-022 | Sciame di agenti: chi lo vede | Lo sciame lo controlla **solo l'amministrazione**; i collaboratori vedono al massimo le cose da approvare, come i post [R] | — | Già così nel codice [C: `allowedNav()`, il collaboratore ha *Approvazioni* ma non *Sciame di agenti* né *Ufficio virtuale*]. Da mantenere e da verificare anche sul server (le rotte dello sciame devono rifiutare il collaboratore) | P2 · da verificare | Un collaboratore che chiama le rotte dello sciame riceve un rifiuto; vede i post da approvare in *Approvazioni* |
+| FUN-022 | Sciame di agenti: chi lo vede | Lo sciame lo controlla **solo l'amministrazione**; i collaboratori vedono al massimo le cose da approvare, come i post [R] | — | Oggi il collaboratore ha *Approvazioni* ma non *Sciame di agenti* né *Ufficio virtuale* [C: `allowedNav()`]. Con il riordino (FUN-048, FUN-061) il collaboratore vede **solo la scheda Da approvare** dello Sciame. Le altre rotte dello sciame devono rifiutarlo **sul server** | P2 · da verificare | Un collaboratore che chiama le rotte dello sciame (tranne Da approvare) riceve un rifiuto |
 
 ---
 
@@ -338,7 +340,7 @@ Le card dei clienti e la creazione di una nuova attività piacciono. Non va bene
 | FUN-042 | "Chiedi all'agenzia" | I clienti scrivono quasi sempre su **WhatsApp** [R] | Funzione che nessuno userebbe | Togliere | P3 · decisa | La sezione non compare |
 | FUN-043 | "Il tuo profilo / La tua attività" | Da togliere [R] | — | Togliere | P3 · decisa | La sezione non compare |
 | FUN-044 | "Collegamento alla fonte dei dati" | **Piace molto:** il cliente vede da dove arrivano i dati e che sono veri, non inventati [R] | Fiducia del cliente | **Tenere solo nella vista cliente**, accanto a ogni report: fonte, data dell'ultimo aggiornamento e collegamento all'originale. Non serve nel lato amministrazione | P2 · da conservare | Ogni dato mostrato al cliente ha la sua fonte e la data |
-| FUN-045 | Vista cliente dal pannello dell'amministrazione | Non serve l'anteprima della vista cliente: per controllarla, l'amministrazione entra con l'email e la password del cliente, conservate in Accessi [R] | — | Togliere **"Vista cliente"** dal menu dell'amministrazione e "Apri attività → vista cliente". Le credenziali dell'account BigAnt OS del cliente stanno nella card Accessi (FUN-010) | P2 · decisa | La voce non c'è più nel menu; la vista cliente si raggiunge solo entrando come cliente |
+| FUN-045 | Vista cliente dal pannello dell'amministrazione | **Decisione rivista dal proprietario a fine giro [R]:** la *Vista cliente* **resta**, solo per l'amministrazione, per controllare cliente per cliente come vede la piattaforma (vedi FUN-067). Cambia solo "Apri attività", che apre la scheda dell'agenzia (FUN-034) | — | Tenere "Vista cliente" nel gruppo **Sistema**, con la scelta del cliente; in più un pulsante **"Guarda come il cliente"** nella scheda cliente | P2 · decisa | Dall'amministrazione si vede la piattaforma esattamente come la vede un cliente scelto, senza poter modificare nulla per suo conto |
 
 ---
 
@@ -489,7 +491,7 @@ Il proprietario non vuole guardare Fidelity adesso, ma va messo in lista per Cod
 | ID | Pagina / percorso | Problema osservato | Conseguenza per l'utente | Modifica proposta | Priorità | Come verificare che sia risolto |
 |---|---|---|---|---|---|---|
 | FUN-058 | Registro attività → parte agenti | Il registro degli agenti va dentro ogni agente [R] | — | Nella scheda di ogni agente (FUN-053) e nello **Storico** dello Sciame (UI-012): cosa ha fatto, quando, con quale esito | P2 · decisa | Aprendo un agente si vede il suo registro |
-| FUN-059 | Registro attività → voce di menu | Da eliminare [R] | — | Togliere la voce dal menu di tutti i ruoli. Il **registro delle persone** (accessi, credenziali viste, utenti, approvazioni) resta, **solo per l'amministrazione**, in un'area **Avanzate / Sistema** insieme ad Accessi e Collegamenti. Non si cancella nessuna riga | P2 · decisa con riserva del consulente | La voce non è nel menu; dall'area Avanzate l'amministrazione ritrova "chi ha visto le credenziali di X" |
+| FUN-059 | Registro attività → voce di menu | Da eliminare [R] | — | Togliere la voce dal menu di tutti i ruoli. Il **registro delle persone** (accessi, credenziali viste, utenti, approvazioni) resta, **solo per l'amministrazione**, nella voce **Accessi** come scheda **Registro** (gruppo **Sistema**, FUN-066). Non si cancella nessuna riga | P2 · decisa con riserva del consulente | La voce non è nel menu; dall'area Avanzate l'amministrazione ritrova "chi ha visto le credenziali di X" |
 
 ### Servizi [C]
 
@@ -523,26 +525,141 @@ Le approvazioni si gestiscono **dentro lo Sciame di agenti**. Regola: quello che
 
 ---
 
+## 12. Collegamenti, Accessi e Vista cliente
+
+### Giudizio del proprietario [R]
+
+- **Collegamenti** piace. Lo vede **solo l'amministrazione** e raccoglie tutti i collegamenti che servono a far funzionare BigAnt OS.
+- **Accessi** piace. Lo vede **solo l'amministrazione** e ci si gestiscono tutti gli accessi: soci, collaboratori, clienti.
+- **Vista cliente** piace e **resta** (rivede FUN-045): serve a controllare, cliente per cliente, come i clienti vedono la piattaforma. Va migliorata come già detto (sezione 6).
+
+### Cosa risulta dal codice [C]
+
+- **Collegamenti** mostra i 17 collegamenti esterni, tutti spenti. L'avviso dice: «In questa sessione non puoi attivare account, inserire chiavi o avviare servizi a pagamento. Le versioni online di Growth e Fidelity restano indipendenti».
+- **Accessi** mostra persone, ruolo, attività assegnate e stato, con i pulsanti "Nuova password" e "Nuovo accesso DEMO". Avviso: «Gli accessi creati qui appartengono soltanto al prototipo locale». **Sul server reale questa frase è falsa:** gli accessi sono veri. Creazione e modifica degli utenti sono riservate ai soci sul server (`requireOwner`).
+
+### Voci
+
+| ID | Pagina / percorso | Problema osservato | Conseguenza per l'utente | Modifica proposta | Priorità | Come verificare che sia risolto |
+|---|---|---|---|---|---|---|
+| FUN-064 | Collegamenti | Da tenere, solo amministrazione [R] | — | Tenere nel gruppo **Sistema**. Per ogni collegamento: **a cosa serve** (servizio o prodotto), stato (**Da collegare · Collegato · Errore**), data dell'ultima verifica, chi l'ha collegato. È il posto dove si **inseriscono le chiavi** (Brave, AI, Google, Meta…), salvate cifrate come nell'originale Growth (COL-005). Qui confluisce la fondamenta "Custodia dei collegamenti" | P2 · decisa | Ogni collegamento dichiara a cosa serve e il suo stato; nessuna chiave compare in chiaro dopo il salvataggio |
+| UI-015 | Collegamenti → avviso | Testo da prototipo: «In questa sessione…», «Le versioni online di Growth e Fidelity restano indipendenti» [C] | Contraddice D-13 (piattaforma unica) e confonde | Riscrivere: «Qui colleghi i servizi esterni che BigAnt OS usa. Nessun collegamento si attiva senza l'ok dei soci» | P2 · difetto di testo | Nessun riferimento a "sessione" o "prototipo" sul server reale |
+| FUN-066 | Accessi | Da tenere, solo amministrazione; gestione di tutti gli accessi [R] | — | Tenere nel gruppo **Sistema**, con due schede: **Persone** (soci, collaboratori, clienti, assegnazione dei clienti ai collaboratori, "Nuova password", disattiva) e **Registro** (chi è entrato, chi ha visto le credenziali di un cliente, chi ha creato o disattivato utenti: FUN-059) | P1 · decisa | Dalla stessa voce si gestiscono gli utenti e si consulta il registro |
+| UI-014 | Accessi → "Nuovo accesso DEMO" e avviso «appartengono soltanto al prototipo locale» | Sul server reale gli accessi sono **veri**: la scritta è **ingannevole** [C] | Si rischia di non prendere sul serio account reali | Per la regola UI-006 la funzione è già reale, quindi **togliere ora** "DEMO" e l'avviso in modalità reale. Pulsante "Nuovo accesso" | P1 · difetto | Sul server reale la pagina Accessi non contiene "DEMO" né "prototipo" |
+| FUN-067 | Vista cliente | Resta, solo amministrazione, per controllare cliente per cliente [R] | — | Nel gruppo **Sistema**: si sceglie il cliente e si vede la sua dashboard **in sola lettura**. Riflette sempre la nuova dashboard cliente (UI-010, FUN-036…044). Pulsante "Guarda come il cliente" anche nella scheda cliente | P2 · decisa | Scelto un cliente, la vista coincide con quella che il cliente vede entrando con le sue credenziali |
+
+---
+
+## 13. Sintesi del giro lato amministrazione (9 ottobre 2026)
+
+### 13.1 Nuovo menu dell'amministrazione
+
+Da 16 voci a **12**, in 4 gruppi. Ogni voce segue PRINC-01: card e una sezione alla volta.
+
+| Gruppo | Voce | Contenuto | Voci di oggi che vi confluiscono |
+|---|---|---|---|
+| **Lavoro** | **Home** | Cosa richiede attenzione oggi (13.3) | Mappa agenzia come pagina d'ingresso, Direzione (in parte) |
+| | **Clienti** | Schede: **Elenco** (card, Nuova attività, avviso contratti in scadenza) · **Risultati dei clienti**. Scheda cliente dell'agenzia a card | Clienti, Anagrafiche, Contratti e rinnovi, Memoria del cliente zero |
+| | **Servizi** | Piano di attivazione dei servizi (stato, cosa manca, data obiettivo, agenti) e Listino (proposta) | Servizi, "Un workspace per ogni servizio", Le aree del marketing, Tariffe confermate |
+| | **Profili** | Profili dell'agenzia e di ogni cliente, con dati e crescita | Canali di Marketing BigAnt |
+| | **Sciame di agenti** | Schede: Ufficio · Agenti · Da approvare · Storico · Budget · Struttura. Cabina di regia in testa | Ufficio virtuale, Sciame di agenti, Approvazioni, Reparti e specialisti, parte agenti di Direzione e del Registro |
+| **Prodotti** | **Growth** | CRM e ricerca clienti, con la sua coda di lavori | Growth, sua parte di "Attività dei moduli collegati" |
+| | **Fidelity** | Programmi fedeltà, con la sua coda di lavori | Fidelity, sua parte di "Attività dei moduli collegati" |
+| **Sistema** | **Vista cliente** | La piattaforma come la vede un cliente scelto | Vista cliente |
+| | **Accessi** | Persone · Registro | Accessi, Registro attività (parte persone) |
+| | **Collegamenti** | Collegamenti esterni e chiavi | Collegamenti, Custodia dei collegamenti |
+| | **Avanzamento** | Stato di costruzione di BigAnt OS, Fondamenta | Mappa agenzia, Fondamenta da completare |
+| *(ultima)* | **Fatturazione** | Incassi e arretrati, Da fatturare, Prima nota con cassa a 30/60/90, Tracker incassi, Costi e abbonamenti, Compensi. **Secondo piano**; registro ufficiale ancora Trello | Amministrazione, moduli economici del gestionale |
+
+**Tolte dal menu:** Mappa agenzia, Marketing BigAnt, Direzione, Lavori e contenuti, Approvazioni, Registro attività, Ufficio virtuale (come voce a sé), Amministrazione (rinominata).
+
+### 13.2 Le 16 voci di oggi, una per una
+
+| Voce di oggi | Destino |
+|---|---|
+| Mappa agenzia | → **Avanzamento** (Sistema); Reparti → Sciame; Servizi → Servizi; Gestionale smontato (FUN-007) |
+| Marketing BigAnt | Eliminata → **Profili**; le aree diventano il Piano di attivazione |
+| Direzione | Eliminata → cabina di regia in Sciame; contratti in scadenza in Clienti; soldi in Fatturazione; il resto su Trello |
+| Amministrazione | → **Fatturazione**, ultima voce |
+| Clienti | Resta, con la nuova scheda dell'agenzia |
+| Lavori e contenuti | Eliminata: task su Trello, piano editoriale sul PED |
+| Growth | Resta in **Prodotti**, da attivare |
+| Fidelity | Resta in **Prodotti**, da collaudare e completare con il Wallet |
+| Ufficio virtuale | → scheda **Ufficio** dello Sciame |
+| Sciame di agenti | Resta, unificato |
+| Approvazioni | → scheda **Da approvare** dello Sciame |
+| Registro attività | Agenti → Sciame; persone → Accessi → Registro |
+| Servizi | Resta, diventa il Piano di attivazione |
+| Collegamenti | Resta in Sistema |
+| Accessi | Resta in Sistema |
+| Vista cliente | Resta in Sistema |
+
+### 13.3 Home dell'amministrazione, aggiornata alle decisioni
+
+Stile della "cabina di regia" (UI-008), card cliccabili. **Niente soldi** (Fatturazione è in secondo piano) e **niente task** (sono su Trello).
+1. **Da approvare**: numero di bozze in attesa, collegamento a Sciame → Da approvare.
+2. **Contratti in scadenza** nei prossimi 30 giorni, collegamento a Clienti.
+3. **Clienti**: attivi e nuovi del mese.
+4. **Growth**: nuovi lead da guardare (quando Growth è attivo).
+5. **Sciame**: agenti attivi, lavori fermi o bloccati dal controllo qualità, budget speso rispetto al tetto.
+6. **Collegamenti in errore**, se ce ne sono.
+
+### 13.4 Collaboratore e cliente: bozza da completare nei prossimi giri
+
+**Collaboratore (Vincenzo).** Giro previsto l'11/10. Bozza dalle decisioni prese finora:
+- Home: clienti assegnati e bozze da approvare;
+- Clienti assegnati: scheda con anagrafica, accessi, scheda informativa, servizi attivi e report. Contratto e documenti: [DV];
+- Sciame: solo la scheda Da approvare.
+
+**Cliente.** Giro previsto il 10/10. Bozza dalle decisioni prese finora:
+- Home a card;
+- I tuoi servizi, con i report e la fonte dei dati;
+- I tuoi profili;
+- Documenti (per ora solo il contratto);
+- Fidelity e altri prodotti, solo se attivi;
+- I tuoi risultati, dopo che l'amministrazione li avrà collaudati.
+
+Tolti: Chiedi all'agenzia, Il tuo profilo, Servizi consigliati, Report mensili, Approvazioni e calendario (PED).
+
+### 13.5 I percorsi completi dopo il riordino
+
+| Percorso | Come funzionerà | Cosa manca (voci) |
+|---|---|---|
+| Nuovo cliente → servizi → lavori → consegna | Clienti → Nuova attività → scheda cliente (contratto, accessi, scheda informativa, servizi attivi) → lavori su **Trello** → report nel servizio | Scheda dell'agenzia (FUN-034), Avvio cliente, report reali (COL-002) |
+| Contenuto → revisione → approvazione → programmazione | Agente prepara la bozza → Sciame → Da approvare (socio o collaboratore) → pubblicazione automatica **solo dopo l'approvazione** | Scheda Da approvare (FUN-048/061), regola sul server (FUN-062), collegamento al canale o al PED (COL-004) |
+| Lead → analisi → proposta → cliente | Growth: ricerca reale → analisi AI → bozza approvata da un socio → appuntamento → conversione in cliente (esiste già) | Collegamenti reali (COL-005), collaudo (FUN-050) |
+| Contratto → fattura → incasso → scadenze | Contratto nella scheda cliente con avviso di scadenza → fattura su **Aruba** → incasso registrato su **Trello** | Contratto con date (FUN-023); Fatturazione di BigAnt OS in secondo piano (D-09) |
+| Agente → incarico → risultato → controllo → approvazione | Sciame → Agenti (solo Attivi) → Storico → controllo qualità → Da approvare | Stati e configurazione degli agenti (FUN-053) |
+| Cliente → risultati → contenuti da approvare → richiesta | Da definire nel giro lato cliente; richieste via WhatsApp | Giro del 10/10 |
+| Accesso → ruolo → permessi → proprio account | Accessi → Persone → ruolo e clienti assegnati → primo accesso con cambio password | Cambio password obbligatorio (FUN-003), testi da correggere (UI-014) |
+
+Il piano di lavoro passo per passo per Codex è in **`docs/PIANO-RIORDINO-CODEX.md`**.
+
+---
+
 ## Decisioni che spettano ai soci
 
 | ID | Decisione | Contesto |
 |---|---|---|
 | D-01 | "Accessi del cliente": solo l'elenco o anche le credenziali? | **DECISA [R]:** anche le credenziali, visibili ad amministrazione e collaboratori, mai ai clienti. Rischio accettato; requisiti minimi in FUN-010 |
 | D-02 | "Un workspace per ogni servizio": promemoria per la crescita dell'agenzia o piano per costruire gli agenti? | **DECISA [R]:** serve ad attivare, passo dopo passo ed entro un anno, i servizi che BigAnt oggi non offre. Diventa il Piano di attivazione dei servizi (FUN-014) |
+| D-03 | Task e consegne: Trello o BigAnt OS? | **DECISA [R]:** si resta su Trello; il collegamento si valuta in futuro (COL-001) |
+| D-04 | Documenti e autorizzazioni: servono in BigAnt OS? | **Risolta da FUN-039 [R]:** card Documenti nella scheda cliente (contratto, poi fatture e pagamenti). Liberatorie e autorizzazioni: [DV], da decidere quando servirà |
+| D-05 | Le parti tolte vanno nascoste o eliminate dal codice? | **Da confermare.** Raccomandazione applicata nel piano: nasconderle ora ed eliminarle dopo il collaudo della nuova struttura |
 | D-06 | Nome della nuova sezione dei profili | **DECISA [R]:** "Profili" (per il cliente: "I tuoi profili") |
 | D-07 | Aggiornamento dei dati dei profili | **DECISA [R]:** una volta al giorno più "Aggiorna ora" |
+| D-08 | Riquadro "obiettivo di fatturato" nella home dell'amministrazione | **DECISA [R]:** non si fa |
 | D-09 | Registro ufficiale di incassi, canoni e saldi: Trello (bacheca Fatturazione) o BigAnt OS? | **DECISA [R]: per ora resta Trello.** Percorso futuro: **finché la Fatturazione resta in secondo piano, Trello è il registro ufficiale**. BigAnt OS lo sostituisce solo quando il tracker (FUN-028) è collaudato, con un'importazione una tantum e un mese di prova in parallelo |
 | D-10 | Fatture e pagamenti visibili al cliente (FUN-039), visto che il registro ufficiale resta Trello (D-09) | **DECISA [R]:** per ora il cliente vede **solo il contratto**; fatture e pagamenti quando la Fatturazione di BigAnt OS diventerà il registro ufficiale |
 | D-11 | Si continuano a usare le app originali su Railway nel frattempo? | **DECISA [R]: no.** Le app originali Growth e Fidelity **non sono ancora usate da nessuno**: si lavora direttamente su BigAnt OS. Le originali restano solo come riferimento del codice (sola lettura) finché il trasferimento non è collaudato; poi si spengono |
 | D-12 | Ordine di attivazione | **DECISA [R]:** prima il **collaudo di Fidelity** (già funzionante nell'originale, rischio basso), poi **Growth fase 1-2** (ricerca e analisi, senza invii), poi Google Wallet, poi gli invii Growth |
 | D-13 | Growth e Fidelity: un'unica piattaforma (BigAnt OS) o app separate? | **DECISA [R]: piattaforma unica.** Chiarimento dato al proprietario: in BigAnt OS Growth e Fidelity **girano completamente dentro** (codice copiato, stesso database), non sono un collegamento alle app originali. Le app originali sono **copie separate**, con database e dati propri, ancora online. Raccomandazione: **un'unica piattaforma**. Il cliente che compra solo Fidelity riceve un accesso BigAnt OS con il solo servizio Fidelity attivo (FUN-041); gli iscritti usano la carta pubblica. Dopo il collaudo (FUN-050, FUN-051) le originali si spengono. Siccome nessuno le usa (D-11), non ci sono tessere o link già distribuiti da preservare |
-| D-14 | Growth: analisi AI con OpenAI (come nell'originale) o con Anthropic (come lo sciame di BigAnt OS)? | Proposta: **un solo fornitore AI per tutta la piattaforma** (Anthropic, già usato dallo sciame, con un solo tetto di spesa). Da confermare |
-| D-15 | Chi può approvare cosa | Proposta: post social → socio o collaboratore; messaggi commerciali Growth e campagne Fidelity → solo soci |
-| D-08 | Riquadro "obiettivo di fatturato" nella home dell'amministrazione | **DECISA [R]:** non si fa |
-| D-03 | Task e consegne: Trello o BigAnt OS? | **DECISA [R]:** si resta su Trello; il collegamento si valuta in futuro (COL-001) |
-| D-04 | Documenti e autorizzazioni: servono in BigAnt OS? | Proposta minima: solo contratti e liberatorie nella scheda cliente |
-| D-05 | Le parti tolte vanno nascoste o eliminate dal codice? | Raccomandazione: nasconderle ora ed eliminarle dopo il collaudo della nuova struttura |
+| D-14 | Growth: analisi AI con OpenAI (come nell'originale) o con Anthropic (come lo sciame di BigAnt OS)? | **Da confermare.** Proposta: **un solo fornitore AI per tutta la piattaforma** (Anthropic, già usato dallo sciame, con un solo tetto di spesa). Da confermare |
+| D-15 | Chi può approvare cosa | **Da confermare.** Proposta: post social → socio o collaboratore; messaggi commerciali Growth e campagne Fidelity → solo soci |
 
 ## Domande aperte
 
-Nessuna per questo blocco.
+1. **D-05** nascondere o eliminare le parti tolte (nel piano si nasconde).
+2. **D-14** un solo fornitore AI (proposta: Anthropic).
+3. **D-15** chi approva cosa.
+4. **FUN-060** Servizi = Piano di attivazione (proposta).
