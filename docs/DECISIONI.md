@@ -99,3 +99,7 @@ Confermata la separazione tra scheda agenzia e anteprima cliente. Contratti e do
 ### Riordino 10 ottobre — D-14 e stati agenti
 
 Predisporre Anthropic e OpenAI come confermato in chat. Nessuna scelta automatica di modello, chiave o attivazione. Istruzioni presenti e chiave disponibile non certificano il collaudo. I percorsi DEMO restano bloccati sul server reale; le attivazioni reali richiedono percorso collaudato e autorizzazione.
+
+### Riordino 10 ottobre — Piano e Listino
+
+Applicata la conferma FUN-060: Piano e Listino in Servizi. Gli stati iniziali provengono dalle schede del playbook e sono da validare; date e prossimi passi restano ai soci. I 27 spazi tecnici esistenti non sono cancellati. Custodia dei collegamenti predisposta senza attivare fornitori: la verifica locale non certifica credenziali valide presso terzi.

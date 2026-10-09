@@ -139,6 +139,7 @@ export function createSciame({store:s,production,administration,growth,orchestra
    x=(await production.handle({method:'PATCH',path:'/contents/'+x.id,body:{version:x.version,state:'IN PRODUZIONE'},user:r,clientId:c})).data;
    x=(await production.handle({method:'PATCH',path:'/contents/'+x.id,body:{version:x.version,state:'DA APPROVARE'},user:r,clientId:c})).data;
    const a=s.one("SELECT * FROM os_approvals WHERE kind='content' AND entity_id=? AND version=?",x.id,x.version);
+   production.tagApproval(a.id,agentiSciame[passoRow.agente].nome,passoRow.esito_qualita);
    if(attendiCliente){registra(passoRow,'Contenuto in attesa dell’approvazione del cliente',{contenuto:x.id,approvazione:a.id});creati.push(x.id);continue;}
    if(autoDemo()){
     await production.handle({method:'POST',path:'/approvals/'+a.id,body:{decision:'approved',reason:`auto-approvato (DEMO) · ${approvatore}`},user:r,clientId:c});

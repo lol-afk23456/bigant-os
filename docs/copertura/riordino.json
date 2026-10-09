@@ -9,7 +9,8 @@
       "criterio": "Nessuna pagina mostra più di una sezione completa alla volta",
       "stato": "parziale in locale",
       "prove": [
-        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Aggiunti Servizi, dettaglio servizio, Listino e Collegamenti; restano Fatturazione e prodotti."
       ]
     },
     {
@@ -131,8 +132,10 @@
       "area": "Mappa agenzia → \"Un workspace per ogni servizio\"",
       "modifica": "Confluisce nel **Piano di attivazione dei servizi** (FUN-014). Gli agenti di ciascun servizio restano in *Sciame di agenti*",
       "criterio": "Un solo posto per lo stato di attivazione dei servizi",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare."
+      ]
     },
     {
       "id": "FUN-007",
@@ -230,8 +233,10 @@
       "area": "Marketing BigAnt → Le aree del marketing BigAnt",
       "modifica": "**Eliminare le \"aree\".** Al loro posto un unico **Piano di attivazione dei servizi**: per ogni servizio lo stato (Attivo · In preparazione · Futuro), cosa manca per attivarlo e la data obiettivo. Si costruisce dal catalogo esistente (`src/servizi/catalogo.js`)",
       "criterio": "Un solo posto mostra quali servizi BigAnt offre oggi, quali sono in preparazione e cosa manca per ciascuno",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare."
+      ]
     },
     {
       "id": "FUN-015",
@@ -398,8 +403,10 @@
       "area": "Amministrazione → \"Tariffe confermate\"",
       "modifica": "Trasformare in **Listino**: prodotto o servizio, prezzo, unità (mese, pezzo, pacchetto), note e data. Si aggiungono voci in un attimo. Valutare il collegamento con il Catalogo servizi",
       "criterio": "Si aggiunge una voce di listino in meno di un minuto e la si ritrova cercandola",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare."
+      ]
     },
     {
       "id": "FUN-032",
@@ -584,9 +591,9 @@
       "area": "Bozze dello sciame",
       "modifica": "Dentro *Sciame di agenti*, una scheda **\"Da approvare\"** con le bozze prodotte dagli agenti (testo, agente, cliente, esito del controllo qualità, approva o rimanda con nota). Il **collaboratore** vede solo questa scheda dello sciame (coerente con FUN-022). Cosa fare della voce *Approvazioni* si decide quando la analizziamo",
       "criterio": "Una bozza di un agente si approva da Sciame → Da approvare; il collaboratore vede quella scheda e nient'altro dello sciame (verifica sul server)",
-      "stato": "parziale in locale",
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "Coda unica e permessi verificati; dettagli autore e controllo qualità da completare nella fase Sciame"
+        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare."
       ]
     },
     {
@@ -753,8 +760,10 @@
       "area": "Servizi",
       "modifica": "**Una sola voce \"Servizi\"** per l'amministrazione, che è il **Piano di attivazione dei servizi** (FUN-014): elenco dei servizi BigAnt con stato (**Attivo · In preparazione · Futuro**), cosa manca per attivarlo, data obiettivo, agenti che lo seguono (stato da FUN-053) e voce di **Listino** (FUN-031). La pagina di dettaglio resta, a card (PRINC-01). Lato cliente, \"Servizi\" è \"I tuoi servizi\" con i report (FUN-036, FUN-037)",
       "criterio": "Un solo posto spiega quali servizi offre BigAnt e a che punto è ciascuno",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare."
+      ]
     },
     {
       "id": "UI-013",
@@ -799,16 +808,20 @@
       "area": "Collegamenti",
       "modifica": "Tenere nel gruppo **Sistema**. Per ogni collegamento: **a cosa serve** (servizio o prodotto), stato (**Da collegare · Collegato · Errore**), data dell'ultima verifica, chi l'ha collegato. È il posto dove si **inseriscono le chiavi** (Brave, AI, Google, Meta…), salvate cifrate come nell'originale Growth (COL-005). Qui confluisce la fondamenta \"Custodia dei collegamenti\"",
       "criterio": "Ogni collegamento dichiara a cosa serve e il suo stato; nessuna chiave compare in chiaro dopo il salvataggio",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare."
+      ]
     },
     {
       "id": "UI-015",
       "area": "Collegamenti → avviso",
       "modifica": "Riscrivere: «Qui colleghi i servizi esterni che BigAnt OS usa. Nessun collegamento si attiva senza l'ok dei soci»",
       "criterio": "Nessun riferimento a \"sessione\" o \"prototipo\" sul server reale",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare."
+      ]
     },
     {
       "id": "FUN-066",

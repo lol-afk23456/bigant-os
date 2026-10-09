@@ -129,3 +129,18 @@ test('senza chiave nessuna credenziale è accettata; note versionate e conflitti
   f.store.run("UPDATE os_memory SET visibility='admin' WHERE client_id='demo-bottega' AND kind='master'");
   assert.equal((await f.request('/api/client-record/memory?clientId=demo-bottega', f.team, 'POST', { ...body, version: row.version + 1 })).status, 403);
 });
+
+test('provenienza e qualità della bozza restano legate alla versione approvata', async t => {
+  const f = await fixture(t);
+  f.production.tagApproval('approval-demo', 'Specialista social · prova', 'approvabile');
+  const first = (await f.request('/api/workspace/approvals', f.team)).body.items.find(row => row.id === 'approval-demo');
+  assert.equal(first.author, 'Specialista social · prova'); assert.equal(first.quality, 'approvabile');
+  assert.throws(() => f.store.run("UPDATE os_approval_origins SET quality='altro' WHERE approval_id='approval-demo'"), /immutabile/);
+  const current = f.store.one("SELECT * FROM os_contents WHERE id='content-demo'");
+  const edited = await f.request('/api/production/contents/content-demo?clientId=demo-bottega', f.team, 'PATCH', { version: current.version, body: 'Nuovo testo DEMO da verificare.' });
+  assert.equal(edited.status, 200);
+  const review = await f.request('/api/production/contents/content-demo?clientId=demo-bottega', f.team, 'PATCH', { version: edited.body.version, state: 'DA APPROVARE' });
+  assert.equal(review.status, 200);
+  const next = (await f.request('/api/workspace/approvals', f.team)).body.items.find(row => row.entity_id === current.id);
+  assert.notEqual(next.id, first.id); assert.equal(next.quality, 'Da verificare'); assert.notEqual(next.author, first.author);
+});

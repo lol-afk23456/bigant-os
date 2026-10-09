@@ -4,10 +4,10 @@
 function sectionCards(items){
  return `<div class="section-cards">${items.map(item=>`<button class="section-card" data-view="${e(item.route)}"><span class="section-card-icon">${icon(item.icon||'grid')}</span><span class="section-card-copy"><b>${e(item.name)}</b><strong>${e(item.value??'Apri')}</strong>${item.note?`<small>${e(item.note)}</small>`:''}</span><span class="section-card-arrow">${icon('arrow')}</span></button>`).join('')}</div>`;
 }
-function sectionNavigator(base,items,renderSection){
+function sectionNavigator(base,items,renderSection,backRoute=`${base}:sections`){
  const current=items.find(item=>item.id===S.section);
  if(!current)return sectionCards(items.map(item=>({...item,route:`${base}:${item.id}`})));
- return `<div class="section-back">${btn('Indietro','goto',`${base}:sections`,'ghost','arrow')}<span>${e(current.name)}</span></div>${renderSection(current.id)}`;
+ return `<div class="section-back">${btn('Indietro','goto',backRoute,'ghost','arrow')}<span>${e(current.name)}</span></div>${renderSection(current.id)}`;
 }
 function workspaceHero(heading,description,action=''){
  return `<section class="hero workspace-hero"><div class="hero-copy"><div class="eyebrow">LA TUA CABINA DI REGIA</div><h2>${heading}</h2><p>${e(description)}</p>${action}</div><div class="hero-aside" aria-hidden="true"><span class="orbit"></span><span class="orbit second"></span><span class="hero-symbol">${icon('agents')}</span></div></section>`;
@@ -136,3 +136,48 @@ function productJobsPanel(){
   e(row.type||'Aggiornamento tessere'),badge(row.status),row.count!==undefined?String(row.count):date(row.created||row.created_at,true),e(row.error||'Nessuna azione esterna eseguita')
  ])));
 }
+
+
+function priceListTable(rows){
+ return table(['Prodotto o servizio','Prezzo','Unità','Data','Note'],rows.map(row=>[e(row.name),money(row.price_cents),e(row.unit),date(row.effective_date),e(row.notes)]));
+}
+function servicePlanView(){
+ if(!isOwner())return catalogView();
+ const d=S.module||{},rows=d.items||[],prices=d.prices||[],filter=S.filter.toLocaleLowerCase('it');
+ const current=rows.find(row=>S.section===`service/${row.id}`||S.section.startsWith(`service/${row.id}/`));
+ if(current){
+  const base=`service/${current.id}`,plan=current.plan;
+  return title(current.name,'Il percorso del servizio, le persone che lo seguono e il suo listino.',btn('Tutti i servizi','goto','catalog:plan','','arrow'))+sectionNavigator('catalog',[
+   {id:base+'/plan',name:'Attivazione',value:plan.status,icon:'check'},
+   {id:base+'/method',name:'Come lavoriamo',value:'Passi e consegne',icon:'book'},
+   {id:base+'/agents',name:'Agenti',value:current.agents.length,icon:'agents'},
+   {id:base+'/prices',name:'Listino',value:prices.filter(row=>row.service===current.id).length,icon:'wallet'}
+  ],id=>{
+   if(id.endsWith('/plan'))return panel('Piano di attivazione',`${badge(plan.status,plan.status==='Attivo'?'green':'orange')}<dl class="out-obj"><div><dt>Data obiettivo</dt><dd>${plan.target_date?date(plan.target_date):'Da decidere'}</dd></div><div><dt>Cosa manca e prossimo passo</dt><dd class="preserve">${e(plan.missing||'Da definire con i soci')}</dd></div><div><dt>Fonte dello stato</dt><dd>${e(plan.version?`Aggiornato dai soci · versione ${plan.version} · ${date(plan.updated_at,true)}`:`Playbook da validare · ${current.sourceStatus}`)}</dd></div></dl>`,btn('Aggiorna piano','service-plan-edit',current.id,'small'))+notice('Lo stato descrive l’offerta dell’agenzia. Non attiva agenti, collegamenti o servizi sui clienti.');
+   if(id.endsWith('/method'))return panel('Metodo e consegne',`<p>${e(current.description)}</p><h3>Cosa serve</h3>${bulletText(current.inputs)}<h3>Cosa consegniamo</h3>${bulletText(current.outputs)}<h3>Passi di lavoro</h3><ol>${current.steps.map(step=>`<li>${e(step)}</li>`).join('')}</ol><small>Fonte: ${e(current.source)}</small>`);
+   if(id.endsWith('/agents'))return `<div class="card-grid">${current.agents.map(agent=>`<article class="module-card"><h3>${e(agent.name)}</h3>${badge(agent.status)}<footer>${btn('Apri lo Sciame','goto','agents:list','small')}</footer></article>`).join('')||empty('Agente da assegnare','Definiamo prima la procedura e il responsabile.')}</div>`;
+   return panel('Listino del servizio',priceListTable(prices.filter(row=>row.service===current.id)),btn('Nuova voce','price-add',current.id,'small','plus'));
+  },`catalog:${base}`);
+ }
+ return title('Servizi. Il piano, passo dopo passo.','Quali servizi offriamo, cosa prepariamo e quali saranno i prossimi.')+sectionNavigator('catalog',[
+  {id:'plan',name:'Piano di attivazione',value:`${rows.length} servizi`,icon:'grid'},
+  {id:'prices',name:'Listino',value:`${prices.length} voci`,icon:'wallet'}
+ ],id=>`<div class="toolbar"><label class="sr-only" for="local-filter">${id==='plan'?'Cerca un servizio':'Cerca nel listino'}</label><input id="local-filter" class="search" placeholder="${id==='plan'?'Cerca un servizio…':'Cerca nome, unità o note…'}" value="${e(S.filter)}">${id==='prices'?btn('Nuova voce','price-add','','primary','plus'):''}</div>`+(id==='prices'?priceListTable(prices.filter(row=>`${row.name} ${row.unit} ${row.notes}`.toLocaleLowerCase('it').includes(filter))):sectionCards(rows.filter(row=>`${row.name} ${row.id} ${row.plan.status}`.toLocaleLowerCase('it').includes(filter)).map(row=>({name:row.name,value:row.plan.status,note:row.plan.target_date?`Obiettivo ${date(row.plan.target_date)}`:'Data obiettivo da decidere',route:`catalog:service/${row.id}`,icon:'book'})))));
+}
+Object.assign(ACTIONS,{
+ 'service-plan-edit':id=>{const row=S.module.items.find(item=>item.id===id),p=row.plan;form('Piano · '+row.name,[selectField('status','Stato',['Attivo','In preparazione','Futuro'],p.status),{name:'targetDate',label:'Data obiettivo',type:'date',value:p.target_date||''},{name:'missing',label:'Cosa manca e prossimo passo',type:'textarea',full:true,value:p.missing}],async b=>{await mutate('/api/service-plan/'+id,{...b,version:p.version},'PATCH');await saved('Piano aggiornato');},{intro:'Le date e le priorità sono decise dai soci. Questo salvataggio non attiva automazioni.'});},
+ 'price-add':service=>form('Nuova voce di listino',[textField('name','Prodotto o servizio'),{name:'priceEuros',label:'Prezzo in euro',type:'number',step:'0.01',min:0,max:1000000,required:true},selectField('unit','Unità',['mese','anno','pezzo','pacchetto','progetto','ora','giorno'],'pezzo'),{name:'effectiveDate',label:'Valido dal',type:'date',value:new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Rome',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()),required:true},selectField('service','Collega al servizio',[['','Nessun servizio specifico'],...S.module.items.map(row=>[row.id,row.name])],service||''),{name:'notes',label:'Note',type:'textarea',full:true}],async(b,fd,requestId)=>{await mutate('/api/service-plan/prices',{name:b.name,priceCents:cents(b.priceEuros),unit:b.unit,effectiveDate:b.effectiveDate,service:b.service,notes:b.notes,requestId});await saved('Voce aggiunta al listino');},{intro:'Una tariffa di riferimento: non genera fatture né movimenti contabili.'})
+});
+
+
+function protectedConnectionsView(){
+ const d=S.module||{},items=d.items||[];
+ return title('I collegamenti, sotto controllo.','Qui colleghi i servizi esterni che BigAnt OS usa. Nessun collegamento si attiva senza l’ok dei soci.')+(!d.vaultReady?notice('Prima di inserire chiavi, configura l’archivio protetto sul server.'):'')+sectionNavigator('connections',items.map(row=>({id:row.id,name:row.name,value:row.status,note:row.purpose,icon:'link'})),id=>{
+  const row=items.find(item=>item.id===id);
+  return panel(row.name,`${badge(row.status,row.status==='Errore'?'red':'orange')}<p>${e(row.purpose)}</p><dl class="out-obj"><div><dt>Accessi salvati</dt><dd>${row.configured?'Sì, nell’archivio protetto':'Da inserire'}</dd></div><div><dt>Configurato da</dt><dd>${e(row.configuredBy||'Nessuno')}</dd></div><div><dt>Ultima verifica</dt><dd>${row.lastCheck?date(row.lastCheck,true)+' · controllo locale':'Non ancora eseguita'}</dd></div></dl>${row.checkNote?notice(row.checkNote,row.status==='Errore'):''}<p>${e(row.activationNote)}</p><div class="actions">${row.fields.length&&d.vaultReady?btn(row.configured?'Aggiorna accessi':'Inserisci accessi','connection-save',id,'primary','shield'):''}${row.configured?btn('Controlla configurazione','connection-check',id,'','check'):''}${row.dependsOn?btn('Apri accesso Google','goto','connections:'+row.dependsOn,'','arrow'):''}</div>${!row.fields.length&&!row.dependsOn?notice('Procedura di collegamento da completare e collaudare.') : ''}`);
+ });
+}
+Object.assign(ACTIONS,{
+ 'connection-save':id=>{const row=S.module.items.find(item=>item.id===id);form('Accessi · '+row.name,row.fields.map(field=>({name:field.id,label:field.label,type:field.secret?'password':'text',required:!row.configured,full:true,help:row.configured?'Lascia vuoto per conservare il valore già salvato.':''})),async fields=>{await mutate('/api/connections/'+id,{fields,version:row.version});await saved('Accessi salvati e nascosti. Collegamento ancora da collaudare.');},{intro:'Le chiavi saranno cifrate. Dopo il salvataggio non verranno mostrate. Nessun servizio viene attivato.'});},
+ 'connection-check':async id=>{await mutate('/api/connections/'+id+'/check');await saved('Controllo locale completato; consulta l’esito nella scheda.');}
+});

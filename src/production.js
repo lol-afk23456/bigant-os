@@ -2,6 +2,10 @@ import { AppError, requireClient, requireOwner, uid, now, text, integer } from '
 import { services } from './registry.js';
 const states=['IDEA','IN PRODUZIONE','DA APPROVARE','APPROVATO','PROGRAMMATO','PUBBLICATO','RIUTILIZZABILE'];
 export function createProduction({store:s}) {
+  s.db.exec(`CREATE TABLE IF NOT EXISTS os_approval_origins (approval_id TEXT PRIMARY KEY REFERENCES os_approvals(id),agent TEXT NOT NULL,quality TEXT NOT NULL);
+    CREATE TRIGGER IF NOT EXISTS os_approval_origins_no_update BEFORE UPDATE ON os_approval_origins BEGIN SELECT RAISE(ABORT,'Provenienza della versione immutabile'); END;`);
+  function tagApproval(id,agent,quality) { s.run('INSERT OR IGNORE INTO os_approval_origins VALUES(?,?,?)',id,text(agent,200),text(quality,200)||'Da verificare'); }
+
   function writable(user,clientId) { requireClient(s,user,clientId); if(user.role==='client')throw new AppError('Il cliente approva e richiede modifiche; la produzione è del team.',403); }
   function serviceAllowed(clientId,service) {const c=s.one('SELECT services_json FROM os_clients WHERE id=?',clientId);if(!services.some(x=>x.id===service)||!JSON.parse(c.services_json).includes(service))throw new AppError('Servizio non attivo per questa attività.',403);}
   function saveMemory(user,clientId,kind,content,source='Modifica manuale DEMO') {
@@ -80,5 +84,5 @@ export function createProduction({store:s}) {
     }
     return null;
   }
-  return {handle,saveMemory,requestApproval,states};
+  return {handle,saveMemory,requestApproval,tagApproval,states};
 }
