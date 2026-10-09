@@ -28,7 +28,8 @@ Sessione di mappatura con il proprietario (Raffaele), iniziata il 9 ottobre 2026
 | Clienti (elenco, nuova attività, apri attività) e vista cliente (tutte le sezioni) | Esaminata [R] [C] |
 | Lavori e contenuti | Esaminata [R] [C] |
 | Growth (e verifica del trasferimento di Fidelity sugli inventari) | Esaminata [R] [C]; Growth confrontato con il codice originale; Fidelity originale non ancora letto (accesso al repository bloccato dal controllo di sicurezza della sessione) |
-| Fidelity (interfaccia), Ufficio virtuale, Sciame di agenti, Approvazioni, Registro attività, Servizi, Collegamenti, Accessi | Da esaminare |
+| Ufficio virtuale e Sciame di agenti | Esaminata [R] [C] |
+| Fidelity (interfaccia, rinviata dal proprietario), Approvazioni, Registro attività, Servizi, Collegamenti, Accessi | Da esaminare |
 | Vista collaboratore | Da esaminare |
 | Vista cliente con un vero login da cliente | Rinviata: il proprietario la controllerà entrando con le credenziali del cliente (FUN-045) |
 | Uso da telefono | Da esaminare |
@@ -421,6 +422,55 @@ Nell'originale le chiavi (Brave, OpenAI, Google) si inseriscono dall'interfaccia
 | FUN-051 | Fidelity → verifica del trasferimento | Fidelity funzionava come progetto separato; non è dimostrato che funzioni uguale dentro BigAnt OS [R] [C] | Rischio di regressioni non viste | **Collaudo completo sul server reale**, lato amministrazione e lato iscritto: creare il programma, iscriversi dalla carta pubblica, accreditare con lo scanner (fotocamera, da telefono), riscattare, stornare, esportare. Stessa lista di prove usata in passato sull'originale | P1 · verifica | La lista di prove dell'originale passa tutta su BigAnt OS, anche da telefono |
 | COL-006 | Fidelity → Apple Wallet e Google Wallet | Manca l'inserimento nel Wallet [R]. Nel codice l'emissione è bloccata; esistono solo i generatori dei contenuti del pass [C] | La carta non si può salvare nel telefono | **Google Wallet:** emittente e account di servizio Google (variabili già previste nell'originale), poi attivazione e prova su un telefono Android. **Apple Wallet:** serve sbloccare l'account Apple Developer (Pass Type ID e certificati), problema aperto anche nell'originale. Certificati e chiavi solo nelle variabili di Railway, mai nel repository | P2 · collegamento mancante | Una carta di prova si aggiunge a Google Wallet e ad Apple Wallet e si aggiorna dopo un accredito |
 | DAT-003 | Growth e Fidelity → dati esistenti | Le app originali **non sono ancora usate da nessuno** [R] | Nessun dato vero da salvare | **Nessuna importazione necessaria.** Prima di spegnere le originali, controllo veloce che non contengano dati da tenere (solo conteggi, senza copiarli) | P3 · semplificata dalla decisione D-11 | Conteggi verificati prima dello spegnimento |
+
+### Fidelity: lavoro da fare (da non esaminare ora) [R]
+
+Il proprietario non vuole guardare Fidelity adesso, ma va messo in lista per Codex:
+1. **Confronto con l'originale** `lol-afk23456/Fidelity`, in sola lettura, funzione per funzione rispetto a `research/FIDELITY-INVENTARIO.md`. Riportare in BigAnt OS quello che manca. L'accesso al repository va autorizzato dal proprietario: in questa sessione è stato bloccato.
+2. **Collaudo completo sul server reale** (FUN-051), lato amministrazione e lato iscritto, anche da telefono con lo scanner.
+3. **Google Wallet e Apple Wallet** (COL-006).
+4. **Nessuna importazione di dati**: l'originale non è usato da nessuno (D-11). Poi si spegne l'originale.
+5. Fidelity diventa un **prodotto** nel gruppo "Prodotti" (FUN-049) e si attiva per cliente come servizio (FUN-041).
+
+---
+
+## 9. Ufficio virtuale e Sciame di agenti
+
+### Cosa contengono oggi [C]
+
+- **Ufficio virtuale** (`public/ufficio.js`): gli agenti al lavoro **in tempo reale**, stanza per stanza, con il testo che scrivono in diretta.
+- **Sciame di agenti** (`public/app.js`, vista agenti):
+  - i 32 agenti per reparto;
+  - **"Giri dell'attività"**: lo **storico delle esecuzioni** degli agenti per il cliente selezionato (agente, quando, stato, esito, "Leggi elaborato");
+  - **"Automatismi pianificati"**: le **regole che fanno partire gli agenti da sole** a orari fissi (calendari) o dopo un evento;
+  - **"Budget del pilota"**: il tetto mensile di spesa condiviso da tutti i reparti;
+  - **"Attività dei moduli collegati"**: la **coda dei lavori di Growth e Fidelity** (ricerche, analisi, aggiornamenti delle tessere). Non riguarda la configurazione degli agenti.
+
+**Stato reale degli agenti:**
+- Dei 32 agenti, tutti hanno una **procedura base senza AI**, cioè regole fisse.
+- Solo **11** hanno anche le istruzioni per lavorare con l'AI (`.claude/agents/`, sciame in `src/sciame/`), provate in locale.
+- Sul server reale **nessun agente usa l'AI**, perché la chiave non è impostata.
+- **Nell'interfaccia non c'è modo di configurare un agente** né di vedere se è configurato.
+
+### Giudizio del proprietario [R]
+
+- Ufficio virtuale e Sciame sono **la stessa cosa vista da due lati**: l'Ufficio è il **davanti**, la vista dal vivo che **piace tantissimo**; lo Sciame è il **dietro**, l'elenco e la configurazione.
+- Gli agenti vanno configurati con l'AI **uno alla volta**, e deve essere chiaro **quale è configurato e quale no**, così da usare solo quelli attivi.
+- "Giri dell'attività" e "Automatismi pianificati" non si capiscono; gli automatismi sono da eliminare.
+- Il "Budget del pilota" piace.
+
+### Voci
+
+| ID | Pagina / percorso | Problema osservato | Conseguenza per l'utente | Modifica proposta | Priorità | Come verificare che sia risolto |
+|---|---|---|---|---|---|---|
+| FUN-052 | Ufficio virtuale + Sciame di agenti | Due voci per la stessa materia, davanti e dietro [R] | Doppione nel menu | **Una sola voce "Sciame di agenti"** con schede (PRINC-01): **Ufficio** (dal vivo, la prima scheda) · **Agenti** (elenco e configurazione) · **Da approvare** (FUN-048) · **Storico** · **Budget**. In testa il riquadro "cabina di regia" (UI-008) | P2 · proposta, da confermare | Una sola voce nel menu; l'Ufficio si apre per primo |
+| UI-011 | Ufficio virtuale | Piace tantissimo [R] | — | **Conservare** l'aspetto e la diretta così come sono | P2 · da conservare | Nessuna regressione dell'Ufficio dopo il riordino |
+| FUN-053 | Sciame → Agenti | Non si vede quali agenti sono configurati e non c'è modo di configurarli [R] [C] | Non si sa quali agenti usare | Per ogni agente uno **stato chiaro**: **Da configurare** → **Base** (procedura senza AI) → **AI pronta** (istruzioni, fonti, prova superata) → **Attivo** (usato nel lavoro vero). Una **scheda di configurazione** per agente: compito, servizio a cui serve, istruzioni, fonti di dati, controllo qualità, costo stimato, "quando lavora". Si usano solo gli agenti **Attivi** | P1 · nuova funzione | L'elenco mostra lo stato di ciascun agente; un agente non Attivo non parte nel lavoro vero |
+| FUN-054 | Sciame → ordine dei lavori | Il proprietario si chiede se analizzare gli agenti ora o prima sistemare la struttura [R] | — | Raccomandazione: **prima la struttura** (menu, schede, scheda cliente, stati degli agenti), **poi si configurano gli agenti uno alla volta**, partendo da quelli che servono ai **servizi già attivi** (Piano di attivazione, FUN-014) e alla ricerca clienti di Growth (COL-005). Ogni agente si analizza quando arriva il suo turno | P1 · proposta | Esiste un ordine di configurazione scritto, legato ai servizi |
+| UI-012 | Sciame → "Giri dell'attività" | Non si capisce cosa sia [R]. È lo storico delle esecuzioni [C] | Nome oscuro | Rinominare **"Storico"**: cosa ha fatto ogni agente, quando, con quale esito, con il collegamento al risultato | P2 · difetto di testo | Il nome si capisce senza spiegazioni |
+| FUN-055 | Sciame → "Automatismi pianificati" | Da eliminare [R]. Sono le regole che fanno partire gli agenti da soli [C] | Pannello incomprensibile, e gli automatismi lanciano lavoro senza che nessuno lo chieda | Togliere il pannello. La regola "quando lavora" diventa un campo della **configurazione del singolo agente** (FUN-053), disattivato finché l'agente non è **Attivo** e i soci non lo autorizzano | P2 · decisa | Nessun pannello di automatismi; nessun agente parte da solo se non è Attivo e autorizzato |
+| FUN-056 | Sciame → "Budget del pilota" | Piace: è il budget dello sciame [R] | — | **Tenere** come scheda **Budget**: tetto mensile, speso, costo per agente | P2 · da conservare | Il budget mostra speso e tetto aggiornati |
+| FUN-057 | Sciame → "Attività dei moduli collegati" | Non si capisce [R]. È la coda dei lavori di Growth e Fidelity, non la configurazione degli agenti [C] | Informazione nel posto sbagliato | Spostare in **Growth** e in **Fidelity**, ciascuno con la propria coda (FUN-049) | P3 · proposta | La coda di Growth si vede in Growth, quella di Fidelity in Fidelity |
 
 ---
 

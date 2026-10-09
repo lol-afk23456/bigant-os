@@ -155,6 +155,20 @@ Per provare la **modalità reale** in locale: `tests/modalita-reale.test.js` mos
 - Proposta da discutere: da 16 a 7 destinazioni (Panoramica, Clienti, Lavoro, Crescita, Sciame AI, Amministrazione, Sistema), con *Vista cliente* che diventa un pulsante nella scheda del cliente.
 - **Flusso di lavoro:** il proprietario annota le note mentre usa il server, poi preme «Copia elenco» e incolla il testo a Codex. Codex raggruppa le note per le 7 destinazioni e propone un piano: **nessuna modifica al codice prima dell'ok dei soci**.
 
+## 9-bis. Mappatura con il proprietario e lavoro su Growth e Fidelity
+
+**Il piano di lavoro sull'interfaccia è `docs/MAPPATURA-MIGLIORIE.md`**, aggiornato con il proprietario pagina per pagina: voci UI/FUN/DAT/COL, decisioni D-xx, principio PRINC-01. Prevale sulla proposta a 7 destinazioni della sezione 9.
+
+**Growth e Fidelity girano dentro BigAnt OS**: il codice è stato copiato, non è un collegamento alle app originali. Le app originali non sono usate da nessuno (D-11): niente dati da importare. Si spengono dopo il collaudo.
+
+**Fidelity, da fare (prima di Growth, D-12):**
+1. Leggere in sola lettura l'originale `lol-afk23456/Fidelity` e confrontarlo funzione per funzione con `research/FIDELITY-INVENTARIO.md` e con `src/fidelity*.js`. Riportare quello che manca. L'accesso al repository va chiesto al proprietario.
+2. Collaudo completo sul server reale, lato amministrazione e lato iscritto, anche da telefono con lo scanner (FUN-051).
+3. Google Wallet, poi Apple Wallet (COL-006). Certificati e chiavi solo nelle variabili di Railway.
+4. Spegnere l'originale dopo il collaudo, con un controllo dei conteggi (DAT-003).
+
+**Growth, da fare dopo:** riportare da `lol-afk23456/bigant-growth` (revisione `cfd4b0b`, `lib/providers.js`) le sei famiglie di collegamenti oggi simulate: ricerca Brave, lettura dei siti, AI, accesso Google, Gmail, Calendar. Accenderle a fasi come da COL-005, con chiavi cifrate nel database e tetto di spesa. Fornitore AI: decisione D-14.
+
 ## 10. Regole che Codex deve rispettare
 
 - Lavorare solo su `bigant-os-notte-1`. **Mai** merge su `main`, **mai** force push. La PR [lol-afk23456/bigant-os#1](https://github.com/lol-afk23456/bigant-os/pull/1) la unisce solo il proprietario.
