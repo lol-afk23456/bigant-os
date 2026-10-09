@@ -1,6 +1,6 @@
 # BigAnt OS — regole per gli agenti
 
-**Punto di partenza (9 ottobre 2026): `docs/PASSAGGIO-CODEX.md`** — accessi, server reale su Railway, stato, priorità e regole. **Piano di riordino dell'interfaccia: `docs/PIANO-RIORDINO-CODEX.md`** (voci in `docs/MAPPATURA-MIGLIORIE.md`).
+**Punto di partenza (9 ottobre 2026): `docs/PASSAGGIO-CODEX.md`** — accessi, server reale su Railway, stato, priorità e regole. **Documento unico per Codex: `docs/MAPPATURA-FINALE-CODEX.md`**; ordine di esecuzione in `docs/PIANO-RIORDINO-CODEX.md`; dettaglio in `docs/MAPPATURA-MIGLIORIE.md`.
 
 Prima di ogni sessione rileggere `docs/BRIEF-BIGANT.md`, `docs/VERIFICA-COPERTURA-BRIEF.md` e `docs/PASSAGGIO-CONSEGNE.md`. Il brief esteso è conservato integralmente; la matrice storica non ne misura ancora tutto il perimetro. Per proseguire usare il ramo remoto, senza forzare la storia locale.
 
