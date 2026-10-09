@@ -384,7 +384,8 @@ export function createFidelityModule({ store: s, origin = 'http://127.0.0.1:4330
     for (const c of s.query("SELECT id FROM fi_campaigns WHERE tenant_id=? AND status='draft' AND scheduled_at IS NOT NULL AND scheduled_at<=?", t, now())) results.push(prepareCampaign(t, c.id, u));
     return { simulated: true, externalSent: 0, prepared: results, costCents: 0 };
   }
-  function seed() {
+  function seed(realMode=false) {
+    if (realMode) return;
     s.transaction(() => {
       if (!s.one('SELECT id FROM os_clients WHERE id=?', 'demo-bottega')) return;
       for (const [id, t, type, name, threshold] of [

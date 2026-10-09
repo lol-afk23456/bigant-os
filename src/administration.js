@@ -364,7 +364,8 @@ export function createAdministrationModule({store:s,clock=()=>new Date()}) {
       return null;
     }); return {data,status:201};
   }
-  function seed() {
+  function seed(realMode=false) {
+    if (realMode) return;
     s.transaction(()=>{
       for(const e of [['demo-entity-a','Ditta Creativa A DEMO'],['demo-entity-b','Ditta Video B DEMO']]) s.run('INSERT OR IGNORE INTO os_fin_entities(id,name) VALUES(?,?)',...e);
       const day=today(),start=day.slice(0,4)+'-01-01';

@@ -60,6 +60,17 @@ export function canAccessClient(store,user,clientId) {
 }
 export function requireClient(store,user,clientId) { if(!canAccessClient(store,user,clientId)) throw new AppError('Attività non accessibile.',403); }
 export function requireOwner(user) { if(user?.role!=='owner'||user.active===0||user.active===false) throw new AppError('Area riservata ai soci BigAnt.',403); }
+export function seedRealCore(s,{socioEmail,socioPassword}={}) {
+  if(!socioEmail||!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(socioEmail)) throw new Error('BIGANT_SOCIO_EMAIL mancante o non valida.');
+  if(typeof socioPassword!=='string'||socioPassword.length<14||socioPassword.length>256) throw new Error('BIGANT_SOCIO_PASSWORD_INIZIALE mancante o troppo corta (minimo 14 caratteri).');
+  s.transaction(()=>{
+    s.run('INSERT OR IGNORE INTO os_clients(id,name,slug,industry,services_json,created_at) VALUES(?,?,?,?,?,?)','demo-bigant','BigAnt','bigant','Agenzia',JSON.stringify(['growth','social','video','ads','local','seo','fidelity']),now());
+    s.run('INSERT OR IGNORE INTO os_users(id,name,email,role,created_at) VALUES(?,?,?,?,?)','os-orchestrator','Orchestratore','orchestratore@sistema.interno','owner',now());
+    const existing=s.one('SELECT id FROM os_users WHERE email=?',socioEmail.toLowerCase());
+    if(!existing) s.run('INSERT INTO os_users(id,tenant_id,name,email,password_hash,role,created_at) VALUES(?,?,?,?,?,?,?)',uid(),null,'Socio',socioEmail.toLowerCase(),passwordHash(socioPassword),'owner',now());
+    if(!s.one('SELECT id FROM os_memory WHERE client_id=? AND kind=?','demo-bigant','master')) s.run('INSERT OR IGNORE INTO os_memory VALUES(?,?,?,?,?,?,?,?)',uid(),'demo-bigant','master','# BigAnt\n\nSpazio di lavoro reale dell\'agenzia. Nessun dato di esempio.','internal',1,'Avvio server reale',now());
+  });
+}
 export function seedCore(s) {
   s.transaction(()=>{
     for(const c of [

@@ -40,7 +40,8 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330' }) 
       auditSource: 'Registro attività centrale OS',
     };
   }
-  function seed() {
+  function seed(realMode=false) {
+    if (realMode) return;
     if (!store.one('SELECT id FROM os_clients WHERE id=?', 'demo-bigant')) return;
     s.workspace('demo-bigant');
     if (!s.one('SELECT 1 FROM leads WHERE workspace=?', 'demo-bigant')) {
