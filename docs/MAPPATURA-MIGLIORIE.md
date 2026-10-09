@@ -29,7 +29,8 @@ Sessione di mappatura con il proprietario (Raffaele), iniziata il 9 ottobre 2026
 | Lavori e contenuti | Esaminata [R] [C] |
 | Growth (e verifica del trasferimento di Fidelity sugli inventari) | Esaminata [R] [C]; Growth confrontato con il codice originale; Fidelity originale non ancora letto (accesso al repository bloccato dal controllo di sicurezza della sessione) |
 | Ufficio virtuale e Sciame di agenti | Esaminata [R] [C] |
-| Fidelity (interfaccia, rinviata dal proprietario), Approvazioni, Registro attività, Servizi, Collegamenti, Accessi | Da esaminare |
+| Registro attività, Servizi | Esaminate [R] [C] |
+| Fidelity (interfaccia, rinviata dal proprietario), Approvazioni, Collegamenti, Accessi | Da esaminare |
 | Vista collaboratore | Da esaminare |
 | Vista cliente con un vero login da cliente | Rinviata: il proprietario la controllerà entrando con le credenziali del cliente (FUN-045) |
 | Uso da telefono | Da esaminare |
@@ -463,7 +464,7 @@ Il proprietario non vuole guardare Fidelity adesso, ma va messo in lista per Cod
 
 | ID | Pagina / percorso | Problema osservato | Conseguenza per l'utente | Modifica proposta | Priorità | Come verificare che sia risolto |
 |---|---|---|---|---|---|---|
-| FUN-052 | Ufficio virtuale + Sciame di agenti | Due voci per la stessa materia, davanti e dietro [R] | Doppione nel menu | **Una sola voce "Sciame di agenti"** con schede (PRINC-01): **Ufficio** (dal vivo, la prima scheda) · **Agenti** (elenco e configurazione) · **Da approvare** (FUN-048) · **Storico** · **Budget**. In testa il riquadro "cabina di regia" (UI-008) | P2 · proposta, da confermare | Una sola voce nel menu; l'Ufficio si apre per primo |
+| FUN-052 | Ufficio virtuale + Sciame di agenti | Due voci per la stessa materia, davanti e dietro [R]. **Confermata [R]** | Doppione nel menu | **Una sola voce "Sciame di agenti"** con schede (PRINC-01): **Ufficio** (dal vivo, la prima scheda) · **Agenti** (elenco e configurazione) · **Da approvare** (FUN-048) · **Storico** · **Budget**. In testa il riquadro "cabina di regia" (UI-008) | P2 · decisa | Una sola voce nel menu; l'Ufficio si apre per primo |
 | UI-011 | Ufficio virtuale | Piace tantissimo [R] | — | **Conservare** l'aspetto e la diretta così come sono | P2 · da conservare | Nessuna regressione dell'Ufficio dopo il riordino |
 | FUN-053 | Sciame → Agenti | Non si vede quali agenti sono configurati e non c'è modo di configurarli [R] [C] | Non si sa quali agenti usare | Per ogni agente uno **stato chiaro**: **Da configurare** → **Base** (procedura senza AI) → **AI pronta** (istruzioni, fonti, prova superata) → **Attivo** (usato nel lavoro vero). Una **scheda di configurazione** per agente: compito, servizio a cui serve, istruzioni, fonti di dati, controllo qualità, costo stimato, "quando lavora". Si usano solo gli agenti **Attivi** | P1 · nuova funzione | L'elenco mostra lo stato di ciascun agente; un agente non Attivo non parte nel lavoro vero |
 | FUN-054 | Sciame → ordine dei lavori | Il proprietario si chiede se analizzare gli agenti ora o prima sistemare la struttura [R] | — | Raccomandazione: **prima la struttura** (menu, schede, scheda cliente, stati degli agenti), **poi si configurano gli agenti uno alla volta**, partendo da quelli che servono ai **servizi già attivi** (Piano di attivazione, FUN-014) e alla ricerca clienti di Growth (COL-005). Ogni agente si analizza quando arriva il suo turno | P1 · proposta | Esiste un ordine di configurazione scritto, legato ai servizi |
@@ -471,6 +472,36 @@ Il proprietario non vuole guardare Fidelity adesso, ma va messo in lista per Cod
 | FUN-055 | Sciame → "Automatismi pianificati" | Da eliminare [R]. Sono le regole che fanno partire gli agenti da soli [C] | Pannello incomprensibile, e gli automatismi lanciano lavoro senza che nessuno lo chieda | Togliere il pannello. La regola "quando lavora" diventa un campo della **configurazione del singolo agente** (FUN-053), disattivato finché l'agente non è **Attivo** e i soci non lo autorizzano | P2 · decisa | Nessun pannello di automatismi; nessun agente parte da solo se non è Attivo e autorizzato |
 | FUN-056 | Sciame → "Budget del pilota" | Piace: è il budget dello sciame [R] | — | **Tenere** come scheda **Budget**: tetto mensile, speso, costo per agente | P2 · da conservare | Il budget mostra speso e tetto aggiornati |
 | FUN-057 | Sciame → "Attività dei moduli collegati" | Non si capisce [R]. È la coda dei lavori di Growth e Fidelity, non la configurazione degli agenti [C] | Informazione nel posto sbagliato | Spostare in **Growth** e in **Fidelity**, ciascuno con la propria coda (FUN-049) | P3 · proposta | La coda di Growth si vede in Growth, quella di Fidelity in Fidelity |
+
+---
+
+## 10. Registro attività e Servizi
+
+### Registro attività [C]
+
+"Ogni azione lascia una traccia": è il **registro comune di chi ha fatto cosa** (`os_audit`). Contiene gli agenti, ma anche e soprattutto **le persone**: accessi, approvazioni, modifiche, creazione di utenti.
+
+**Decisione del proprietario [R]:** ogni agente deve avere il **proprio registro**, dentro lo Sciame / Ufficio virtuale. La voce "Registro attività" si elimina.
+
+**Nota del consulente:** il registro serve anche per la **sicurezza**, non solo per gli agenti. È lì che deve risultare chi ha visto le credenziali di un cliente (FUN-010), chi ha creato o disattivato un utente, chi ha approvato cosa. Va tolto dal menu, ma non va cancellato: deve restare consultabile dall'amministrazione.
+
+| ID | Pagina / percorso | Problema osservato | Conseguenza per l'utente | Modifica proposta | Priorità | Come verificare che sia risolto |
+|---|---|---|---|---|---|---|
+| FUN-058 | Registro attività → parte agenti | Il registro degli agenti va dentro ogni agente [R] | — | Nella scheda di ogni agente (FUN-053) e nello **Storico** dello Sciame (UI-012): cosa ha fatto, quando, con quale esito | P2 · decisa | Aprendo un agente si vede il suo registro |
+| FUN-059 | Registro attività → voce di menu | Da eliminare [R] | — | Togliere la voce dal menu di tutti i ruoli. Il **registro delle persone** (accessi, credenziali viste, utenti, approvazioni) resta, **solo per l'amministrazione**, in un'area **Avanzate / Sistema** insieme ad Accessi e Collegamenti. Non si cancella nessuna riga | P2 · decisa con riserva del consulente | La voce non è nel menu; dall'area Avanzate l'amministrazione ritrova "chi ha visto le credenziali di X" |
+
+### Servizi [C]
+
+"Tutti i servizi, con il loro spazio": il **catalogo dei 27 servizi**, ciascuno con una pagina di dettaglio (perimetro, metodo, stato "Solo struttura" o "Flusso DEMO parziale", lavoro condiviso). Il cliente vede solo i servizi attivi.
+
+**Giudizio del proprietario [R]:** non è chiaro quali servizi siano; probabilmente è la stessa cosa dei servizi di cui si è parlato prima (Mappa agenzia e Marketing BigAnt).
+
+| ID | Pagina / percorso | Problema osservato | Conseguenza per l'utente | Modifica proposta | Priorità | Come verificare che sia risolto |
+|---|---|---|---|---|---|---|
+| FUN-060 | Servizi | Non si capisce quali servizi siano. È il **terzo posto** che parla dei servizi, dopo "Un workspace per ogni servizio" (Mappa agenzia) e "Le aree del marketing" (Marketing BigAnt) [R] [C] | Tre pagine per lo stesso argomento | **Una sola voce "Servizi"** per l'amministrazione, che è il **Piano di attivazione dei servizi** (FUN-014): elenco dei servizi BigAnt con stato (**Attivo · In preparazione · Futuro**), cosa manca per attivarlo, data obiettivo, agenti che lo seguono (stato da FUN-053) e voce di **Listino** (FUN-031). La pagina di dettaglio resta, a card (PRINC-01). Lato cliente, "Servizi" è "I tuoi servizi" con i report (FUN-036, FUN-037) | P2 · proposta, da confermare | Un solo posto spiega quali servizi offre BigAnt e a che punto è ciascuno |
+| UI-013 | Servizi | Avviso «Le schede descrivono il perimetro. "Solo struttura" significa…» [C] | Linguaggio tecnico | Sostituire con i tre stati semplici del Piano di attivazione (UI-004) | P2 · difetto di testo | Nessun avviso tecnico nella pagina |
+
+**Approvazioni:** non ancora esaminata (il giro è passato da Sciame a Registro). Da riprendere.
 
 ---
 
