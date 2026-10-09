@@ -26,7 +26,8 @@ Sessione di mappatura con il proprietario (Raffaele), iniziata il 9 ottobre 2026
 | Direzione | Esaminata [R] [C] |
 | Amministrazione | Esaminata [R] [C]; bacheca Trello Fatturazione letta in sola lettura (solo struttura) |
 | Clienti (elenco, nuova attività, apri attività) e vista cliente (tutte le sezioni) | Esaminata [R] [C] |
-| Lavori e contenuti, Growth, Fidelity, Ufficio virtuale, Sciame di agenti, Approvazioni, Registro attività, Servizi, Collegamenti, Accessi | Da esaminare |
+| Lavori e contenuti | Esaminata [R] [C] |
+| Growth, Fidelity, Ufficio virtuale, Sciame di agenti, Approvazioni, Registro attività, Servizi, Collegamenti, Accessi | Da esaminare |
 | Vista collaboratore | Da esaminare |
 | Vista cliente con un vero login da cliente | Rinviata: il proprietario la controllerà entrando con le credenziali del cliente (FUN-045) |
 | Uso da telefono | Da esaminare |
@@ -337,6 +338,26 @@ Le card dei clienti e la creazione di una nuova attività piacciono. Non va bene
 
 ---
 
+## 7. Lavori e contenuti
+
+### Cosa contiene oggi [C]
+
+Lavori (task) e contenuti (piano editoriale, versioni, approvazioni) dell'attività selezionata. È la **pagina d'ingresso del collaboratore** (`S.view=…'work'`) ed è presente anche nel menu del cliente. Le bozze dello sciame (per esempio quelle Social) finiscono nei contenuti e da lì nelle approvazioni (`src/agents/outputs.js`, `src/sciame/index.js`).
+
+### Decisione del proprietario [R]
+
+**Eliminare.** Non se ne capisce il senso. I task si gestiscono su **Trello** (D-03) e il piano editoriale sul **PED** (COL-004).
+
+### Voci
+
+| ID | Pagina / percorso | Problema osservato | Conseguenza per l'utente | Modifica proposta | Priorità | Come verificare che sia risolto |
+|---|---|---|---|---|---|---|
+| FUN-046 | Lavori e contenuti | Doppione di Trello (task) e del PED (piano editoriale) [R] | Tre posti per la stessa cosa | **Togliere la voce** dai menu di amministrazione, collaboratore e cliente. Il codice resta (D-05) perché ci si appoggiano lo sciame e le approvazioni | P2 · decisa | La voce non compare in nessun menu; sciame e approvazioni funzionano ancora (test verdi) |
+| FUN-047 | Collaboratore → pagina d'ingresso | Oggi il collaboratore entra proprio su *Lavori e contenuti* [C] | Tolta la voce, il collaboratore non ha più una pagina d'ingresso sensata | La **home del collaboratore** (FUN-002) va ripensata senza task e senza piano editoriale: per esempio clienti assegnati, accessi e scheda informativa dei clienti, approvazioni. Da decidere a fine giro, insieme al menu del collaboratore | P1 · conseguenza da risolvere | Il collaboratore entra su una home utile senza passare da *Lavori e contenuti* |
+| FUN-048 | Bozze dello sciame | Le bozze degli agenti (per esempio Social) oggi passano dai contenuti [C] | Senza *Lavori e contenuti* serve un altro posto dove vederle | Le bozze degli agenti si vedono e si approvano in **Approvazioni** (e in futuro passano al PED, COL-004). Da verificare analizzando *Sciame* e *Approvazioni* | P2 · [DV] | Una bozza prodotta da un agente compare in Approvazioni senza passare da *Lavori e contenuti* |
+
+---
+
 ## Decisioni che spettano ai soci
 
 | ID | Decisione | Contesto |
@@ -346,7 +367,7 @@ Le card dei clienti e la creazione di una nuova attività piacciono. Non va bene
 | D-06 | Nome della nuova sezione dei profili | **DECISA [R]:** "Profili" (per il cliente: "I tuoi profili") |
 | D-07 | Aggiornamento dei dati dei profili | **DECISA [R]:** una volta al giorno più "Aggiorna ora" |
 | D-09 | Registro ufficiale di incassi, canoni e saldi: Trello (bacheca Fatturazione) o BigAnt OS? | **DECISA [R]: per ora resta Trello.** Percorso futuro: **finché la Fatturazione resta in secondo piano, Trello è il registro ufficiale**. BigAnt OS lo sostituisce solo quando il tracker (FUN-028) è collaudato, con un'importazione una tantum e un mese di prova in parallelo |
-| D-10 | Fatture e pagamenti visibili al cliente (FUN-039), visto che il registro ufficiale resta Trello (D-09) | Proposta: per ora il cliente vede **solo il contratto**; fatture e pagamenti quando la Fatturazione di BigAnt OS diventerà il registro ufficiale |
+| D-10 | Fatture e pagamenti visibili al cliente (FUN-039), visto che il registro ufficiale resta Trello (D-09) | **DECISA [R]:** per ora il cliente vede **solo il contratto**; fatture e pagamenti quando la Fatturazione di BigAnt OS diventerà il registro ufficiale |
 | D-08 | Riquadro "obiettivo di fatturato" nella home dell'amministrazione | **DECISA [R]:** non si fa |
 | D-03 | Task e consegne: Trello o BigAnt OS? | **DECISA [R]:** si resta su Trello; il collegamento si valuta in futuro (COL-001) |
 | D-04 | Documenti e autorizzazioni: servono in BigAnt OS? | Proposta minima: solo contratti e liberatorie nella scheda cliente |
