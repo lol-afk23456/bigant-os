@@ -56,7 +56,7 @@ Per ora servono **tre tipi di accesso**:
 
 ### Proposta di home per ruolo (da validare con i soci)
 
-**Amministrazione: funzionale, "cosa richiede attenzione oggi"**
+**Amministrazione: funzionale, "cosa richiede attenzione oggi"** · [DV] da rivedere a fine giro: dopo le decisioni D-03 e FUN-021 (rischi e decisioni restano su Trello, soldi in Fatturazione) i punti 2 e 5 vanno probabilmente tolti
 1. Da approvare: numero e collegamento diretto alla coda.
 2. Lavori in ritardo o in scadenza questa settimana.
 3. Clienti: attivi, con problemi, in rinnovo.
@@ -203,7 +203,7 @@ Il riquadro "cabina di regia" è **bello, anche esteticamente**. Il resto della 
 
 La pagina mescola due cose diverse:
 1. **La regia degli agenti** (cabina di regia, "assegna il prossimo passo agli agenti", priorità del Direttore): è materia dello Sciame. Qui il proprietario ha ragione.
-2. **Le sei domande e "Serve il tuo sguardo"**: non riguardano gli agenti, ma la gestione dell'agenzia (soldi, clienti a rischio, contratti, decisioni). Sono esattamente il contenuto previsto per la **home dell'amministrazione** (FUN-002). Non vanno buttate: vanno spostate lì, tranne i soldi (in Fatturazione) e il sovraccarico (tolto).
+2. **Le sei domande e "Serve il tuo sguardo"**: non riguardano gli agenti, ma la gestione dell'agenzia (soldi, clienti a rischio, contratti, decisioni). Il consulente proponeva di portarle nella home dell'amministrazione; **la decisione del proprietario** (FUN-021) le distribuisce invece tra Fatturazione, Trello e la pagina *Clienti*.
 
 ### Voci
 
@@ -213,7 +213,8 @@ La pagina mescola due cose diverse:
 | UI-008 | Direzione → "La tua cabina di regia" | Piace, anche esteticamente [R] | — | **Conservare lo stile** di questo riquadro come riferimento grafico: in testa a *Sciame di agenti* e come modello per la testata delle home (FUN-002) | P2 · da conservare | Il riquadro esiste in Sciame di agenti, con lo stesso aspetto |
 | FUN-019 | Direzione → cabina di regia, "Esplora lo sciame", priorità del Direttore | Riguardano gli agenti [R] | — | Spostare in **Sciame di agenti** | P2 · decisa | Questi blocchi si trovano solo in Sciame di agenti |
 | FUN-020 | Direzione → quattro numeri (attività nel sistema, lavori in corso, decisioni in attesa, cassa registrata) | Inutili qui [R] | Numeri senza azione collegata | Togliere. "Decisioni in attesa" sopravvive come contatore nella home dell'amministrazione, con il collegamento alle Approvazioni | P3 · decisa | Nessuna fila di numeri senza azione |
-| FUN-021 | Direzione → "Le sei domande della settimana" | Non è chiaro a cosa servano [R] | Domande utili, ma nel posto sbagliato | Ripartizione proposta: cassa e incassi → **Fatturazione** (secondo piano, FUN-009); clienti e consegne a rischio, contratti in scadenza, decisioni da prendere → **home dell'amministrazione** (FUN-002); "chi è sovraccarico" → **tolta** (coerente con la rimozione della capacità del team) | P2 · proposta del consulente, da confermare | Ogni domanda tenuta ha una risposta nella home o in Fatturazione |
+| FUN-021 | Direzione → "Le sei domande della settimana" | Non è chiaro a cosa servano [R] | Domande utili in parte, ma nel posto sbagliato | **Decisione [R]:** cassa e incassi → **Fatturazione** (secondo piano, FUN-009); clienti e consegne a rischio → **Trello** (non in BigAnt OS, D-03); **contratti in scadenza → pagina iniziale di *Clienti*** come avviso in evidenza (FUN-023); decisioni da prendere → **Trello**, come task; "chi è sovraccarico" → **tolta** | P2 · decisa | Nessuna delle sei domande resta in una pagina a sé; i contratti in scadenza compaiono come avviso aprendo *Clienti* |
+| FUN-023 | Clienti → pagina iniziale | I contratti in scadenza devono essere visibili appena si apre l'anagrafica clienti [R] | Un rinnovo dimenticato è un cliente perso o un servizio non pagato | In cima alla pagina *Clienti*, un **avviso** con i contratti che scadono nei prossimi 30 giorni (cliente, data, collegamento alla scheda). Richiede che il contratto in scheda cliente abbia data di inizio, durata e scadenza (FUN-007) | P2 · decisa | Con un contratto che scade entro 30 giorni, aprendo *Clienti* compare l'avviso con il nome del cliente e la data |
 | FUN-022 | Sciame di agenti: chi lo vede | Lo sciame lo controlla **solo l'amministrazione**; i collaboratori vedono al massimo le cose da approvare, come i post [R] | — | Già così nel codice [C: `allowedNav()`, il collaboratore ha *Approvazioni* ma non *Sciame di agenti* né *Ufficio virtuale*]. Da mantenere e da verificare anche sul server (le rotte dello sciame devono rifiutare il collaboratore) | P2 · da verificare | Un collaboratore che chiama le rotte dello sciame riceve un rifiuto; vede i post da approvare in *Approvazioni* |
 
 ---
