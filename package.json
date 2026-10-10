@@ -19,7 +19,8 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.127.0",
+    "@zxing/browser": "0.2.1",
     "qrcode": "1.5.4",
-    "sharp": "0.34.5"
+    "sharp": "0.35.5"
   }
 }

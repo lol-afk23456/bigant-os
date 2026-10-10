@@ -10,7 +10,8 @@
       "stato": "parziale in locale",
       "prove": [
         "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
-        "Aggiunti Servizi, dettaglio servizio, Listino e Collegamenti; restano Fatturazione e prodotti."
+        "Aggiunti Servizi, dettaglio servizio, Listino e Collegamenti; restano Fatturazione e prodotti.",
+        "Fidelity riordinata in sette sezioni con Indietro; vecchio codice conservato."
       ]
     },
     {
@@ -628,8 +629,10 @@
       "area": "Fidelity → verifica del trasferimento",
       "modifica": "**Collaudo completo sul server reale**, lato amministrazione e lato iscritto: creare il programma, iscriversi dalla carta pubblica, accreditare con lo scanner (fotocamera, da telefono), riscattare, stornare, esportare. Stessa lista di prove usata in passato sull'originale",
       "criterio": "La lista di prove dell'originale passa tutta su BigAnt OS, anche da telefono",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "docs/COLLAUDO-FIDELITY-RIORDINO.md: sorgente originale verificata, 27 test dominio e 4 scanner, percorso timbri/riscatto e carta responsive. Server reale, telefono e fornitori ancora da collaudare."
+      ]
     },
     {
       "id": "COL-006",
@@ -644,8 +647,10 @@
       "area": "Fidelity → lavoro completo",
       "modifica": "Confronto con l'originale `lol-afk23456/Fidelity` (sola lettura), riporto delle parti mancanti, collaudo completo (FUN-051), Wallet (COL-006), nessuna importazione (D-11), spegnimento dell'originale. Prima di Growth (D-12)",
       "criterio": "La lista di prove dell'originale passa tutta su BigAnt OS",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "docs/COLLAUDO-FIDELITY-RIORDINO.md: sorgente originale verificata, 27 test dominio e 4 scanner, percorso timbri/riscatto e carta responsive. Server reale, telefono e fornitori ancora da collaudare."
+      ]
     },
     {
       "id": "DAT-003",
@@ -770,8 +775,10 @@
       "area": "Servizi",
       "modifica": "Sostituire con i tre stati semplici del Piano di attivazione (UI-004)",
       "criterio": "Nessun avviso tecnico nella pagina",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Piano servizi e dettaglio a card, avviso tecnico tolto dalla pagina dei soci; verifica browser locale."
+      ]
     },
     {
       "id": "FUN-061",

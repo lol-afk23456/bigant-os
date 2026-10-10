@@ -101,6 +101,8 @@ ${script(app)}
 ${script(readFileSync(resolve(root,'public/ufficio.js'),'utf8'))}
 ${script(readFileSync(resolve(root,'public/cliente.js'),'utf8'))}
 ${script(readFileSync(resolve(root,'public/workspace.js'),'utf8'))}
+${script(readFileSync(resolve(root,'node_modules/@zxing/browser/umd/zxing-browser.min.js'),'utf8'))}
+${script(readFileSync(resolve(root,'public/fidelity-scanner.js'),'utf8'))}
 ${script(`(async()=>{
  try{
   const b=atob(${JSON.stringify(logo)}),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);

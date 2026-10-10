@@ -179,6 +179,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
         throw new AppError('Funzione non trovata.',404);
       }
       if(method==='GET'||method==='HEAD'){
+        if(path==='/vendor/zxing-browser.min.js'){const bytes=readFileSync(resolve(root,'node_modules/@zxing/browser/umd/zxing-browser.min.js'));res.writeHead(200,{'Content-Type':'text/javascript; charset=utf-8','Cache-Control':'no-cache'});return res.end(method==='HEAD'?undefined:bytes);}
         if(Object.hasOwn(brandAssets,path)){
           const asset=brandAssets[path],bytes=decodeBrandAsset(readFileSync(resolve(root,'public/brand',asset.file),'utf8'),asset.sha256);
           res.writeHead(200,{'Content-Type':'image/png','Content-Length':bytes.length,'Cache-Control':'no-store'});return res.end(method==='HEAD'?undefined:bytes);

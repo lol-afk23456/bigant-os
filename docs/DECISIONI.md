@@ -103,3 +103,7 @@ Predisporre Anthropic e OpenAI come confermato in chat. Nessuna scelta automatic
 ### Riordino 10 ottobre — Piano e Listino
 
 Applicata la conferma FUN-060: Piano e Listino in Servizi. Gli stati iniziali provengono dalle schede del playbook e sono da validare; date e prossimi passi restano ai soci. I 27 spazi tecnici esistenti non sono cancellati. Custodia dei collegamenti predisposta senza attivare fornitori: la verifica locale non certifica credenziali valide presso terzi.
+
+### Riordino Fidelity — 10 ottobre
+
+Confermata la priorità D-12: Fidelity prima di Growth. Riutilizzata la famiglia di lettore QR dell’originale (ZXing), servita localmente. Nessuna riattivazione implicita di Wallet o campagne; la prova responsive non sostituisce quella del telefono.
