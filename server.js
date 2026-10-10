@@ -2,6 +2,7 @@ import http from 'node:http';
 import QRCode from 'qrcode';
 import {safePath} from './scripts/backup.js';
 import {createBackupScheduler} from './src/backups.js';
+import {createBilling} from './src/billing.js';
 import {createConnections} from './src/connections.js';
 import {createServicePlan} from './src/service-plan.js';
 import {createAgentConfig} from './src/agent-config.js';
@@ -58,6 +59,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const connections=createConnections({store,env});
   const workspace=createWorkspace({store,clock,budget:()=>orchestrator.budget(),expiring:records.expiring,agentConfig,connections});
   const servicePlan=createServicePlan({store,agentConfig});
+  const billing=createBilling({store,administration});
   const limits=new Map();
   function rate(key,max=120,window=60000) {let l=limits.get(key);if(!l||l.until<Date.now()){l={count:0,until:Date.now()+window};limits.set(key,l);}if(++l.count>max)throw new AppError('Troppe richieste: riprova tra poco.',429);if(limits.size>10000)for(const[k,v]of limits)if(v.until<Date.now())limits.delete(k);}
   function session(req) {const token=(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('bigant_os='))?.slice(10);if(!token)return null;return store.one('SELECT u.id,u.name,u.email,u.role,u.tenant_id,u.active,u.must_change_password,s.csrf,s.id session_id FROM os_sessions s JOIN os_users u ON u.id=s.user_id WHERE s.id=? AND s.expires_at>? AND u.active=1',digest(token),Date.now());}
@@ -131,6 +133,8 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
         if(u.must_change_password)throw new AppError('Cambia la password provvisoria prima di continuare.',403);
         const clientId=clientFrom(url,u,{optional:method==='GET'&&['/api/overview','/api/clients','/api/workspace/home','/api/workspace/approvals','/api/workspace/contracts'].includes(path)});
         const b=['GET','HEAD'].includes(method)?{}:await body(req);
+        if(path==='/api/billing/state'&&method==='GET')return json(res,billing.state(u));
+        const billingMatch=path.match(/^\/api\/billing\/tracker\/([^/]+)$/);if(billingMatch&&method==='PATCH')return json(res,billing.label(u,billingMatch[1],b));
         if(path==='/api/connections'&&method==='GET')return json(res,connections.state(u));
         const connectionMatch=path.match(/^\/api\/connections\/([^/]+)(\/check)?$/);if(connectionMatch&&method==='POST')return json(res,connectionMatch[2]?connections.check(u,connectionMatch[1]):connections.save(u,connectionMatch[1],b));
         if(path==='/api/service-plan'&&method==='GET')return json(res,servicePlan.state(u));
@@ -197,7 +201,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const backups=realMode&&worker&&database!==':memory:'?createBackupScheduler({store,sourcePath:database,env,clock}):null;
   let workerError=null;
   const timer=worker?setInterval(()=>orchestrator.tick().then(()=>{workerError=null;}).catch(()=>{workerError='Controllo delle automazioni da verificare.';}),2000):null;timer?.unref();
-  return {server,store,connections,servicePlan,agentConfig,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);await backups?.close();if(server.listening)await new Promise(r=>server.close(r));store.close();}};
+  return {server,store,billing,connections,servicePlan,agentConfig,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);await backups?.close();if(server.listening)await new Promise(r=>server.close(r));store.close();}};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const modalitaReale=process.env.BIGANT_MODALITA==='reale';

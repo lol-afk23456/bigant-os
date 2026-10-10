@@ -11,7 +11,8 @@
       "prove": [
         "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
         "Aggiunti Servizi, dettaglio servizio, Listino e Collegamenti; restano Fatturazione e prodotti.",
-        "Fidelity riordinata in sette sezioni con Indietro; vecchio codice conservato."
+        "Fidelity riordinata in sette sezioni con Indietro; vecchio codice conservato.",
+        "Fatturazione riordinata in quattro card e Costi in tre sottosezioni. Growth resta da riordinare."
       ]
     },
     {
@@ -163,8 +164,10 @@
       "area": "Nuova voce di menu: **Fatturazione**",
       "modifica": "Una sola sezione **Fatturazione**, visibile **solo all'accesso amministrazione**, **ultima voce del menu**, in secondo piano. Raccoglie cassa, prima nota, fatture, incassi, saldo per cliente, costi e abbonamenti. Prima schermata: saldo per cliente e abbonamenti in scadenza",
       "criterio": "Collaboratore e cliente non vedono la voce né i dati (verifica sul server, non solo nel menu); l'amministrazione la trova in fondo al menu",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
     },
     {
       "id": "COL-001",
@@ -340,64 +343,80 @@
       "area": "Amministrazione",
       "modifica": "La voce **Amministrazione diventa Fatturazione**: una sola voce, solo amministrazione, ultima del menu",
       "criterio": "Esiste una sola voce per soldi e costi",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
     },
     {
       "id": "FUN-025",
       "area": "Amministrazione → Incassi del mese, Arretrati",
       "modifica": "**Tenere** come numeri principali in testa alla Fatturazione",
       "criterio": "I due numeri sono la prima cosa visibile in Fatturazione",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
     },
     {
       "id": "UI-009",
       "area": "Amministrazione → \"Bozze da emettere\"",
       "modifica": "Rinominare **\"Da fatturare\"**: lavori e canoni conclusi senza fattura emessa. Le fatture vere restano su Aruba (COL-003)",
       "criterio": "Il nome descrive cosa contiene senza bisogno di spiegazioni",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
     },
     {
       "id": "FUN-026",
       "area": "Amministrazione → \"Cosa non torna\", \"Conti e quadrature\", \"Storico delle quadrature\", \"Ore attribuite\", \"Ore e margini gestionali\"",
       "modifica": "Togliere dalla vista",
       "criterio": "I pannelli non compaiono",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
     },
     {
       "id": "FUN-027",
       "area": "Amministrazione → Prima nota, Cassa a 30/60/90 giorni",
       "modifica": "**Prima nota** con, in testa, la previsione di cassa a 30, 60 e 90 giorni",
       "criterio": "Un solo pannello mostra movimenti e previsione",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
     },
     {
       "id": "FUN-028",
       "area": "Amministrazione → \"Documenti e incassi\", \"Contributo di cassa per cliente\"",
       "modifica": "**Tracker incassi** con le stesse categorie della bacheca Trello: canoni ricorrenti (fatturati e non), hosting e canoni annuali, siti, foto e video, promozionale, gestione social a pacchetto, forniture con saldo residuo e prelievi. Per ogni voce: cliente, importo, metodo, scadenza, pagato sì/no, ditta che fattura. Per ogni cliente il totale incassato (ex \"contributo di cassa\")",
       "criterio": "Ogni categoria della bacheca Trello ha il suo corrispettivo e il saldo per cliente torna con quello della bacheca",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Categorie, residui, metodi, ditte e totale per cliente verificati su dati inventati. Collegamento e confronto con Trello da fare."
+      ]
     },
     {
       "id": "FUN-029",
       "area": "Amministrazione → \"Scadenze e compensi\"",
       "modifica": "Pannello **Compensi collaboratori**: persona, mese, lavoro, importo, pagato sì/no. Sta nella stessa area di **Costi e abbonamenti**",
       "criterio": "Si registra il compenso del mese di un collaboratore e risulta nel totale dei costi del mese",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
     },
     {
       "id": "FUN-030",
       "area": "Amministrazione → Abbonamenti",
       "modifica": "**Un solo pannello \"Costi e abbonamenti\"** in Fatturazione, insieme ai compensi (FUN-029)",
       "criterio": "Un solo elenco degli abbonamenti in tutta l'app",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
     },
     {
       "id": "FUN-031",
@@ -414,16 +433,20 @@
       "area": "Amministrazione → \"Contratti e rinnovi\"",
       "modifica": "Spostare nella scheda cliente (FUN-007) e nell'avviso dei contratti in scadenza (FUN-023)",
       "criterio": "I contratti si trovano solo in Clienti",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
     },
     {
       "id": "COL-003",
       "area": "Fatturazione → fatture",
       "modifica": "BigAnt OS **non emette fatture**: segna \"da fatturare\" e \"fatturato\". Un collegamento ad Aruba si valuta in futuro",
       "criterio": "Nessuna funzione di BigAnt OS promette l'emissione di fatture elettroniche",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
     },
     {
       "id": "DAT-002",

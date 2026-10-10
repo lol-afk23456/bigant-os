@@ -2,7 +2,7 @@
 
 ## Stato corrente — riordino Codex, 10 ottobre 2026
 
-Fasi 0–4 in lavorazione sul ramo bigant-os-notte-1: backup, password, navigazione, home, scheda cliente, permessi e configurazione Sciame, Piano servizi, Listino e custodia dei collegamenti. **220 test verdi**, controllo 5/5. Modifiche locali, nessun rilascio. La matrice [riordino.json](copertura/riordino.json) segue tutte le 92 voci; non sono tutte completate. Il [diario](DIARIO-LAVORO.md) riporta prove e limiti. Le sezioni seguenti sono storiche.
+Fasi 0–4 in lavorazione sul ramo bigant-os-notte-1: backup, password, navigazione, home, scheda cliente, permessi e configurazione Sciame, Piano servizi, Listino, custodia dei collegamenti, collaudo Fidelity e riordino Fatturazione. **223 test verdi**, controllo 5/5. Modifiche locali, nessun rilascio. La matrice [riordino.json](copertura/riordino.json) segue tutte le 92 voci; non sono tutte completate. Il [diario](DIARIO-LAVORO.md) riporta prove e limiti. Le sezioni seguenti sono storiche.
 
 ## Aggiornamento finale di consegna — 8 ottobre 2026
 
