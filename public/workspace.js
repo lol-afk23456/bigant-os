@@ -116,6 +116,7 @@ Object.assign(ACTIONS,{
  'record-onboarding':()=>{const row=S.module.onboarding;form('Avvio cliente',[{name:'notes',label:'Prossimi passi, responsabile e note',type:'textarea',full:true,value:row.notes},{name:'completed',label:'Avvio completato',type:'checkbox',value:!!row.completed}],async(b,fd)=>{await mutate('/api/client-record/onboarding',{notes:b.notes,completed:fd.has('completed'),version:row.version});await saved('Avvio aggiornato');},{intro:''});}
 });
 
+
 Object.assign(ACTIONS,{
  'agent-config':id=>{const agent=S.module.configuration.items.find(item=>item.id===id),c=agent.config;form('Configura · '+agent.name,[
   {name:'task',label:'Compito',type:'textarea',value:c.task,required:true,full:true},
@@ -275,7 +276,7 @@ function growthSectionsView(){
    `${e(row.email||'Email da aggiungere')}<small>${row.suppressed?'Contatto interrotto':row.consent==='marketing'?'Consenso marketing registrato':row.consent==='request'?'Richiesta di risposta':'Autorizzazione da verificare'}</small>`,
    `<div class="actions">${g.simulation||g.runtime.phases.analysis.enabled?btn('Analizza','analyze-lead',row.id,'small'):''}${g.simulation||g.runtime.phases.drafts.enabled?btn('Bozza','draft-lead',row.id,'small'):''}</div>`
   ])));
-  if(id==='messages')return panel('Bozze e conversazioni',list(g.messages,row=>`<div class="list-item"><div class="body"><b>${e(row.subject)}</b><p>${e(row.company)} · ${row.direction==='in'?(g.simulation?'Risposta DEMO':'Risposta ricevuta'):'Messaggio commerciale'}</p>${badge(row.status)}</div>${btn('Apri','message',row.id,'small')}</div>`))+notice('L’approvazione di messaggi Growth è riservata ai soci. Ogni modifica richiede una nuova approvazione.');
+  if(id==='messages')return growthMessagesPanel(g);
   if(id==='meetings')return panel('Appuntamenti',list(g.meetings,row=>`<div class="list-item"><div class="body"><b>${e(row.company)}</b><p>${date(row.start,true)}</p>${badge(row.status)}</div>${row.status==='simulated_booked'?btn('Annulla','cancel-meeting',row.id,'small'):['pending','uncertain'].includes(row.status)?btn('Verifica esito','reconcile-meeting',row.id,'small'):''}</div>`),'',g.simulation?'Calendario locale di prova. Nessun invito Google.':'Calendar richiede una fase successiva di collaudo e attivazione.');
   if(id==='jobs')return panel('Attività Growth',table(['Attività','Quando','Stato','Esito',''],g.jobs.map(row=>[
    e(({research:'Ricerca',analyze:'Analisi',draft:'Bozza',sync:'Conversazioni',reconcile:'Verifica messaggio',reconcileMeeting:'Verifica appuntamento'})[row.type]||row.type),date(row.created,true),badge(row.status),`<span class="table-text">${e(row.error||'—')}</span>`,row.status==='failed'?btn('Riprova','retry-growth',row.id,'small'):''
@@ -287,6 +288,13 @@ function growthSectionsView(){
 }
 
 
+function growthMessageBadge(message,simulation){return badge(!simulation&&message.status==='received'?'Da leggere':message.status);}
+function growthMessagesPanel(g){
+ const c=g.conversations,r=c?.result;
+ const summary=r?`${r.received} nuove risposte · ${r.checked} conversazioni verificate · ${r.skipped} messaggi già acquisiti o esclusi`:'Nessuna lettura eseguita.';
+ const sync=c?panel('Risposte Gmail',`<p>Legge soltanto le conversazioni avviate da BigAnt OS. Nessuna risposta o analisi AI parte da sola.</p><p><b>${e(summary)}</b></p>${r?.errors||r?.review||r?.interrupted?notice(`Conversazioni non aggiornate: ${r.errors||0}. Messaggi da controllare in Gmail: ${r.review||0}.${r.interrupted?' Lettura interrotta: alcuni risultati possono essere incompleti.':''}`,true):''}<p class="muted">${c.lastAttempt?'Ultima richiesta: '+date(c.lastAttempt,true):''}${c.eligibleThreads>c.batchLimit?` · Fino a ${c.batchLimit} conversazioni per volta, partendo dalle meno recentemente verificate.`:''}</p><div class="actions">${c.canSync&&!c.running&&c.eligibleThreads?btn('Aggiorna risposte','growth-mail-sync','','primary','mail'):''}${btn('Collegamento Gmail','goto','growth:connections','','link')}</div>${!c.canSync?notice(c.reason||'Casella da autorizzare.'):!c.eligibleThreads?notice('Non ci sono conversazioni inviate da questa casella tramite BigAnt OS da aggiornare.'):c.running?notice('Lettura in corso…'):''}`):'';
+ return sync+panel('Bozze e conversazioni',list(g.messages,row=>`<div class="list-item"><div class="body"><b>${e(row.subject)}</b><p>${e(row.company)} · ${row.direction==='in'?(g.simulation?'Risposta DEMO':'Risposta ricevuta'):'Messaggio commerciale'}</p>${growthMessageBadge(row,g.simulation)}${row.error?`<small>${e(row.error)}</small>`:''}</div>${btn('Apri','message',row.id,'small')}</div>`))+notice('L’approvazione di messaggi Growth è riservata ai soci. Ogni modifica richiede una nuova approvazione.');
+}
 const growthPhaseNames={research:'Ricerca e lettura siti',analysis:'Analisi delle aziende',drafts:'Bozze da approvare'};
 function growthRuntimeView(g){
  const r=g.runtime,phases=Object.keys(growthPhaseNames);
@@ -317,8 +325,17 @@ ACTIONS['google-oauth-start']=()=>{const row=S.module.items.find(item=>item.id==
 
 function growthMailPanel(g){const m=g.mail;if(!m)return '';const canCheck=m.available&&m.configured&&g.runtime.phases.drafts.enabled&&!g.settings.paused;return panel('Gmail · invio manuale',`${badge(m.enabled?'Attivo':m.checked?'Collaudato':'Da attivare',m.enabled?'green':'')}<p>${e(m.note)}</p><dl class="out-obj"><div><dt>Casella autorizzata</dt><dd>${e(m.configured?m.email:'Da collegare')}</dd></div><div><dt>Mittente impostato</dt><dd>${e(g.settings.senderEmail||'Da indicare nelle impostazioni')}</dd></div><div><dt>Ultimo collaudo</dt><dd>${m.lastCheck?date(m.lastCheck,true):'Non eseguito'}</dd></div></dl><div class="actions">${btn('Accesso Google','goto','connections:google','','link')}${btn('Imposta mittente e limite','goto','growth:settings')}${canCheck?btn('Collauda la casella','growth-mail-check','','','check'):''}${m.enabled?btn('Sospendi Gmail','growth-mail-disable'):m.checked&&canCheck?btn('Attiva invio manuale','growth-mail-enable','','primary'):''}</div>`,'','Ogni invio richiede una versione approvata, un consenso valido e una conferma finale. Gli esiti incerti si verificano senza reinvio.');}
 Object.assign(ACTIONS,{
+ 'growth-mail-sync':()=>form('Aggiorna risposte Gmail',[],async()=>{const r=await mutate('/api/growth/mail/sync',{confirmed:true});await saved(`${r.received} nuove risposte · ${r.checked} conversazioni verificate${r.errors?' · alcuni controlli non riusciti':''}`);},{submit:'Leggi le risposte',intro:'Legge fino a dieci conversazioni inviate da BigAnt OS. Le risposte annullano bozze e approvazioni superate; i rifiuti riconosciuti interrompono i contatti. Nessun messaggio o analisi AI viene avviato.'}),
  'growth-mail-check':()=>form('Collauda la casella',[],async()=>{await mutate('/api/growth/mail/check',{version:S.module.mail.version});await saved('Casella verificata. Puoi attivare l’invio manuale.');},{submit:'Verifica casella',intro:'Legge da Google l’identità della casella. Non invia messaggi. Ripetere il collaudo sospende l’attivazione Gmail.'}),
  'growth-mail-enable':async()=>{await mutate('/api/growth/mail/activate',{version:S.module.mail.version,enabled:true});toast('Invio manuale abilitato. Nessun messaggio inviato.');await load();},
  'growth-mail-disable':async()=>{await mutate('/api/growth/mail/activate',{version:S.module.mail.version,enabled:false});toast('Invio Gmail sospeso');await load();},
  'growth-mail-preview':async id=>{const p=await api('/api/growth/messages/'+encodeURIComponent(id)+'/send-preview'),html=`<dl class="out-obj"><div><dt>Da</dt><dd>${e(p.fromName)} &lt;${e(p.from)}&gt;</dd></div><div><dt>A</dt><dd>${e(p.to)}</dd></div><div><dt>Versione approvata</dt><dd>${p.version}</dd></div></dl><h3>${e(p.subject)}</h3><p class="preserve">${e(p.body)}</p>`;if(!p.canSend)return dialog('Anteprima invio',html+notice(p.reason,true));form('Conferma invio Gmail',[{html},{name:'confirmed',label:'Confermo destinatario, contenuto e invio di questa versione',type:'checkbox'}],async(b,fd)=>{if(!fd.has('confirmed'))throw Error('Conferma il messaggio prima di inviarlo.');await mutate('/api/growth/messages/'+encodeURIComponent(id)+'/send',{version:p.version,hash:p.hash,confirmed:true});await saved('Gmail ha confermato l’invio del messaggio.');},{submit:'Invia con Gmail',intro:'Questa azione invia il messaggio alla casella indicata. In caso di esito incerto usa Verifica esito, senza ripetere l’invio.'});}
 });
+
+const previousGrowthMessageAction=ACTIONS.message;
+ACTIONS.message=id=>{
+ const g=S.module,m=g.messages.find(row=>row.id===id);
+ if(g.simulation||m.direction!=='in')return previousGrowthMessageAction(id);
+ const reason=m.replyBlockedReason||(g.settings.paused?'Growth è in pausa.':!g.runtime?.phases.drafts.enabled?'La preparazione delle bozze deve essere collaudata e attivata.':null);
+ return dialog(m.subject,`${growthMessageBadge(m,false)}<p>${e(m.company)} · ${date(m.created,true)}</p>${m.source?`<p class="muted">Fonte: ${e(m.source.provider)} · acquisita ${date(m.source.importedAt,true)}</p>`:''}<p class="preserve section">${e(m.body)}</p>${m.error?notice(m.error,true):''}${reason?notice(reason):notice('Prepara una bozza da rivedere. La richiesta entra nelle attività da eseguire manualmente; non avvia un invio.')}${reason?'':`<div class="actions">${btn('Prepara risposta','reply-message',id,'primary')}</div>`}`);
+};

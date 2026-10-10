@@ -41,6 +41,6 @@ L'istruzione finale «parti con T0» consente ora la selezione degli strumenti e
 
 ## Come riprendere
 
-Continuare le 92 voci dal loro stato reale e il riordino incrementale T0. Restano, fra l'altro, sincronizzazione conversazioni e Calendar Growth, motore reale dello Sciame, collaudi dei ruoli e telefono, collegamenti da autorizzare. Apple non è più un requisito di attivazione reale in questa tranche, per la nuova istruzione T6; mantenere conservata e chiaramente non attiva l'eventuale struttura esistente.
+Continuare le 92 voci dal loro stato reale e il riordino incrementale T0. Lettura manuale delle conversazioni predisposta e verificata con fornitori finti; restano, fra l'altro, collaudo Gmail reale e Calendar Growth, motore reale dello Sciame, collaudi dei ruoli e telefono, collegamenti da autorizzare. Apple non è più un requisito di attivazione reale in questa tranche, per la nuova istruzione T6; mantenere conservata e chiaramente non attiva l'eventuale struttura esistente.
 
 Ogni gate esterno va preparato con istruzioni, costo verificato, prova locale e risultato da approvare. Non dichiarare concluso l'intero obiettivo mentre restano codice o verifiche eseguibili.

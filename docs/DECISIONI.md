@@ -124,3 +124,10 @@ Budget totale 50 €/mese, stop e avviso a 40 €; mantenuta l'interpretazione p
 T6 esclude Apple reale per mancanza dell'account Developer; non eliminare le strutture esistenti. T7 è un collaudo futuro su server di prova separato, circa un mese dopo a lavori finiti; non autorizza prove offensive sul server reale o un nuovo servizio a pagamento. La visione SaaS della presentazione T9 non autorizza una conversione del codice in piattaforma per altre agenzie.
 
 T0: usare le skill e i test già disponibili, due verifiche delegate circoscritte e fonti ufficiali per i servizi. Nessuna nuova dipendenza necessaria. Estrarre solo il predicato puro `isISODate` ripetuto fra contratti e piano servizi, conservando i wrapper e tutti i messaggi. Ampliato il test contratti esistente per verificare che date impossibili non scrivano record e che il giorno bisestile valido sia accettato. Nessun comportamento applicativo cambiato; pulizia dei moduli maggiori da proseguire in piccoli passi motivati. Selezione e alternative in [STRUMENTI](STRUMENTI.md).
+
+
+### Conversazioni Growth — 10 ottobre 2026
+
+Lettura solo su richiesta del socio, senza worker o AI automatici. Il consenso OAuth Gmail già predisposto è sufficiente: nessun nuovo scope o collegamento attivato. Dieci thread per richiesta con rotazione, provenienti da invii OS confermati e dalla stessa casella/destinatario. Consentire la lettura mentre gli invii sono sospesi, per ricevere rifiuti; revoca OAuth, socio o attività inattivi la bloccano.
+
+Verificare ancore e data Gmail, poi acquisire ogni thread in transazione con invalidazione di bozze e approvazioni. Un messaggio incompleto impedisce nuove bozze AI per quel contatto; gestione fuori dall’OS nella casella finché non esiste un flusso esplicito di revisione. Ultima risposta e provenienza sono vincolanti anche dopo modifica del consenso o della casella. Nessuna email ricevuta concede consenso commerciale automaticamente. Parser MIME locale, senza nuove dipendenze, con limiti espliciti; nessun allegato o risorsa remota acquisiti. Confrontare gli indirizzi non certifica l’identità del mittente. Dettagli e limiti in SOP-GROWTH-CONVERSAZIONI.

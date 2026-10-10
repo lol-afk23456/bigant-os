@@ -126,6 +126,7 @@ test('OAuth Google via HTTP: sessione, CSRF, callback senza segreti e casella au
  const {app,request}=await setupReale(t,{BIGANT_SECRET_KEY:Buffer.alloc(32,4).toString('base64'),BIGANT_GROWTH_GMAIL_ENABLED:'true'},{fetchImpl:async url=>{calls.push(String(url));return new Response(JSON.stringify(String(url).endsWith('/token')?{access_token:'token-finto-http',refresh_token:'refresh-finto-http',token_type:'Bearer',scope:scopes.join(' ')}:{emailAddress:'casella@fixture.example'}));}});
  const callback=await request('/auth/google/callback?code=codice-finto-http&state=stato-finto');assert.equal(callback.status,200);assert.ok(!callback.body.includes('codice-finto-http'));assert.equal(callback.headers['referrer-policy'],'no-referrer');assert.equal(calls.length,0);
  assert.equal((await request('/api/connections/google/oauth/state')).status,401);
+ assert.equal((await request('/api/growth/mail/sync',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`},body:{confirmed:true}})).status,401);
  let login=await request('/api/login',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`},body:{email:SOCIO_EMAIL,password:SOCIO_PASSWORD}});
  login=await request('/api/account/password',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`,Cookie:login.headers['set-cookie'][0].split(';')[0],'X-CSRF-Token':login.body.csrf},body:{currentPassword:SOCIO_PASSWORD,newPassword:'personale-fixture-oauth-02',confirmPassword:'personale-fixture-oauth-02'}});
  assert.match(login.headers['set-cookie'][0],/SameSite=Strict/);const headers={Origin:`https://${ORIGIN_HOST}`,Cookie:login.headers['set-cookie'][0].split(';')[0],'X-CSRF-Token':login.body.csrf};
@@ -136,8 +137,13 @@ test('OAuth Google via HTTP: sessione, CSRF, callback senza segreti e casella au
  const finished=await request('/api/connections/google/oauth/finish',{method:'POST',headers,body:{state,code:'codice-finto-http'}});assert.equal(finished.status,200);assert.equal(finished.body.connected,true);assert.equal(finished.body.email,body.email);assert.ok(!JSON.stringify(finished.body).includes('refresh-finto-http'));assert.equal(calls.length,2);
  assert.equal((await request('/api/connections/google/oauth/finish',{method:'POST',headers,body:{state,code:'codice-finto-http'}})).status,409);
  const growth=await request('/api/growth/state',{headers});assert.equal(growth.status,200);assert.equal(growth.body.mail.enabled,false);assert.equal((await request('/api/growth/mail/activate',{method:'POST',headers,body:{version:0,enabled:true}})).status,409);
+ assert.equal(growth.body.conversations.canSync,true);
+ assert.equal((await request('/api/growth/mail/sync',{method:'POST',headers:{...headers,'X-CSRF-Token':''},body:{confirmed:true}})).status,403);
+ assert.equal((await request('/api/growth/mail/sync',{method:'POST',headers,body:{confirmed:false}})).status,409);
+ const sync=await request('/api/growth/mail/sync',{method:'POST',headers,body:{confirmed:true}});assert.equal(sync.status,200);assert.equal(sync.body.checked,0);assert.equal(calls.length,2);
+ assert.equal((await request('/api/growth/mail/sync',{headers})).status,404);
  const ownerId=login.body.user.id,client=app.store.one('SELECT id FROM os_clients');app.store.run('INSERT INTO os_assignments VALUES(?,?)',ownerId,client.id);
- for(const role of ['collaborator','client']){app.store.run('UPDATE os_users SET role=?,tenant_id=? WHERE id=?',role,role==='client'?client.id:null,ownerId);assert.equal((await request('/api/connections/google/oauth/state',{headers})).status,403);assert.equal((await request('/api/growth/messages/inventato/send',{method:'POST',headers,body:{confirmed:true}})).status,403);}
+ for(const role of ['collaborator','client']){app.store.run('UPDATE os_users SET role=?,tenant_id=? WHERE id=?',role,role==='client'?client.id:null,ownerId);assert.equal((await request('/api/connections/google/oauth/state',{headers})).status,403);assert.equal((await request('/api/growth/messages/inventato/send',{method:'POST',headers,body:{confirmed:true}})).status,403);assert.equal((await request('/api/growth/mail/sync',{method:'POST',headers,body:{confirmed:true}})).status,403);}
  assert.equal(calls.length,2);
 });
 

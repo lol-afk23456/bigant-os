@@ -2,6 +2,7 @@ import {createHash} from 'node:crypto';
 import {AppError,requireOwner} from './store.js';
 import {canContact} from './growth-domain.js';
 import {createGrowthLiveProviders} from './growth-live-providers.js';
+import {createGrowthConversations} from './growth-conversations.js';
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const address=value=>String(value||'').toLowerCase();
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
@@ -29,6 +30,12 @@ export function createGrowthMail({store:root,growthStore:s,runtime,googleAuth,or
  const latest=(w,id)=>root.one("SELECT * FROM os_approvals WHERE client_id=? AND kind='growth_message' AND entity_id=? ORDER BY version DESC LIMIT 1",w,id);
  function envelope(user,w,m){
   const l=s.lead(w,m.lead_id),st=s.settings(w),g=google(user),base=new URL(origin).origin;
+  if(m.kind==='reply'||m.thread_id||m.reply_to){
+   if(m.kind!=='reply')throw new AppError('Riferimenti di conversazione non validi per questo tipo di messaggio.',409);
+   const incoming=s.query("SELECT * FROM messages WHERE workspace=? AND lead_id=? AND direction='in' AND thread_id=? AND reply_to=?",w,m.lead_id,m.thread_id,m.reply_to);
+   if(incoming.length!==1)throw new AppError('Conversazione originale non verificabile.',409);
+   const reason=conversations.replyReason(user,w,incoming[0]);if(reason)throw new AppError(reason,409);
+  }
   const token=s.query("SELECT id FROM tokens WHERE workspace=? AND lead_id=? AND kind='unsubscribe' AND expires>?",w,m.lead_id,clock().getTime()).find(t=>m.body.split(/\s+/).includes(base+'/growth/unsubscribe/'+t.id));
   if(/[\r\n]/.test(m.subject)||/[\r\n]/.test(st.senderName))throw new AppError('Oggetto e nome mittente devono stare su una sola riga.');
   if(!token||!m.body.includes('Assistente digitale del team BigAnt Agency.')||!st.signature.trim()||!m.body.includes(st.signature))throw new AppError('La bozza deve contenere firma, indicazione dell’assistente digitale e link di disiscrizione valido.',409);
@@ -64,5 +71,11 @@ export function createGrowthMail({store:root,growthStore:s,runtime,googleAuth,or
   if(message.id!==found.id||message.threadId!==found.threadId||!message.labelIds?.includes('SENT')||header('Message-ID')!==`<${id}@growth.bigantagency.it>`||mail(header('From'))!==address(payload.from)||mail(header('To'))!==address(payload.to)||subject!==payload.subject)throw new AppError('Il messaggio trovato non corrisponde all’invio: verifica manuale necessaria.',409);
   const sentAt=new Date(Number(message.internalDate));if(typeof message.internalDate!=='string'||!/^[0-9]+$/.test(message.internalDate)||!Number.isFinite(sentAt.getTime())||sentAt.getTime()<Date.parse(intent.created_at)-300000||sentAt.getTime()>clock().getTime()+300000)throw new AppError('Data Gmail non verificabile.',409);markSent(user,w,intent,found,sentAt.toISOString());return {status:'sent',found:true};
  }
- return {state,check,activate,recordApproval,preview,send,reconcile};
+ const conversations=createGrowthConversations({store:root,growthStore:s,providers,clock,authorize:(user,w)=>{
+  const access=permitted(user,w,{read:true});
+  if(!s.active(w))throw new AppError('Attività non più attiva.',409);
+  return access;
+ }});
+ async function sync(user,w,b){try{return await conversations.sync(user,w,b);}catch(e){if([401,403].includes(e.remoteStatus))googleAuth.invalidate();throw e;}}
+ return {state,check,activate,recordApproval,preview,send,reconcile,conversations,sync};
 }

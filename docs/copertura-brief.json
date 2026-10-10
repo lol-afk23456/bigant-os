@@ -1974,11 +1974,10 @@
       "requirement": "Generazione risposta",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:31",
-        "src/growth-engine.js:12-24; src/growth-providers.js:26-32; tests/growth.test.js:114,120; public/app.js:130",
-        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+        "src/growth-conversations.js; src/gmail-message.js; src/growth-engine.js; src/growth-mail.js",
+        "tests/growth-conversations.test.js: 78/78; tests/modalita-reale.test.js; docs/COLLAUDO-GROWTH-RIORDINO.md; Browser desktop e 390 px con fornitori finti"
       ],
-      "missing": "Flusso risposta preservato su inbox inventata; generazione AI e lettura Gmail mancanti.",
+      "missing": "Risposta manuale integrata con provenienza, ultima email, controllo consenso e approvazione; AI e casella reali da autorizzare/collaudare. Testi incompleti da gestire manualmente in Gmail.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -2037,11 +2036,10 @@
       "requirement": "Rifiuto e disiscrizione",
       "status": "FATTO e testato",
       "evidence": [
-        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:34",
-        "src/growth-domain.js:24-25; src/growth-engine.js:33-35; tests/growth.test.js:136; public/app.js:125,201",
-        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+        "src/growth-conversations.js; src/gmail-message.js; src/growth-engine.js; src/growth-mail.js",
+        "tests/growth-conversations.test.js: 78/78; tests/modalita-reale.test.js; docs/COLLAUDO-GROWTH-RIORDINO.md; Browser desktop e 390 px con fornitori finti"
       ],
-      "missing": "Esclusione e blocchi locali verificati. Il recupero di rifiuti da Gmail reale è un connettore separato non attivo.",
+      "missing": "Rifiuti email e disiscrizione invalidano localmente bozze/approvazioni; lettura Gmail predisposta e provata con trasporto finto. Account reale e formulazioni non riconosciute richiedono collaudo/verifica umana.",
       "baselineStatus": "FATTO e testato",
       "category": "funzionale"
     },
@@ -2247,11 +2245,10 @@
       "requirement": "Recupero conversazioni",
       "status": "SOLO STRUTTURA",
       "evidence": [
-        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:44",
-        "src/growth-engine.js:32-35; src/growth-providers.js:thread; tests/growth.test.js:120; public/app.js:131",
-        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+        "src/growth-conversations.js; src/gmail-message.js; src/growth-engine.js; src/growth-mail.js",
+        "tests/growth-conversations.test.js: 78/78; tests/modalita-reale.test.js; docs/COLLAUDO-GROWTH-RIORDINO.md; Browser desktop e 390 px con fornitori finti"
       ],
-      "missing": "Inbox solo fixture. Recupero thread Gmail e UI di sincronizzazione manuale dedicata mancanti.",
+      "missing": "Lettura manuale di thread verificati e UI dedicate implementate; trasporto reale ancora scollegato. Mancano collaudo casella reale e telefono fisico.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -2268,11 +2265,10 @@
       "requirement": "Deduplica risposta",
       "status": "FATTO e testato",
       "evidence": [
-        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:45",
-        "src/growth-engine.js:32-35; src/growth-providers.js:11-15; tests/growth.test.js:120; public/app.js:128",
-        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+        "src/growth-conversations.js; src/gmail-message.js; src/growth-engine.js; src/growth-mail.js",
+        "tests/growth-conversations.test.js: 78/78; tests/modalita-reale.test.js; docs/COLLAUDO-GROWTH-RIORDINO.md; Browser desktop e 390 px con fornitori finti"
       ],
-      "missing": "Correlazione, filtri e deduplica testati su payload DEMO; acquisizione Gmail separata.",
+      "missing": "Deduplica e impronta immutabile del contenuto acquisite con fixture Gmail, replay diverso rifiutato in transazione. Nessuna prova con casella reale.",
       "baselineStatus": "FATTO e testato",
       "category": "funzionale"
     },

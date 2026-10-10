@@ -13,6 +13,7 @@ export function mailFixture(t,{gmailEnabled=true}={}){
   const href=String(url);calls.push({url:href,opts});if(control.before)await control.before(href,opts);
   if(href.endsWith('/token'))return json({access_token:'accesso-inventato',refresh_token:'rinnovo-inventato',token_type:'Bearer',scope:GMAIL_SCOPES.join(' ')});
   if(href.endsWith('/profile'))return json({emailAddress:'mittente@fixture.example'});
+  if(href.includes('/threads/'))return json(typeof control.thread==='function'?await control.thread(href):control.thread);
   if(href.endsWith('/messages/send')){if(control.sendFail)throw Error('Timeout finto');const mime=Buffer.from(JSON.parse(opts.body).raw,'base64url').toString(),id=mime.match(/Message-ID: <([^@]+)@growth\.bigantagency\.it>/)[1];return json(control.sendResult||{id:'gmail-'+id,threadId:'thread-'+id});}
   if(href.includes('/messages?')){const id=new URL(href).searchParams.get('q').match(/rfc822msgid:([^@]+)@/)[1];return json({messages:control.found?[{id:'gmail-'+id,threadId:'thread-'+id}]:[],resultSizeEstimate:control.found?1:0});}
   if(href.includes('/messages/gmail-')){const id=new URL(href).pathname.split('/messages/gmail-')[1],intent=store.one("SELECT * FROM gr_mail_intents WHERE status='uncertain' AND message_id=?",id),p=JSON.parse(intent.payload_json);return json({id:'gmail-'+id,threadId:'thread-'+id,labelIds:['SENT'],internalDate:String(Date.now()),payload:{headers:[['Message-ID',`<${p.id}@growth.bigantagency.it>`],['From',p.from],['To',control.to||p.to],['Subject',p.subject]].map(([name,value])=>({name,value}))}});}

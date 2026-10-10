@@ -132,6 +132,7 @@ Catalogo delle nuove funzioni, disponibili soltanto ai soci nella modalità real
 | POST `/api/connections/google/oauth/finish` | `state,code` oppure `state,error` | Verifica sessione, casella e ambiti; token cifrato |
 | GET `/auth/google/callback` | Pagina HTML | Completa via POST autenticato/CSRF, senza indebolire il cookie |
 | POST `/api/growth/mail/check` | `version` della configurazione mail | Verifica profilo Google e sospende l’attivazione precedente |
+| POST `/api/growth/mail/sync` | `confirmed:true` | Legge al massimo dieci thread verificabili di questa attività/casella, senza AI o invii |
 | POST `/api/growth/mail/activate` | `version,enabled` booleano | Attivazione o sospensione Gmail per attività |
 | PATCH `/api/growth/messages/:id` | `version` obbligatoria, campi della bozza e decisione | Controllo concorrenza; approvazione immutabile di testo, mittente, destinatario e consenso |
 | GET `/api/growth/messages/:id/send-preview` | Payload approvato, `version,hash,canSend,reason` | Anteprima leggibile, senza invio |
@@ -142,4 +143,15 @@ Catalogo delle nuove funzioni, disponibili soltanto ai soci nella modalità real
 
 `state.mail` distingue disponibilità server, casella configurata, collaudo e attivazione. `messages[].approvalVersion` alimenta l’approvazione; `sent` indica conferma Gmail, `uncertain` richiede verifica. Le prove automatiche usano lo stesso percorso con un trasporto finto e non dimostrano consegna reale. Anche la coda comune passa la versione al modulo; un’approvazione SQL generica non basta perché manca lo snapshot del messaggio.
 
-Le chiamate protette richiedono sessione attiva, cambio password completato e CSRF per le scritture; il client selezionato viene verificato dal server. I vecchi percorsi `/secrets`, `/google/*`, `/auth/*` interni a Growth restano bloccati. Il worker non esegue invii reali. Sincronizzazione delle risposte, Calendar e moduli pubblici di acquisizione/prenotazione restano da integrare nella modalità reale; i relativi job vengono rifiutati. La disiscrizione è l’eccezione pubblica supportata.
+Le chiamate protette richiedono sessione attiva, cambio password completato e CSRF per le scritture; il client selezionato viene verificato dal server. I vecchi percorsi `/secrets`, `/google/*`, `/auth/*` interni a Growth restano bloccati. Il worker non esegue invii reali. La lettura manuale delle risposte è integrata nel percorso dedicato `/mail/sync`; il vecchio job `sync` reale resta vietato, come Calendar e i moduli pubblici di acquisizione/prenotazione ancora da integrare. La disiscrizione è l’eccezione pubblica supportata.
+
+
+### Conversazioni Gmail — lettura manuale
+
+Catalogo della funzione e procedura: [SOP-GROWTH-CONVERSAZIONI](SOP-GROWTH-CONVERSAZIONI.md). `state.conversations` espone `canSync`, `reason`, `running`, `eligibleThreads`, `batchLimit`, `lastAttempt`, `lastSuccess` e `result`. Il risultato contiene conversazioni verificate, risposte nuove, messaggi esclusi/già presenti, verifiche manuali ed errori; `interrupted` segnala una richiesta interrotta. Un errore in un thread annulla quel thread; i thread precedenti già verificati restano acquisiti.
+
+La lettura richiede socio/attività attivi, flag Gmail e OAuth valido. Rimane consentita in pausa o con invio sospeso per ricevere anche i rifiuti. Ogni thread deve contenere l’invio OS verificato con gli stessi indirizzi e identificativi. Conservati `gr_mail_receipts` (casella/mittente originali e impronta), ultima verifica per thread e risultato del lotto; audit solo con conteggi. Allegati e risorse remote non scaricati.
+
+Le risposte hanno `source` (Gmail e data acquisizione) e `replyBlockedReason`. `received` nella vista reale è «Da leggere», mai «Ricevuto DEMO»; `needs_owner` blocca tutte le nuove bozze AI per quel contatto. Rifiuti e nuove risposte invalidano messaggi/approvazioni superati in transazione. Un invio già in dispatch rimane soggetto alla verifica dell’esito; prima del dispatch il messaggio resta annullato.
+
+Il job reply accetta solo l’ultima email e la provenienza corrente; `incomingId` non è ammesso per initial/followup. Una nuova email durante l’AI scarta il risultato superato. Casella e destinatario originali vengono ricontrollati anche approvando e inviando la bozza. Nessuna risposta o chiamata AI automatica deriva dalla lettura. Prove: `tests/growth-conversations.test.js`, `tests/modalita-reale.test.js` e collaudo Browser locale. Il collegamento reale resta da autorizzare e verificare.

@@ -187,3 +187,14 @@ Due subagenti autorizzati hanno controllato riordini e servizi ufficiali. Skill 
 Estratto il controllo data ISO condiviso da contratti e piano servizi. Messaggi, date facoltative, permessi e transazioni conservati. Rafforzata la prova HTTP contratti con giorni impossibili rifiutati senza record e 29 febbraio valido. Revisione indipendente del diff senza regressioni individuate. Corretto il README sulle quattro dipendenze effettive.
 
 Verifica: **10/10 mirati, 284/284 suite completa, check 5/5**. Ambiente della suite privo di credenziali, temporanei nella cache del progetto. Nessuna modifica visiva o nuova prova Browser richiesta da questo refactor. T0 resta in corso per i piccoli riordini successivi; nessuna delle 92 voci promossa sulla sola base di questa pulizia. Nessun account, acquisto, email, push, deploy o dato reale inserito sul server.
+
+
+## 10 ottobre 2026 — lettura manuale delle conversazioni Growth
+
+COL-005 / FUN-050, MIG-GR-17/20/30/31. Continuato nella cartella tecnica come confermato dal proprietario. Nuova SOP prima del codice; registrata funzione nel catalogo API. Aggiunti parser Gmail e servizio conversazioni separati dal modulo di invio: invio OS verificato, casella/destinatario, data Gmail, MIME limitato, deduplica con impronta, transazioni per thread, lotto di dieci con rotazione, rifiuti e invalidazione delle approvazioni superate. Nessuna AI o invio automatico.
+
+Due verifiche delegate: suite specifica e revisione statica. Corretti tutti i casi segnalati: mail precedenti all’invio, contenuto incompleto inviabile all’AI, parti HTML perse, riuso dopo cambio identità (anche con kind improprio) e data di conferma HTTP successiva all’email ricevuta. Durante l’AI nuove risposte scartano la bozza; durante l’invio, annullamento prima del dispatch ed esito da riconciliare dopo. Il contatore continua a mostrare messaggi da verificare anche se già acquisiti.
+
+Prove finali: 78/78 dedicate, 362/362 suite, check 5/5. Ambiente isolato, temporanei sotto la cache del progetto. HTTP verifica sessione/CSRF/ruoli. Browser: tre email finte acquisite, rifiuto e testo incompleto senza preparazione, vecchia bozza annullata, nuova risposta accodata e preparata solo manualmente. A 390 px documento 390 e dialogo 356. Schermate archiviate nella cache tecnica; i soli temporanei delle immagini rimossi dopo la copia. Build DEMO pubblica senza credenziali e1b292740835 (3078 KB) generata in cache, file di pubblicazione preesistente preservato.
+
+Limiti: nessuna Gmail reale letta o collegata, nessuna AI applicativa, spesa, email, push o deploy. Calendar, server, telefono fisico e collaudo completo autorizzato restano aperti; le 92 voci non sono concluse. Nessun nuovo dato cliente reale nel repository. I messaggi needs_owner richiedono gestione manuale nella casella; non viene finto uno sblocco OS non implementato.

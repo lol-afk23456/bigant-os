@@ -14,7 +14,7 @@ Aggiornamento: 10 ottobre 2026. Valuta dei limiti: euro. Non contiene fatture, d
 | Voce | Importo noto | Evidenza | Trattamento |
 |---|---:|---|---|
 | Railway, piano esistente | 20,00 € dichiarati | Conferma del proprietario nel prompt; fatturazione non consultata | Impegno prudenziale di pianificazione, non ricevuta verificata e non intero consumo account misurato |
-| Nuovi acquisti/API esterne attivati nel ciclo T0 | 0,00 € | Nessun acquisto, attivazione o chiamata applicativa reale; prove con dati inventati | Zero nuove spese disposte da questo ciclo |
+| Nuovi acquisti/API esterne attivati nei cicli T0 e conversazioni Gmail | 0,00 € | Nessun acquisto, attivazione o chiamata applicativa reale; prove con dati inventati | Zero nuove spese disposte da questi cicli |
 | Altri consumi AI/servizi già avvenuti nel mese | **Non verificati** | Nessuna fattura o contatore economico account consultato | Non assumere zero |
 | Uso Codex e subagenti nella sessione | **Costo monetario non disponibile** | Strumenti della sessione; nessun contatore in euro attribuibile al progetto | Non confondere assenza di nuove sottoscrizioni con consumo gratuito o illimitato |
 

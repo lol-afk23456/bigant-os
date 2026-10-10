@@ -84,3 +84,16 @@ Nel Browser, fixture `.cache/riordino-browser/gmail-ui.mjs` con dati in memoria 
 Suite completa finale: **284/284**. Controllo progetto **5/5**; build offline **43d06565ce8d**, 3863 KB. Queste prove non equivalgono a una consegna email reale. Nessun account collegato, nessuna email, spesa o modifica a Railway.
 
 Restano da completare: sincronizzazione reale delle conversazioni e rifiuti, Calendar, verifiche con account autorizzati, confronto completo con l’originale e collaudo server/telefono. FUN-050 e COL-005 rimangono parziali, non chiusi contando i test.
+
+
+## 10 ottobre — conversazioni Gmail e rifiuti, lettura manuale
+
+COL-005 / FUN-050 ancora **parziali in locale**. Aggiunta lettura manuale di dieci thread per lotto, ordinati per ultima verifica, solo su invii OS confermati della stessa attività/casella/contatto. SOP scritta prima del codice: [SOP-GROWTH-CONVERSAZIONI](SOP-GROWTH-CONVERSAZIONI.md). Nessuna AI, risposta automatica o scaricamento allegati durante la lettura.
+
+- **78/78 prove specifiche**: ancore e date Gmail, intestazioni e MIME ostili, rifiuti, consenso, duplicati/replay, isolamento, permessi/revoche, transazioni, doppia richiesta, rotazione oltre dieci thread e concorrenza con bozza/invio.
+- Revisione indipendente: corretti la tolleranza sulle vecchie risposte, l’uso AI di testi incompleti, la perdita di parti HTML nei messaggi misti, il riuso dopo cambio casella/destinatario (compreso tipo job improprio) e la soglia temporale basata erroneamente sul ritorno HTTP. Ogni caso ha una regressione con dati inventati.
+- HTTP: niente lettura senza sessione, CSRF o ruolo socio; GET non produce effetti, conferma obbligatoria, zero chiamate quando non ci sono thread eleggibili. La pausa dell’invio non impedisce di leggere un rifiuto.
+- Browser desktop: acquisite tre risposte inventate, vecchia bozza annullata; messaggio incompleto e rifiuto senza comando per preparare risposta; normale risposta accodata e lavorata solo con esecuzione manuale, nuova bozza da approvare. Fonte Gmail e data visibili, etichetta reale «Da leggere».
+- Browser a **390 px**: documento 390 px, dialogo 356 px, nessun overflow orizzontale. Screenshot: `.cache/riordino-browser/bigant-gmail-risposte-desktop.jpg` e `bigant-gmail-risposte-390.jpg`. La cornice DEMO usa il modulo reale su memoria e trasporti finti: non prova autenticazione Google o recapito reali. Autenticazione/CSRF verificati separatamente dai test HTTP.
+
+Suite completa **362/362**, check **5/5**. Build DEMO pubblica locale senza credenziali **e1b292740835**, 3078 KB, salvata nella cache tecnica; il file di pubblicazione precedente è stato preservato. Nessun account, email, AI applicativa reale, spesa, push o deploy. Restano Calendar, verifica reale autorizzata di Gmail/fornitori, collaudo server e telefono fisico, confronto completo con l’inventario. I messaggi incompleti richiedono gestione manuale nella casella: non esiste ancora uno sblocco OS della revisione.

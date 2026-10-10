@@ -26,18 +26,18 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
   const runtime=realMode?createGrowthRuntime({store,growthStore:s,connections,getActor:()=>actor.getStore(),externalEnabled,providerOptions}):null;
   const mail=realMode?createGrowthMail({store,growthStore:s,runtime,googleAuth,origin,enabled:gmailEnabled,providerOptions,clock}):null;
   const p = runtime?runtime.providers:demoProviders(s);
-  const engine = createEngine(s, p, { origin: origin + '/api/growth',simulation:!realMode,runtime,...(realMode?{readWebsite:(url,w)=>p.website(w,url)}:{}) });
+  const engine = createEngine(s, p, { origin: origin + '/api/growth',simulation:!realMode,runtime,...(realMode?{readWebsite:(url,w)=>p.website(w,url),replyContext:(w,m,user)=>mail.conversations.replyReason(user||actor.getStore(),w,m)}:{}) });
   engine.recover();
 
   function state(clientId = 'demo-bigant', user) {
     owner(user); s.workspace(clientId);
     const settings = s.settings(clientId), used = s.costs(clientId),mailState=mail?.state(user,clientId)||null;
     return {
-      simulation: !realMode, label: realMode?'Growth · attivazione per fasi':'DEMO offline · nessuna ricerca, email o prenotazione esterna', settings, mail:mailState,runtime:runtime?.state(user,clientId)||null,
+      simulation: !realMode, label: realMode?'Growth · attivazione per fasi':'DEMO offline · nessuna ricerca, email o prenotazione esterna', settings, mail:mailState,conversations:mail?.conversations.state(user,clientId)||null,runtime:runtime?.state(user,clientId)||null,
       sources:store.query('SELECT id,lead_id,kind,url,retrieved_at,provenance_json FROM gr_sources WHERE workspace=? ORDER BY retrieved_at DESC',clientId),
       connections: { openai: false, brave: false, google: mailState?.configured||false, googleConfigured: mailState?.configured||false, demoAvailable: !realMode },
       leads: s.query('SELECT * FROM leads WHERE workspace=? ORDER BY created DESC', clientId),
-      messages: s.query('SELECT m.*,l.company FROM messages m JOIN leads l ON l.id=m.lead_id AND l.workspace=m.workspace WHERE m.workspace=? ORDER BY m.created DESC', clientId).map(m => ({ ...m, simulation: !realMode, externalDelivery: realMode&&m.status==='sent',approvalVersion:store.one("SELECT MAX(version) version FROM os_approvals WHERE kind='growth_message' AND entity_id=?",m.id)?.version||0 })),
+      messages: s.query('SELECT m.*,l.company FROM messages m JOIN leads l ON l.id=m.lead_id AND l.workspace=m.workspace WHERE m.workspace=? ORDER BY m.created DESC,m.id DESC', clientId).map(m => ({ ...m, simulation: !realMode, externalDelivery: realMode&&m.status==='sent',replyBlockedReason:realMode&&m.direction==='in'?engine.replyReason(clientId,m,user):null,source:realMode&&m.direction==='in'?store.one("SELECT 'Gmail' provider,imported_at importedAt FROM gr_mail_receipts WHERE message_id=?",m.id)||null:null,approvalVersion:store.one("SELECT MAX(version) version FROM os_approvals WHERE kind='growth_message' AND entity_id=?",m.id)?.version||0 })),
       meetings: s.query('SELECT m.*,l.company FROM meetings m JOIN leads l ON l.id=m.lead_id AND l.workspace=m.workspace WHERE m.workspace=? ORDER BY m.start DESC', clientId).map(m => ({ ...m, simulation: !realMode, externalInvitation: false })),
       jobs: s.query('SELECT * FROM jobs WHERE workspace=? ORDER BY created DESC', clientId),
       costs: s.query('SELECT * FROM costs WHERE workspace=? ORDER BY created DESC', clientId),
@@ -83,6 +83,7 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
       if(runtime&&method==='POST'&&path==='/runtime/activate')return data(runtime.activate(user,w,body));
       if(mail&&method==='POST'&&path==='/mail/check')return data(await mail.check(user,w,body));
       if(mail&&method==='POST'&&path==='/mail/activate')return data(mail.activate(user,w,body));
+      if(mail&&method==='POST'&&path==='/mail/sync')return data(await mail.sync(user,w,body));
       const mailMatch=path.match(/^\/messages\/([^/]+)\/(send-preview|send|reconcile)$/);
       if(mail&&mailMatch){const [,id,action]=mailMatch;if(method==='GET'&&action==='send-preview')return data(mail.preview(user,w,id));if(method==='POST'&&action==='send')return data(await mail.send(user,w,id,body));if(method==='POST'&&action==='reconcile')return data(await mail.reconcile(user,w,id));}
       if(realMode&&(path.startsWith('/simulate/')||path==='/booking-link'||path.startsWith('/public/')||path.startsWith('/meetings/')))throw new AppError('Email, moduli pubblici e calendario richiedono una fase successiva di collaudo e attivazione.',409);

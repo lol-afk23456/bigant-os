@@ -159,3 +159,8 @@ L'OS non è ancora un sostituto pronto della produzione Growth: per una migrazio
 ## Aggiornamento riordino — 10 ottobre 2026
 
 Riletto il file originale `lib/providers.js` al medesimo commit cfd4b0b. Adattatori preparati in `src/growth-live-providers.js` e `src/public-website.js`, con OpenAI e Anthropic entrambi disponibili come scelta futura. I protocolli sono collaudati mediante risposte finte; il modulo operativo resta DEMO. Nessuna acquisizione di dati, chiamata AI, email o prenotazione reale. Per i passi necessari al collegamento leggere [COLLAUDO-GROWTH-RIORDINO](../docs/COLLAUDO-GROWTH-RIORDINO.md). La predisposizione non equivale a un porting operativo concluso.
+
+
+### Aggiornamento 10 ottobre — recupero delle conversazioni nel server OS
+
+La riga «Recupero conversazioni» ha ora un percorso manuale dedicato `/api/growth/mail/sync`, indipendente dal worker DEMO. Legge dieci thread per richiesta con invio OS verificato, rotazione dei lotti, stessa attività/casella/destinatario, controllo MIME e deduplica con impronta. Rifiuti e risposte invalidano le bozze superate; la preparazione AI resta separata e richiede una risposta completa, attuale e con provenienza ancora valida. Prove offline 78/78, API HTTP e UI desktop/mobile nella [SOP conversazioni](../docs/SOP-GROWTH-CONVERSAZIONI.md) e nel [collaudo](../docs/COLLAUDO-GROWTH-RIORDINO.md). **Non collaudato con casella reale**; inventario complessivo e Calendar ancora parziali.
