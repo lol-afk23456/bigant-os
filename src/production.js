@@ -1,7 +1,7 @@
 import { AppError, canAccessClient, requireClient, requireOwner, uid, now, text, integer } from './store.js';
 import { services } from './registry.js';
 const states=['IDEA','IN PRODUZIONE','DA APPROVARE','APPROVATO','PROGRAMMATO','PUBBLICATO','RIUTILIZZABILE'];
-export function createProduction({store:s}) {
+export function createProduction({store:s,realMode=false}) {
   s.db.exec(`CREATE TABLE IF NOT EXISTS os_approval_origins (approval_id TEXT PRIMARY KEY REFERENCES os_approvals(id),agent TEXT NOT NULL,quality TEXT NOT NULL);
     CREATE TRIGGER IF NOT EXISTS os_approval_origins_no_update BEFORE UPDATE ON os_approval_origins BEGIN SELECT RAISE(ABORT,'Provenienza della versione immutabile'); END;`);
   function tagApproval(id,agent,quality) { s.run('INSERT OR IGNORE INTO os_approval_origins VALUES(?,?,?)',id,text(agent,200),text(quality,200)||'Da verificare'); }
@@ -38,7 +38,7 @@ export function createProduction({store:s}) {
     s.audit(user,clientId,'Memoria aggiornata',kind,{source});return s.one('SELECT * FROM os_memory WHERE client_id=? AND kind=?',clientId,kind);
   }
   function feedback(clientId,message,user) {
-    const previous=s.one("SELECT content FROM os_memory WHERE client_id=? AND kind='feedback'",clientId)?.content||'# Feedback DEMO\n';
+    const previous=s.one("SELECT content FROM os_memory WHERE client_id=? AND kind='feedback'",clientId)?.content||(realMode?'# Feedback\n':'# Feedback DEMO\n');
     s.run('INSERT INTO os_memory VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(client_id,kind) DO UPDATE SET content=excluded.content,version=os_memory.version+1,updated_at=excluded.updated_at',uid(),clientId,'feedback',`${previous}\n- ${now()} · ${user.name}: ${text(message,1500)}`,'internal',1,'Decisione registrata in approvazione',now());
   }
   function requestApproval(user,content) {
@@ -55,10 +55,10 @@ export function createProduction({store:s}) {
     if(user.role==='client')throw new AppError('La produzione è riservata al team BigAnt. Consulta i servizi nella tua area clienti.',403);
     const purchased=JSON.parse(s.one('SELECT services_json FROM os_clients WHERE id=?',clientId).services_json);
     const visible=row=>user.role!=='client'||purchased.includes(row.service)||row.service==='account';
-    if(method==='GET'&&path==='/state') return {data:{contents:s.query('SELECT * FROM os_contents WHERE client_id=?',clientId).filter(visible),tasks:s.query('SELECT * FROM os_tasks WHERE client_id=?',clientId).filter(visible),states,scheduling:'PROGRAMMATO significa pianificato nel calendario DEMO; nessun canale esterno aggiornato.',externalPublished:false}};
+    if(method==='GET'&&path==='/state') return {data:{contents:s.query('SELECT * FROM os_contents WHERE client_id=?',clientId).filter(visible),tasks:s.query('SELECT * FROM os_tasks WHERE client_id=?',clientId).filter(visible),states,scheduling:realMode?'PROGRAMMATO significa pianificato nel calendario interno; nessun canale esterno aggiornato.':'PROGRAMMATO significa pianificato nel calendario DEMO; nessun canale esterno aggiornato.',externalPublished:false}};
     if(method==='POST'&&path==='/contents') {
       writable(user,clientId);serviceAllowed(clientId,body.service);if(!text(body.title)||!text(body.body))throw new AppError('Titolo e testo sono obbligatori.');
-      const id=uid();s.run('INSERT INTO os_contents VALUES(?,?,?,?,?,?,?,?,?,?)',id,clientId,body.service,text(body.title,180),text(body.body,20000),'IDEA',null,1,text(body.source,500)||'Bozza manuale DEMO',now());s.audit(user,clientId,'Contenuto creato',id);return {data:s.one('SELECT * FROM os_contents WHERE id=?',id),status:201};
+      const id=uid();s.run('INSERT INTO os_contents VALUES(?,?,?,?,?,?,?,?,?,?)',id,clientId,body.service,text(body.title,180),text(body.body,20000),'IDEA',null,1,text(body.source,500)||(realMode?'Bozza manuale':'Bozza manuale DEMO'),now());s.audit(user,clientId,'Contenuto creato',id);return {data:s.one('SELECT * FROM os_contents WHERE id=?',id),status:201};
     }
     let m=path.match(/^\/contents\/([^/]+)$/);
     if(m&&method==='PATCH') {

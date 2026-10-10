@@ -6,9 +6,9 @@ import {createApp} from '../server.js';
 
 const future=()=>new Date(Date.now()+86400000).toISOString();
 const status=code=>error=>error.status===code;
-function fixture(t,{store=null,production=null}={}) {
+function fixture(t,{store=null,production=null,realMode=false}={}) {
  const s=store||openStore();if(!store){seedCore(s);t.after(()=>s.close());}
- const p=production||createProduction({store:s}),user=id=>s.one('SELECT * FROM os_users WHERE id=?',id);
+ const p=production||createProduction({store:s,realMode}),user=id=>s.one('SELECT * FROM os_users WHERE id=?',id);
  const owner=user('demo-owner'),collaborator=user('demo-collaborator'),robot=user('os-orchestrator');
  let network=0;t.mock.method(globalThis,'fetch',()=>{network++;throw Error('Rete vietata nel collaudo produzione');});t.after(()=>assert.equal(network,0));
  const call=async(method,path,body={},actor=owner,clientId='demo-bottega')=>(await p.handle({method,path,body,user:actor,clientId})).data;
@@ -23,6 +23,25 @@ function fixture(t,{store=null,production=null}={}) {
  const publish=(c,actor=owner)=>call('PATCH','/contents/'+c.id,{version:c.version,state:'PUBBLICATO'},actor);
  return {s,p,user,owner,collaborator,robot,call,ready,decide,schedule,publish};
 }
+
+test('UI-006: calendario e provenienza distinguono il server reale dalla DEMO senza consentire pubblicazioni',async t=>{
+ for(const realMode of [false,true]){
+  const f=fixture(t,{realMode});
+  const manual=await f.call('POST','/contents',{service:'social',title:'Prova inventata',body:'Testo di collaudo'});
+  assert.equal(manual.source,realMode?'Bozza manuale':'Bozza manuale DEMO');
+  const state=await f.call('GET','/state');assert.equal(state.scheduling.includes('DEMO'),!realMode);assert.equal(state.externalPublished,false);
+  const {content,approval}=await f.ready();await f.decide(approval,f.owner,'changes');
+  assert.ok(f.s.one("SELECT content FROM os_memory WHERE client_id='demo-bottega' AND kind='feedback'").content.startsWith(realMode?'# Feedback\n':'# Feedback DEMO\n'));
+  await assert.rejects(f.publish(content),status(409));
+ }
+});
+
+test('UI-006: l’installazione reale passa la modalità al calendario di produzione',async t=>{
+ const app=createApp({origin:'https://fixture.example',env:{BIGANT_MODALITA:'reale',BIGANT_SOCIO_EMAIL:'fixture@calendar.example',BIGANT_SOCIO_PASSWORD_INIZIALE:'password-inventata-calendario'}});t.after(()=>app.close());
+ const user=app.store.one("SELECT * FROM os_users WHERE role='owner' AND id<>'os-orchestrator' LIMIT 1");
+ const result=await app.production.handle({method:'GET',path:'/state',user,clientId:'demo-bigant'});
+ assert.match(result.data.scheduling,/calendario interno/);assert.doesNotMatch(result.data.scheduling,/DEMO/);assert.equal(result.data.externalPublished,false);
+});
 
 test('FUN-062: socio e collaboratore assegnato approvano la versione social; solo calendario locale',async t=>{
  const f=fixture(t);

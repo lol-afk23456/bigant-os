@@ -68,7 +68,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const metaAuth=createMetaOAuth({store,connections,env,origin,enabled:metaProfilesEnabled,clock,providerOptions:metaProfileProviderOptions});
   const metaProfiles=createMetaProfiles({store,connections,enabled:metaProfilesEnabled,clock,providerOptions:metaProfileProviderOptions});
   const businessProfile=createBusinessProfile({store,auth:businessProfileAuth,enabled:businessProfileEnabled,clock,providerOptions:businessProfileProviderOptions});
-  const production=createProduction({store}),growth=createGrowthModule({store,origin,realMode,costControl,connections,googleAuth,gmailEnabled,calendarEnabled,clock,externalEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true',providerOptions:growthProviderOptions}),fidelity=createFidelityModule({store,origin,realMode,env,clock,walletProviderOptions}),administration=createAdministrationModule({store,clock});
+  const production=createProduction({store,realMode}),growth=createGrowthModule({store,origin,realMode,costControl,connections,googleAuth,gmailEnabled,calendarEnabled,clock,externalEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true',providerOptions:growthProviderOptions}),fidelity=createFidelityModule({store,origin,realMode,env,clock,walletProviderOptions}),administration=createAdministrationModule({store,clock});
   growth.seed(realMode);fidelity.seed(realMode);administration.seed(realMode);
   let agentTrials,agentWork;
   const agentConfig=createAgentConfig({store,root,env,clock,connections,trialState:(id,c)=>agentTrials?.stateForAgent(id,c)||null,operationalState:(id,c)=>agentWork?.state(id,c)||null});
