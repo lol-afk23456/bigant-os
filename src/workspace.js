@@ -19,9 +19,10 @@ export function navigationFor(user, activeServices = []) {
   if (user.role === 'collaborator') return { landing: 'home', items: [
     ['home', 'Home', 'grid', 'Lavoro'], ['clients', 'Clienti assegnati', 'users', 'Lavoro'], ['agents', 'Da approvare', 'approval', 'Lavoro']
   ] };
-  // The definitive client navigation follows the dedicated client review.
+  // Customer navigation exposes only their own purchased services and public profiles.
   return { landing: 'client', items: [
     ['client', 'La tua attività', 'grid', 'Il tuo spazio'], ['catalog', 'I tuoi servizi', 'book', 'Il tuo spazio'],
+    ['profiles', 'I tuoi profili', 'globe', 'Il tuo spazio'],
     ...(activeServices.includes('fidelity') ? [['fidelity', 'Fidelity', 'card', 'Prodotti']] : [])
   ] };
 }
@@ -68,5 +69,5 @@ export function createWorkspace({ store, clock = () => new Date(), budget, expir
     profileDirectory.save(user, clientId, channel, body);
     return profiles(user, clientId);
   }
-  return { home, profiles, saveProfile, approvals, priorities: user => directorPriorities(store, user) };
+  return { home, profiles, publicProfiles: profileDirectory.state, saveProfile, approvals, priorities: user => directorPriorities(store, user) };
 }

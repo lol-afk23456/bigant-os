@@ -14,7 +14,8 @@
         "Fidelity riordinata in sette sezioni con Indietro; vecchio codice conservato.",
         "Fatturazione riordinata in quattro card e Costi in tre sottosezioni. Growth resta da riordinare.",
         "Growth ora a sette sezioni, coda unica, ricerca e analisi DEMO verificate nel Browser; 390 px senza overflow.",
-        "Area cliente ora a card e sezioni separate, verificata su desktop e 390 px. Restano giro completo dei ruoli e altre pagine da verificare."
+        "Area cliente ora a card e sezioni separate, verificata su desktop e 390 px. Restano giro completo dei ruoli e altre pagine da verificare.",
+        "COLLAUDO-NAVIGAZIONE-RUOLI.md: menu e card Profili cliente, proiezione uguale all’anteprima, fonte/data e report nel servizio; giro delle schermate principali per ruolo e telefono. Collegamenti reali e giro completo restano aperti."
       ]
     },
     {
@@ -220,7 +221,8 @@
       "prove": [
         "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
         "Registro di link pubblici con fonte, conferma manuale del socio, versioni immutabili e isolamento: src/profile-directory.js; tests/profile-directory.test.js, tests/profiles-http.test.js, tests/profiles-ui.test.js; docs/COLLAUDO-PROFILI.md. Prima tranche: soli link pubblici; successivamente aggiunto il percorso GBP descritto nella prova seguente. Nessuna modifica al menu cliente definitivo.",
-        "GBP predisposto: consenso OAuth separato, scelta vincolata della scheda, lettura di prova, attivazione esplicita e aggiornamento giornaliero/manuale; cache RAM 24h con fonte e data. 71 nuove prove, suite 652/652 e Browser desktop/mobile con Google simulato: docs/COLLAUDO-GOOGLE-BUSINESS.md. Nessun account reale o rilascio; altri canali e giro cliente ancora da completare."
+        "GBP predisposto: consenso OAuth separato, scelta vincolata della scheda, lettura di prova, attivazione esplicita e aggiornamento giornaliero/manuale; cache RAM 24h con fonte e data. 71 nuove prove, suite 652/652 e Browser desktop/mobile con Google simulato: docs/COLLAUDO-GOOGLE-BUSINESS.md. Nessun account reale o rilascio; altri canali e giro cliente ancora da completare.",
+        "COLLAUDO-NAVIGAZIONE-RUOLI.md: menu e card Profili cliente, proiezione uguale all’anteprima, fonte/data e report nel servizio; giro delle schermate principali per ruolo e telefono. Collegamenti reali e giro completo restano aperti."
       ]
     },
     {
@@ -809,8 +811,10 @@
       "area": "Sciame → ordine dei lavori",
       "modifica": "Raccomandazione: **prima la struttura** (menu, schede, scheda cliente, stati degli agenti), **poi si configurano gli agenti uno alla volta**, partendo da quelli che servono ai **servizi già attivi** (Piano di attivazione, FUN-014) e alla ricerca clienti di Growth (COL-005). Ogni agente si analizza quando arriva il suo turno",
       "criterio": "Esiste un ordine di configurazione scritto, legato ai servizi",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale; ordine scritto, attivazioni reali escluse",
+      "prove": [
+        "ORDINE-CONFIGURAZIONE-AGENTI.md: sequenza per servizi attivi dichiarati nel brief, prerequisiti e avanzamento uno alla volta; Growth separato e T4 ancora da avviare."
+      ]
     },
     {
       "id": "UI-012",

@@ -4,7 +4,7 @@ import {catalogoServizi} from '../servizi/catalogo.js';
 
 // The customer and owner preview share this explicit, read-only projection.
 // Internal task/content/agent work is never used to build a customer report.
-export function createClientArea({store:s,records,businessProfile=null,clock=()=>new Date(),clientResults=null,emailMarketing=null}){
+export function createClientArea({store:s,records,businessProfile=null,clock=()=>new Date(),clientResults=null,emailMarketing=null,publicProfiles=null}){
  function scope(user,clientId){
   const current=user?.id?s.one('SELECT * FROM os_users WHERE id=?',user.id):null;
   if(!current?.active||current.must_change_password||!['owner','client'].includes(current.role)||current.id==='os-orchestrator')throw new AppError('Area riservata al cliente e all’anteprima dei soci.',403);
@@ -47,13 +47,23 @@ export function createClientArea({store:s,records,businessProfile=null,clock=()=
   return {demo:c.demo,clientId,clientName:c.client.name,service:serviceCard(selected),reports,google,publishedReports,...(id==='email-marketing'&&emailMarketing?{emailMarketing:emailMarketing.state(user,clientId)}:{}),
    note:id==='fidelity'?'Gli iscritti appartengono soltanto a questa attività. Gli invii dipendono dalle autorizzazioni del prodotto.':'I valori mancanti restano da collegare. Bozze e calendario editoriale sono gestiti separatamente.'};
  }
+ function profiles(user,clientId){
+  const c=scope(user,clientId);
+  if(!publicProfiles)throw new AppError('Profili non disponibili.',503);
+  const directory=publicProfiles(c.user,clientId);
+  const channelServices={instagram:['social'],facebook:['social'],linkedin:['social'],tiktok:['social'],'google-business':['local','presence','multisite','seo'],website:['website','seo','ecommerce']};
+  return {demo:c.demo,clientId,clientName:c.client.name,canEdit:false,items:directory.items.map(row=>({id:row.id,name:row.name,
+   link:row.link?{url:row.link.url,sourceUrl:row.link.sourceUrl,updatedAt:row.link.updatedAt}:null,
+   reportService:(channelServices[row.id]||[]).find(id=>c.visible.some(service=>service.id===id))||null}))};
+ }
  async function handle({method,path,user,clientId}){
   if(method!=='GET')throw new AppError('Area cliente in sola lettura.',405);
+  if(path==='/profiles')return {data:profiles(user,clientId)};
   if(path==='/dashboard')return {data:dashboard(user,clientId)};
   if(path==='/results'&&clientResults){scope(user,clientId);return {data:clientResults.published(user,clientId)};}
   const match=path.match(/^\/services\/([a-z-]+)$/);
   if(match)return {data:service(user,clientId,match[1])};
   return null;
  }
- return {dashboard,service,handle};
+ return {dashboard,service,profiles,handle};
 }

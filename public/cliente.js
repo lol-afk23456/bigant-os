@@ -75,8 +75,18 @@ function clientServiceReportView(){
  const reports=d.reports||[];
  return clientAreaHeader()+back+`<h2>${e(d.service.nome)}</h2>`+notice(d.note)+(d.publishedReports||[]).map(row=>`<details class="section"><summary>${e(row.period)} · Report verificato</summary>${resultsBody(row,false)}</details>`).join('')+(google?clientGoogleReport(google):'')+(d.emailMarketing?emailContactsPanel(d.emailMarketing):'')+reports.map(row=>panel(row.nome,row.metriche.length?clientMetricRows(row.metriche):empty('Report non ancora disponibile','Le misure verranno mostrate qui con fonte e data.'))).join('');
 }
+function clientProfilesView(){
+ const d=S.module||{},preview=S.view==='client',base=preview?'client:profiles':'profiles',section=preview?S.section.slice('profiles'.length).replace(/^\//,''):S.section||'';
+ if(d.clientId!==S.clientId||!Array.isArray(d.items))return empty('Profili non disponibili','Aggiorna la pagina per leggere la tua attività.');
+ const header=clientAreaHeader()+`<h2>I tuoi profili</h2>`,row=d.items.find(item=>item.id===section);
+ if(!section)return header+notice('Indirizzi pubblici della tua attività. I risultati si trovano nei servizi acquistati.')+sectionCards(d.items.map(item=>({name:item.name,value:item.link?'Indirizzo registrato':'Da aggiungere',route:base+(preview?'/':':')+item.id,icon:'globe'})));
+ const back=btn('Indietro','goto',base,'ghost','arrow');
+ if(!row)return header+back+empty('Profilo non disponibile','Scegli un canale dall’elenco.');
+ return header+back+panel(row.name,row.link?`<p>${profileExternalLink(row.link.url,'Apri il profilo pubblico')}</p><p>Fonte: ${profileExternalLink(row.link.sourceUrl,'Apri la fonte')}</p><p>Aggiornato ${e(date(row.link.updatedAt,true))}</p>`:empty('Indirizzo da aggiungere','L’agenzia deve ancora registrare il profilo pubblico.'))+notice('Un indirizzo registrato non indica che l’account sia collegato.')+(row.reportService?btn('Apri il servizio e i suoi report','goto','client:service/'+row.reportService,'','chart'):'');
+}
 function clienteDashboardView(){
  const d=S.module||{};
+ if(/^profiles(?:\/|$)/.test(S.section||''))return clientProfilesView();
  if(S.section==='results')return clientResultsView();
  if((S.section||'').startsWith('service/'))return clientServiceReportView();
  if(S.section==='servizi')return clientServicesView();
@@ -86,6 +96,7 @@ function clienteDashboardView(){
  const home=d.sezioni?.find(x=>x.id==='home')||{};
  return clientAreaHeader()+workspaceHero('Il tuo spazio.<br>Tutto più chiaro.','Apri un servizio per leggere i suoi dati, oppure consulta i documenti della tua attività.')+sectionCards([
   {name:'I tuoi servizi',value:home.servicesCount||0,note:'Report e fonti, servizio per servizio',route:'client:servizi',icon:'chart'},
+  {name:'I tuoi profili',value:'Apri',note:'Indirizzi pubblici della tua attività',route:isOwner()?'client:profiles':'profiles',icon:'globe'},
   {name:'Documenti',value:home.contractsCount||0,note:'I contratti della tua attività',route:'client:documenti',icon:'file'},
   ...(d.sezioni?.some(row=>row.id==='results')?[{name:'I tuoi risultati',value:'Apri',note:'Obiettivi e lavoro svolto',route:'client:results',icon:'chart'}]:[])
  ]);

@@ -78,3 +78,25 @@ test('Profili HTTP: nessuna rotta cancella link o consente di dichiarare una sin
   assert.equal(f.store.one('SELECT total_changes() n').n,before);
   assert.equal((await f.request('GET',path())).body.items.find(row=>row.id==='website').link.version,1);
 });
+
+test('Profili del cliente: anteprima identica, sola proiezione pubblica, report nel servizio e nessuna scrittura',async t=>{
+ const f=fixture(t);await f.request('PATCH',path('demo-bottega','website'),payload());
+ const before=f.store.one('SELECT total_changes() n').n;
+ const route='/api/cliente/profiles?clientId=demo-bottega';
+ const client=await f.request('GET',route,undefined,{user:'demo-client'}),owner=await f.request('GET',route);
+ assert.equal(client.status,200);assert.deepEqual(owner.body,client.body);assert.equal(client.body.canEdit,false);
+ const website=client.body.items.find(row=>row.id==='website');assert.deepEqual(Object.keys(website.link).sort(),['sourceUrl','updatedAt','url']);assert.equal(website.reportService,'website');
+ assert.doesNotMatch(JSON.stringify(client.body),/businessProfile|confirmed_by|checked|metrics|token|oauth|credentials|configuration/);
+ assert.equal(f.store.one('SELECT total_changes() n').n,before);
+ f.store.run("UPDATE os_clients SET services_json='[]' WHERE id='demo-bottega'");
+ const absent=await f.request('GET',route,undefined,{user:'demo-client'});assert.ok(absent.body.items.every(row=>row.reportService===null));assert.equal(absent.body.items.find(row=>row.id==='website').link.url,payload().url);
+});
+
+test('Profili del cliente: login, ruoli, altre attività e operazioni non ammesse',async t=>{
+ const f=fixture(t),route='/api/cliente/profiles?clientId=demo-bottega';
+ assert.equal((await f.request('GET',route,undefined,{user:null})).status,401);
+ for(const user of ['demo-collaborator','demo-client-other'])assert.equal((await f.request('GET',route,undefined,{user})).status,403);
+ assert.equal((await f.request('GET','/api/cliente/profiles?clientId=demo-studio',undefined,{user:'demo-client'})).status,403);
+ assert.equal((await f.request('POST',route,{}, {user:'demo-client'})).status,405);
+ f.store.run("UPDATE os_users SET active=0 WHERE id='demo-client'");assert.equal((await f.request('GET',route,undefined,{user:'demo-client'})).status,401);
+});

@@ -75,8 +75,8 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const records=createClientRecords({store,production,env,clock});
   const clientResults=createClientResults({store,clock});
   const emailMarketing=createEmailMarketing({store,clock});
-  const cliente=createClientDashboard({store,records,businessProfile,clock,clientResults,emailMarketing});
   const workspace=createWorkspace({store,clock,budget:()=>orchestrator.budget(),expiring:records.expiring,agentConfig,connections,businessProfile});
+  const cliente=createClientDashboard({store,records,businessProfile,clock,clientResults,emailMarketing,publicProfiles:workspace.publicProfiles});
   const servicePlan=createServicePlan({store,agentConfig});
   const billing=createBilling({store,administration});
   const platformProgress=createPlatformProgress({store,realMode,connections,agentConfig,growth,fidelity,businessProfile,backup:()=>backups?.status()||{enabled:false},clock});

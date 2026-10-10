@@ -57,3 +57,20 @@ test('UI cliente: Google non nasconde indicatori non coperti e alla scadenza spa
  const timer=f.timers.at(-1);f.S.module.google.expiresAt='2000-01-01T00:00:00Z';timer.fn();
  assert.equal(loads,1);assert.doesNotMatch(html,/COMMENTO CACHE TEMPORANEO|Fonte Google di prova/);assert.match(html,/Directory coerenti/);
 });
+
+test('UI profili cliente: home, sola lettura anche in anteprima e report nel servizio',async()=>{
+ const f=await fixture();assert.match(f.run('clienteDashboardView()'),/data-view="profiles"/);
+ f.S.session.user.role='owner';assert.match(f.run('clienteDashboardView()'),/data-view="client:profiles"/);
+ f.S.module={clientId:f.S.clientId,clientName:'Attività <inventata>',canEdit:false,items:[{id:'website',name:'Sito web',link:{url:'https://cliente.example/',sourceUrl:'https://fonte.example/',updatedAt:'2026-10-10T10:00:00Z'},reportService:'website'}]};
+ f.S.section='profiles';let html=f.run('clienteDashboardView()');assert.match(html,/client:profiles\/website/);assert.doesNotMatch(html,/profile-edit|Modifica|Aggiorna ora/);
+ f.S.section='profiles/website';html=f.run('clienteDashboardView()');assert.match(html,/Fonte:/);assert.match(html,/Aggiornato/);assert.match(html,/client:service\/website/);assert.match(html,/Attività &lt;inventata&gt;/);assert.doesNotMatch(html,/profile-edit|business-profile-choose|business-profile-activate/);
+ f.S.session.user.role='client';f.S.view='profiles';f.S.section='website';assert.match(f.run('workspaceProfilesView()'),/Apri il profilo pubblico/);
+ f.S.module.items[0].link.url='javascript:alert(1)';assert.doesNotMatch(f.run('workspaceProfilesView()'),/href="javascript/);
+ f.S.module.clientId='demo-studio';assert.match(f.run('workspaceProfilesView()'),/Profili non disponibili/);
+});
+
+test('UI profili cliente: menu e anteprima caricano la medesima API senza configurazione interna',async()=>{
+ const f=await fixture(),seen=[];f.S.overview.navigation.items.push(['profiles','I tuoi profili']);f.context.fakeApi=async path=>{seen.push(path);return path==='/api/overview'?f.S.overview:{clientId:f.S.clientId,items:[]};};
+ f.run('api=fakeApi;render=()=>{};');f.S.view='profiles';await f.run('load()');assert.ok(seen.includes('/api/cliente/profiles'));assert.ok(!seen.includes('/api/workspace/profiles'));
+ seen.length=0;f.S.session.user.role='owner';f.S.view='client';f.S.section='profiles/website';await f.run('load()');assert.ok(seen.includes('/api/cliente/profiles'));assert.ok(!seen.includes('/api/workspace/profiles'));
+});

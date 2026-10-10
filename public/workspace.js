@@ -30,6 +30,7 @@ function workspaceHomeView(){
  return heading+workspaceHero('La testa resta umana.<br>Il lavoro trova il suo ritmo.','Clienti, approvazioni e agenti. Scegli il prossimo passo.',btn('Apri lo sciame','goto','agents','primary','arrow'))+sectionCards(cards)+(S.overview.backup?.error?notice(S.overview.backup.error,true):'');
 }
 function workspaceProfilesView(){
+ if(role()==='client')return clientProfilesView();
  const data=S.module,header=title('I profili, tutti qui.',`Indirizzi pubblici e fonti di ${clientName(S.clientId)}. Registrare un indirizzo non collega l’account né acquisisce dati.`);
  if(!data||data.clientId!==S.clientId||!Array.isArray(data.items))return header+empty('Profili non disponibili','Aggiorna la pagina per leggere i canali dell’attività selezionata.','globe');
  businessProfileScheduleExpiry(data.businessProfile);
@@ -244,7 +245,7 @@ Object.assign(ACTIONS,{
 });
 
 function usersView(){
- return sectionNavigator('users',[
+ return title('Accessi.','Persone autorizzate e registro delle attività.')+sectionNavigator('users',[
   {id:'people',name:'Persone',value:S.module?.items?.length||0,icon:'users'},
   {id:'registry',name:'Registro',value:'Accessi e modifiche',icon:'clock'}
  ],id=>id==='people'?usersPeopleView():activityView());

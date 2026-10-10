@@ -16,7 +16,7 @@ async function fixture(){
  const nodes=new Map(),calls=[];
  const node=selector=>{if(!nodes.has(selector))nodes.set(selector,{innerHTML:'',textContent:'',open:false,addEventListener(){},replaceChildren(){this.innerHTML='';},showModal(){this.open=true;},close(){this.open=false;},focus(){}});return nodes.get(selector);};
  const context=vm.createContext({URL,URLSearchParams,Date,Intl,FormData,crypto:{randomUUID},setInterval:()=>0,setTimeout:()=>0,clearTimeout(){},window:{},history:{replaceState(){}},location:{origin:'http://127.0.0.1:4330',pathname:'/',hash:'',search:''},document:{querySelector:node,addEventListener(){},hidden:false},fetch:async()=>response({user:null,demo:true,profiles:[]})});
- for(const file of ['app.js','ufficio.js','workspace.js'])vm.runInContext(readFileSync(new URL('../public/'+file,import.meta.url),'utf8'),context,{filename:file});
+ for(const file of ['app.js','ufficio.js','cliente.js','workspace.js'])vm.runInContext(readFileSync(new URL('../public/'+file,import.meta.url),'utf8'),context,{filename:file});
  await new Promise(setImmediate);
  const run=code=>vm.runInContext(code,context),S=run('S'),actions=run('ACTIONS');
  S.session={user:{id:'owner-fixture',role:'owner',name:'Socio DEMO'},demo:false,csrf:'csrf-fixture'};S.view='profiles';S.section='';S.clientId='demo-bottega';
@@ -104,7 +104,7 @@ test('Profili: nomi e URL precompilati non creano markup nel modulo',async()=>{
  const f=await fixture();f.S.overview.clients[0].name='Attività <script>';f.S.module.items[0].name='Canale <img>';f.S.module.items[0].link=link({url:'https://www.instagram.com/demo/" onfocus="bad',sourceUrl:'https://fonte.example/<svg>'});f.actions['profile-edit']('instagram');assert.match(f.html(),/Attività &lt;script&gt;/);assert.match(f.html(),/Canale &lt;img&gt;/);assert.match(f.html(),/onfocus=&quot;bad/);assert.doesNotMatch(f.html(),/<script>|<img|<svg>| onfocus="/);assert.equal(f.calls.length,0);
 });
 
-test('Profili: navigazione e aggiornamento leggono il cliente corrente senza aggiungere voci al menu cliente',async()=>{
+test('Profili: navigazione e aggiornamento leggono il cliente corrente senza alterare il menu ricevuto dal server',async()=>{
  const f=await fixture();let current=data();f.serve(call=>call.path==='/api/overview'?f.S.overview:current);await f.actions.goto('profiles:instagram');assert.match(f.page(),/Indirizzo da aggiungere/);assert.equal(f.S.section,'instagram');assert.deepEqual(f.calls.map(call=>call.path),['/api/overview','/api/workspace/profiles']);assert.ok(f.calls.every(call=>call.method==='GET'&&call.clientId==='demo-bottega'));
  current=data();current.items[0].link=link();await f.actions.refresh();assert.match(f.page(),/Fonte dell’indirizzo/);assert.match(f.page(),/www.instagram.com/);assert.equal(f.calls.length,4);
  f.S.session.user.role='client';f.S.overview.navigation.items=[['client','La tua attività','eye','Lavoro']];assert.doesNotMatch(f.run('navigationMarkup()'),/data-view="profiles"/);

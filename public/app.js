@@ -85,7 +85,7 @@ async function load(){
   else if(S.view==='clients'&&isOwner())nextModule=await api('/api/workspace/contracts',{scoped:false});
   else if(S.view==='administration')nextModule=await api('/api/billing/state',{scoped:false});
   else if(S.view==='connections')nextModule=await api('/api/connections',{scoped:false});
-  else if(S.view==='profiles')nextModule=await api('/api/workspace/profiles');
+  else if(S.view==='profiles')nextModule=await api(role()==='client'?'/api/cliente/profiles':'/api/workspace/profiles');
   else if(S.view==='catalog'&&isOwner())nextModule=await api('/api/service-plan',{scoped:false});
   else if(S.view==='progress')nextModule=await api('/api/workspace/progress',{scoped:false});
   else if(S.view==='agents'){
@@ -96,7 +96,7 @@ async function load(){
     else if(S.section!=='sections'){const [state,configuration]=await Promise.all([api('/api/agents/state'),api('/api/agent-config/state')]);nextModule={...state,configuration};}
   }
   else if(S.view==='service')nextModule=await api((role()==='client'?'/api/cliente/services/':'/api/agency/services/')+encodeURIComponent(S.serviceId));
-  else if(S.view==='client')nextModule=await api((S.section||'').startsWith('service/')?'/api/cliente/services/'+encodeURIComponent(S.section.slice(8)):S.section==='results'?'/api/cliente/results':'/api/cliente/dashboard');
+  else if(S.view==='client')nextModule=await api(/^profiles(?:\/|$)/.test(S.section||'')?'/api/cliente/profiles':(S.section||'').startsWith('service/')?'/api/cliente/services/'+encodeURIComponent(S.section.slice(8)):S.section==='results'?'/api/cliente/results':'/api/cliente/dashboard');
   else if(S.view==='catalog')nextModule=await api('/api/cliente/dashboard');
   else nextModule=S.view==='users'?await api('/api/users'):moduleName?await api(`/api/${moduleName}/state`):null;
   if(sequence!==S.loading)return;S.module=nextModule;render();S.lastRefresh=Date.now();

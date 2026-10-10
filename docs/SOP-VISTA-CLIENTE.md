@@ -23,3 +23,7 @@ La funzione sostituisce la proiezione pubblica della dashboard già registrata: 
 | `GET /api/client-record/contracts` e relativo PDF | Stessi documenti per cliente e anteprima del socio |
 
 La voce Vista cliente e le card dei servizi riutilizzano queste proiezioni. La registrazione non aggiunge servizi acquistati né collegamenti. Catalogo storico delle nove sezioni conservato ma non usato dalla risposta pubblica. [Prove e limiti](COLLAUDO-VISTA-CLIENTE.md).
+
+## Profili pubblici del cliente
+
+La voce I tuoi profili e la card della home aprono sei canali pubblici della sola attività. Anteprima del socio e cliente ricevono la stessa proiezione: indirizzo, fonte, data e servizio pertinente. Nessuna credenziale, impostazione OAuth, prova interna o comando di modifica. I report si aprono dal servizio acquistato; i collegamenti pubblici non attestano la connessione dell’account. Ogni richiesta rilegge identità, sessione e attività. Nessuna rete o scrittura durante la consultazione.
