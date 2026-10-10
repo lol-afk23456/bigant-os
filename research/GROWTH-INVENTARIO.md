@@ -154,3 +154,8 @@ Verifica eseguita: `node --test tests/growth.test.js`, **24 test superati**. Que
 | Collegamento CRM al resto dell'agenzia | `/leads/:id/convert`, `os_clients`, `gr_conversions` | Aggiunta nuova verificata: conversione atomica, idempotente, provenienza |
 
 L'OS non è ancora un sostituto pronto della produzione Growth: per una migrazione reale restano l'attivazione autorizzata dei connettori, i test HTTP/UI complessivi e un piano di importazione dati fuori dal repository. Gli originali online non sono stati modificati.
+
+
+## Aggiornamento riordino — 10 ottobre 2026
+
+Riletto il file originale `lib/providers.js` al medesimo commit cfd4b0b. Adattatori preparati in `src/growth-live-providers.js` e `src/public-website.js`, con OpenAI e Anthropic entrambi disponibili come scelta futura. I protocolli sono collaudati mediante risposte finte; il modulo operativo resta DEMO. Nessuna acquisizione di dati, chiamata AI, email o prenotazione reale. Per i passi necessari al collegamento leggere [COLLAUDO-GROWTH-RIORDINO](../docs/COLLAUDO-GROWTH-RIORDINO.md). La predisposizione non equivale a un porting operativo concluso.
