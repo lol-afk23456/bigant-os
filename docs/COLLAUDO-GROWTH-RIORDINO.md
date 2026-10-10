@@ -2,6 +2,26 @@
 
 10 ottobre 2026. Ramo locale `bigant-os-notte-1`. Fonte del confronto: originale `lol-afk23456/bigant-growth`, commit `cfd4b0bfc1b9f209474af1eb9ca7fe90c6eb8aa4`, file `lib/providers.js`. Originale non modificato.
 
+## Ultimo aggiornamento — Calendar, 10 ottobre 2026
+
+COL-005 / FUN-050 restano **parziali**: il percorso Calendar è predisposto e verificato localmente, mentre account, notifiche e server reali non sono stati collaudati. Le sezioni successive conservano la cronologia. [SOP Calendar e contratto API](SOP-GROWTH-CALENDAR.md).
+
+Consenso Google Calendar facoltativo e separato, con soli ambiti `calendar.events.owned` e `calendar.freebusy` aggiunti a Gmail. Un callback non può ampliare gli ambiti scelti. Configurazione e collaudo sono versionati; prima dell’attivazione occorrono prova sulla casella verificata, verifica dell’evento e ricezione dichiarata dal socio. L’evento non prova da solo il recapito della notifica. I collegamenti per i contatti si creano dopo anteprima e conferma, senza spedizione automatica e senza opt-in marketing implicito.
+
+Token temporaneo monouso conservato come hash; contatto, socio, configurazione e consenso riletti durante l’operazione. Intenzioni persistenti, intervalli UTC e transazioni impediscono il doppio uso del link e sovrapposizioni fra attività OS sullo stesso calendario. Nessuna nota interna nel contenuto Google. Esiti incerti e riavvio conservano l’impegno; riconciliazione con identificativo stabile e calendario originale, confronto completo e nessun reinvio. Annullamento con anteprima, conferma e `If-Match`; errore 412 richiede una nuova anteprima. La prova già verificata e ricevuta può essere annullata senza perdere l’attestazione storica.
+
+**94 nuove prove**, tutte con dati inventati: 38 OAuth Calendar, 27 runtime Calendar, 5 adattatore, 6 HTTP/integrate e 18 interfaccia. Le prove integrate usano il vero assemblaggio del server, OAuth, vault, fasi Growth, Gmail e Calendar con trasporto sostituito. La suite completa termina con **543/543**, zero fallimenti o prove saltate. Stato e Avanzamento non scrivono né aprono credenziali; la lettura remota autorizzata conserva invece l’audit del vault.
+
+La revisione indipendente ha individuato due difetti ora corretti e coperti: cancellazione definitivamente bloccata dopo 412 e vecchie impostazioni capaci di ripristinare un’autorizzazione obsoleta. Le impostazioni generali reali rifiutano modifiche Calendar; si usa il percorso versionato dedicato. Un tentativo incerto non viene presentato come richiesta ricevuta da Google. Una fixture precedente sceglieva l’utente tecnico al posto di un socio: ora verifica esplicitamente il rifiuto dell’utente tecnico e usa un’identità umana inventata.
+
+Browser locale con archivi in memoria e fornitori finti: lettura disponibilità → scelta ora → anteprima prova → creazione → conferma ricezione → attivazione → anteprima del contatto → link → scelta pubblica → riepilogo → prenotazione → anteprima annullamento → annullamento. Pagina pubblica a 390×844 senza overflow; dialogo di annullamento largo 356 px. Ripuliti anche due campi senza nome nella scheda contatto vuota di analisi/fonti. Nessun errore console osservato. Schermate nella cache tecnica:
+
+- `.cache/riordino-browser/bigant-calendar-public-preview.png`
+- `.cache/riordino-browser/bigant-calendar-public-booked.png`
+- `.cache/riordino-browser/bigant-calendar-cancel-mobile.png`
+
+Limiti: la lettura FreeBusy non blocca modifiche contemporanee fatte da altre applicazioni; gli esiti assenti dopo timeout richiedono verifica manuale e non liberano automaticamente l’orario. L’inventario completo sul server e la prova su telefono fisico restano aperti. `BIGANT_GROWTH_CALENDAR_ENABLED=false` di default. Nessuna dipendenza aggiunta, connessione reale, email, invito esterno, spesa, push o deploy. Anteprima terminata, schede chiuse e dimensioni del browser ripristinate.
+
 ## Cosa è verificato
 
 L’interfaccia è suddivisa in sette sezioni con ritorno alla griglia. Ricerca, aziende, analisi e storico conservano il percorso DEMO. Nel Browser una ricerca inventata ha aggiunto cinque aziende e un’analisi ha aggiornato il conteggio delle qualificate. Nessuna email inviata. Larghezza 390 px senza scorrimento orizzontale nel documento; prova su dispositivo fisico ancora da fare.

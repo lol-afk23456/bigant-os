@@ -50,8 +50,8 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const store=openStore(database);
   if(realMode)seedRealCore(store,{socioEmail:env.BIGANT_SOCIO_EMAIL,socioPassword:env.BIGANT_SOCIO_PASSWORD_INIZIALE});else seedCore(store);
   const connections=createConnections({store,env});
-  const gmailEnabled=realMode&&env.BIGANT_GROWTH_GMAIL_ENABLED==='true',googleAuth=realMode?createGoogleOAuth({store,connections,env,origin,enabled:gmailEnabled,clock,providerOptions:growthProviderOptions}):null;
-  const production=createProduction({store}),growth=createGrowthModule({store,origin,realMode,connections,googleAuth,gmailEnabled,clock,externalEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true',providerOptions:growthProviderOptions}),fidelity=createFidelityModule({store,origin,realMode,env,clock,walletProviderOptions}),administration=createAdministrationModule({store,clock});
+  const gmailEnabled=realMode&&env.BIGANT_GROWTH_GMAIL_ENABLED==='true',calendarEnabled=()=>realMode&&env.BIGANT_GROWTH_CALENDAR_ENABLED==='true',googleAuth=realMode?createGoogleOAuth({store,connections,env,origin,enabled:gmailEnabled,calendarEnabled,clock,providerOptions:growthProviderOptions}):null;
+  const production=createProduction({store}),growth=createGrowthModule({store,origin,realMode,connections,googleAuth,gmailEnabled,calendarEnabled,clock,externalEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true',providerOptions:growthProviderOptions}),fidelity=createFidelityModule({store,origin,realMode,env,clock,walletProviderOptions}),administration=createAdministrationModule({store,clock});
   growth.seed(realMode);fidelity.seed(realMode);administration.seed(realMode);
   const agentConfig=createAgentConfig({store,root,env,clock});
   const orchestrator=createOrchestrator({store,production,administration,growth,fidelity,clock,guard:realMode?(id,options)=>agentConfig.requireRun(id,options):null});
@@ -105,7 +105,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
       else if(!['127.0.0.1','::1','::ffff:127.0.0.1'].includes(req.socket.remoteAddress)||req.headers.host!==expectedHost)throw new AppError('Il prototipo è disponibile solo in locale.',403);
       const url=new URL(req.url,runtimeOrigin),path=url.pathname,method=req.method;
       if(!['GET','HEAD','POST','PATCH','DELETE'].includes(method))throw new AppError('Metodo non consentito.',405);
-      if(method==='GET'&&path==='/health')return json(res,{status:'ok',app:'BigAnt OS',demo:!realMode,externalActions:realMode&&(env.BIGANT_GOOGLE_WALLET_ENABLED==='true'||gmailEnabled),externalReadsEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true'});
+      if(method==='GET'&&path==='/health')return json(res,{status:'ok',app:'BigAnt OS',demo:!realMode,externalActions:realMode&&(env.BIGANT_GOOGLE_WALLET_ENABLED==='true'||gmailEnabled||calendarEnabled()),externalReadsEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true'});
       const u=session(req);
       if(method==='GET'&&path==='/api/session')return json(res,{user:safeUser(u),csrf:u?.csrf||null,demo:!realMode,profiles:realMode?[]:profiles.map(id=>store.one('SELECT id,name,role FROM os_users WHERE id=? AND active=1',id)).filter(Boolean)});
       if(!['GET','HEAD'].includes(method)&&req.headers.origin!==runtimeOrigin)throw new AppError('Origine della richiesta non autorizzata.',403);
@@ -116,6 +116,12 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
       let publicGrowth=path.match(/^\/api\/growth\/(public\/book|unsubscribe)\/([^/]+)$/);
       if(publicGrowth||path==='/api/growth/public/inquiry'){
         rate('public:'+req.socket.remoteAddress,80);let clientId='demo-bigant';
+        if(realMode&&publicGrowth?.[1]==='public/book'){
+          const token=publicGrowth[2];
+          if(method==='GET')return json(res,await growth.calendar.publicSlots(token));
+          if(method==='POST')return json(res,await growth.calendar.publicBook(token,await body(req)));
+          throw new AppError('Metodo non consentito.',405);
+        }
         if(publicGrowth){const kind=publicGrowth[1]==='unsubscribe'?'unsubscribe':'booking';const t=store.one('SELECT workspace FROM gr_tokens WHERE id=? AND kind=? AND expires>?',publicGrowth[2],kind,Date.now());if(!t)throw new AppError('Collegamento scaduto o non valido.',410);clientId=t.workspace;}
         if(publicGrowth?.[1]!=='unsubscribe'&&!store.one('SELECT 1 FROM os_clients WHERE id=? AND active=1',clientId))throw new AppError('Attività non disponibile.',404);
         return reply(res,await growth.handle({method,path:path.slice('/api/growth'.length),body:['GET','HEAD'].includes(method)?{}:await body(req),user:publicUser,clientId}));

@@ -28,7 +28,7 @@ function assertMinimal(growth,fidelity){
  assert.deepEqual(Object.keys(growth.gmail).sort(),['available','checked','configured','enabled','lastCheck']);
  assert.deepEqual(Object.keys(fidelity).sort(),['appleWallet','googleWallet','simulation']);
  assert.deepEqual(Object.keys(fidelity.googleWallet).sort(),['available','checkedCount','configured','enabledCount','lastCheck']);
- assert.deepEqual(growth.calendar,{enabled:false});assert.deepEqual(fidelity.appleWallet,{enabled:false});
+ assert.deepEqual(Object.keys(growth.calendar).sort(),['available','checked','configured','enabled','lastCheck']);assert.equal(growth.calendar.enabled,false);assert.deepEqual(fidelity.appleWallet,{enabled:false});
 }
 
 test('segnali DEMO: nessuna attivazione né creazione di configurazioni alla lettura',t=>{
@@ -64,7 +64,7 @@ test('Growth collaudato con fornitori finti: segnali minimi, nessuna chiamata o 
  const g=readOnly(f.store,()=>f.growth.progress(f.owner,'demo-bottega'),f.calls);
  assert.equal(g.simulation,false);assert.equal(g.paused,false);
  for(const phase of ['research','analysis','drafts','gmail']){assert.equal(g[phase].checked,true);assert.equal(g[phase].enabled,true);assert.ok(g[phase].lastCheck);}
- assert.equal(g.gmail.configured,true);assert.deepEqual(g.calendar,{enabled:false});
+ assert.equal(g.gmail.configured,true);assert.equal(g.calendar.enabled,false);assert.equal(g.calendar.checked,false);
  const serialized=JSON.stringify(g);assert.doesNotMatch(serialized,/mittente|fixture\.example|inventat|fingerprint|provider|searchCents|signature|source|preview/);
 });
 

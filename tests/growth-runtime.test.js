@@ -73,7 +73,10 @@ test('modalità DEMO e reale non riusano registrazioni di prova presenti',t=>{
 });
 test('server reale costruisce Growth chiuso anche con chiave del vault; nessun fornitore viene chiamato',async t=>{
  const app=createApp({origin:'https://os.example',env:{BIGANT_MODALITA:'reale',BIGANT_SOCIO_EMAIL:'owner@test.example',BIGANT_SOCIO_PASSWORD_INIZIALE:'password-inventata-lunga',BIGANT_SECRET_KEY:Buffer.alloc(32,2).toString('base64')},growthProviderOptions:{fetchImpl:()=>{throw Error('Rete vietata');}}});t.after(()=>app.close());
- const owner=app.store.one("SELECT * FROM os_users WHERE role='owner'");const client=app.store.one('SELECT id FROM os_clients');const state=app.growth.state(client.id,owner);assert.equal(state.runtime.available,false);assert.equal(state.simulation,false);assert.equal(state.leads.length,0);
+ const client=app.store.one('SELECT id FROM os_clients');
+ assert.throws(()=>app.growth.state(client.id,app.store.one("SELECT * FROM os_users WHERE id='os-orchestrator'")),e=>e.status===403);
+ app.store.run("UPDATE os_users SET must_change_password=0 WHERE email='owner@test.example'");
+ const owner=app.store.one("SELECT * FROM os_users WHERE email='owner@test.example'");const state=app.growth.state(client.id,owner);assert.equal(state.runtime.available,false);assert.equal(state.simulation,false);assert.equal(state.leads.length,0);assert.equal(state.calendar.enabled,false);
 });
 
 test('ripetere un collaudo sospende le fasi dipendenti; un errore non conserva la vecchia attestazione',async t=>{

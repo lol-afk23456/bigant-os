@@ -9,7 +9,7 @@ export const services = [
   ['seo','SEO e contenuti','production','Audit, priorità, testi, misure','Metodo disponibile','GA4 e Search Console'],
   ['ecommerce','E-commerce','production','Catalogo, ordini, resi e collaudo','Da attivare','Piattaforma e-commerce'],
   ['social-commerce','Social commerce','production','Catalogo collegato e percorso di acquisto','Da attivare','Meta'],
-  ['booking','Prenotazioni','account','Disponibilità, appuntamenti, conferme','Simulazione locale','Google Calendar'],
+  ['booking','Prenotazioni','account','Disponibilità, appuntamenti, conferme','Attivazione con prova e approvazione','Google Calendar'],
   ['ads','Pubblicità online','production','Brief, mappa leve, creatività, report','Metodo disponibile','Google Ads e Meta Ads'],
   ['display','Display e programmatic','production','Pianificazione tramite partner','Partner da valutare','Partner pubblicitario'],
   ['social','Social media','production','DNA, calendario, bozze, approvazioni','Flusso locale','Postiz'],

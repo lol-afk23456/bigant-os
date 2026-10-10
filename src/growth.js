@@ -4,6 +4,7 @@ import { AppError, string, email, createLead, updateLead, suppression, canContac
 import { createEngine } from './growth-engine.js';
 import { demoProviders } from './growth-providers.js';
 import {createGrowthMail} from './growth-mail.js';
+import {createGrowthCalendar} from './growth-calendar.js';
 import { createGrowthRuntime } from './growth-runtime.js';
 import { emailHTML, emailPreviewText } from './growth-brand.js';
 
@@ -20,11 +21,12 @@ function fixture(input) {
 }
 function data(value, status = 200) { return { data: value, status }; }
 
-export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', realMode=false, connections=null, externalEnabled=false, providerOptions={}, googleAuth=null, gmailEnabled=false, clock=()=>new Date() }) {
+export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', realMode=false, connections=null, externalEnabled=false, providerOptions={}, googleAuth=null, gmailEnabled=false, calendarEnabled=false, clock=()=>new Date() }) {
   const actor = new AsyncLocalStorage();
   const s = growthStore(store, () => actor.getStore(),{realMode});
   const runtime=realMode?createGrowthRuntime({store,growthStore:s,connections,getActor:()=>actor.getStore(),externalEnabled,providerOptions}):null;
   const mail=realMode?createGrowthMail({store,growthStore:s,runtime,googleAuth,origin,enabled:gmailEnabled,providerOptions,clock}):null;
+  const calendar=realMode?createGrowthCalendar({store,growthStore:s,runtime,mail,googleAuth,origin,enabled:calendarEnabled,providerOptions,clock}):null;
   const p = runtime?runtime.providers:demoProviders(s);
   const engine = createEngine(s, p, { origin: origin + '/api/growth',simulation:!realMode,runtime,...(realMode?{readWebsite:(url,w)=>p.website(w,url),replyContext:(w,m,user)=>mail.conversations.replyReason(user||actor.getStore(),w,m)}:{}) });
   engine.recover();
@@ -35,19 +37,19 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
     const snapshot=runtime?.progress(current,w),simulation=!realMode||!!snapshot?.simulation;
     const phase=id=>({...((snapshot?.[id])||fallback()),...(simulation?{enabled:false}:{})});
     return {simulation,paused:snapshot?.paused??!!s.settings(w).paused,research:phase('research'),analysis:phase('analysis'),drafts:phase('drafts'),
-      gmail:mail?.progress(current,w)||{...fallback(),configured:false},calendar:{enabled:false}};
+      gmail:mail?.progress(current,w)||{...fallback(),configured:false},calendar:calendar?.progress(current,w)||{...fallback(),configured:false}};
   }
 
   function state(clientId = 'demo-bigant', user) {
     owner(user); s.workspace(clientId);
     const settings = s.settings(clientId), used = s.costs(clientId),mailState=mail?.state(user,clientId)||null;
     return {
-      simulation: !realMode, label: realMode?'Growth · attivazione per fasi':'DEMO offline · nessuna ricerca, email o prenotazione esterna', settings, mail:mailState,conversations:mail?.conversations.state(user,clientId)||null,runtime:runtime?.state(user,clientId)||null,
+      simulation: !realMode, label: realMode?'Growth · attivazione per fasi':'DEMO offline · nessuna ricerca, email o prenotazione esterna', settings, mail:mailState,calendar:calendar?.state(user,clientId)||null,conversations:mail?.conversations.state(user,clientId)||null,runtime:runtime?.state(user,clientId)||null,
       sources:store.query('SELECT id,lead_id,kind,url,retrieved_at,provenance_json FROM gr_sources WHERE workspace=? ORDER BY retrieved_at DESC',clientId),
       connections: { openai: false, brave: false, google: mailState?.configured||false, googleConfigured: mailState?.configured||false, demoAvailable: !realMode },
       leads: s.query('SELECT * FROM leads WHERE workspace=? ORDER BY created DESC', clientId),
       messages: s.query('SELECT m.*,l.company FROM messages m JOIN leads l ON l.id=m.lead_id AND l.workspace=m.workspace WHERE m.workspace=? ORDER BY m.created DESC,m.id DESC', clientId).map(m => ({ ...m, simulation: !realMode, externalDelivery: realMode&&m.status==='sent',replyBlockedReason:realMode&&m.direction==='in'?engine.replyReason(clientId,m,user):null,source:realMode&&m.direction==='in'?store.one("SELECT 'Gmail' provider,imported_at importedAt FROM gr_mail_receipts WHERE message_id=?",m.id)||null:null,approvalVersion:store.one("SELECT MAX(version) version FROM os_approvals WHERE kind='growth_message' AND entity_id=?",m.id)?.version||0 })),
-      meetings: s.query('SELECT m.*,l.company FROM meetings m JOIN leads l ON l.id=m.lead_id AND l.workspace=m.workspace WHERE m.workspace=? ORDER BY m.start DESC', clientId).map(m => ({ ...m, simulation: !realMode, externalInvitation: false })),
+      meetings: calendar?calendar.meetings(user,clientId):s.query('SELECT m.*,l.company FROM meetings m JOIN leads l ON l.id=m.lead_id AND l.workspace=m.workspace WHERE m.workspace=? ORDER BY m.start DESC', clientId).map(m => ({ ...m, simulation: true, externalInvitation: false })),
       jobs: s.query('SELECT * FROM jobs WHERE workspace=? ORDER BY created DESC', clientId),
       costs: s.query('SELECT * FROM costs WHERE workspace=? ORDER BY created DESC', clientId),
       approvals: s.query('SELECT a.* FROM gr_approvals a JOIN leads l ON l.id=(SELECT lead_id FROM messages WHERE id=a.message_id) WHERE l.workspace=?', clientId),
@@ -93,6 +95,17 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
       if(mail&&method==='POST'&&path==='/mail/check')return data(await mail.check(user,w,body));
       if(mail&&method==='POST'&&path==='/mail/activate')return data(mail.activate(user,w,body));
       if(mail&&method==='POST'&&path==='/mail/sync')return data(await mail.sync(user,w,body));
+      if(calendar&&method==='POST'&&path==='/calendar/config')return data(calendar.configure(user,w,body));
+      if(calendar&&method==='POST'&&path==='/calendar/check')return data(await calendar.check(user,w,body));
+      if(calendar&&method==='POST'&&path==='/calendar/probe-preview')return data(await calendar.probePreview(user,w,body));
+      if(calendar&&method==='POST'&&path==='/calendar/probe')return data(await calendar.probe(user,w,body));
+      if(calendar&&method==='POST'&&path==='/calendar/probe-verify')return data(await calendar.verifyProbe(user,w,body));
+      if(calendar&&method==='POST'&&path==='/calendar/activate')return data(calendar.activate(user,w,body));
+      if(calendar&&method==='POST'&&path==='/calendar/invite')return data(calendar.invite(user,w,body));
+      const calendarLead=path.match(/^\/leads\/([^/]+)\/invite-preview$/);
+      if(calendar&&calendarLead&&method==='GET')return data(calendar.invitePreview(user,w,calendarLead[1]));
+      const calendarMeeting=path.match(/^\/meetings\/([^/]+)\/(cancel-preview|cancel|reconcile)$/);
+      if(calendar&&calendarMeeting){const [,id,action]=calendarMeeting;if(method==='GET'&&action==='cancel-preview')return data(await calendar.cancelPreview(user,w,id));if(method==='POST'&&action==='cancel')return data(await calendar.cancel(user,w,id,body));if(method==='POST'&&action==='reconcile')return data(await calendar.reconcile(user,w,id));}
       const mailMatch=path.match(/^\/messages\/([^/]+)\/(send-preview|send|reconcile)$/);
       if(mail&&mailMatch){const [,id,action]=mailMatch;if(method==='GET'&&action==='send-preview')return data(mail.preview(user,w,id));if(method==='POST'&&action==='send')return data(await mail.send(user,w,id,body));if(method==='POST'&&action==='reconcile')return data(await mail.reconcile(user,w,id));}
       if(realMode&&(path.startsWith('/simulate/')||path==='/booking-link'||path.startsWith('/public/')||path.startsWith('/meetings/')))throw new AppError('Email, moduli pubblici e calendario richiedono una fase successiva di collaudo e attivazione.',409);
@@ -202,6 +215,7 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
         if (body.autoSend || body.autoReply) throw new AppError('Gli invii automatici sono disabilitati: ogni messaggio richiede un socio.', 409);
         if (!realMode&&body.senderEmail) fixture({ email: body.senderEmail });
         const previous=s.settings(w),next = validateSettings(body, previous); next.autoSend = false; next.autoReply = false;
+        if(realMode&&['calendarId','meetingMinutes','startHour','endHour','timezone'].some(key=>next[key]!==previous[key]))throw new AppError('Modifica il calendario dalla configurazione Calendar in Collegamenti Growth: occorrono una nuova versione e nuovi collaudi.',409);
         if(realMode&&(next.autoResearch||next.publicFormEnabled||next.researchLimit<1||next.researchLimit>10))throw new AppError('Per ora Growth reale richiede ricerche manuali da 1 a 10 risultati e moduli pubblici disattivati.',409);
         if (['totalBudget','hostingBudget','emailBudget','reserveBudget'].some(k => k in body)) { if(next.totalBudget-next.hostingBudget-next.emailBudget-next.reserveBudget<s.costs())throw new AppError('Il nuovo limite è inferiore ai costi già impegnati.',409); store.setSetting('budget_cents', next.totalBudget); store.setSetting('fixed_cents', next.hostingBudget + next.emailBudget + next.reserveBudget); }
         s.transaction(()=>{s.saveSettings(w, next);if(realMode&&['senderEmail','senderName','signature'].some(key=>next[key]!==previous[key]))s.invalidateApprovals(w);});
@@ -212,5 +226,5 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
     } finally { /* Il contesto attore è isolato per richiesta. */ }
     });
   }
-  return { mail,runtime,state,progress, seed, handle, engine, store: s, providers: p };
+  return { mail,calendar,runtime,state,progress, seed, handle, engine, store: s, providers: p };
 }

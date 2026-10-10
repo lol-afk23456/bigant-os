@@ -79,14 +79,16 @@ test('Avanzamento: autorizzazione Google richiede anche custodia, senza estender
 test('Avanzamento: fasi Growth e conteggio Wallet descrivono soltanto la capacità autorizzata', t => {
   const f = fixture(t, { realMode: true }); let paused = false, simulation = false, enabled = true;
   const phase = () => ({ enabled, checked: true, lastCheck: '2026-10-09T12:00:00.000Z' });
-  t.mock.method(f.growth, 'progress', () => ({ paused, simulation, research: phase(), analysis: phase(), drafts: phase(), gmail: phase() }));
+  t.mock.method(f.growth, 'progress', () => ({ paused, simulation, research: phase(), analysis: phase(), drafts: phase(), gmail: phase(), calendar: phase() }));
   t.mock.method(f.fidelity, 'progress', () => ({ googleWallet: { enabledCount: 1, checkedCount: 2, lastCheck: '2026-10-09T12:00:00.000Z' } }));
   let result = f.snapshot();
   for (const id of ['research','analysis','drafts','gmail']) assert.equal(row(result, 'growth-' + id).status, 'Funziona');
+  assert.equal(row(result,'calendar').status,'Funziona');
   assert.match(row(result, 'growth-gmail').missing.join(' '), /manuale.*approvazione/);
   assert.equal(row(result, 'google-wallet').status, 'Funziona'); assert.match(row(result, 'google-wallet').summary, /1 attività abilitate; 2/);
   assert.equal(row(result, 'fidelity').status, 'Prova');
   paused = true; result = f.snapshot(); assert.equal(row(result, 'growth-gmail').status, 'Prova'); assert.match(row(result, 'growth-gmail').missing.join(' '), /pausa/);
+  assert.equal(row(result,'calendar').status,'Prova');assert.match(row(result,'calendar').missing.join(' '),/pausa/);
   paused = false; simulation = true; assert.equal(row(f.snapshot(), 'growth-gmail').status, 'Prova');
   simulation = false; enabled = false; assert.equal(row(f.snapshot(), 'growth-gmail').status, 'Prova');
 });

@@ -2308,9 +2308,10 @@
       "evidence": [
         "Baseline 8750e80; research/GROWTH-INVENTARIO.md:47",
         "src/growth-engine.js:60-63; src/growth-providers.js:busy; tests/growth.test.js:152,256; public/app.js:133",
-        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS.",
+        "10 ottobre 2026: src/growth-calendar.js, src/google-oauth.js, src/growth-live-providers.js; tests/growth-calendar*.test.js e tests/google-oauth-calendar.test.js; suite 543/543; SOP-GROWTH-CALENDAR.md e COLLAUDO-GROWTH-RIORDINO.md. Stato storico conservativo invariato, nessuna attestazione del provider reale."
       ],
-      "missing": "Slot Europe/Rome e conflitti locali funzionano; Google FreeBusy non collegato.",
+      "missing": "Disponibilità Google integrata con consenso separato, versione e fasi precedenti; FreeBusy e slot Europe/Rome verificati con trasporto finto. Collegamento e collaudo con calendario reale ancora necessari; le app esterne possono cambiare la disponibilità durante la prenotazione.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -2329,9 +2330,10 @@
       "evidence": [
         "Baseline 8750e80; research/GROWTH-INVENTARIO.md:48",
         "src/growth.js:146-152; tests/growth.test.js:152,167,256; tests/core-review.test.js:100; public/app.js:133,197",
-        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS.",
+        "10 ottobre 2026: src/growth-calendar.js, src/google-oauth.js, src/growth-live-providers.js; tests/growth-calendar*.test.js e tests/google-oauth-calendar.test.js; suite 543/543; SOP-GROWTH-CALENDAR.md e COLLAUDO-GROWTH-RIORDINO.md. Stato storico conservativo invariato, nessuna attestazione del provider reale."
       ],
-      "missing": "Token e pagina prenotazione locali verificati; invito Google classificato separatamente.",
+      "missing": "Link pubblico monouso conservato come hash, socio e contatto correnti, scadenza e doppia conferma verificati localmente anche nel Browser. Pubblicazione e collaudo sul dominio reale da fare.",
       "baselineStatus": "FATTO e testato",
       "category": "funzionale"
     },
@@ -2350,9 +2352,10 @@
       "evidence": [
         "Baseline 8750e80; research/GROWTH-INVENTARIO.md:49",
         "src/growth-engine.js:62-63; src/growth-providers.js:book; tests/growth.test.js:152; public/app.js:133,197,226",
-        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS.",
+        "10 ottobre 2026: src/growth-calendar.js, src/google-oauth.js, src/growth-live-providers.js; tests/growth-calendar*.test.js e tests/google-oauth-calendar.test.js; suite 543/543; SOP-GROWTH-CALENDAR.md e COLLAUDO-GROWTH-RIORDINO.md. Stato storico conservativo invariato, nessuna attestazione del provider reale."
       ],
-      "missing": "Prenotazione locale e token monouso funzionano; creazione evento e invito Google reali mancanti.",
+      "missing": "Creazione Google collegata a intenzione persistente e contenuto autorizzato; test di concorrenza, revoca e risposta incoerente superati con trasporto finto. Evento e notifiche reali non collaudati.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -2371,9 +2374,10 @@
       "evidence": [
         "Baseline 8750e80; research/GROWTH-INVENTARIO.md:50",
         "src/growth-engine.js:42; src/growth-providers.js:event; tests/growth.test.js:182; public/app.js:134",
-        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS.",
+        "10 ottobre 2026: src/growth-calendar.js, src/google-oauth.js, src/growth-live-providers.js; tests/growth-calendar*.test.js e tests/google-oauth-calendar.test.js; suite 543/543; SOP-GROWTH-CALENDAR.md e COLLAUDO-GROWTH-RIORDINO.md. Stato storico conservativo invariato, nessuna attestazione del provider reale."
       ],
-      "missing": "Stati e deduplica verificati nella simulazione; riconciliazione con Calendar reale non implementata.",
+      "missing": "Riconciliazione sul calendario originale con confronto evento/destinatario/orari/marcatura implementata e testata localmente. Esiti assenti restano in verifica senza reinvio; percorso reale da collaudare.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -2392,9 +2396,10 @@
       "evidence": [
         "Baseline 8750e80; research/GROWTH-INVENTARIO.md:51",
         "src/growth-engine.js:64; src/growth-providers.js:cancelEvent; tests/growth.test.js:152; public/app.js:135",
-        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS.",
+        "10 ottobre 2026: src/growth-calendar.js, src/google-oauth.js, src/growth-live-providers.js; tests/growth-calendar*.test.js e tests/google-oauth-calendar.test.js; suite 543/543; SOP-GROWTH-CALENDAR.md e COLLAUDO-GROWTH-RIORDINO.md. Stato storico conservativo invariato, nessuna attestazione del provider reale."
       ],
-      "missing": "Annullamento della sola prenotazione DEMO; manca aggiornamento remoto e notifica agli invitati.",
+      "missing": "Annullamento integrato con anteprima, conferma, versione If-Match e gestione 412/timeout. Provider e notifica reali ancora da collaudare; nessun invito o annullamento esterno eseguito.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
@@ -2645,9 +2650,10 @@
       "evidence": [
         "Baseline 8750e80; research/GROWTH-INVENTARIO.md:63",
         "src/growth.js:32,74; tests/growth.test.js:224; public/app.js:75",
-        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS.",
+        "10 ottobre 2026: src/growth-calendar.js, src/google-oauth.js, src/growth-live-providers.js; tests/growth-calendar*.test.js e tests/google-oauth-calendar.test.js; suite 543/543; SOP-GROWTH-CALENDAR.md e COLLAUDO-GROWTH-RIORDINO.md. Stato storico conservativo invariato, nessuna attestazione del provider reale."
       ],
-      "missing": "Flusso OAuth, state, refresh token, profilo mittente e consenso Google non implementati; soltanto stato Non collegato e rifiuto 409.",
+      "missing": "OAuth Gmail e Calendar opzionale implementati con stato/sessione monouso, PKCE, scope salvati lato server e refresh token cifrato. 44 test OAuth con Google finto; account, applicazione Google, consenso e callback reali non collaudati.",
       "baselineStatus": "SOLO STRUTTURA",
       "category": "funzionale"
     },
