@@ -59,9 +59,10 @@
       "area": "Accessi",
       "modifica": "Creare da *Accessi*: utente collaboratore (Vincenzo) e utente cliente collegato al cliente di prova \"BigAnt\" (vedi DAT-001). Account nominali, password scelte dai titolari, mai scritte in chat o nei documenti",
       "criterio": "Tre accessi distinti entrano e ciascuno vede solo il proprio spazio",
-      "stato": "da fare",
+      "stato": "parziale; collaboratore presente, cliente da creare e login da verificare",
       "prove": [
-        "10 ottobre, COLLAUDO-ONLINE-2026-10-10.md: indirizzi ricevuti e due moduli preparati, non salvati; cliente sulla sola attività di prova e collaboratore assegnato alla stessa. Password e salvataggio richiesti al titolare nel browser. I tre login separati restano da verificare."
+        "10 ottobre, COLLAUDO-ONLINE-2026-10-10.md: indirizzi ricevuti e due moduli preparati, non salvati; cliente sulla sola attività di prova e collaboratore assegnato alla stessa. Password e salvataggio richiesti al titolare nel browser. I tre login separati restano da verificare.",
+        "Verifica successiva nella pagina Accessi reale: Vincenzo attivo come Collaboratore sul solo BigAnt (cliente di prova); account cliente non presente. Nessun account creato in questa ricognizione, nessuna password aperta o cambiata. Primo accesso e collaudo autenticato dei ruoli ancora aperti. COLLAUDO-ONLINE-2026-10-10.md."
       ]
     },
     {

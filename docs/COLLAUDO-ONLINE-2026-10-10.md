@@ -104,3 +104,9 @@ Operazioni online dalla sessione socio, esclusivamente su **BigAnt (cliente di p
 Screenshot nella cache: `client-note-online.png`, `client-contract-online.png`, `client-report-online.png` (il report è fotografato durante la fase visibile, poi è stato reso nuovamente privato). La misura del viewport del giro corrente era 1280 px: questi scatti documentano il desktop, non una nuova prova mobile. Le verifiche precedenti a 390 px restano distinte. Nessun errore/avviso nei log raccolti alla fine del giro.
 
 Queste prove non sostituiscono gli accessi nominali cliente/collaboratore, la fotocamera fisica, Wallet o i collegamenti esterni. Nessun dato di clienti reali, nuova credenziale, invio o costo di un fornitore introdotto. Il database applicativo è stato aggiornato soltanto con i record di collaudo indicati sopra; il rilascio non ha migrazioni o scritture automatiche.
+
+## Aggiornamento successivo degli accessi
+
+Ricognizione in sola lettura della pagina Accessi: **Vincenzo è ora presente e attivo**, ruolo Collaboratore, assegnazione limitata a BigAnt (cliente di prova). L’account cliente non compare ancora. Nessun account creato o modificato in questa ricognizione, nessuna password letta o reimpostata. Primo login del collaboratore, cambio obbligatorio e isolamento dalla sua sessione restano da verificare; non ricreare il suo account. FUN-001 passa da da fare a parziale; matrice **73 locali, 16 parziali, 3 da fare**.
+
+Collegamenti: tutte le voci visualizzate indicano Da collegare. Non sono state aperte chiavi né autorizzazioni. Le schede dei moduli preparati restano conservate per il proprietario; non ripetere richieste già rinviate.
