@@ -129,8 +129,8 @@ export function createSciame({store:s,production,administration,growth,orchestra
  }
  function eseguiAzioneEsterna(user,id){requireOwner(user);const a=s.one('SELECT * FROM os_azioni_esterne WHERE id=?',id);if(!a)throw new AppError('Azione non trovata.',404);s.audit(user,a.client_id,'Tentativo di azione esterna rifiutato',id,{tipo:a.tipo},'internal');throw new AppError(`${AZIONI[a.tipo]||a.tipo}: bloccato. ${a.motivo}`,409);}
 
- // ---------- Contenuti nella produzione comune (stati IDEA → … → PROGRAMMATO) ----------
- async function contenuti(passoRow,bozze,{approvatore,servizio='social',attendiCliente=false}){
+ // ---------- Contenuti nella produzione comune: la persona decide nella coda ----------
+ async function contenuti(passoRow,bozze,{servizio='social'}={}){
   const r=robot(),c=passoRow.client_id,creati=[];
   for(const b of bozze){
    const corpo=`${b.testo}\n\nCTA: ${b.cta}${b.hashtag?.length?'\n'+b.hashtag.join(' '):''}${b.brief_visivo?`\n\nBrief visivo: ${b.brief_visivo}`:''}${b.canale?`\nCanale: ${b.canale} · ${b.formato}`:'\nCanale: Google Business Profile'}`;
@@ -140,15 +140,7 @@ export function createSciame({store:s,production,administration,growth,orchestra
    x=(await production.handle({method:'PATCH',path:'/contents/'+x.id,body:{version:x.version,state:'DA APPROVARE'},user:r,clientId:c})).data;
    const a=s.one("SELECT * FROM os_approvals WHERE kind='content' AND entity_id=? AND version=?",x.id,x.version);
    production.tagApproval(a.id,agentiSciame[passoRow.agente].nome,passoRow.esito_qualita);
-   if(attendiCliente){registra(passoRow,'Contenuto in attesa dell’approvazione del cliente',{contenuto:x.id,approvazione:a.id});creati.push(x.id);continue;}
-   if(autoDemo()){
-    await production.handle({method:'POST',path:'/approvals/'+a.id,body:{decision:'approved',reason:`auto-approvato (DEMO) · ${approvatore}`},user:r,clientId:c});
-    s.run("UPDATE os_approvals SET reason=? WHERE id=?",`auto-approvato (DEMO) · ${approvatore}`,a.id);
-    registra(passoRow,'Approvazione: auto-approvato (DEMO)',{contenuto:x.id,passaggio:approvatore});
-    const quando=/^\d{4}-\d{2}-\d{2}$/.test(b.data_proposta)&&Date.parse(b.data_proposta+'T10:00:00+02:00')>Date.now()?b.data_proposta+'T10:00:00+02:00':new Date(Date.now()+86400000).toISOString();
-    x=(await production.handle({method:'PATCH',path:'/contents/'+x.id,body:{version:x.version,state:'PROGRAMMATO',scheduled_at:quando},user:r,clientId:c})).data;
-    registra(passoRow,'Contenuto programmato (solo calendario DEMO)',{contenuto:x.id,quando});
-   }
+   registra(passoRow,'Contenuto in attesa dell’approvazione del team BigAnt',{contenuto:x.id,approvazione:a.id});
    creati.push(x.id);azioneEsterna(passoRow,servizio==='local'?'pubblicazione_gbp':'pubblicazione',servizio==='local'?`Post GBP «${b.titolo}» — pubblicazione bloccata (GBP API non collegata)`:`${b.canale}: «${b.titolo}» — pubblicazione reale bloccata (Postiz/Meta non collegati)`);
   }
   return creati;
@@ -234,7 +226,7 @@ export function createSciame({store:s,production,administration,growth,orchestra
  async function flussoMarketing(giro,ctx){
   const pk=pacchettoMarketing(ctx.priorita);
   const r=await passo(giro,{flusso:'marketing',agente:'marketing',clientId:'demo-bigant',compito:`Prepara il piano editoriale BigAnt per la settimana dal ${pk.settimana.dal} al ${pk.settimana.al} e le bozze dei post pronte da approvare.`,pacchetto:pk,cliente:{nome:'BigAnt',settore:'Agenzia di comunicazione',sanitario:false}});
-  if(r.approvato)await contenuti(r.passo,r.output.bozze,{approvatore:'passaggio interno al posto del socio'});
+  if(r.approvato)await contenuti(r.passo,r.output.bozze);
   return r;
  }
  async function flussoCommerciale(giro){
@@ -257,14 +249,14 @@ export function createSciame({store:s,production,administration,growth,orchestra
   const d=oggi(),m=new Date(d+'T12:00:00Z');m.setUTCMonth(m.getUTCMonth()+1);const mese=`${mesi[m.getUTCMonth()]} ${m.getUTCFullYear()}`;
   const pk={oggi:d,mese,cliente:bottegaDemo.cliente,squadra_bigant:bigantProfilo.squadra,pacchetto:{nome:'S “Presenza”',contenuti_mese:8,canali:['Instagram','Facebook'],reel:2},dna:bottegaDemo.dna,promozioni_eventi:bottegaDemo.promozioni_eventi,feedback_cliente:feedback('demo-bottega','social'),regole:['Piano del mese successivo entro il 20','Voce del cliente (DNA)','Nessuna promessa o prezzo non fornito','Pubblicazione solo dopo ok del cliente']};
   const r=await passo(giro,{flusso:'social',agente:'social',clientId:'demo-bottega',compito:`Prepara il piano editoriale S01 di ${mese} per ${bottegaDemo.cliente.nome} con i testi dei post.`,pacchetto:pk,cliente:{nome:bottegaDemo.cliente.nome,settore:bottegaDemo.cliente.settore,sanitario:false}});
-  if(r.approvato)await contenuti(r.passo,r.output.post,{approvatore:'approvazione del cliente simulata'});
+  if(r.approvato)await contenuti(r.passo,r.output.post);
   return r;
  }
  async function flussoLocal(giro,{dati=bottegaDemo,attendiCliente=false}={}){
   const cid=dati.cliente.id,cliente={nome:dati.cliente.nome,settore:dati.cliente.settore,sanitario:/fisio|medic|sanit|clinic/i.test(dati.cliente.settore)};
   const gbp=await passo(giro,{flusso:'local',agente:'local-gbp',clientId:cid,compito:`Controlla la scheda Google di ${cliente.nome} (S06), segnala le incoerenze con il sito e prepara 4 post GBP del mese.`,pacchetto:{oggi:oggi(),cliente:dati.cliente,squadra_bigant:bigantProfilo.squadra,pacchetto_s06:pacchettoS06,scheda_google:dati.scheda_google,dati_sito:dati.dati_sito,checklist_s06:checklistS06,vincoli:['Le modifiche le esegue Vincenzo dopo l’ok (Trello “GBP OPS”)','Nessuna modifica aggressiva: rischio sospensione']},cliente});
   if(gbp.approvato){azioneEsterna(gbp.passo,'modifica_scheda',`${gbp.output.controlli.filter(c=>c.stato!=='ok').length} correzioni alla scheda Google — modifica bloccata (GBP API non collegata)`);
-   if(attendiCliente)gbp.contenuti=await contenuti(gbp.passo,gbp.output.post_gbp,{approvatore:'cliente',servizio:'local',attendiCliente:true});
+   if(attendiCliente)gbp.contenuti=await contenuti(gbp.passo,gbp.output.post_gbp,{servizio:'local'});
    else for(const x of gbp.output.post_gbp)azioneEsterna(gbp.passo,'pubblicazione_gbp',`Post GBP «${x.titolo}» — pubblicazione bloccata`);}
   if(!dati.recensioni?.length)return gbp;
   const rep=await passo(giro,{flusso:'local',agente:'reputazione',clientId:cid,compito:`Prepara le risposte a tutte le recensioni DEMO di ${cliente.nome} (S08) e il kit di raccolta.`,pacchetto:{oggi:oggi(),cliente:dati.cliente,tono:dati.dna||'[DA VERIFICARE] DNA non compilato',recensioni:dati.recensioni,regole:['Vietato comprare, inventare o incentivare recensioni','Negative: avviso immediato e ok del cliente','Nessun dato personale o sensibile nelle risposte']},cliente});

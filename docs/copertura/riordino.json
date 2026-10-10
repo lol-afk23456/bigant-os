@@ -838,8 +838,13 @@
       "area": "Regola di pubblicazione",
       "modifica": "Regola **applicata dal server**, non solo dall'interfaccia: una pubblicazione parte solo se esiste un'approvazione di una persona, sulla **stessa versione** del testo (il codice già annulla le approvazioni dei testi modificati [C]). La pubblicazione automatica richiede il collegamento al canale (Meta, PED, o un programmatore di post: COL-002, COL-004) ed è **spenta finché non viene collaudata e autorizzata**",
       "criterio": "Un tentativo di pubblicare senza approvazione, o con un'approvazione su una versione precedente, viene rifiutato dal server (test automatico)",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "src/production.js e tests/production-approval.test.js: decisione umana, identità/permessi riletti, stesso cliente/contenuto/versione/titolo/testo, approvatore ancora autorizzato e servizio attivo prima della pianificazione; pubblicazione sempre rifiutata anche con prova valida",
+        "src/sciame/index.js e tests/sciame.test.js: bozze DA APPROVARE anche in DEMO, nessuna auto-approvazione dei contenuti; i soli passaggi interni sciame_output restano simulati",
+        "Browser locale: otto post Sciame pendenti, decisione del collaboratore registrata e coda aggiornata; finestra a 390 px senza overflow. Suite completa 382/382; SOP-PUBBLICAZIONE-CONTENUTI.md",
+        "Mancano collegamento, esecuzione automatica, ricevute del canale e collaudo autorizzato sul server: nessuna pubblicazione esterna predisposta come operativa"
+      ]
     },
     {
       "id": "FUN-063",

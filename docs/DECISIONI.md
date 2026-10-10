@@ -131,3 +131,10 @@ T0: usare le skill e i test già disponibili, due verifiche delegate circoscritt
 Lettura solo su richiesta del socio, senza worker o AI automatici. Il consenso OAuth Gmail già predisposto è sufficiente: nessun nuovo scope o collegamento attivato. Dieci thread per richiesta con rotazione, provenienti da invii OS confermati e dalla stessa casella/destinatario. Consentire la lettura mentre gli invii sono sospesi, per ricevere rifiuti; revoca OAuth, socio o attività inattivi la bloccano.
 
 Verificare ancore e data Gmail, poi acquisire ogni thread in transazione con invalidazione di bozze e approvazioni. Un messaggio incompleto impedisce nuove bozze AI per quel contatto; gestione fuori dall’OS nella casella finché non esiste un flusso esplicito di revisione. Ultima risposta e provenienza sono vincolanti anche dopo modifica del consenso o della casella. Nessuna email ricevuta concede consenso commerciale automaticamente. Parser MIME locale, senza nuove dipendenze, con limiti espliciti; nessun allegato o risorsa remota acquisiti. Confrontare gli indirizzi non certifica l’identità del mittente. Dettagli e limiti in SOP-GROWTH-CONVERSAZIONI.
+
+
+### Approvazione umana dei contenuti — FUN-062, 10 ottobre 2026
+
+La regola vale anche nella DEMO: os-orchestrator può preparare una bozza e richiedere revisione, ma non decidere sui contenuti. Restano simulate soltanto le approvazioni interne sciame_output. Il calendario rilegge la prova completa e i permessi correnti di chi ha deciso: una disattivazione, revoca dell’assegnazione o rimozione del servizio blocca l’uso dell’approvazione. Non alterare decisioni storiche incoerenti per farle risultare valide; serve una nuova revisione umana. Riallineata soltanto la fixture di approvazione dei nuovi archivi DEMO al titolo della sua bozza.
+
+Correzione locale senza nuovi connettori: PUBBLICATO resta rifiutato anche con prova valida. Il futuro esecutore dovrà ricontrollare la stessa versione al momento dell’invio e registrare ricevute e idempotenza; FUN-062 resta parziale per questa parte e per il collaudo server. SOP e catalogo architetturale aggiornati.

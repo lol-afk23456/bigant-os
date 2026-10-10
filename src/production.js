@@ -1,4 +1,4 @@
-import { AppError, requireClient, requireOwner, uid, now, text, integer } from './store.js';
+import { AppError, canAccessClient, requireClient, requireOwner, uid, now, text, integer } from './store.js';
 import { services } from './registry.js';
 const states=['IDEA','IN PRODUZIONE','DA APPROVARE','APPROVATO','PROGRAMMATO','PUBBLICATO','RIUTILIZZABILE'];
 export function createProduction({store:s}) {
@@ -6,10 +6,32 @@ export function createProduction({store:s}) {
     CREATE TRIGGER IF NOT EXISTS os_approval_origins_no_update BEFORE UPDATE ON os_approval_origins BEGIN SELECT RAISE(ABORT,'Provenienza della versione immutabile'); END;`);
   function tagApproval(id,agent,quality) { s.run('INSERT OR IGNORE INTO os_approval_origins VALUES(?,?,?)',id,text(agent,200),text(quality,200)||'Da verificare'); }
 
-  function writable(user,clientId) { requireClient(s,user,clientId); if(user.role==='client')throw new AppError('Il cliente approva e richiede modifiche; la produzione è del team.',403); }
+  function currentUser(user) {
+    const current=user?.id&&s.one('SELECT id,name,tenant_id,role,active FROM os_users WHERE id=? AND active=1',user.id);
+    if(!current)throw new AppError('Utente non più autorizzato. Accedi nuovamente.',403);
+    return current;
+  }
+  function writable(user,clientId) {user=currentUser(user);requireClient(s,user,clientId);if(user.role==='client')throw new AppError('La produzione e le decisioni sui contenuti spettano al team BigAnt.',403);return user;}
   function serviceAllowed(clientId,service) {const c=s.one('SELECT services_json FROM os_clients WHERE id=?',clientId);if(!services.some(x=>x.id===service)||!JSON.parse(c.services_json).includes(service))throw new AppError('Servizio non attivo per questa attività.',403);}
+  function canApprove(user,content) {
+    // L'identità tecnica può preparare bozze, mai sostituire la decisione umana.
+    return user?.id!=='os-orchestrator'&&!!user?.active&&canAccessClient(s,user,content.client_id)
+      &&(user.role==='owner'||(user.role==='collaborator'&&content.service==='social'));
+  }
+  function sameVersion(approval,content) {
+    return approval?.kind==='content'&&approval.client_id===content.client_id&&approval.entity_id===content.id
+      &&approval.version===content.version&&approval.title===content.title&&approval.body===content.body;
+  }
+  function requireApprovedVersion(content) {
+    serviceAllowed(content.client_id,content.service);
+    const approval=s.one("SELECT * FROM os_approvals WHERE kind='content' AND client_id=? AND entity_id=? AND version=? AND status='approved'",content.client_id,content.id,content.version);
+    const approver=approval?.decision_by&&s.one('SELECT id,tenant_id,role,active FROM os_users WHERE id=?',approval.decision_by);
+    if(!sameVersion(approval,content)||!Number.isFinite(Date.parse(approval.decision_at))||!canApprove(approver,content))
+      throw new AppError('Serve una nuova approvazione umana sulla versione corrente, da una persona ancora autorizzata.',409);
+    return approval;
+  }
   function saveMemory(user,clientId,kind,content,source='Modifica manuale DEMO') {
-    writable(user,clientId);if(!['master','dna','strategy','feedback','report'].includes(kind))throw new AppError('Tipo di memoria non disponibile.');
+    user=writable(user,clientId);if(!['master','dna','strategy','feedback','report'].includes(kind))throw new AppError('Tipo di memoria non disponibile.');
     if(s.one("SELECT 1 FROM os_memory WHERE client_id=? AND kind=? AND visibility='admin'",clientId,kind))requireOwner(user);
     if(!text(content))throw new AppError('La memoria non può essere vuota.');
     s.run('INSERT INTO os_memory VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(client_id,kind) DO UPDATE SET visibility=CASE WHEN os_memory.visibility=\'admin\' THEN \'admin\' ELSE \'internal\' END,content=excluded.content,version=os_memory.version+1,source=excluded.source,updated_at=excluded.updated_at',uid(),clientId,kind,text(content,20000),'internal',1,text(source,500),now());
@@ -20,11 +42,15 @@ export function createProduction({store:s}) {
     s.run('INSERT INTO os_memory VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(client_id,kind) DO UPDATE SET content=excluded.content,version=os_memory.version+1,updated_at=excluded.updated_at',uid(),clientId,'feedback',`${previous}\n- ${now()} · ${user.name}: ${text(message,1500)}`,'internal',1,'Decisione registrata in approvazione',now());
   }
   function requestApproval(user,content) {
+    user=writable(user,content.client_id);serviceAllowed(content.client_id,content.service);
+    const current=s.one('SELECT * FROM os_contents WHERE id=? AND client_id=?',content.id,content.client_id);
+    if(!current||current.version!==content.version||current.title!==content.title||current.body!==content.body||current.service!==content.service||current.state!==content.state)throw new AppError('La bozza è cambiata. Ricaricala prima di chiedere approvazione.',409);
     if(content.state!=='DA APPROVARE')throw new AppError('Porta prima il contenuto in revisione.',409);
     const id=uid();s.run('INSERT OR IGNORE INTO os_approvals(id,client_id,kind,entity_id,version,title,body,status,requested_by,created_at) VALUES(?,?,?,?,?,?,?,?,?,?)',id,content.client_id,'content',content.id,content.version,content.title,content.body,'pending',user.id,now());
     return s.one("SELECT * FROM os_approvals WHERE kind='content' AND entity_id=? AND version=?",content.id,content.version);
   }
   async function handle({method,path,body={},user,clientId}) {
+    user=currentUser(user);
     requireClient(s,user,clientId);
     const purchased=JSON.parse(s.one('SELECT services_json FROM os_clients WHERE id=?',clientId).services_json);
     const visible=row=>user.role!=='client'||purchased.includes(row.service)||row.service==='account';
@@ -35,17 +61,17 @@ export function createProduction({store:s}) {
     }
     let m=path.match(/^\/contents\/([^/]+)$/);
     if(m&&method==='PATCH') {
-      writable(user,clientId);const c=s.one('SELECT * FROM os_contents WHERE id=? AND client_id=?',m[1],clientId);if(!c)throw new AppError('Contenuto non trovato.',404);if(body.version!==c.version)throw new AppError('La bozza è cambiata. Ricaricala prima di modificarla.',409);
+      writable(user,clientId);const c=s.one('SELECT * FROM os_contents WHERE id=? AND client_id=?',m[1],clientId);if(!c)throw new AppError('Contenuto non trovato.',404);serviceAllowed(clientId,c.service);if(body.version!==c.version)throw new AppError('La bozza è cambiata. Ricaricala prima di modificarla.',409);
       return {data:s.transaction(()=>{
         const edited=body.body!==undefined||body.title!==undefined;
         if(edited) {const t=text(body.title??c.title,180),b=text(body.body??c.body,20000);if(!t||!b)throw new AppError('Titolo e testo sono obbligatori.');s.run("UPDATE os_contents SET title=?,body=?,version=version+1,state='IN PRODUZIONE',scheduled_at=NULL,updated_at=? WHERE id=?",t,b,now(),c.id);s.run("UPDATE os_approvals SET status='obsolete' WHERE entity_id=? AND kind='content' AND status IN('pending','approved')",c.id);}
         else {
           const next=body.state;
           const transitions={'IDEA':['IN PRODUZIONE'],'IN PRODUZIONE':['DA APPROVARE'],'DA APPROVARE':['IN PRODUZIONE'],'APPROVATO':['PROGRAMMATO'],'PROGRAMMATO':['APPROVATO'],'PUBBLICATO':['RIUTILIZZABILE'],'RIUTILIZZABILE':[]};
-          if(next==='PUBBLICATO')throw new AppError('Pubblicazione esterna disabilitata: non registriamo una pubblicazione inesistente.',409);
+          if(next==='PUBBLICATO') {requireApprovedVersion(c);throw new AppError('Pubblicazione esterna disabilitata: non registriamo una pubblicazione inesistente.',409);}
           if(!transitions[c.state]?.includes(next))throw new AppError('Passaggio di stato non consentito.',409);
           let schedule=null;
-          if(next==='PROGRAMMATO') {if(!s.one("SELECT 1 FROM os_approvals WHERE entity_id=? AND version=? AND status='approved'",c.id,c.version))throw new AppError('Serve approvare questa versione.',409);if(!Number.isFinite(Date.parse(body.scheduled_at))||Date.parse(body.scheduled_at)<=Date.now())throw new AppError('Scegli una data futura.');schedule=new Date(body.scheduled_at).toISOString();}
+          if(next==='PROGRAMMATO') {requireApprovedVersion(c);if(!Number.isFinite(Date.parse(body.scheduled_at))||Date.parse(body.scheduled_at)<=Date.now())throw new AppError('Scegli una data futura.');schedule=new Date(body.scheduled_at).toISOString();}
           s.run('UPDATE os_contents SET state=?,scheduled_at=?,updated_at=? WHERE id=?',next,schedule,now(),c.id);
           if(next==='DA APPROVARE')requestApproval(user,{...c,state:next});
         }
@@ -58,9 +84,9 @@ export function createProduction({store:s}) {
       const a=s.one('SELECT * FROM os_approvals WHERE id=? AND client_id=?',m[1],clientId);if(!a)throw new AppError('Approvazione non trovata.',404);
       if(a.kind!=='content') {requireOwner(user);throw new AppError('Usa il modulo responsabile per questa decisione.',409);}
       const c=s.one('SELECT * FROM os_contents WHERE id=? AND client_id=?',a.entity_id,clientId);
-      if(user.role==='collaborator'&&c?.service!=='social')requireOwner(user);
+      if(c&&!canApprove(user,c))throw new AppError('Serve la decisione di un socio o, per i post social, di un collaboratore assegnato all’attività.',403);
       if(c)serviceAllowed(clientId,c.service);
-      if(!c||a.status!=='pending'||c.version!==a.version||c.state!=='DA APPROVARE')throw new AppError('Richiesta già decisa o versione superata.',409);
+      if(!c||a.status!=='pending'||!sameVersion(a,c)||c.state!=='DA APPROVARE')throw new AppError('Richiesta già decisa o versione superata. Ricarica la bozza e richiedi una nuova approvazione.',409);
       if(!['approved','rejected','changes'].includes(body.decision))throw new AppError('Decisione non valida.');if(body.decision!=='approved'&&!text(body.reason))throw new AppError('Indica il motivo: tornerà nel feedback al team.');
       return {data:s.transaction(()=>{
         s.run('UPDATE os_approvals SET status=?,decision_by=?,decision_at=?,reason=? WHERE id=?',body.decision,user.id,now(),text(body.reason,1500),a.id);

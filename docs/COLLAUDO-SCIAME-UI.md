@@ -1,5 +1,11 @@
 # Sciame BigAnt — interfaccia DEMO
 
+## Aggiornamento FUN-062 — 10 ottobre 2026
+
+Su un nuovo archivio soltanto in memoria, il flusso social DEMO produce otto bozze **DA APPROVARE**, senza auto-approvazione né data in calendario. Browser locale: accesso Collaboratore DEMO, coda di nove richieste (otto Sciame e una fixture preesistente), lettura di Contenuto 1 e decisione registrata; la richiesta decisa scompare e le altre restano pendenti. Verificato il dialogo di Contenuto 2 a 390×844: documento 390 px, finestra 356 px, nessuno scorrimento orizzontale e nessun errore console rilevato.
+
+Schermate nella cache tecnica `.cache/riordino-browser/bigant-publication-desktop.jpg` e `bigant-publication-mobile.jpg`. La pianificazione e i rifiuti del server sono verificati da `tests/production-approval.test.js` e `tests/sciame.test.js`: 35 prove mirate, suite complessiva 382/382. [SOP e limiti](SOP-PUBBLICAZIONE-CONTENUTI.md). Nessun test su un telefono fisico o su un canale esterno; nessun rilascio. Il resoconto seguente resta storico.
+
 Aggiornamento: 8 ottobre 2026. Il collaudo riguarda BigAnt OS nella cartella tecnica, non le applicazioni online.
 
 ## Comportamenti predisposti

@@ -37,7 +37,7 @@ test('ogni agente dello sciame ha istruzioni proprie in .claude/agents con front
  }
 });
 
-test('giro completo con motore DEMO: sette reparti, Qualità su ogni output, auto-approvazioni DEMO e azioni esterne bloccate',async t=>{
+test('giro completo con motore DEMO: sette reparti, Qualità, passaggi interni automatici e contenuti in attesa umana',async t=>{
  const a=fixture(t),giro=a.sciame.creaGiro(a.owner,{richiesta:RICHIESTA});
  const r=await a.sciame.eseguiGiro(giro.id);
  assert.equal(r.stato,'completato',JSON.stringify(r.passi.filter(p=>p.errore)));
@@ -52,10 +52,10 @@ test('giro completo con motore DEMO: sette reparti, Qualità su ogni output, aut
   assert.equal(p.motore,'demo');assert.ok(['completato','in_attesa_approvazione'].includes(p.stato));
  }
  assert.equal(r.passi.find(p=>p.agente==='amministrazione').visibilita,'admin');
- // Contenuti nella produzione comune fino a PROGRAMMATO, con pubblicazione bloccata.
+ // Le verifiche interne automatiche non approvano né programmano contenuti.
  const contenuti=a.s.query("SELECT * FROM os_contents WHERE source LIKE 'Sciame %'");
- assert.equal(contenuti.length,4+8);assert.ok(contenuti.every(c=>c.state==='PROGRAMMATO'&&c.scheduled_at));
- for(const c of contenuti)assert.equal(a.s.one("SELECT reason FROM os_approvals WHERE kind='content' AND entity_id=?",c.id).reason.startsWith('auto-approvato (DEMO)'),true);
+ assert.equal(contenuti.length,4+8);assert.ok(contenuti.every(c=>c.state==='DA APPROVARE'&&c.scheduled_at===null));
+ for(const c of contenuti){const ap=a.s.one("SELECT * FROM os_approvals WHERE kind='content' AND entity_id=?",c.id);assert.equal(ap.status,'pending');assert.equal(ap.decision_by,null);assert.equal(ap.decision_at,null);assert.equal(ap.body,c.body);assert.equal(ap.title,c.title);}
  const azioni=a.s.query('SELECT * FROM os_azioni_esterne WHERE giro_id=?',giro.id);
  assert.ok(azioni.length>=12&&azioni.every(x=>x.stato==='bloccata'));
  for(const tipo of ['pubblicazione','pubblicazione_gbp','modifica_scheda','risposta_recensioni','invio_email'])assert.ok(azioni.some(x=>x.tipo===tipo),'manca azione '+tipo);
@@ -69,9 +69,21 @@ test('giro completo con motore DEMO: sette reparti, Qualità su ogni output, aut
  const anomalie=r.passi.find(p=>p.agente==='amministrazione').input.anomalie_rilevate;for(const regola of ['missing_document','subscription_increase','possible_duplicate','invoice_overdue'])assert.ok(anomalie.some(x=>x.regola===regola),'manca '+regola);
  // Registro attività: ogni passo lascia righe con agente, motore e costo; il Direttore salva le priorità.
  assert.ok(a.s.query("SELECT * FROM os_audit WHERE action LIKE 'Sciame · %'").length>=r.passi.length);
- assert.equal(a.s.query("SELECT * FROM os_audit WHERE action='Approvazione: auto-approvato (DEMO)'").length,9+12);
+ assert.equal(a.s.query("SELECT * FROM os_audit WHERE action='Approvazione: auto-approvato (DEMO)'").length,9);
  assert.match(a.s.one("SELECT content FROM os_memory WHERE client_id='demo-bigant' AND kind='priorita-settimana'").content,/^1\. /);
  assert.equal(r.costo_usd_micro,0);
+});
+
+test('contenuto Sciame: soltanto una persona approva la versione e la programma nel calendario locale',async t=>{
+ const a=fixture(t),giro=a.sciame.creaGiro(a.owner,{richiesta:'Social Bottega',flussi:['social']});await a.sciame.eseguiGiro(giro.id);
+ const c=a.s.one("SELECT * FROM os_contents WHERE source LIKE 'Sciame %' AND client_id='demo-bottega'");assert.ok(c);assert.equal(c.state,'DA APPROVARE');
+ const ap=a.s.one("SELECT * FROM os_approvals WHERE kind='content' AND entity_id=?",c.id);
+ const call=(method,path,body,user=a.team)=>a.production.handle({method,path,body,user,clientId:c.client_id});
+ await assert.rejects(call('PATCH','/contents/'+c.id,{version:c.version,state:'PROGRAMMATO',scheduled_at:new Date(Date.now()+86400000).toISOString()}),e=>e.status===409);
+ await call('POST','/approvals/'+ap.id,{decision:'approved'});assert.equal(a.s.one('SELECT decision_by FROM os_approvals WHERE id=?',ap.id).decision_by,a.team.id);
+ const scheduled=await call('PATCH','/contents/'+c.id,{version:c.version,state:'PROGRAMMATO',scheduled_at:new Date(Date.now()+86400000).toISOString()});assert.equal(scheduled.data.state,'PROGRAMMATO');
+ await assert.rejects(call('PATCH','/contents/'+c.id,{version:c.version,state:'PUBBLICATO'}),e=>e.status===409);
+ assert.equal(a.s.one("SELECT count(*) n FROM os_contents WHERE state='PUBBLICATO'").n,0);
 });
 
 test('Qualità ferma un output con promessa garantita dopo una correzione fallita: nessuna approvazione, nessun contenuto',async t=>{

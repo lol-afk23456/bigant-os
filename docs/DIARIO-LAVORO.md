@@ -198,3 +198,14 @@ Due verifiche delegate: suite specifica e revisione statica. Corretti tutti i ca
 Prove finali: 78/78 dedicate, 362/362 suite, check 5/5. Ambiente isolato, temporanei sotto la cache del progetto. HTTP verifica sessione/CSRF/ruoli. Browser: tre email finte acquisite, rifiuto e testo incompleto senza preparazione, vecchia bozza annullata, nuova risposta accodata e preparata solo manualmente. A 390 px documento 390 e dialogo 356. Schermate archiviate nella cache tecnica; i soli temporanei delle immagini rimossi dopo la copia. Build DEMO pubblica senza credenziali e1b292740835 (3078 KB) generata in cache, file di pubblicazione preesistente preservato.
 
 Limiti: nessuna Gmail reale letta o collegata, nessuna AI applicativa, spesa, email, push o deploy. Calendar, server, telefono fisico e collaudo completo autorizzato restano aperti; le 92 voci non sono concluse. Nessun nuovo dato cliente reale nel repository. I messaggi needs_owner richiedono gestione manuale nella casella; non viene finto uno sblocco OS non implementato.
+
+
+## 10 ottobre 2026 — contenuti: approvazione umana prima del calendario
+
+FUN-062, collegata a FUN-063. Revisione indipendente iniziale: riprodotte in memoria programmazioni con approvazione tecnica, servizio rimosso e approvatore disattivato o non più assegnato. Nessuna pubblicazione esterna possibile già prima della correzione. Scritto SOP-PUBBLICAZIONE-CONTENUTI prima del codice, poi introdotto il controllo della prova completa e delle identità correnti anche negli accessi interni al modulo. Decisione e calendario verificano stesso cliente, contenuto, versione, titolo e testo; la pianificazione richiede una decisione datata di una persona ancora autorizzata. Le bozze dello Sciame restano DA APPROVARE anche in DEMO. Nessuna migrazione o correzione retroattiva delle approvazioni esistenti.
+
+Test delegati in file disgiunti e riesame dei sorgenti senza ulteriori difetti bloccanti: 35/35 mirati, altri 29/29 di regressione, suite completa **382/382**. Le prove comprendono sessione, CSRF, isolamento e revoca dell’utente durante la lettura della richiesta HTTP. Ambiente privo di credenziali; gli errori iniziali EPERM riguardavano i soli listener locali e sono stati risolti con esecuzione autorizzata. Browser: otto post Sciame attendono il team, un collaboratore registra la decisione e la coda si aggiorna. Finestra mobile 390×844, documento 390 e dialogo 356, nessun errore console. Schermate in cache tecnica, temporanei esterni rimossi; anteprima in memoria terminata.
+
+FUN-062 passa da da fare a parziale in locale: mancano connettore, esecuzione e ricevute del canale, oltre al collaudo autorizzato sul server. Le 92 voci e il nuovo incarico non sono conclusi. Nessuna dipendenza aggiunta, account collegato, AI applicativa reale, pubblicazione, spesa, push o deploy.
+
+Controllo conclusivo: **check 5/5**, 105 file JavaScript, 72 documenti, 137 collegamenti locali, registro e dipendenze verificati senza rete.

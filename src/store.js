@@ -96,6 +96,6 @@ export function seedCore(s) {
     }
     s.run('INSERT OR IGNORE INTO os_tasks VALUES(?,?,?,?,?,?,?,?,?,?,?)','task-demo','demo-bottega','Rivedere il piano social DEMO','social','demo-collaborator',new Date(Date.now()+86400000).toISOString(),'todo',90,0,'Fixture DEMO',now());
     s.run('INSERT OR IGNORE INTO os_contents VALUES(?,?,?,?,?,?,?,?,?,?)','content-demo','demo-bottega','social','La bottega si racconta · DEMO','Bozza dimostrativa: persone, gesti e materiali. Nessuna offerta o risultato reale.','DA APPROVARE',null,1,'Fixture DEMO',now());
-    s.run('INSERT OR IGNORE INTO os_approvals VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)','approval-demo','demo-bottega','content','content-demo',1,'Piano social · DEMO','Bozza dimostrativa: persone, gesti e materiali. Nessuna offerta o risultato reale.','pending','agente-social',null,null,'',now());
+    s.run('INSERT OR IGNORE INTO os_approvals VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)','approval-demo','demo-bottega','content','content-demo',1,'La bottega si racconta · DEMO','Bozza dimostrativa: persone, gesti e materiali. Nessuna offerta o risultato reale.','pending','agente-social',null,null,'',now());
   });
 }
