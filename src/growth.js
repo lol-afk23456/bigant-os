@@ -3,6 +3,7 @@ import { growthStore, now, uid } from './growth-store.js';
 import { AppError, string, email, createLead, updateLead, suppression, canContact, validateSettings, csv } from './growth-domain.js';
 import { createEngine } from './growth-engine.js';
 import { demoProviders } from './growth-providers.js';
+import {createGrowthMail} from './growth-mail.js';
 import { createGrowthRuntime } from './growth-runtime.js';
 import { emailHTML, emailPreviewText } from './growth-brand.js';
 
@@ -19,23 +20,24 @@ function fixture(input) {
 }
 function data(value, status = 200) { return { data: value, status }; }
 
-export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', realMode=false, connections=null, externalEnabled=false, providerOptions={} }) {
+export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', realMode=false, connections=null, externalEnabled=false, providerOptions={}, googleAuth=null, gmailEnabled=false, clock=()=>new Date() }) {
   const actor = new AsyncLocalStorage();
   const s = growthStore(store, () => actor.getStore(),{realMode});
   const runtime=realMode?createGrowthRuntime({store,growthStore:s,connections,getActor:()=>actor.getStore(),externalEnabled,providerOptions}):null;
+  const mail=realMode?createGrowthMail({store,growthStore:s,runtime,googleAuth,origin,enabled:gmailEnabled,providerOptions,clock}):null;
   const p = runtime?runtime.providers:demoProviders(s);
   const engine = createEngine(s, p, { origin: origin + '/api/growth',simulation:!realMode,runtime,...(realMode?{readWebsite:(url,w)=>p.website(w,url)}:{}) });
   engine.recover();
 
   function state(clientId = 'demo-bigant', user) {
     owner(user); s.workspace(clientId);
-    const settings = s.settings(clientId), used = s.costs(clientId);
+    const settings = s.settings(clientId), used = s.costs(clientId),mailState=mail?.state(user,clientId)||null;
     return {
-      simulation: !realMode, label: realMode?'Growth · attivazione per fasi':'DEMO offline · nessuna ricerca, email o prenotazione esterna', settings, runtime:runtime?.state(user,clientId)||null,
+      simulation: !realMode, label: realMode?'Growth · attivazione per fasi':'DEMO offline · nessuna ricerca, email o prenotazione esterna', settings, mail:mailState,runtime:runtime?.state(user,clientId)||null,
       sources:store.query('SELECT id,lead_id,kind,url,retrieved_at,provenance_json FROM gr_sources WHERE workspace=? ORDER BY retrieved_at DESC',clientId),
-      connections: { openai: false, brave: false, google: false, googleConfigured: false, demoAvailable: !realMode },
+      connections: { openai: false, brave: false, google: mailState?.configured||false, googleConfigured: mailState?.configured||false, demoAvailable: !realMode },
       leads: s.query('SELECT * FROM leads WHERE workspace=? ORDER BY created DESC', clientId),
-      messages: s.query('SELECT m.*,l.company FROM messages m JOIN leads l ON l.id=m.lead_id AND l.workspace=m.workspace WHERE m.workspace=? ORDER BY m.created DESC', clientId).map(m => ({ ...m, simulation: !realMode, externalDelivery: false })),
+      messages: s.query('SELECT m.*,l.company FROM messages m JOIN leads l ON l.id=m.lead_id AND l.workspace=m.workspace WHERE m.workspace=? ORDER BY m.created DESC', clientId).map(m => ({ ...m, simulation: !realMode, externalDelivery: realMode&&m.status==='sent',approvalVersion:store.one("SELECT MAX(version) version FROM os_approvals WHERE kind='growth_message' AND entity_id=?",m.id)?.version||0 })),
       meetings: s.query('SELECT m.*,l.company FROM meetings m JOIN leads l ON l.id=m.lead_id AND l.workspace=m.workspace WHERE m.workspace=? ORDER BY m.start DESC', clientId).map(m => ({ ...m, simulation: !realMode, externalInvitation: false })),
       jobs: s.query('SELECT * FROM jobs WHERE workspace=? ORDER BY created DESC', clientId),
       costs: s.query('SELECT * FROM costs WHERE workspace=? ORDER BY created DESC', clientId),
@@ -79,6 +81,10 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
       if(runtime&&method==='POST'&&path==='/runtime/config')return data(runtime.save(user,w,body));
       if(runtime&&method==='POST'&&path==='/runtime/check')return data(await runtime.check(user,w,body));
       if(runtime&&method==='POST'&&path==='/runtime/activate')return data(runtime.activate(user,w,body));
+      if(mail&&method==='POST'&&path==='/mail/check')return data(await mail.check(user,w,body));
+      if(mail&&method==='POST'&&path==='/mail/activate')return data(mail.activate(user,w,body));
+      const mailMatch=path.match(/^\/messages\/([^/]+)\/(send-preview|send|reconcile)$/);
+      if(mail&&mailMatch){const [,id,action]=mailMatch;if(method==='GET'&&action==='send-preview')return data(mail.preview(user,w,id));if(method==='POST'&&action==='send')return data(await mail.send(user,w,id,body));if(method==='POST'&&action==='reconcile')return data(await mail.reconcile(user,w,id));}
       if(realMode&&(path.startsWith('/simulate/')||path==='/booking-link'||path.startsWith('/public/')||path.startsWith('/meetings/')))throw new AppError('Email, moduli pubblici e calendario richiedono una fase successiva di collaudo e attivazione.',409);
       if (path === '/secrets' || path.startsWith('/google/') || path.startsWith('/auth/')) throw new AppError(EXTERNAL_DISABLED, 409);
       if (method === 'GET' && path === '/session') return data({ user, unified: true, simulation: !realMode });
@@ -127,6 +133,8 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
       if (method === 'PATCH' && match) {
         const message = s.one("SELECT * FROM messages WHERE workspace=? AND id=? AND direction='out'", w, match[1]);
         if (!message || !['draft', 'approved'].includes(message.status)) throw new AppError('Messaggio non modificabile.', 409);
+        const latest=store.one("SELECT * FROM os_approvals WHERE kind='growth_message' AND entity_id=? ORDER BY version DESC LIMIT 1",message.id);
+        if(realMode&&(!Number.isSafeInteger(body.version)||body.version!==(latest?.version||0)))throw new AppError('Versione superata: ricarica la bozza prima di decidere.',409);
         const status = body.status || 'draft';
         if (!['draft', 'approved', 'cancelled'].includes(status)) throw new AppError('Stato non valido.');
         if (status === 'approved') { const reason = canContact(s, w, s.lead(w, message.lead_id), message.kind); if (reason) throw new AppError(reason, 409); }
@@ -135,7 +143,8 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
         s.transaction(() => {
           s.run('UPDATE messages SET subject=?,body=?,status=? WHERE workspace=? AND id=?', subject, text, status, w, message.id);
           s.run('INSERT OR REPLACE INTO gr_approvals VALUES(?,?,?,?,?)', message.id, user.id, now(), status, string(body.reason, 1000) || (status === 'approved' ? realMode?'Approvazione esplicita del socio':'Approvazione esplicita del socio · DEMO' : 'Bozza aggiornata'));
-          s.requestApproval(w, message.id, { status: status === 'draft' ? 'pending' : status === 'cancelled' ? 'rejected' : 'approved', reason: string(body.reason, 1000), decidedBy: status === 'draft' ? null : user.id, changed: subject !== message.subject || text !== message.body });
+          s.requestApproval(w, message.id, { status: status === 'draft' ? 'pending' : status === 'cancelled' ? 'rejected' : 'approved', reason: string(body.reason, 1000), decidedBy: status === 'draft' ? null : user.id, changed: subject !== message.subject || text !== message.body || (realMode&&latest?.status!=='pending') });
+          if(mail&&status==='approved')mail.recordApproval(user,w,message.id);
           s.log(w, 'Commerciale', status === 'approved' ? 'Messaggio approvato dal socio' : 'Bozza aggiornata', `Decisione ${status} · ${string(body.reason, 1000)}`, message.lead_id);
         });
         return data({ ok: true, simulation: !realMode });
@@ -162,6 +171,7 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
       match = path.match(/^\/public\/book\/([^/]+)$/);
       if (match) { verifyToken(w, match[1], 'booking'); if (method === 'GET') return data({ ...await engine.slots(match[1]), simulation: true }); if (method === 'POST') return data({ ...await engine.book(match[1], string(body.start, 40)), simulation: !realMode, externalInvitation: false }); }
       match = path.match(/^\/unsubscribe\/([^/]+)$/);
+      if(match&&method==='GET'){verifyToken(w,match[1],'unsubscribe');return data({simulation:!realMode});}
       if (match && method === 'POST') { const token = verifyToken(w, match[1], 'unsubscribe'); suppression(s, w, token.lead_id, realMode?'Disiscrizione':'Disiscrizione DEMO'); return data({ ok: true, simulation: !realMode }); }
       match = path.match(/^\/meetings\/([^/]+)\/cancel$/);
       if (match && method === 'POST') { await engine.cancelMeeting(w, match[1]); return data({ ok: true, simulation: !realMode }); }
@@ -181,10 +191,10 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
       if (method === 'POST' && path === '/settings') {
         if (body.autoSend || body.autoReply) throw new AppError('Gli invii automatici sono disabilitati: ogni messaggio richiede un socio.', 409);
         if (!realMode&&body.senderEmail) fixture({ email: body.senderEmail });
-        const next = validateSettings(body, s.settings(w)); next.autoSend = false; next.autoReply = false;
+        const previous=s.settings(w),next = validateSettings(body, previous); next.autoSend = false; next.autoReply = false;
         if(realMode&&(next.autoResearch||next.publicFormEnabled||next.researchLimit<1||next.researchLimit>10))throw new AppError('Per ora Growth reale richiede ricerche manuali da 1 a 10 risultati e moduli pubblici disattivati.',409);
         if (['totalBudget','hostingBudget','emailBudget','reserveBudget'].some(k => k in body)) { if(next.totalBudget-next.hostingBudget-next.emailBudget-next.reserveBudget<s.costs())throw new AppError('Il nuovo limite è inferiore ai costi già impegnati.',409); store.setSetting('budget_cents', next.totalBudget); store.setSetting('fixed_cents', next.hostingBudget + next.emailBudget + next.reserveBudget); }
-        s.saveSettings(w, next);
+        s.transaction(()=>{s.saveSettings(w, next);if(realMode&&['senderEmail','senderName','signature'].some(key=>next[key]!==previous[key]))s.invalidateApprovals(w);});
         s.log(w, 'Controllo', 'Impostazioni Growth aggiornate', next.paused ? 'Attività in pausa' : realMode?'Esecuzioni vincolate alle fasi attivate':'Prova abilitata; nessun servizio esterno');
         return data({ ok: true, simulation: !realMode });
       }
@@ -192,5 +202,5 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
     } finally { /* Il contesto attore è isolato per richiesta. */ }
     });
   }
-  return { runtime,state, seed, handle, engine, store: s, providers: p };
+  return { mail,runtime,state, seed, handle, engine, store: s, providers: p };
 }

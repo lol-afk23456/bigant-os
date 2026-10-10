@@ -642,7 +642,8 @@
       "stato": "parziale in locale",
       "prove": [
         "COLLAUDO-GROWTH-RIORDINO: sei famiglie di adattatori predisposte, OpenAI e Anthropic con schema comune, 11 nuove prove offline; integrazione con motore/vault e collaudo reale da fare.",
-        "Motore/vault integrati per ricerca, analisi e bozze, disabilitati di default. 13 test runtime + HTTP, suite 248/248; Browser su fixture con scelta AI rinviata e ricerca chiusa. Gmail/OAuth/Calendar e collaudo fornitori/server ancora da fare. Vedi aggiornamento COLLAUDO-GROWTH-RIORDINO."
+        "Motore/vault integrati per ricerca, analisi e bozze, disabilitati di default. 13 test runtime + HTTP, suite 248/248; Browser su fixture con scelta AI rinviata e ricerca chiusa. Gmail/OAuth/Calendar e collaudo fornitori/server ancora da fare. Vedi aggiornamento COLLAUDO-GROWTH-RIORDINO.",
+        "10 ottobre: OAuth e invio Gmail manuale integrati, chiusi per default; test offline su versioni, consenso, concorrenza, quota, esito incerto, riavvio e HTTP. Browser con fornitori finti, anteprima 390 px e riconciliazione. SOP-GROWTH-GMAIL.md e COLLAUDO-GROWTH-RIORDINO.md. Account/consegna reali, sincronizzazione conversazioni e Calendar ancora mancanti."
       ]
     },
     {
@@ -653,7 +654,8 @@
       "stato": "parziale in locale",
       "prove": [
         "COLLAUDO-GROWTH-RIORDINO: sei famiglie di adattatori predisposte, OpenAI e Anthropic con schema comune, 11 nuove prove offline; integrazione con motore/vault e collaudo reale da fare.",
-        "Motore/vault integrati per ricerca, analisi e bozze, disabilitati di default. 13 test runtime + HTTP, suite 248/248; Browser su fixture con scelta AI rinviata e ricerca chiusa. Gmail/OAuth/Calendar e collaudo fornitori/server ancora da fare. Vedi aggiornamento COLLAUDO-GROWTH-RIORDINO."
+        "Motore/vault integrati per ricerca, analisi e bozze, disabilitati di default. 13 test runtime + HTTP, suite 248/248; Browser su fixture con scelta AI rinviata e ricerca chiusa. Gmail/OAuth/Calendar e collaudo fornitori/server ancora da fare. Vedi aggiornamento COLLAUDO-GROWTH-RIORDINO.",
+        "10 ottobre: OAuth e invio Gmail manuale integrati, chiusi per default; test offline su versioni, consenso, concorrenza, quota, esito incerto, riavvio e HTTP. Browser con fornitori finti, anteprima 390 px e riconciliazione. SOP-GROWTH-GMAIL.md e COLLAUDO-GROWTH-RIORDINO.md. Account/consegna reali, sincronizzazione conversazioni e Calendar ancora mancanti."
       ]
     },
     {
@@ -853,7 +855,8 @@
       "criterio": "Ogni collegamento dichiara a cosa serve e il suo stato; nessuna chiave compare in chiaro dopo il salvataggio",
       "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare."
+        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare.",
+        "10 ottobre: OAuth e invio Gmail manuale integrati, chiusi per default; test offline su versioni, consenso, concorrenza, quota, esito incerto, riavvio e HTTP. Browser con fornitori finti, anteprima 390 px e riconciliazione. SOP-GROWTH-GMAIL.md e COLLAUDO-GROWTH-RIORDINO.md. Account/consegna reali, sincronizzazione conversazioni e Calendar ancora mancanti."
       ]
     },
     {

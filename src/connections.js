@@ -6,7 +6,7 @@ const apiKey = { id: 'apiKey', label: 'Chiave API', secret: true };
 const fields = {
   brave: [apiKey], openai: [apiKey, { id: 'model', label: 'Modello', secret: false }],
   anthropic: [apiKey, { id: 'model', label: 'Modello', secret: false }],
-  google: [{ id: 'clientId', label: 'Client ID', secret: false }, { id: 'clientSecret', label: 'Client secret', secret: true }, { id: 'refreshToken', label: 'Refresh token', secret: true }],
+  google: [{ id: 'clientId', label: 'Client ID', secret: false }, { id: 'clientSecret', label: 'Client secret', secret: true }],
   meta: [{ id: 'accessToken', label: 'Token di accesso', secret: true }],
   postiz: [apiKey], trello: [apiKey, { id: 'token', label: 'Token', secret: true }],
   wallet: [] // Wallet keys and certificates belong only to protected server variables (COL-006).
@@ -16,7 +16,7 @@ const definitions = [...integrations, { id: 'anthropic', name: 'Anthropic', purp
 ].map(row => ({ ...row, fields: fields[row.id] || [], dependsOn: ['gmail', 'calendar', 'ga4', 'gsc', 'gbp', 'google-ads', 'drive', 'sheets'].includes(row.id) ? 'google' : null }));
 
 export function createConnections({ store: s, env = {} }) {
-  const vault = createVault(env);
+  const vault = createVault(env);let googleMetadata=null;
   s.db.exec(`CREATE TABLE IF NOT EXISTS os_connections (
     id TEXT PRIMARY KEY, sealed TEXT NOT NULL, version INTEGER NOT NULL, updated_at TEXT NOT NULL, updated_by TEXT NOT NULL,
     last_checked TEXT, check_status TEXT NOT NULL DEFAULT 'Da collegare', check_note TEXT NOT NULL DEFAULT ''
@@ -28,8 +28,8 @@ export function createConnections({ store: s, env = {} }) {
   }
   const stored = id => s.one('SELECT * FROM os_connections WHERE id=?', id);
   function metadata(id) {
-    const d = definition(id), row = id==='wallet'?null:stored(id), by = row && s.one('SELECT name FROM os_users WHERE id=?', row.updated_by);
-    return { ...d, status: row?.check_status || 'Da collegare', lastCheck: row?.last_checked || null, checkNote: row?.check_note || '',
+    const d = definition(id), row = id==='wallet'?null:stored(id), by = row && s.one('SELECT name FROM os_users WHERE id=?', row.updated_by), authorization=id==='google'&&googleMetadata?googleMetadata(row?.version||0):null;
+    return { ...d, ...(authorization?{authorization}:{}),status: authorization?(authorization.connected?'Collegato':'Da collegare'):row?.check_status || 'Da collegare', lastCheck: row?.last_checked || null, checkNote: row?.check_note || '',
       configured: !!row, version: row?.version || 0, updatedAt: row?.updated_at || null, configuredBy: by?.name || null,
       activationNote: id==='wallet'?'Chiavi e certificati Wallet si configurano soltanto sul server. Collaudo e attivazione in Fidelity.':'Il salvataggio delle chiavi non attiva il collegamento. Servono collaudo e autorizzazione dei soci.' };
   }
@@ -40,6 +40,7 @@ export function createConnections({ store: s, env = {} }) {
     if (b.version !== (row?.version || 0)) throw new AppError('Configurazione cambiata. Ricarica prima di salvare.', 409);
     if (!b.fields || typeof b.fields !== 'object' || Array.isArray(b.fields) || Object.keys(b.fields).some(key => !d.fields.some(field => field.id === key))) throw new AppError('Campi del collegamento non validi.');
     const values = row ? vault.open(row.sealed, 'connection:' + id) : {};
+    if(id==='google'){delete values.refreshToken;delete values.scopes;delete values.email;}
     for (const field of d.fields) {
       const value = b.fields[field.id];
       if (value !== undefined && (typeof value !== 'string' || value.length > 20000)) throw new AppError('Valore del collegamento non valido.');
@@ -69,7 +70,7 @@ export function createConnections({ store: s, env = {} }) {
     return metadata(id);
   }
   function summary() {
-    return { total: definitions.length, connected: 0, errors: s.one("SELECT COUNT(*) n FROM os_connections WHERE check_status='Errore'").n };
+    return { total: definitions.length, connected: googleMetadata?.(stored('google')?.version||0).connected?1:0, errors: s.one("SELECT COUNT(*) n FROM os_connections WHERE check_status='Errore'").n };
   }
   // Internal-only capability. No HTTP route returns decrypted configuration.
   function readForRuntime(user,id,version) {
@@ -78,5 +79,14 @@ export function createConnections({ store: s, env = {} }) {
     const values=vault.open(row.sealed,'connection:'+id);
     s.audit(user,null,'Collegamento usato dal motore',id,{version},'admin');return values;
   }
-  return { state, save, check, summary, runtimeMetadata:metadata, readForRuntime };
+  // Only the server OAuth flow calls this method; no public route accepts tokens.
+  function completeGoogle(user,version,{refreshToken,scopes,email}) {
+    requireOwner(user);const row=stored('google');
+    if(!row||row.version!==version)throw new AppError('Accessi Google cambiati: ripeti il collegamento.',409);
+    if(typeof refreshToken!=='string'||!refreshToken||refreshToken.length>16000||!Array.isArray(scopes)||typeof email!=='string')throw new AppError('Autorizzazione Google incompleta.',409);
+    const values={...vault.open(row.sealed,'connection:google'),refreshToken,scopes,email};
+    s.run("UPDATE os_connections SET sealed=?,version=version+1,updated_at=?,updated_by=?,last_checked=?,check_status='Collegato',check_note='Casella verificata; invii ancora soggetti al collaudo e all’attivazione Growth.' WHERE id='google'",vault.seal(values,'connection:google'),now(),user.id,now());
+    s.audit(user,null,'Casella Google autorizzata','google',{version:version+1},'admin');return version+1;
+  }
+  return { state, save, check, summary, runtimeMetadata:metadata, readForRuntime, completeGoogle, setGoogleMetadata:fn=>{googleMetadata=fn;} };
 }

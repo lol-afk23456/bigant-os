@@ -71,3 +71,16 @@ Invio, ricezione Gmail, moduli pubblici, prenotazioni e Calendar restano rifiuta
 Browser: schermata e salvataggio di “Scelta rinviata”, entrambe le AI presenti nell’elenco, nessuna fase attiva e ricerca disabilitata; 390 px senza overflow. Per questa prova la cornice DEMO usa il modulo Growth reale chiuso attraverso una fixture locale in memoria, senza password o fornitori. Non è una prova dell’autenticazione reale in Browser né un collaudo di servizi esterni.
 
 **COL-005 e FUN-050 restano parziali.** Mancano il collaudo con risultati veri autorizzato dai soci, il ciclo OAuth completo, Gmail manuale con approvazione della versione/consenso/idempotenza e riconciliazione, Calendar e il confronto integrale dell’inventario sul server. Nessun push, deploy, collegamento, invio o spesa eseguito.
+
+
+## 10 ottobre — OAuth e Gmail manuale integrati, chiusi per default
+
+COL-005 fase 4, FUN-050, FUN-064. Collegati server, custodia cifrata, approvazioni comuni e UI al runtime OAuth/Gmail. Il refresh token non è un campo da incollare: proviene soltanto dal consenso Google verificato. Nessun ambito Calendar. La [SOP Gmail](SOP-GROWTH-GMAIL.md) descrive attivazione e limiti.
+
+Prove nuove: 6 OAuth, 10 invio/riconciliazione e 3 HTTP. I test dei provider ora verificano il cancello prima del token, prima della richiesta e dopo la risposta. Controllati anche doppio clic, quota concorrente, firma/disiscrizione, versione obsoleta, cambio destinatario o mittente, consenso e socio revocati, timeout, riavvio, casella diversa, intestazioni incongruenti e richiesta pubblica da origine estranea. Nessun segreto restituito da API o audit.
+
+Nel Browser, fixture `.cache/riordino-browser/gmail-ui.mjs` con dati in memoria e tutti i fornitori finti: bozza → approvazione → anteprima → conferma → esito; checkbox obbligatoria, stato incerto → verifica senza reinvio, due identificativi distinti. Corretto il trasporto di prova che inizialmente assegnava lo stesso identificativo a messaggi diversi. Anteprima a 390 px: documento 390, finestra 354, nessun overflow orizzontale; screenshot `bigant-gmail-390.png` e `bigant-gmail-esito.png`. Ritorno Google provato in modalità DEMO: parametri rimossi, operazione esterna rifiutata; il vero giro Google resta da collaudare.
+
+Suite completa finale: **284/284**. Controllo progetto **5/5**; build offline **43d06565ce8d**, 3863 KB. Queste prove non equivalgono a una consegna email reale. Nessun account collegato, nessuna email, spesa o modifica a Railway.
+
+Restano da completare: sincronizzazione reale delle conversazioni e rifiuti, Calendar, verifiche con account autorizzati, confronto completo con l’originale e collaudo server/telefono. FUN-050 e COL-005 rimangono parziali, non chiusi contando i test.

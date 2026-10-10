@@ -3,6 +3,7 @@ import QRCode from 'qrcode';
 import {safePath} from './scripts/backup.js';
 import {createBackupScheduler} from './src/backups.js';
 import {createBilling} from './src/billing.js';
+import {createGoogleOAuth} from './src/google-oauth.js';
 import {createConnections} from './src/connections.js';
 import {createServicePlan} from './src/service-plan.js';
 import {createAgentConfig} from './src/agent-config.js';
@@ -48,7 +49,8 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const store=openStore(database);
   if(realMode)seedRealCore(store,{socioEmail:env.BIGANT_SOCIO_EMAIL,socioPassword:env.BIGANT_SOCIO_PASSWORD_INIZIALE});else seedCore(store);
   const connections=createConnections({store,env});
-  const production=createProduction({store}),growth=createGrowthModule({store,origin,realMode,connections,externalEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true',providerOptions:growthProviderOptions}),fidelity=createFidelityModule({store,origin,realMode,env,clock,walletProviderOptions}),administration=createAdministrationModule({store,clock});
+  const gmailEnabled=realMode&&env.BIGANT_GROWTH_GMAIL_ENABLED==='true',googleAuth=realMode?createGoogleOAuth({store,connections,env,origin,enabled:gmailEnabled,clock,providerOptions:growthProviderOptions}):null;
+  const production=createProduction({store}),growth=createGrowthModule({store,origin,realMode,connections,googleAuth,gmailEnabled,clock,externalEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true',providerOptions:growthProviderOptions}),fidelity=createFidelityModule({store,origin,realMode,env,clock,walletProviderOptions}),administration=createAdministrationModule({store,clock});
   growth.seed(realMode);fidelity.seed(realMode);administration.seed(realMode);
   const agentConfig=createAgentConfig({store,root,env,clock});
   const orchestrator=createOrchestrator({store,production,administration,growth,fidelity,clock,guard:realMode?(id,options)=>agentConfig.requireRun(id,options):null});
@@ -101,7 +103,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
       else if(!['127.0.0.1','::1','::ffff:127.0.0.1'].includes(req.socket.remoteAddress)||req.headers.host!==expectedHost)throw new AppError('Il prototipo è disponibile solo in locale.',403);
       const url=new URL(req.url,runtimeOrigin),path=url.pathname,method=req.method;
       if(!['GET','HEAD','POST','PATCH','DELETE'].includes(method))throw new AppError('Metodo non consentito.',405);
-      if(method==='GET'&&path==='/health')return json(res,{status:'ok',app:'BigAnt OS',demo:!realMode,externalActions:realMode&&env.BIGANT_GOOGLE_WALLET_ENABLED==='true',externalReadsEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true'});
+      if(method==='GET'&&path==='/health')return json(res,{status:'ok',app:'BigAnt OS',demo:!realMode,externalActions:realMode&&(env.BIGANT_GOOGLE_WALLET_ENABLED==='true'||gmailEnabled),externalReadsEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true'});
       const u=session(req);
       if(method==='GET'&&path==='/api/session')return json(res,{user:safeUser(u),csrf:u?.csrf||null,demo:!realMode,profiles:realMode?[]:profiles.map(id=>store.one('SELECT id,name,role FROM os_users WHERE id=? AND active=1',id)).filter(Boolean)});
       if(!['GET','HEAD'].includes(method)&&req.headers.origin!==runtimeOrigin)throw new AppError('Origine della richiesta non autorizzata.',403);
@@ -113,7 +115,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
       if(publicGrowth||path==='/api/growth/public/inquiry'){
         rate('public:'+req.socket.remoteAddress,80);let clientId='demo-bigant';
         if(publicGrowth){const kind=publicGrowth[1]==='unsubscribe'?'unsubscribe':'booking';const t=store.one('SELECT workspace FROM gr_tokens WHERE id=? AND kind=? AND expires>?',publicGrowth[2],kind,Date.now());if(!t)throw new AppError('Collegamento scaduto o non valido.',410);clientId=t.workspace;}
-        if(!store.one('SELECT 1 FROM os_clients WHERE id=? AND active=1',clientId))throw new AppError('Attività non disponibile.',404);
+        if(publicGrowth?.[1]!=='unsubscribe'&&!store.one('SELECT 1 FROM os_clients WHERE id=? AND active=1',clientId))throw new AppError('Attività non disponibile.',404);
         return reply(res,await growth.handle({method,path:path.slice('/api/growth'.length),body:['GET','HEAD'].includes(method)?{}:await body(req),user:publicUser,clientId}));
       }
       if(path.startsWith('/api/')){
@@ -135,6 +137,8 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
         const b=['GET','HEAD'].includes(method)?{}:await body(req);
         if(path==='/api/billing/state'&&method==='GET')return json(res,billing.state(u));
         const billingMatch=path.match(/^\/api\/billing\/tracker\/([^/]+)$/);if(billingMatch&&method==='PATCH')return json(res,billing.label(u,billingMatch[1],b));
+        const googleMatch=path.match(/^\/api\/connections\/google\/oauth\/(state|start|finish)$/);
+        if(googleMatch){requireOwner(u);if(!googleAuth)throw new AppError('Google non disponibile in modalità DEMO.',409);if(method==='GET'&&googleMatch[1]==='state')return json(res,googleAuth.state(u));if(method==='POST'&&googleMatch[1]==='start')return json(res,googleAuth.start(u,b));if(method==='POST'&&googleMatch[1]==='finish')return json(res,await googleAuth.finish(u,b));}
         if(path==='/api/connections'&&method==='GET')return json(res,connections.state(u));
         const connectionMatch=path.match(/^\/api\/connections\/([^/]+)(\/check)?$/);if(connectionMatch&&method==='POST')return json(res,connectionMatch[2]?connections.check(u,connectionMatch[1]):connections.save(u,connectionMatch[1],b));
         if(path==='/api/service-plan'&&method==='GET')return json(res,servicePlan.state(u));
@@ -163,7 +167,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
           if(b.decision!=='approved'&&!text(b.reason))throw new AppError('Indica il motivo della richiesta.');
           if(a.kind==='agent_output')return json(res,orchestrator.outputs.decide(u,a,b));
           if(a.kind==='sciame_output')return json(res,sciame.decide(u,a,b));
-          if(a.kind==='growth_message'){requireOwner(u);const current=store.one("SELECT MAX(version) version FROM os_approvals WHERE kind='growth_message' AND entity_id=?",a.entity_id);if(current.version!==a.version)throw new AppError('Versione superata.',409);return reply(res,await growth.handle({method:'PATCH',path:'/messages/'+a.entity_id,body:{status:b.decision==='approved'?'approved':b.decision==='changes'?'draft':'cancelled',reason:b.reason},user:u,clientId}));}
+          if(a.kind==='growth_message'){requireOwner(u);const current=store.one("SELECT MAX(version) version FROM os_approvals WHERE kind='growth_message' AND entity_id=?",a.entity_id);if(current.version!==a.version)throw new AppError('Versione superata.',409);return reply(res,await growth.handle({method:'PATCH',path:'/messages/'+a.entity_id,body:{version:a.version,status:b.decision==='approved'?'approved':b.decision==='changes'?'draft':'cancelled',reason:b.reason},user:u,clientId}));}
           if(a.kind==='fidelity_campaign'&&u.role!=='owner'&&!JSON.parse(store.one('SELECT services_json FROM os_clients WHERE id=?',clientId).services_json).includes('fidelity'))throw new AppError('Servizio Fidelity non attivo.',403);
           if(a.kind==='fidelity_campaign')return reply(res,await fidelity.handle({method:'POST',path:'/campaigns/'+a.entity_id+'/decision',body:{...b,version:a.version},user:u,clientId}));
           const decision=await production.handle({method:'POST',path:'/approvals/'+a.id,body:b,user:u,clientId});if(b.decision==='approved')orchestrator.event('content.approved',clientId,a.entity_id,a.version);return reply(res,decision);
@@ -188,7 +192,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
           const asset=brandAssets[path],bytes=decodeBrandAsset(readFileSync(resolve(root,'public/brand',asset.file),'utf8'),asset.sha256);
           res.writeHead(200,{'Content-Type':'image/png','Content-Length':bytes.length,'Cache-Control':'no-store'});return res.end(method==='HEAD'?undefined:bytes);
         }
-        const appPage=path==='/'||path.startsWith('/fidelity/')||path.startsWith('/growth/');
+        const appPage=path==='/'||path==='/auth/google/callback'||path.startsWith('/fidelity/')||path.startsWith('/growth/');
         const file=appPage?resolve(root,'public/index.html'):resolve(root,'public','.'+decodeURIComponent(path));const publicRoot=resolve(root,'public')+'/';
         if(!file.startsWith(publicRoot)||!existsSync(file)||!statSync(file).isFile())throw new AppError('Pagina non trovata.',404);
         const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.svg':'image/svg+xml','.ttf':'font/ttf'};
@@ -201,7 +205,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const backups=realMode&&worker&&database!==':memory:'?createBackupScheduler({store,sourcePath:database,env,clock}):null;
   let workerError=null,workerRun=null;
   const timer=worker?setInterval(()=>{if(workerRun)return;workerRun=orchestrator.tick().then(()=>fidelity.runWalletJobs()).then(()=>{workerError=null;}).catch(()=>{workerError='Controllo delle automazioni da verificare.';}).finally(()=>{workerRun=null;});},2000):null;timer?.unref();
-  return {server,store,billing,connections,servicePlan,agentConfig,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(workerRun)await workerRun;await backups?.close();if(server.listening)await new Promise(r=>server.close(r));store.close();}};
+  return {server,store,googleAuth,billing,connections,servicePlan,agentConfig,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(workerRun)await workerRun;await backups?.close();if(server.listening)await new Promise(r=>server.close(r));store.close();}};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const modalitaReale=process.env.BIGANT_MODALITA==='reale';

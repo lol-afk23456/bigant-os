@@ -2,7 +2,7 @@
 
 Il modulo riutilizza le regole CRM e il motore del repository Growth verificato al commit `cfd4b0bfc1b9f209474af1eb9ca7fe90c6eb8aa4`. È eseguito dal server OS, con la stessa connessione SQLite, la stessa sessione, gli stessi clienti, le approvazioni e il registro centrale. Nessun iframe, server Growth separato, account reale o secondo file database.
 
-**Modalità attuale: DEMO offline.** Ricerca e testi sono fixture deterministiche, non risposte AI reali. Le email simulate restano nel database locale; gli appuntamenti non generano inviti Google. Non esiste un percorso di codice che legga chiavi o chiami provider esterni. I destinatari/siti inseriti devono usare `.example`. Il modulo è riservato ai soci, anche sui percorsi denominati `public` nel vecchio sistema: è un collaudo protetto, non un modulo pubblico già rilasciato.
+**Contratto storico della DEMO offline** (vedere sotto l’estensione reale del 10 ottobre). Ricerca e testi sono fixture deterministiche, non risposte AI reali. Le email simulate restano nel database locale; gli appuntamenti non generano inviti Google. In modalità DEMO non si leggono chiavi né si chiamano provider esterni. I destinatari/siti inseriti devono usare `.example`. Il modulo è riservato ai soci, anche sui percorsi denominati `public` nel vecchio sistema: è un collaudo protetto, non un modulo pubblico già rilasciato.
 
 ## Contratto per il server e l'interfaccia
 
@@ -117,3 +117,29 @@ Sono presenti 24 test: connessione e audit comuni, accesso ruoli, deduplica, con
 Non sono collaudati invio Gmail reale, OAuth, Brave/OpenAI, Google Calendar o pubblicazione del modulo pubblico: sono intenzionalmente disconnessi e rispondono 409 ove applicabile. Attivarli richiede un lavoro successivo autorizzato e verifiche con credenziali fuori dal codice. I payload Gmail vengono esercitati con fixture, non leggendo posta.
 
 Lo scheduler e l'integrazione del pannello devono essere verificati anche tramite il front controller OS: i test di questo modulo provano le regole e i percorsi del modulo; non sostituiscono il collaudo HTTP/UI complessivo.
+
+
+## Estensione reale — 10 ottobre 2026
+
+La modalità reale mantiene lo stesso database e i ruoli OS. Non carica simulatori o archivi DEMO occupati. Ricerca, analisi e bozze usano `runtime` con flag, configurazione, collaudi e attivazioni esplicite; Gmail usa il percorso manuale sotto. Tutto è chiuso per impostazione predefinita. Stato e limiti correnti: [collaudo Growth](COLLAUDO-GROWTH-RIORDINO.md), procedura: [SOP Gmail](SOP-GROWTH-GMAIL.md).
+
+Catalogo delle nuove funzioni, disponibili soltanto ai soci nella modalità reale:
+
+| Percorso | Dati | Effetto |
+|---|---|---|
+| GET `/api/connections/google/oauth/state` | Metadati, mai token | Stato della casella e versione della configurazione |
+| POST `/api/connections/google/oauth/start` | `version,email,acknowledged:true` | Stato monouso e URL di consenso Google; nessun invio |
+| POST `/api/connections/google/oauth/finish` | `state,code` oppure `state,error` | Verifica sessione, casella e ambiti; token cifrato |
+| GET `/auth/google/callback` | Pagina HTML | Completa via POST autenticato/CSRF, senza indebolire il cookie |
+| POST `/api/growth/mail/check` | `version` della configurazione mail | Verifica profilo Google e sospende l’attivazione precedente |
+| POST `/api/growth/mail/activate` | `version,enabled` booleano | Attivazione o sospensione Gmail per attività |
+| PATCH `/api/growth/messages/:id` | `version` obbligatoria, campi della bozza e decisione | Controllo concorrenza; approvazione immutabile di testo, mittente, destinatario e consenso |
+| GET `/api/growth/messages/:id/send-preview` | Payload approvato, `version,hash,canSend,reason` | Anteprima leggibile, senza invio |
+| POST `/api/growth/messages/:id/send` | `version,hash,confirmed:true` | Intento persistente, controlli freschi e unico invio manuale |
+| POST `/api/growth/messages/:id/reconcile` | Nessuno | Verifica la posta inviata; mai un reinvio |
+| GET `/api/growth/unsubscribe/:token` | Solo `simulation` | Pubblico, non cambia consenso e non rivela il contatto |
+| POST `/api/growth/unsubscribe/:token` | Conferma dalla medesima origine | Pubblico, esclude il contatto anche ad attività spenta |
+
+`state.mail` distingue disponibilità server, casella configurata, collaudo e attivazione. `messages[].approvalVersion` alimenta l’approvazione; `sent` indica conferma Gmail, `uncertain` richiede verifica. Le prove automatiche usano lo stesso percorso con un trasporto finto e non dimostrano consegna reale. Anche la coda comune passa la versione al modulo; un’approvazione SQL generica non basta perché manca lo snapshot del messaggio.
+
+Le chiamate protette richiedono sessione attiva, cambio password completato e CSRF per le scritture; il client selezionato viene verificato dal server. I vecchi percorsi `/secrets`, `/google/*`, `/auth/*` interni a Growth restano bloccati. Il worker non esegue invii reali. Sincronizzazione delle risposte, Calendar e moduli pubblici di acquisizione/prenotazione restano da integrare nella modalità reale; i relativi job vengono rifiutati. La disiscrizione è l’eccezione pubblica supportata.

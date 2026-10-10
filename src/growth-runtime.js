@@ -101,5 +101,5 @@ export function createGrowthRuntime({store:root,growthStore:s,connections,getAct
   return context.run({workspace:w,phase,userId:user.id,fingerprint:stamp.fingerprint,probe:false},operation);
  }
  function canQueue(w,type) {try{decorate(w,type);return true;}catch{return false;}}
- return {state,save,check,activate,decorate,run,canQueue,providers:p};
+ return {state,save,check,activate,decorate,run,canQueue,providers:p,deliveryContext:(user,w)=>{currentOwner(user);const c=config(w);return {fingerprint:executionFingerprint(c,'drafts'),ready:externalEnabled&&phaseState(c).drafts.enabled&&s.active(w)};}};
 }

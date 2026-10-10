@@ -48,14 +48,14 @@ test('AI invalida, rifiuto, errore remoto o rete: costo prudenziale conservato, 
 test('Google: gate distinto per lettura e invio; token mai in URL, messaggio stabile per riconciliazione',async()=>{
  const f=setup();f.config.fetchImpl=async(url,opts)=>{f.requests.push({url:String(url),...opts});if(String(url).endsWith('/token'))return json({access_token:'access-fixture'});if(String(url).endsWith('/send'))return json({id:'sent1',threadId:'thread1'});return json({messages:[{id:'sent1',threadId:'thread1'}]});};
  const p=createGrowthLiveProviders(f.config);assert.equal((await p.send('w',message)).id,'sent1');assert.equal((await p.findSent('w',message.id)).id,'sent1');
- assert.deepEqual(f.gates.map(row=>row.operation),['gmail-send','gmail-read']);assert.equal(f.gates[0].context.message.id,message.id);assert.equal(f.requests.length,4);
+ assert.deepEqual(f.gates.map(row=>row.operation),['gmail-send','gmail-send','gmail-send','gmail-read','gmail-read','gmail-read']);assert.deepEqual(f.gates.slice(0,3).map(row=>row.context.stage),[undefined,'dispatch','result']);assert.equal(f.gates[0].context.message.id,message.id);assert.equal(f.requests.length,4);
  const send=f.requests[1],decoded=Buffer.from(JSON.parse(send.body).raw,'base64url').toString();assert.match(decoded,/Message-ID: <mail-123@growth.bigantagency.it>/);assert.match(decoded,/List-Unsubscribe/);
  assert.equal(send.headers.Authorization,'Bearer access-fixture');assert.ok(f.requests.every(row=>!row.url.includes('fixture')));assert.equal(f.costs.length,0);
 });
 test('Calendar: disponibilità distinta dalla scrittura, id stabile, errore di calendario non equivale a libero',async()=>{
  const f=setup();f.config.fetchImpl=async(url,opts)=>{f.requests.push({url:String(url),...opts});if(String(url).endsWith('/token'))return json({access_token:'access-fixture'});if(String(url).endsWith('/freeBusy'))return json({calendars:{primary:{busy:[]}}});if(opts.method==='DELETE')return json({},404);return json({id:event.id.replaceAll('-',''),status:'confirmed'});};
  const p=createGrowthLiveProviders(f.config);assert.deepEqual(await p.busy('w',event.start,event.end),[]);await p.book('w',event);await p.cancelEvent('w',event.id);
- assert.deepEqual(f.gates.map(row=>row.operation),['calendar-read','calendar-write','calendar-write']);assert.equal(JSON.parse(f.requests[3].body).id,event.id.replaceAll('-',''));assert.equal(f.gates[1].context.action,'book');assert.match(f.requests[3].url,/sendUpdates=all/);
+ assert.deepEqual(f.gates.map(row=>row.operation),['calendar-read','calendar-read','calendar-read','calendar-write','calendar-write','calendar-write','calendar-write','calendar-write']);assert.equal(JSON.parse(f.requests[3].body).id,event.id.replaceAll('-',''));assert.equal(f.gates[3].context.action,'book');assert.match(f.requests[3].url,/sendUpdates=all/);
  const missing=setup({fetchImpl:async url=>json(String(url).endsWith('/token')?{access_token:'fake'}:{calendars:{primary:{errors:[{reason:'notFound'}]}}})});await assert.rejects(missing.p.busy('w',event.start,event.end),/non verificabile/);
  const uncertain=setup({fetchImpl:async url=>json(String(url).endsWith('/token')?{access_token:'fake'}:{id:'different',status:'confirmed'})});await assert.rejects(uncertain.p.book('w',event),/Esito Calendar da verificare/);
  await assert.rejects(p.busy('w','2026','2027'),/Intervallo/);
