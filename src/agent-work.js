@@ -7,7 +7,7 @@ import {qualityDraft,qualityAssessment,readQualityReview,qualityReviewCurrent} f
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const uuid=/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/;
 
-// Manual internal drafts only. The legacy DEMO queue must never execute these jobs.
+// Internal drafts only; scheduled calls require a separate recurring consent. The legacy DEMO queue must never execute these jobs.
 export function createAgentWork({store:s,connections,trials,configFor,orchestrator,production,enabled=()=>false,clock=()=>new Date(),providerOptions={}}){
  s.db.exec(`CREATE TABLE IF NOT EXISTS os_agent_authorizations(id INTEGER PRIMARY KEY AUTOINCREMENT,agent TEXT NOT NULL,config_version INTEGER NOT NULL,connection_version INTEGER NOT NULL,trial_id TEXT NOT NULL,enabled INTEGER NOT NULL,authorized_by TEXT NOT NULL REFERENCES os_users(id),created_at TEXT NOT NULL);
  CREATE TRIGGER IF NOT EXISTS os_agent_authorizations_no_update BEFORE UPDATE ON os_agent_authorizations BEGIN SELECT RAISE(ABORT,'Autorizzazione immutabile'); END;
@@ -51,13 +51,13 @@ export function createAgentWork({store:s,connections,trials,configFor,orchestrat
   if(saved?.review)saved.review.current=qualityReviewCurrent(s,clientId,JSON.parse(row.packet_json).context);
   return {id:row.id,agent:row.agent,clientId,status:row.status,error:row.error,result:saved,rawOutput:row.raw_output?JSON.parse(row.raw_output):null,quality:row.quality_json?JSON.parse(row.quality_json):[],costCents:cost?.cents??null,costStatus:cost?.status??null,createdAt:row.created_at,finishedAt:row.finished_at};
  }
- async function run(user,clientId,id,b){actor(user);requireClient(s,user,clientId);
+ async function run(user,clientId,id,b,{guard:extraGuard}={}){extraGuard?.();actor(user);requireClient(s,user,clientId);
   if(!uuid.test(b.requestId||'')||b.confirmed!==true||typeof b.fingerprint!=='string')throw new AppError('Conferma i dati e il costo della singola elaborazione.');
   const previous=s.one('SELECT j.client_id,j.agent,j.status,w.requested_by,w.fingerprint FROM os_agent_work w JOIN os_jobs j ON j.id=w.job_id WHERE j.id=?',b.requestId);
   if(previous){if(previous.client_id!==clientId||previous.agent!==id||previous.requested_by!==user.id||previous.fingerprint!==b.fingerprint)throw new AppError('Identificativo già utilizzato.',409);if(previous.status==='running')throw new AppError('Elaborazione già in corso.',409);return result(user,clientId,b.requestId);}
   const p=packet(user,clientId,id,b.brief,b);if(b.fingerprint!==p.fingerprint)throw new AppError('Dati o autorizzazioni cambiati. Leggi una nuova anteprima.',409);
   const key=id+':'+clientId;if(active.has(key))throw new AppError('Elaborazione già in corso per questa attività.',409);
-  const guard=()=>{if(packet(user,clientId,id,b.brief,b).fingerprint!==p.fingerprint)throw new AppError('Dati o autorizzazioni cambiati durante il lavoro.',409);};
+  const guard=()=>{extraGuard?.();if(packet(user,clientId,id,b.brief,b).fingerprint!==p.fingerprint)throw new AppError('Dati o autorizzazioni cambiati durante il lavoro.',409);};
   const attempt=(async()=>{let costId,submitted=false;
    s.transaction(()=>{s.run("INSERT INTO os_jobs(id,client_id,agent,input,status,attempts,available_at,created_at) VALUES(?,?,?,?,'running',1,?,?)",b.requestId,clientId,id,JSON.stringify({requestedBy:user.id,mode:'AI',brief:b.brief}),instant(),instant());s.run('INSERT INTO os_agent_work VALUES(?,?,?,?,NULL,NULL,NULL)',b.requestId,user.id,p.fingerprint,JSON.stringify(p));});
    try{

@@ -847,7 +847,8 @@
       "stato": "parziale in locale",
       "prove": [
         "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo.",
-        "COLLAUDO-AGENTE-SOCIAL: primo percorso S01 manuale, autorizzazione distinta, anteprima/consenso, bozze con provenienza e approvazione umana; 703/703 test, controllo 5/5 e Browser desktop/mobile con fornitore simulato. Pianificazioni, altri percorsi e attivazioni reali ancora aperti."
+        "COLLAUDO-AGENTE-SOCIAL: primo percorso S01 manuale, autorizzazione distinta, anteprima/consenso, bozze con provenienza e approvazione umana; 703/703 test, controllo 5/5 e Browser desktop/mobile con fornitore simulato. Pianificazioni, altri percorsi e attivazioni reali ancora aperti.",
+        "COLLAUDO-PIANIFICAZIONE-AGENTI: Social ricorrente predisposto con consenso per attività e scadenza, guard prima/dopo, budget, sospensione e nessun retry. 814/814 test, controllo 5/5, browser desktop/390 px. Interruttore spento, prima attivazione e altri agenti ancora aperti."
       ]
     },
     {

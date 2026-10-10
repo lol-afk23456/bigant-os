@@ -213,3 +213,22 @@ test('Qualità: collaboratore legge il parere, vede quello superato e una rispos
  const pending=deferred();f.serve(()=>pending.promise);const read=f.actions['quality-review'](draft.id);f.S.session={...f.S.session};f.node('#dialog-content').innerHTML='Altra sessione';pending.resolve(review);await read;assert.equal(f.node('#dialog-content').innerHTML,'Altra sessione');
  f.S.session.user.role='client';await assert.rejects(f.actions['quality-review'](draft.id),/riservata/);
 });
+
+const scheduleState=()=>({supported:true,available:true,entry:null,history:[]});
+const schedulePlan=()=>({clientId:'demo-bottega',agent:'social',version:0,cadence:'daily',nextAt:'2026-10-11T07:00:00Z',expiresAt:'2026-11-09T10:00:00Z',validUntil:'2026-10-10T10:10:00Z',planHash:'impronta-piano',packet:workPreview()});
+test('Quando lavora: consenso ricorrente distinto, pacchetto esatto e nessun avvio immediato',async()=>{
+ const f=await fixture();f.serve(call=>call.path.endsWith('/preview')?schedulePlan():scheduleState());await f.actions['agent-schedule']('social');const fd=new FormData();fd.set('brief','Incarico ricorrente');await f.run('formHandler')(fd);
+ const html=f.node('#dialog-content').innerHTML;assert.match(html,/Ogni giorno alle 09:00 di Roma/);assert.match(html,/Incarico e istruzioni|Informazioni del cliente/);assert.match(html,/data dell’incarico/);assert.doesNotMatch(html,/name="confirmed"[^>]*checked|<script>/);const yes=new FormData();await assert.rejects(f.run('formHandler')(yes),/Conferma dati/);assert.equal(f.calls.length,2);yes.set('confirmed','on');await f.run('formHandler')(yes);const saved=f.calls[2];assert.equal(saved.path,'/api/agent-work/social/schedule');assert.equal(saved.clientId,'demo-bottega');assert.equal(saved.body.plan.planHash,'impronta-piano');assert.equal(saved.body.confirmed,true);assert.equal(saved.body.version,0);assert.match(f.node('#dialog-content').innerHTML,/Nessun incarico avviato adesso/);assert.ok(f.calls.every(c=>!c.path.endsWith('/run')));
+});
+test('Quando lavora: spento senza form e sospensione possibile senza interruttore globale',async()=>{
+ const f=await fixture();f.serve(()=>({...scheduleState(),available:false}));await f.actions['agent-schedule']('social');assert.match(f.node('#dialog-content').innerHTML,/spente sul server/);assert.doesNotMatch(f.node('#dialog-content').innerHTML,/<form/);
+ f.serve(()=>({...scheduleState(),available:false,entry:{version:7,enabled:true,brief:'Incarico <script>',cadence:'daily',nextAt:'2026-10-11T07:00:00Z',expiresAt:'2026-11-09T10:00:00Z'}}));await f.actions['agent-schedule']('social');assert.match(f.node('#dialog-content').innerHTML,/Sospendi pianificazione/);assert.doesNotMatch(f.node('#dialog-content').innerHTML,/&lt;time/);assert.doesNotMatch(f.node('#dialog-content').innerHTML,/<script>/);await f.run('formHandler')(new FormData());assert.equal(f.calls[2].body.enabled,false);assert.equal(f.calls[2].body.version,7);
+});
+test('Quando lavora: cambio cliente/sessione e risposte tardive non autorizzano altre attività',async()=>{
+ for(const stage of ['state','preview','save']){
+  const f=await fixture(),pending=deferred();f.serve(call=>stage==='state'||stage==='preview'&&call.path.endsWith('/preview')||stage==='save'&&call.method==='POST'&&!call.path.endsWith('/preview')?pending.promise:call.path.endsWith('/preview')?schedulePlan():scheduleState());let task=f.actions['agent-schedule']('social');
+  if(stage!=='state'){await task;const fd=new FormData();fd.set('brief','Prova');task=f.run('formHandler')(fd);if(stage==='save'){await task;const yes=new FormData();yes.set('confirmed','on');task=f.run('formHandler')(yes);await assert.rejects(f.run('formHandler')(yes),/già in corso/);}}
+  f.S.clientId='demo-bigant';f.node('#dialog-content').innerHTML='Cliente diverso';pending.resolve(stage==='preview'?schedulePlan():scheduleState());await task;assert.equal(f.node('#dialog-content').innerHTML,'Cliente diverso');assert.ok(f.calls.every(c=>c.clientId==='demo-bottega'));
+ }
+ const f=await fixture();f.serve(()=>scheduleState());await f.actions['agent-schedule']('social');const handler=f.run('formHandler');f.S.session={...f.S.session};await assert.rejects(handler(new FormData()),/Pagina o accesso/);assert.equal(f.calls.length,1);
+});

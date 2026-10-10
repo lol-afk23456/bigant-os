@@ -9,6 +9,7 @@ import {createBusinessProfile} from './src/business-profile.js';
 import {createConnections} from './src/connections.js';
 import {createServicePlan} from './src/service-plan.js';
 import {createCostControl} from './src/cost-control.js';
+import {createAgentSchedules} from './src/agent-schedules.js';
 import {createAgentWork} from './src/agent-work.js';
 import {createAgentTrials} from './src/agent-trials.js';
 import {createAgentConfig} from './src/agent-config.js';
@@ -69,6 +70,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const orchestrator=createOrchestrator({store,production,administration,growth,fidelity,clock,realMode,costControl,guard:realMode?(id,options)=>agentConfig.requireRun(id,options):null});
   agentTrials=createAgentTrials({store,connections,costControl,reserve:orchestrator.reserve,configFor:id=>agentConfig.entry(id).config,enabled:()=>realMode&&env.BIGANT_SCIAME_AI_TRIALS_ENABLED==='true',clock,providerOptions:agentTrialProviderOptions});
   agentWork=createAgentWork({store,connections,trials:agentTrials,configFor:id=>agentConfig.entry(id).config,orchestrator,production,clock,enabled:()=>realMode&&env.BIGANT_SCIAME_AI_ENABLED==='true',providerOptions:agentWorkProviderOptions});
+  const agentSchedules=createAgentSchedules({store,work:agentWork,clock,enabled:()=>realMode&&env.BIGANT_SCIAME_SCHEDULES_ENABLED==='true'});
   const agency=createAgencyModule({store});
   const sciame=createSciame({store,production,administration,growth,orchestrator,root,env,clock,manualState:()=>({active:['social','quality'].some(id=>agentWork.state(id,agentConfig.entry(id).config).active)}),motore:motore?(typeof motore==='string'?createMotore({nome:motore,root,env}):motore):null});
   if(importaProveSciame)sciame.importaProve(resolve(root,'docs/demo-sciame'));
@@ -193,6 +195,8 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
         if(path==='/api/service-plan/prices'&&method==='POST')return json(res,servicePlan.addPrice(u,b),201);
         const planMatch=path.match(/^\/api\/service-plan\/([^/]+)$/);if(planMatch&&method==='PATCH')return json(res,servicePlan.save(u,planMatch[1],b));
         if(path==='/api/agent-config/state'&&method==='GET')return json(res,agentConfig.state(u));
+        const scheduleMatch=path.match(/^\/api\/agent-work\/([^/]+)\/schedule(\/preview)?$/);
+        if(scheduleMatch){const id=scheduleMatch[1];if(method==='POST')return json(res,scheduleMatch[2]?agentSchedules.preview(u,clientId,id,b):agentSchedules.save(u,clientId,id,b));if(method==='GET'&&!scheduleMatch[2])return json(res,agentSchedules.state(u,clientId,id));throw new AppError('Metodo non consentito.',405);}
         const workMatch=path.match(/^\/api\/agent-work\/([^/]+)\/(authorize|preview|run)$/);
         if(workMatch&&method==='POST'){const id=workMatch[1],action=workMatch[2];return json(res,action==='authorize'?agentWork.authorize(u,id,b):action==='preview'?agentWork.preview(u,clientId,id,b.brief,b):await agentWork.run(u,clientId,id,b));}
         if(path==='/api/agent-work/quality/review'&&method==='GET')return json(res,agentWork.review(u,clientId,url.searchParams.get('contentId')));
@@ -264,8 +268,8 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const server=http.createServer(handler);server.requestTimeout=30000;server.headersTimeout=15000;
   const backups=realMode&&worker&&database!==':memory:'?createBackupScheduler({store,sourcePath:database,env,clock}):null;
   let workerError=null,workerRun=null;
-  const timer=worker?setInterval(()=>{if(workerRun)return;workerRun=orchestrator.tick().then(()=>fidelity.runWalletJobs()).then(()=>businessProfile.tick()).then(()=>{workerError=null;}).catch(()=>{workerError='Controllo delle automazioni da verificare.';}).finally(()=>{workerRun=null;});},2000):null;timer?.unref();
-  return {server,store,clientResults,emailMarketing,costControl,googleAuth,businessProfileAuth,businessProfile,billing,connections,servicePlan,agentConfig,agentTrials,agentWork,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(workerRun)await workerRun;await backups?.close();if(server.listening)await new Promise(r=>server.close(r));await businessProfile.close();await agentTrials.close();await agentWork.close();store.close();}};
+  const timer=worker?setInterval(()=>{if(workerRun)return;workerRun=orchestrator.tick().then(()=>fidelity.runWalletJobs()).then(()=>businessProfile.tick()).then(()=>agentSchedules.tick()).then(()=>{workerError=null;}).catch(()=>{workerError='Controllo delle automazioni da verificare.';}).finally(()=>{workerRun=null;});},2000):null;timer?.unref();
+  return {server,store,clientResults,emailMarketing,costControl,googleAuth,businessProfileAuth,businessProfile,billing,connections,servicePlan,agentConfig,agentTrials,agentWork,agentSchedules,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(workerRun)await workerRun;await backups?.close();if(server.listening)await new Promise(r=>server.close(r));await businessProfile.close();await agentTrials.close();await agentSchedules.close();await agentWork.close();store.close();}};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const modalitaReale=process.env.BIGANT_MODALITA==='reale';

@@ -39,3 +39,5 @@ Per ciascuno: SOP → configurazione versionata → prova tecnica con dati inven
 OpenAI e Anthropic restano predisposti, scelta rinviata. Costi complessivi ancora da riconciliare; tetto 50 €/mese e stop prima di 40 €. Prezzo del modello e consumi reali si verificano al suo turno, senza inventare stime.
 
 FUN-054 richiede questo ordine scritto; non chiude FUN-053/FUN-055, i collaudi reali o T4. Stato: percorso Social verificato con fornitore simulato, nessun nuovo agente configurato o attivato da questo documento.
+
+La pianificazione Social è predisposta nella scheda «Quando lavora», con consenso separato per attività e scadenza a 30 giorni: [SOP](SOP-PIANIFICAZIONE-AGENTI.md). Il suo interruttore resta spento; non anticipa la prima prova reale e la verifica dei costi.
