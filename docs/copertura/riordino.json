@@ -17,7 +17,8 @@
         "Area cliente ora a card e sezioni separate, verificata su desktop e 390 px. Restano giro completo dei ruoli e altre pagine da verificare.",
         "COLLAUDO-NAVIGAZIONE-RUOLI.md: menu e card Profili cliente, proiezione uguale all’anteprima, fonte/data e report nel servizio; giro delle schermate principali per ruolo e telefono. Collegamenti reali e giro completo restano aperti.",
         "10 ottobre: COLLAUDO-NAVIGAZIONE-RUOLI.md, sottopagine. Note cliente, regolamento/Wallet e anagrafiche/incassi separati; ritorni e ruoli verificati, suite 772/772 e browser a 390 px. Audit complessivo e collaudo autenticato online ancora aperti.",
-        "Report nei servizi riordinati a card con un solo dettaglio aperto: fonti Meta separate, risultati/recensioni Google, report verificati, indicatori e contatti Email marketing. Navigazione e API vincolate a cliente/servizio; scadenze e percorsi obsoleti senza ripiego su altri dati. Cinque nuove prove e browser desktop/mobile: docs/COLLAUDO-VISTA-CLIENTE.md. Non certifica tutte le pagine/ruoli reali né attiva fonti esterne."
+        "Report nei servizi riordinati a card con un solo dettaglio aperto: fonti Meta separate, risultati/recensioni Google, report verificati, indicatori e contatti Email marketing. Navigazione e API vincolate a cliente/servizio; scadenze e percorsi obsoleti senza ripiego su altri dati. Cinque nuove prove e browser desktop/mobile: docs/COLLAUDO-VISTA-CLIENTE.md. Non certifica tutte le pagine/ruoli reali né attiva fonti esterne.",
+        "Giro online del 10 ottobre: il percorso diretto service:social usa ancora serviceWorkspaceView in app.js con pannelli completi affiancati. Riordino di questa pagina residua da fare; non riaprire la verifica degli indici Servizi gia completata."
       ]
     },
     {
@@ -45,9 +46,10 @@
       "area": "Tutta l'app",
       "modifica": "Per ogni funzione portata a regime: togliere le sue diciture DEMO (interfaccia e testi del server) **nello stesso intervento** che la rende reale, e aggiornare la pagina Avanzamento (FUN-004). Nessuna rimozione in blocco",
       "criterio": "Ogni funzione senza DEMO ha una prova che funziona sul server reale; ogni funzione non ancora configurata riporta ancora DEMO",
-      "stato": "da fare",
+      "stato": "parziale; produzione verificata sul server reale",
       "prove": [
-        "Fidelity distingue modalità e programmi DEMO nella carta pubblica; fixture storiche non convertite. La verifica sul server e per tutte le funzioni resta aperta."
+        "Fidelity distingue modalità e programmi DEMO nella carta pubblica; fixture storiche non convertite. La verifica sul server e per tutte le funzioni resta aperta.",
+        "10 ottobre, 21:00: corretti i testi della produzione per modalita reale/DEMO. API autenticate sul solo cliente di prova: bozza, approvazione, calendario, revisione con invalidazione e pubblicazione rifiutata; browser socio, fonte e nessuna data residua, 390 px senza overflow. Suite 890/890. COLLAUDO-ONLINE-2026-10-10.md. Non certifica ogni funzione o i ruoli nominali ancora da completare."
       ]
     },
     {
