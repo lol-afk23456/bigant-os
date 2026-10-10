@@ -16,7 +16,7 @@ async function fixture(){
 const secret={label:'Accesso inventato',username:'utente inventato',password:'SECRET_TEST_ONLY',url:'https://example.com',notes:'Nota inventata'};
 
 test('scheda cliente: nessun salvataggio di moduli aperti per un’altra attività o sessione',async()=>{
- const scenarios=[['record-profile','profile'],['record-memory','brief','master'],['record-credential','credentials'],['record-contract','contract'],['record-onboarding','onboarding']];
+ const scenarios=[['record-profile','profile'],['record-memory','brief/master','master'],['record-credential','credentials'],['record-contract','contract'],['record-onboarding','onboarding']];
  for(const [action,section,id]of scenarios)for(const change of [f=>{f.S.clientId='client-b';},f=>{f.S.session={...f.S.session};}]){
   const f=await fixture();f.S.section=section;f.action(action,id);change(f);
   await assert.rejects(f.submit({name:'Modifica di prova',content:'Nuovo testo',password:'FAKE',notes:'Nota'}),/pagina|scheda|attività|sessione/i);assert.equal(f.calls.length,0,action);
@@ -46,7 +46,7 @@ test('scheda cliente: file PDF letto in ritardo non viene inviato dopo cambio at
 });
 
 test('scheda cliente: cliente vincolato nella richiesta, doppio submit ignorato e nessuna conferma su nuova pagina',async()=>{
- const f=await fixture();f.S.section='brief';f.action('record-memory','master');let resolve;
+ const f=await fixture();f.S.section='brief/master';f.action('record-memory','master');let resolve;
  f.context.testApi=async(path,options)=>{f.calls.push({path,options});return new Promise(r=>{resolve=r;});};f.run('api=testApi;');
  const a=f.submit({content:'Brief modificato inventato'}),b=f.submit({content:'Doppio clic'});await b;
  assert.equal(f.calls.length,1);assert.equal(f.calls[0].path,'/api/client-record/memory?clientId=client-a');assert.equal(f.calls[0].options.scoped,false);assert.equal(f.calls[0].options.body.version,2);

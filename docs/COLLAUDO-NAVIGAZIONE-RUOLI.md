@@ -17,3 +17,18 @@ L’[ordine degli agenti](ORDINE-CONFIGURAZIONE-AGENTI.md) soddisfa il criterio 
 ## Limiti
 
 Questo giro verifica navigazione e proiezioni con dati inventati, non attiva sincronizzazioni. FUN-012/COL-002 restano parziali finché mancano i collegamenti reali. PRINC-01 resta parziale: non sono stati provati tutti i comandi e tutte le sottopagine, né gli accessi nominali sul server. I collaudi reali Fidelity/Growth, telefono fisico/Wallet e la prima copia giornaliera applicativa restano distinti.
+
+
+## Sottopagine — verifica successiva del 10 ottobre
+
+Riordinate tre aree che mostravano ancora sezioni complete affiancate o in sequenza:
+
+- Scheda informativa: quattro card con nome e versione; ogni nota apre solo il proprio testo. Editor vincolato alla nota aperta, salvataggio e versioni conservati. Indietro torna prima all’indice delle note, poi alla scheda cliente.
+- Fidelity, Regolamento e Wallet: indice con Regolamento/privacy, Google Wallet e Apple Wallet; una pagina per voce. Il collaboratore non accede a queste sottopagine. Nessun Wallet attivato.
+- Fatturazione: anagrafiche divise tra Persone e aziende e Ditte BigAnt; Incassi per cliente ha una propria card, separata dal Tracker. Le informazioni restano quelle già disponibili, senza nuovi dati o movimenti.
+
+Tre nuove prove UI su contenuti esclusi dalle altre sottopagine, ritorni, ruoli e contesto dell’editor. Le dieci regressioni delle schede cliente restano superate. **Suite completa 772/772**, zero errori e zero saltate, eseguita una volta sul blocco finale; prova locale `.cache/workspace-sections-full.log`.
+
+Browser locale, dati inventati: apertura della nota, salvataggio versione 2, ritorno all’indice; regolamento e Google Wallet singoli; incassi cliente, ditte e persone separati. A 390 px non c’è overflow nelle pagine misurate; nessun errore console. Screenshot `.cache/riordino-browser/bigant-sottopagine-desktop.png` e `bigant-sottopagine-mobile.png`. Le API e i permessi server non sono cambiati.
+
+PRINC-01 resta parziale nell’audit complessivo: questo è il collaudo delle sottopagine modificate, non la certificazione di ogni schermata o dell’uso autenticato sul server. Matrice92 invariata.

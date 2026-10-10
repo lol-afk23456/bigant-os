@@ -332,3 +332,8 @@ Completato il criterio scritto FUN-054. Nel giro browser individuato e corretto 
 Corretti salvataggi dal contesto obsoleto e credenziali restituite dopo navigazione/uscita. Un solo controllo indipendente ha individuato anche una nuova apertura durante logout pendente, ora bloccata. Dieci regressioni UI, **suite completa 769/769**, browser su anagrafica, memoria, avvio e logout con dati inventati; nessun errore console. [Prove e limiti](COLLAUDO-SCHEDE-CLIENTI.md). Nessuna dipendenza o migrazione dati. Matrice invariata, nessuna attivazione esterna.
 
 Rilascio dello stesso blocco completato: `a752be3`, Railway SUCCESS, backup 17:00 e verifica HTTP 17:02. Due file identici e due API anonime 401. Anteprima locale fermata; pagina online conservata per l’accesso del socio già richiesto.
+
+
+## 10 ottobre — Sottopagine ordinate
+
+Scheda informativa, impostazioni Fidelity e anagrafiche/incassi di Fatturazione riusano il componente di navigazione: indice compatto, una sezione completa, ritorno al proprio indice. Nessun cambiamento di dati o permessi server. Tre nuove prove, suite **772/772**, browser mobile e salvataggio della nota verificati. [Dettaglio e limiti](COLLAUDO-NAVIGAZIONE-RUOLI.md). Matrice92 invariata; l’intero obiettivo resta aperto.
