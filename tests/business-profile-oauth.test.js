@@ -24,7 +24,7 @@ function fixture(t,{enabled=true,origin='https://os.example',configure=true}={})
  const auth=createBusinessProfileOAuth({store,connections,env,origin,enabled:()=>control.enabled,clock,providerOptions:{fetchImpl}});
  const start=(extra={})=>new URL(auth.start(owner,{version:connections.runtimeMetadata('gbp').version,email:'socio@fixture.example',acknowledged:true,...extra}).url);
  const finish=(url,who=owner,extra={})=>auth.finish(who,{state:url.searchParams.get('state'),code:'code-gbp-inventato',...extra});
- return {store,owner,env,connections,auth,control,requests,start,finish,advance:ms=>milliseconds+=ms,connect:async()=>finish(start())};
+ return {store,owner,env,connections,auth,control,requests,clock,start,finish,advance:ms=>milliseconds+=ms,connect:async()=>finish(start())};
 }
 const authRow=f=>f.store.one('SELECT * FROM os_gbp_authorization WHERE id=1');
 const changes=f=>f.store.one('SELECT total_changes() n').n;
@@ -153,5 +153,5 @@ test('GBP: disconnessione locale disponibile con flag spento, senza revoca remot
 
 test('GBP: assenza vault o origine non HTTPS impediscono l’avvio prima della rete',t=>{
  for(const origin of ['http://os.example','https://user:pass@os.example','https://os.example/path','non-url']){const f=fixture(t,{origin});assert.throws(f.start,/Origine/);assert.equal(f.requests.length,0);}
- const f=fixture(t),auth=createBusinessProfileOAuth({store:f.store,connections:f.connections,env:{},origin:'https://os.example',enabled:true});assert.throws(()=>auth.start(f.owner,{version:1,email:'socio@fixture.example',acknowledged:true}),/Archivio/);assert.equal(f.requests.length,0);
+ const f=fixture(t),auth=createBusinessProfileOAuth({store:f.store,connections:f.connections,env:{},origin:'https://os.example',enabled:true,clock:f.clock});assert.throws(()=>auth.start(f.owner,{version:1,email:'socio@fixture.example',acknowledged:true}),/Archivio/);assert.equal(f.requests.length,0);
 });
