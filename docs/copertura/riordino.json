@@ -734,7 +734,8 @@
         "Motore/vault integrati per ricerca, analisi e bozze, disabilitati di default. 13 test runtime + HTTP, suite 248/248; Browser su fixture con scelta AI rinviata e ricerca chiusa. Gmail/OAuth/Calendar e collaudo fornitori/server ancora da fare. Vedi aggiornamento COLLAUDO-GROWTH-RIORDINO.",
         "10 ottobre: OAuth e invio Gmail manuale integrati, chiusi per default; test offline su versioni, consenso, concorrenza, quota, esito incerto, riavvio e HTTP. Browser con fornitori finti, anteprima 390 px e riconciliazione. SOP-GROWTH-GMAIL.md e COLLAUDO-GROWTH-RIORDINO.md. Account/consegna reali, sincronizzazione conversazioni e Calendar ancora mancanti.",
         "10 ottobre: lettura manuale conversazioni Gmail integrata, solo invii OS confermati; rifiuti, deduplica, MIME, revoche e concorrenza verificati con 78 prove dedicate, HTTP e Browser desktop/390 px. SOP-GROWTH-CONVERSAZIONI.md. Nessuna casella reale letta; Calendar e collaudo fornitori/server ancora aperti.",
-        "10 ottobre: Calendar integrato nel server con consenso OAuth facoltativo, prova/ricevuta esplicita, inviti monouso, concorrenza, riconciliazione e annullamento verificato. 94 nuove prove con fornitori finti, suite 543/543; Browser socio e pubblico, 390 px. SOP-GROWTH-CALENDAR.md e COLLAUDO-GROWTH-RIORDINO.md. Account, ricezione Google e collaudo server restano da autorizzare e verificare; nessuna promozione a completato."
+        "10 ottobre: Calendar integrato nel server con consenso OAuth facoltativo, prova/ricevuta esplicita, inviti monouso, concorrenza, riconciliazione e annullamento verificato. 94 nuove prove con fornitori finti, suite 543/543; Browser socio e pubblico, 390 px. SOP-GROWTH-CALENDAR.md e COLLAUDO-GROWTH-RIORDINO.md. Account, ricezione Google e collaudo server restano da autorizzare e verificare; nessuna promozione a completato.",
+        "4d99498 online: risolto archivio DEMO occupato con conservazione privata e ripristino protetto. Growth reale vuoto e in pausa verificato. Ricerca/AI/Gmail/Calendar reali restano da collaudare."
       ]
     },
     {
@@ -745,7 +746,8 @@
       "stato": "parziale in locale",
       "prove": [
         "docs/COLLAUDO-FIDELITY-RIORDINO.md: sorgente originale verificata, 27 test dominio e 4 scanner, percorso timbri/riscatto e carta responsive. Server reale, telefono e fornitori ancora da collaudare.",
-        "Google Wallet: motore con firma/OAuth, emissione e aggiornamenti idempotenti, revoca e coda persistente; 16 test con risposte finte e una prova HTTP. Schermate e carta pubblica a 390 px verificate. Flag chiuso; account/dominio Google, Android e Apple/iPhone ancora da collaudare. SOP-GOOGLE-WALLET.md; suite OS 265/265."
+        "Google Wallet: motore con firma/OAuth, emissione e aggiornamenti idempotenti, revoca e coda persistente; 16 test con risposte finte e una prova HTTP. Schermate e carta pubblica a 390 px verificate. Flag chiuso; account/dominio Google, Android e Apple/iPhone ancora da collaudare. SOP-GOOGLE-WALLET.md; suite OS 265/265.",
+        "10 ottobre, collaudo autenticato sul server: programma/tessera inventati, accredito, riscatto, rifiuto saldo insufficiente, storno, ricerca per link ed export. Restano telefono fisico, Wallet e altri ruoli. Vedi COLLAUDO-ONLINE-2026-10-10.md."
       ]
     },
     {
@@ -766,7 +768,8 @@
       "stato": "parziale in locale",
       "prove": [
         "docs/COLLAUDO-FIDELITY-RIORDINO.md: sorgente originale verificata, 27 test dominio e 4 scanner, percorso timbri/riscatto e carta responsive. Server reale, telefono e fornitori ancora da collaudare.",
-        "Google Wallet: motore con firma/OAuth, emissione e aggiornamenti idempotenti, revoca e coda persistente; 16 test con risposte finte e una prova HTTP. Schermate e carta pubblica a 390 px verificate. Flag chiuso; account/dominio Google, Android e Apple/iPhone ancora da collaudare. SOP-GOOGLE-WALLET.md; suite OS 265/265."
+        "Google Wallet: motore con firma/OAuth, emissione e aggiornamenti idempotenti, revoca e coda persistente; 16 test con risposte finte e una prova HTTP. Schermate e carta pubblica a 390 px verificate. Flag chiuso; account/dominio Google, Android e Apple/iPhone ancora da collaudare. SOP-GOOGLE-WALLET.md; suite OS 265/265.",
+        "Tessera pubblica online verificata a 390 px senza overflow; scanner tramite link riuscito. Fotocamera fisica ancora da provare."
       ]
     },
     {
@@ -949,7 +952,8 @@
       "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
       "prove": [
         "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare.",
-        "10 ottobre: OAuth e invio Gmail manuale integrati, chiusi per default; test offline su versioni, consenso, concorrenza, quota, esito incerto, riavvio e HTTP. Browser con fornitori finti, anteprima 390 px e riconciliazione. SOP-GROWTH-GMAIL.md e COLLAUDO-GROWTH-RIORDINO.md. Account/consegna reali, sincronizzazione conversazioni e Calendar ancora mancanti."
+        "10 ottobre: OAuth e invio Gmail manuale integrati, chiusi per default; test offline su versioni, consenso, concorrenza, quota, esito incerto, riavvio e HTTP. Browser con fornitori finti, anteprima 390 px e riconciliazione. SOP-GROWTH-GMAIL.md e COLLAUDO-GROWTH-RIORDINO.md. Account/consegna reali, sincronizzazione conversazioni e Calendar ancora mancanti.",
+        "Custodia cifrata configurata sul server e disponibilità verificata nell’area socio. Nessun fornitore attivato e nessuna chiave nel repository."
       ]
     },
     {

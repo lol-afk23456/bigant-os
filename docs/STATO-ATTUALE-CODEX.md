@@ -3,10 +3,10 @@
 Aggiornato il 10 ottobre 2026. Questo file riassume lo stato; non sostituisce le decisioni del proprietario o la mappatura principale.
 
 - Repository: `~/Documents/BigAnt-OS-Codex`, ramo `bigant-os-notte-1`.
-- **Codice online:** `aef13b3`, Railway BigAnt OS / bigant-os-server / production; deployment `2032ce9d-ce21-475a-b747-4eb3c349e0d8` SUCCESS. Documentazione successiva sullo stesso ramo.
-- Backup Railway prima del rilascio: 10 ottobre, 17:09, 799 MB referenziati, confermato dall’API ufficiale. Prima copia giornaliera applicativa verificata nell’area socio: 10 ottobre, 16:05 ora di Roma. Nessuna pianificazione aggiuntiva Railway impostata.
+- **Codice online:** `4d99498`, Railway BigAnt OS / bigant-os-server / production; deployment `a8da3f4f-3e95-47cb-921c-23a58c8ba450` SUCCESS. Health e file pubblico verificati, tre API anonime 401. Documentazione successiva sullo stesso ramo.
+- Backup Railway prima del rilascio: 10 ottobre, **18:43**, 800 MB referenziati, confermato dall’API ufficiale. Prima copia giornaliera applicativa verificata nell’area socio: 10 ottobre, **16:05 ora di Roma**. Nessuna pianificazione aggiuntiva Railway impostata.
 - Ultime prove del codice: **791/791**, zero saltate, controllo progetto **5/5** (blocco archivio Growth). Tre nuove prove di navigazione e dieci regressioni scheda/sessione ancora verdi. Browser: nota singola salvata, impostazioni Fidelity e anagrafiche/incassi, 390 px senza overflow nelle pagine misurate, zero errori console. Health online OK, workspace.js identico e tre API anonime 401. Non ripetere queste prove se il codice non cambia.
-- Ultimo sviluppo: risolto il blocco Growth causato dall’archivio DEMO occupato. Transizione esplicita con conservazione atomica e ripristino protetto, in attesa della verifica finale online. Fidelity socio collaudato sul server: programma/tessera, accredito, riscatto, rifiuto saldo insufficiente, storno, ricerca per link, CSV e pagina a 390 px. Programma tecnico infine disattivato. [Prove online](COLLAUDO-ONLINE-2026-10-10.md).
+- Ultimo sviluppo: risolto il blocco Growth causato dall’archivio DEMO occupato. Transizione esplicita con conservazione atomica e ripristino protetto, rilasciata e verificata online: 5 aziende/6 attività/6 costi DEMO conservati, Growth reale vuoto e in pausa, ripristino disponibile. Fidelity socio collaudato sul server: programma/tessera, accredito, riscatto, rifiuto saldo insufficiente, storno, ricerca per link, CSV e pagina a 390 px. Programma tecnico infine disattivato. [Prove online](COLLAUDO-ONLINE-2026-10-10.md).
 - Matrice92: **73 implementate localmente, 13 parziali, 6 da fare**. Rilascio del codice e collaudo funzionale autenticato sono distinti. L’intero obiettivo resta aperto.
 
 ## Prossimo lavoro utile
@@ -15,7 +15,8 @@ Aggiornato il 10 ottobre 2026. Questo file riassume lo stato; non sostituisce le
 2. FUN-054 completata: ORDINE-CONFIGURAZIONE-AGENTI.md. Sequenza scritta dal brief, nessuna attivazione e T4 ancora aperta. Nuovo percorso Profili cliente verificato e online.
 3. Audit residui concluso: AUDIT-RESIDUI-RIORDINO.md. FUN-007 soddisfa il criterio locale delle destinazioni; FUN-053/055/062 restano parziali perché non provano percorsi automatici/esterni funzionanti. Non ripetere audit o collaudi equivalenti. Proseguire dalle prove online appena raccolte e dai prerequisiti dei fornitori. Non ripetere i passaggi socio Fidelity già superati; telefono fisico e ruoli separati restano aperti.
 4. **Accesso risolto:** login automatico riuscito e cambio password completato dal titolare. Sessione socio autenticata verificata nel browser; Fidelity verificato con dati inventati per BigAnt. Custodia cifrata configurata su Railway e confermata nell’app; nessun fornitore attivato. Proseguire il collaudo online, senza ripetere login o cercare credenziali. Password conservate soltanto nella conversazione, mai nei file del progetto.
-5. T0 in corso; T1–T10 seguono il riordino, con stato in [TASK-AVANZAMENTO](TASK-AVANZAMENTO.md). Non dichiararle completate per il solo numero di test.
+5. **Growth sbloccato online:** nessun fornitore attivo, budget disponibile visualizzato 0 €. Verificare budget/consumi e prerequisiti prima della prima prova onerosa. Accessi nominali, cliente separato di prova, collaudo ruoli e collegamenti reali rimangono aperti. Non ripetere l’archiviazione già conclusa.
+6. T0 in corso; T1–T10 seguono il riordino, con stato in [TASK-AVANZAMENTO](TASK-AVANZAMENTO.md). Non dichiararle completate per il solo numero di test.
 
 ## Autorizzazioni e accessi
 

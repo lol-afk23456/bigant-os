@@ -36,4 +36,16 @@ La correzione aggiunge un passaggio esplicito riservato ai soci: anteprima dei c
 
 Il ripristino è disponibile dalle impostazioni soltanto finché lo spazio reale è vuoto e non configurato. Versione dell’anteprima, permessi correnti e dipendenze vengono ricontrollati sul server; modifiche concorrenti o nuove attività impediscono la sostituzione. Il browser vincola la conferma alla pagina, al socio e al cliente iniziali.
 
-Verifiche: **791/791 test**, zero saltati, controllo progetto **5/5**. Le 19 prove nuove coprono 23 tabelle Growth, ripristino integrale, transazioni interrotte, isolamento, versioni obsolete, ruoli e protezioni HTTP/browser. Rilascio e prova finale sul server da registrare dopo la pubblicazione.
+Verifiche: **791/791 test**, zero saltati, controllo progetto **5/5**. Le 19 prove nuove coprono 23 tabelle Growth, ripristino integrale, transazioni interrotte, isolamento, versioni obsolete, ruoli e protezioni HTTP/browser. Codice **4d99498**, pubblicato e verificato sul server.
+
+
+## Rilascio e prova finale Growth
+
+- Backup Railway prima del rilascio: `351d73d0-ffb7-4118-a4cf-044dea2a76ca`, 10 ottobre **18:43**, 800 MB referenziati.
+- Deployment `a8da3f4f-3e95-47cb-921c-23a58c8ba450`, SUCCESS. Alle 18:46: health OK, codice pubblico identico al commit, API Growth/Fidelity/Collegamenti anonime 401; azioni e letture esterne disabilitate.
+- Il browser mostrava soltanto i conteggi della prova precedente: **5 aziende, 6 attività e 6 registrazioni di costo**. Nessuna scheda precedente esportata o copiata nel repository.
+- Eseguita la transizione esplicita: Growth ora si apre con aziende, bozze, appuntamenti e attività a zero; ricerca in pausa, **0 di 5 fasi attive**. Le vecchie registrazioni sono conservate nell’archivio privato, i costi centrali invariati.
+- Impostazioni: ripristino disponibile e abilitato. Il ciclo completo di ripristino è verificato nei test automatici; non ripetuto in produzione.
+- Vista Growth a 390 px: larghezza documento 390 px. Immagine `riordino-browser/bigant-growth-online-390.png` nella cache ignorata.
+
+Restano da autorizzare e collaudare fornitori AI, ricerca, Gmail e Calendar. Il budget disponibile mostrato da Growth è **0 €**: va verificato nel controllo costi prima di qualsiasi prova a pagamento. Questo rilascio non attiva alcun fornitore e non certifica il percorso esterno di acquisizione clienti.
