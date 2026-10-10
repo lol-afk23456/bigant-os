@@ -166,3 +166,12 @@ Stato locale aggiornato in Avanzamento senza promuovere integrazioni solo config
 Prima della sincronizzazione dei canali serve distinguere il link pubblico dall’autorizzazione dell’account. I soci registrano URL e fonte con conferma manuale dell’attività; questo non vale come verifica indipendente T5. Sei canali aziendali, LinkedIn solo pagine company. Nessuna nuova voce nel menu cliente prima del giro. Nessun indirizzo viene visitato o arricchito automaticamente. Versioni immutabili e conflitti espliciti impediscono sovrascritture involontarie; il dialogo conserva il contesto di apertura.
 
 Lo spazio recensioni vive in GBP ma dichiara i dati non ancora disponibili: FUN-013 resta parziale, FUN-012 non è promosso a completo e COL-002 resta da collegare. La revisione indipendente ha invece verificato sette criteri di riordino già implementati (UI-005, UI-007, FUN-011, FUN-016, FUN-020, FUN-021, DAT-002): aggiornare la mappa conservando il limite locale. Trello resta fonte ufficiale, senza attestarne la lettura. Nessuna dipendenza, account, spesa o dato cliente aggiunto.
+
+
+### Google Business Profile — 10 ottobre 2026
+
+Prima integrazione dei Profili: OAuth GBP con chiavi proprie e consenso distinto da Gmail/Calendar. Anche se Google concede business.manage, implementare solo lettura di schede, recensioni e tre serie giornaliere. Nessuna risposta, modifica, esportazione o alimentazione AI/Growth con questi contenuti. Prima selezione dalla lista autorizzata, poi conferma manuale dell’attività, lettura di prova e attivazione del socio. Non equiparare questa conferma alla verifica indipendente T5.
+
+Cache soltanto in RAM: 24 ore dall’inizio lettura, 64 attività/8 MiB. Il database conserva identificativi, versioni, soci e date/esiti senza payload Google. Aggiornamento giornaliero solo esplicito; massimo cinque attività per giro, fallimenti senza retry ravvicinati. Il cliente legge la propria cache autorizzata con servizio locale; collaboratori esclusi da questo percorso e menu cliente definitivo rinviato al giro. Sospensione e revoca impediscono riuso; nessuna rete alla consultazione. Dati mancanti distinti dallo zero codificato da Google come campo value omesso in un punto datato.
+
+La revisione finale conferma FUN-013 implementata in locale, COL-002 e FUN-012 parziali. Rilascio, account/quote e confronto reale ancora da autorizzare e verificare. Nessuna modifica al budget o ai vincoli T0–T10. [Collaudo](COLLAUDO-GOOGLE-BUSINESS.md).

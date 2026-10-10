@@ -43,6 +43,10 @@ L'istruzione finale «parti con T0» consente ora la selezione degli strumenti e
 
 Link pubblici e fonte ora registrabili per attività, con conferma manuale del socio, versioni immutabili e isolamento. Questo prepara l'app per l'inserimento futuro, **non avvia T5** e non sostituisce la verifica indipendente dei clienti. Account e dati dei canali restano scollegati; nessuna lettura delle cartelle reali. Prove: **581/581**, 38 nuove, controllo **5/5**, Browser desktop e 390 px; [collaudo Profili](COLLAUDO-PROFILI.md). Le sette voci già presenti sono state riallineate dopo verifica indipendente: **59 locali, 14 parziali, 19 da fare**. T0–T10 mantengono l'ordine e gli stati sopra.
 
+## Riordino corrente — Google Business Profile
+
+Prima fonte dei Profili predisposta: consenso separato, scheda scelta e verificata, recensioni e serie giornaliere, aggiornamento manuale/giornaliero esplicito. Prove locali con Google simulato: **652/652**, Browser desktop e 390 px, revisione indipendente. Dettagli in [COLLAUDO-GOOGLE-BUSINESS](COLLAUDO-GOOGLE-BUSINESS.md). Le 92 voci sono ora **60 locali, 14 parziali, 18 da fare**; non è una misura di completamento T0–T10. Nessun avvio T5/T6, dato cliente, collegamento reale o rilascio.
+
 ## Come riprendere
 
 Continuare le 92 voci dal loro stato reale e il riordino incrementale T0. Lettura manuale delle conversazioni predisposta e verificata con fornitori finti; Calendar Growth predisposto e provato localmente con fornitori finti (consenso separato, inviti autorizzati, prenotazione, riconciliazione e annullamento). Restano, fra l'altro, collaudi Gmail e Calendar reali, motore reale dello Sciame, collaudi dei ruoli e telefono, collegamenti da autorizzare. Apple non è più un requisito di attivazione reale in questa tranche, per la nuova istruzione T6; mantenere conservata e chiaramente non attiva l'eventuale struttura esistente.

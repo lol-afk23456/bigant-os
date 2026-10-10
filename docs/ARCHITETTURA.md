@@ -241,3 +241,12 @@ Il flag `BIGANT_GROWTH_CALENDAR_ENABLED` è spento per impostazione predefinita.
 `src/profile-directory.js` registra la capacità di leggere e aggiornare i link pubblici per attività, dietro le API comuni di Workspace. Sei canali fissi, proprietario e cliente riletti dal database, scrittura solo dei soci e controllo della versione corrente. Lo storico append-only conserva ogni versione e l’audit comune registra soltanto metadati. Contratto e responsabilità nella [SOP Profili](SOP-PROFILI.md).
 
 Il registro conserva URL e fonte dichiarati dal socio, senza chiamare servizi esterni. Non è un connettore e non trasforma il link in un account collegato. Metriche, sincronizzazione e recensioni restano assenti. Google Business Profile ospita il punto di raccolta delle recensioni future. La vista cliente definitiva attende il giro dedicato; l’API ne verifica già l’isolamento. [Prove e limiti](COLLAUDO-PROFILI.md).
+
+
+## Aggiornamento Profili / GBP — 10 ottobre 2026
+
+Il registro pubblico resta in src/profile-directory.js; il nuovo src/business-profile.js aggiunge dati temporanei a Profili senza confondere link registrato e account autorizzato. src/business-profile-oauth.js gestisce PKCE, identità e refresh cifrati con un consenso separato. Il trasporto OAuth usa endpoint fissi; src/business-profile-provider.js accetta soltanto letture Google previste, con limiti di risposta e validazione. Le nuove funzioni sono collegate alla SOP del servizio local nel registro.
+
+Le tabelle os_gbp_authorization/os_gbp_oauth_states custodiscono consenso e stato monouso; os_gbp_config conserva scelta/versioni/permessi/date, mai recensioni o serie. Cache RAM 24h, massimo 64 attività e 8 MiB. Il worker comune invoca tick, esplicitamente attivato per attività/frequenza e limitato a cinque tentativi per giro. Avanzamento usa solo conteggi e date, senza clonare payload o chiamare Google. Il salvataggio di un link pubblico conserva il nuovo DTO businessProfile.
+
+Rotte private sotto /api/connections/gbp/oauth e /api/business-profile; callback /auth/google-business/callback. Flag BIGANT_GBP_ENABLED=false, comunque chiuso nella DEMO. Sessione, origine, CSRF e controlli correnti di socio/cliente/servizio restano nel server e nel dominio. Scelta e attivazione non consentono risposte alle recensioni né modifiche remote. Procedura e prove: [SOP](SOP-GOOGLE-BUSINESS.md), [collaudo](COLLAUDO-GOOGLE-BUSINESS.md).

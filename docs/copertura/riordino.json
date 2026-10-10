@@ -218,7 +218,8 @@
       "stato": "parziale in locale",
       "prove": [
         "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
-        "Registro di link pubblici con fonte, conferma manuale del socio, versioni immutabili e isolamento: src/profile-directory.js; tests/profile-directory.test.js, tests/profiles-http.test.js, tests/profiles-ui.test.js; docs/COLLAUDO-PROFILI.md. Metriche e recensioni non ancora acquisite; provider e sincronizzazione mancanti. Nessuna modifica al menu cliente definitivo."
+        "Registro di link pubblici con fonte, conferma manuale del socio, versioni immutabili e isolamento: src/profile-directory.js; tests/profile-directory.test.js, tests/profiles-http.test.js, tests/profiles-ui.test.js; docs/COLLAUDO-PROFILI.md. Prima tranche: soli link pubblici; successivamente aggiunto il percorso GBP descritto nella prova seguente. Nessuna modifica al menu cliente definitivo.",
+        "GBP predisposto: consenso OAuth separato, scelta vincolata della scheda, lettura di prova, attivazione esplicita e aggiornamento giornaliero/manuale; cache RAM 24h con fonte e data. 71 nuove prove, suite 652/652 e Browser desktop/mobile con Google simulato: docs/COLLAUDO-GOOGLE-BUSINESS.md. Nessun account reale o rilascio; altri canali e giro cliente ancora da completare."
       ]
     },
     {
@@ -237,9 +238,10 @@
       "area": "Profili → Google Business Profile",
       "modifica": "Le recensioni stanno **dentro Google Business Profile**",
       "criterio": "Nessuna voce \"Recensioni\" separata; le recensioni si leggono nella scheda GBP",
-      "stato": "parziale in locale",
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "Registro di link pubblici con fonte, conferma manuale del socio, versioni immutabili e isolamento: src/profile-directory.js; tests/profile-directory.test.js, tests/profiles-http.test.js, tests/profiles-ui.test.js; docs/COLLAUDO-PROFILI.md. Metriche e recensioni non ancora acquisite; provider e sincronizzazione mancanti. Nessuna modifica al menu cliente definitivo."
+        "Registro di link pubblici con fonte, conferma manuale del socio, versioni immutabili e isolamento: src/profile-directory.js; tests/profile-directory.test.js, tests/profiles-http.test.js, tests/profiles-ui.test.js; docs/COLLAUDO-PROFILI.md. Prima tranche: soli link pubblici; successivamente aggiunto il percorso GBP descritto nella prova seguente. Nessuna modifica al menu cliente definitivo.",
+        "GBP predisposto: consenso OAuth separato, scelta vincolata della scheda, lettura di prova, attivazione esplicita e aggiornamento giornaliero/manuale; cache RAM 24h con fonte e data. 71 nuove prove, suite 652/652 e Browser desktop/mobile con Google simulato: docs/COLLAUDO-GOOGLE-BUSINESS.md. Nessun account reale o rilascio; altri canali e giro cliente ancora da completare."
       ]
     },
     {
@@ -247,8 +249,10 @@
       "area": "Profili",
       "modifica": "Nota del consulente: le API di Meta, Google Business Profile, LinkedIn e TikTok richiedono app approvate e verifiche aziendali (`docs/DA-FARE-RAFFAELE.md`). Il \"tempo reale\" vero non è realistico né necessario: proposta **aggiornamento automatico una volta al giorno** più il pulsante \"Aggiorna ora\". Ordine consigliato: GBP, poi Instagram/Facebook, poi gli altri",
       "criterio": "Decisione D-07; poi, per ogni canale collegato, dati confrontati con quelli della piattaforma originale",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "GBP predisposto: consenso OAuth separato, scelta vincolata della scheda, lettura di prova, attivazione esplicita e aggiornamento giornaliero/manuale; cache RAM 24h con fonte e data. 71 nuove prove, suite 652/652 e Browser desktop/mobile con Google simulato: docs/COLLAUDO-GOOGLE-BUSINESS.md. Nessun account reale o rilascio; altri canali e giro cliente ancora da completare."
+      ]
     },
     {
       "id": "FUN-014",

@@ -257,3 +257,16 @@ Controllo finale **5/5**: 121 file JavaScript, 74 documenti e 144 collegamenti l
 - Prove nuove 18 dominio + 5 HTTP + 15 UI = 38. Suite completa **581/581**, nessun salto/fallimento. Controllo progetto **5/5** (125 JS, 76 documenti, 150 collegamenti locali); nessuna dipendenza aggiunta. HTTP e Avanzamento 12/12; log nella cache tecnica. Iniziali casi HTTP rifiutati perché usavano suffisso .example; fixture corrette a sottodomini IANA example.com/org, senza cambiare la validazione o visitare indirizzi.
 - Browser: inserimento e modifica del sito inventato con fonte, separazione fra due clienti, GBP con recensioni mancanti, desktop e 390 px (dialogo 356 px, nessun overflow). Nessun errore console osservato. Screenshot conservati nella cache del progetto, temporanei rimossi. Nessun collaudo su telefono fisico o server reale.
 - Revisione statica indipendente senza ulteriori difetti concreti; nessun nuovo pacchetto, account, chiamata provider, spesa, dato reale, push o deploy. Il totale economico esterno resta non verificato. Procedura ed esiti in COLLAUDO-PROFILI.
+
+
+## 10 ottobre 2026 — Google Business Profile nei Profili
+
+FUN-012/FUN-013/COL-002. SOP prima del codice, fonti ufficiali Google e file disgiunti per OAuth, provider/runtime e UI. Parent integra server, Profili, Avanzamento, registro e test HTTP. OAuth con identità verificata e nessun consenso Gmail implicito; selezione temporanea vincolata, prova e attivazione separate, aggiornamento giornaliero esplicito. Dati Google esclusivamente in memoria, con TTL/limiti e nessun riuso AI o Growth. Ruoli, sessione, servizi, pausa e versioni ricontrollati dopo le attese.
+
+Revisione indipendente ha trovato il DTO di salvataggio link privo dello stato GBP: wrapper corretto e regressione aggiunta. Le prime prove hanno rilevato una fixture con orologi discordanti; corretta soltanto la scadenza inventata. La nuova prova automatica ora verifica anche il rifiuto dell’attivazione con cache scaduta e richiede un nuovo controllo. Provider/worker limitati e rivisti senza ulteriori finding concreti.
+
+**71 nuove prove, suite completa 652/652**, zero fallimenti o test saltati. OAuth15, runtime22, provider7, HTTP7, UI19, Avanzamento1. Browser account→scheda→conferma→prova→attivazione con Google simulato; desktop1280, mobile390×844, dialogo356, nessun overflow o errore console osservato. Compattato avviso link assente GBP. Screenshot nella cache tecnica, dettagli in COLLAUDO-GOOGLE-BUSINESS.
+
+FUN-013 implementata localmente, FUN-012/COL-002 parziali; revisore ha confrontato i criteri originali. Matrice92: **60 implementate localmente, 14 parziali, 18 da fare**. Nessuna promozione dei collaudi server o della copertura storica del brief. T0–T10 rimane aperto; nessun nuovo pacchetto, account, dato reale, consumo API applicativo, push o deploy.
+
+Controllo finale **5/5**: 136 JavaScript, 78 documenti e 158 link locali. Browser verificati anche Aggiorna ora e sospensione con dati rimossi. Anteprima terminata, tab chiusa e viewport ripristinata; immagini temporanee spostate nella cache del progetto.
