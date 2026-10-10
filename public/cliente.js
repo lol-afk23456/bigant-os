@@ -1,8 +1,8 @@
 'use strict';
 // Dashboard cliente: le 9 voci della specifica, pensate prima per il telefono.
-// Ogni numero mostra la fonte e lo stato: DEMO, COLLEGAMENTO MANCANTE, SOLO STRUTTURA o NON ATTIVO.
-const TONI_STATO={OPERATIVO:'green',DEMO:'orange','COLLEGAMENTO MANCANTE':'red','SOLO STRUTTURA':'','NON ATTIVO':'',Pronto:'green','Pronto per la verifica':'green','Al lavoro':'orange','Controllo qualità':'orange','In coda':'orange','In revisione interna':''};
-const statoBadge=st=>`<span class="badge ${TONI_STATO[st]??''}">${e(st)}</span>`;
+// Ogni numero mostra la fonte; le misure assenti non vengono presentate come zero.
+const TONI_STATO={OPERATIVO:'green',DEMO:'orange','COLLEGAMENTO MANCANTE':'red','NON ATTIVO':'',Pronto:'green','Pronto per la verifica':'green','Al lavoro':'orange','Controllo qualità':'orange','In coda':'orange','In revisione interna':''};
+const statoBadge=st=>`<span class="badge ${TONI_STATO[st]??''}">${e(st==='SOLO STRUTTURA'?'Dato non disponibile':st)}</span>`;
 const euroC=c=>money(c);
 function kpiTabella(righe){return `<div class="kpi-list">${righe.map(k=>`<div class="kpi-row"><div><b>${e(k.kpi)}</b><small>${e(k.fonte)}</small></div><div class="kpi-val">${k.valore===null?'<span class="muted">—</span>':e(k.valore)}${statoBadge(k.stato)}</div></div>`).join('')}</div>`;}
 function sezioneCliente(x){
@@ -16,7 +16,7 @@ function sezioneCliente(x){
   ${panel('Calendario',x.calendario.length?`<div class="list">${x.calendario.map(c=>`<div class="list-item"><span class="number">${icon('calendar')}</span><div class="body"><b>${e(c.title)}</b><p>${e(c.state)}${c.scheduled_at?` · ${e(date(c.scheduled_at,true))}`:''}</p></div></div>`).join('')}</div>`:empty('Calendario vuoto','',"calendar"),'','PROGRAMMATO = in calendario; la pubblicazione sui canali non è collegata')}</div>
   ${panel('Storico delle decisioni',x.storico.length?table(['Contenuto','Decisione','Chi','Quando','Motivo'],x.storico.map(h=>[e(h.titolo),badge(h.decisione),e(h.da||'—'),e(date(h.quando,true)),e(h.motivo||'')])):empty('Nessuna decisione ancora','',"clock"))}`;
  if(x.id==='servizi')return `<div class="card-grid">${x.attivi.map(sv=>`<article class="module-card"><h3>${e(sv.codice)} · ${e(sv.nome)}</h3><ul class="out-list">${sv.include.slice(0,6).map(i=>`<li>${e(i)}</li>`).join('')}</ul><small>Consegne del mese: ${sv.consegneDelMese.fatte} fatte · ${sv.consegneDelMese.inCorso} in corso</small></article>`).join('')}</div>${panel('Servizi consigliati per te',x.consigliati?`<p class="preserve">${e(x.consigliati.testo)}</p><small>${e(x.consigliati.fonte)}</small>`:empty('Nessun consiglio per ora','Le proposte arrivano dal Direttore Crescita dopo l’approvazione dei soci.','star'))}`;
- if(x.id==='report')return panel('Report mensili',x.report.length?x.report.map(r=>`<h3>${e(r.titolo)}</h3><p class="preserve">${e(r.testo)}</p><small>Aggiornato ${e(date(r.aggiornato,true))}</small>`).join(''):empty('Nessun report ancora','',"file"))+notice(`${x.invioAutomatico.stato}: ${x.invioAutomatico.nota} · ${x.pdf.stato}: ${x.pdf.nota}`);
+ if(x.id==='report')return panel('Report mensili',x.report.length?x.report.map(r=>`<h3>${e(r.titolo)}</h3><p class="preserve">${e(r.testo)}</p><small>Aggiornato ${e(date(r.aggiornato,true))}</small>`).join(''):empty('Nessun report ancora','',"file"))+notice(`Invio dei report: ${x.invioAutomatico.nota} · PDF: ${x.pdf.nota}`);
  if(x.id==='documenti')return panel('Contratti',contractLinks(x.contratti))+notice('Fatture e pagamenti sono gestiti separatamente dall’agenzia.');
  if(x.id==='crm')return `<div class="stats">${stat('Contatti nel CRM',String(x.contatti),'CRM BigAnt OS','users')}${stat('Iscritti Fidelity',String(x.iscrittiFidelity),'BigAnt Fidelity','card')}</div>${notice(`${x.campagne.stato}: ${x.campagne.nota}`)}`;
  if(x.id==='chiedi'&&isOwner())return panel('Chiedi all’agenzia',notice('Vista in sola lettura: la richiesta è disponibile dall’accesso personale del cliente.'));

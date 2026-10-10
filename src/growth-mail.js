@@ -14,10 +14,13 @@ export function createGrowthMail({store:root,growthStore:s,runtime,googleAuth,or
  CREATE TRIGGER IF NOT EXISTS gr_mail_approvals_immutable BEFORE UPDATE ON gr_mail_approvals BEGIN SELECT RAISE(ABORT,'Approvazione invio immutabile'); END;`);
  root.run("UPDATE gr_mail_intents SET status='uncertain',error='Processo riavviato. Verifica la posta inviata.' WHERE status IN ('preparing','dispatching')");
  function owner(user){requireOwner(user);if(!root.one("SELECT id FROM os_users WHERE id=? AND active=1 AND role='owner' AND must_change_password=0",user.id))throw new AppError('Socio non più autorizzato.',403);}
- const config=w=>{s.workspace(w);root.run('INSERT OR IGNORE INTO gr_mail_config(workspace) VALUES(?)',w);return root.one('SELECT * FROM gr_mail_config WHERE workspace=?',w);};
+ const readConfig=w=>root.one('SELECT * FROM gr_mail_config WHERE workspace=?',w)||{version:0,fingerprint:null,checked_at:null,enabled_by:null};
+ const config=w=>{s.workspace(w);root.run('INSERT OR IGNORE INTO gr_mail_config(workspace) VALUES(?)',w);return readConfig(w);};
  const google=user=>googleAuth?googleAuth.state(user):{connected:false,version:0,email:null};
- function proof(user,w){const context=runtime.deliveryContext(user,w),g=google(user),st=s.settings(w);return {fingerprint:hash({runtime:context.fingerprint,google:g.version,email:g.email,sender:st.senderEmail}),ready:enabled&&context.ready&&g.connected&&address(st.senderEmail)===g.email&&!!st.senderEmail,google:g};}
- function state(user,w){owner(user);const row=config(w),p=proof(user,w),checked=row.fingerprint===p.fingerprint&&!!row.checked_at,by=!!row.enabled_by&&!!root.one("SELECT id FROM os_users WHERE id=? AND role='owner' AND active=1",row.enabled_by);return {available:enabled,configured:p.google.connected,email:p.google.email,version:row.version,checked,lastCheck:row.checked_at,enabled:p.ready&&checked&&by,canReconcile:enabled&&p.google.connected,note:!enabled?'Gmail è disabilitato sul server.':'Invio solo manuale, dopo approvazione della versione e controllo del consenso.'};}
+ function proof(user,w,options){const context=runtime.deliveryContext(user,w,options),g=google(user),st=s.settings(w);return {fingerprint:hash({runtime:context.fingerprint,google:g.version,email:g.email,sender:st.senderEmail}),ready:enabled&&context.ready&&g.connected&&address(st.senderEmail)===g.email&&!!st.senderEmail,google:g};}
+ function snapshot(row,p){const checked=row.fingerprint===p.fingerprint&&!!row.checked_at,by=!!row.enabled_by&&!!root.one("SELECT id FROM os_users WHERE id=? AND role='owner' AND active=1",row.enabled_by);return {available:enabled,configured:p.google.connected,email:p.google.email,version:row.version,checked,lastCheck:row.checked_at,enabled:p.ready&&checked&&by,canReconcile:enabled&&p.google.connected,note:!enabled?'Gmail è disabilitato sul server.':'Invio solo manuale, dopo approvazione della versione e controllo del consenso.'};}
+ function state(user,w){owner(user);return snapshot(config(w),proof(user,w));}
+ function progress(user,w){owner(user);const status=snapshot(readConfig(w),proof(user,w,{readOnly:true}));return {available:status.available,configured:status.configured,checked:status.checked,enabled:status.enabled,lastCheck:status.checked?status.lastCheck:null};}
  function permitted(user,w,{probe=false,read=false}={}){owner(user);if(!enabled)throw new AppError('Gmail non abilitato sul server.',409);const g=google(user);if(!g.connected)throw new AppError('Casella Google da autorizzare.',409);if(read)return {google:g};const p=proof(user,w);if(!p.ready||s.settings(w).paused)throw new AppError('Completa le fasi precedenti e il mittente; Growth deve essere attivo.',409);if(!probe&&!state(user,w).enabled)throw new AppError('Gmail da collaudare o attivare per questa attività.',409);return {google:g,proof:p,config:config(w)};}
  const providers=(user,version,allow)=>createGrowthLiveProviders({...providerOptions,origin,clock,credentials:(_w,id)=>{if(id!=='google')throw new AppError('Fornitore non autorizzato.',403);return googleAuth.credentials(user,version);},allow});
  async function check(user,w,b){
@@ -77,5 +80,5 @@ export function createGrowthMail({store:root,growthStore:s,runtime,googleAuth,or
   return access;
  }});
  async function sync(user,w,b){try{return await conversations.sync(user,w,b);}catch(e){if([401,403].includes(e.remoteStatus))googleAuth.invalidate();throw e;}}
- return {state,check,activate,recordApproval,preview,send,reconcile,conversations,sync};
+ return {state,progress,check,activate,recordApproval,preview,send,reconcile,conversations,sync};
 }

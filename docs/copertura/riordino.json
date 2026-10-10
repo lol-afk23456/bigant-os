@@ -89,9 +89,10 @@
       "area": "Mappa agenzia",
       "modifica": "Trasformarla in **\"Avanzamento BigAnt OS\"**: una pagina che mostra lo stato di costruzione della piattaforma (cosa è operativo, demo o da collegare). Spostarla in un'area **Avanzate / Sistema**, fuori dal menu principale",
       "criterio": "La voce non è più nel menu principale; in Avanzate una pagina mostra l'avanzamento con i tre stati",
-      "stato": "parziale in locale",
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "API owner-only di sola lettura: 17 capacità, dati correnti di runtime/custodia/backup, fonte ed evidenza separate dalla lettura; stati mai attivati da chiavi salvate. Test e Browser locale; SOP-AVANZAMENTO."
       ]
     },
     {
@@ -99,9 +100,10 @@
       "area": "Mappa agenzia",
       "modifica": "Una pagina per ogni argomento, oppure schede che mostrano un argomento alla volta. In gran parte però queste parti si spostano altrove (FUN-005…FUN-008)",
       "criterio": "Nessuna pagina del socio richiede di scorrere quattro argomenti diversi",
-      "stato": "parziale in locale",
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Avanzamento a due ingressi e schede separate; Struttura già nello Sciame, Servizi nel Piano/Listino, gestione nelle destinazioni correnti. Browser desktop/390 px e test navigazione/Indietro."
       ]
     },
     {
@@ -109,9 +111,10 @@
       "area": "Mappa agenzia",
       "modifica": "Togliere dalle pagine di lavoro. Gli stati di avanzamento compaiono solo nella pagina \"Avanzamento BigAnt OS\" (FUN-004), con tre etichette semplici: Funziona · Prova · Da collegare",
       "criterio": "Nessun avviso tecnico nelle pagine operative",
-      "stato": "parziale in locale",
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Tre stati semplici in Avanzamento. Badge tecnici rimossi da catalogo/dettaglio servizio e KPI/Report cliente; tutti i contratti servizio e dashboard testati, DEMO/null/zero conservati. Vecchi renderer nascosti mantenuti secondo D-05."
       ]
     },
     {
@@ -159,9 +162,10 @@
       "area": "Mappa agenzia → Fondamenta da completare",
       "modifica": "Spostare l'intera sezione in Avanzamento (FUN-004)",
       "criterio": "Le Fondamenta si trovano solo in Avanzamento",
-      "stato": "parziale in locale",
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Tutte le nove Fondamenta in Avanzamento, con dettaglio singolo e capacità/mancanze aggiornate; nessun dato inventato o area cancellata. Browser desktop/390 px e prove API/UI."
       ]
     },
     {
@@ -824,7 +828,8 @@
       "criterio": "Nessun avviso tecnico nella pagina",
       "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "Piano servizi e dettaglio a card, avviso tecnico tolto dalla pagina dei soci; verifica browser locale."
+        "Piano servizi e dettaglio a card, avviso tecnico tolto dalla pagina dei soci; verifica browser locale.",
+        "Pulizia estesa al catalogo cliente e ai dettagli servizio: nessuna etichetta tecnica, limiti e DEMO conservati; 7 test operativi e verifica Browser."
       ]
     },
     {

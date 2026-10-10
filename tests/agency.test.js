@@ -83,7 +83,9 @@ test('dashboard cliente contiene le dieci sezioni previste ma filtra i servizi n
 });
 test('i nuovi spazi dichiarano ciò che manca e non inventano KPI, prezzi o record',t=>{
  const a=fixture(t),state=a.agency.state(a.owner);
- for(const f of state.foundations){assert.equal(f.status,'Solo struttura');assert.deepEqual(f.records,[]);assert.equal(f.implementation,null);assert.ok(f.fields.length&&f.missing);}
+ assert.equal(state.foundations.length,9);
+ for(const f of state.foundations){const partial=['onboarding','packages','credentials'].includes(f.id);assert.equal(f.status,partial?'Flusso DEMO parziale':'Solo struttura');assert.deepEqual(f.records,[]);if(partial){assert.equal(f.implementation.partial,true);assert.ok(f.implementation.files.length);}else assert.equal(f.implementation,null);assert.ok(f.available.length&&f.fields.length&&f.missing);}
+ assert.match(state.foundations.find(f=>f.id==='credentials').available.join(' '),/cifrat/);
  for(const section of state.dashboard.client){assert.equal(section.metrics,null);assert.equal(section.updatedAt,null);}
  const docs=state.management.find(m=>m.id==='documents');assert.equal(docs.status,'Solo struttura');assert.equal(docs.implementation.file,null);
  for(const id of ['documents','objectives'])assert.equal(state.dashboard.internal.find(s=>s.id===id).status,'Solo struttura');

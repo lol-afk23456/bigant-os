@@ -53,6 +53,10 @@ export function createFidelityModule({ store: s, origin = 'http://127.0.0.1:4330
   if(!s.query('PRAGMA table_info(fi_programs)').some(row=>row.name==='simulation'))s.run('ALTER TABLE fi_programs ADD COLUMN simulation INTEGER NOT NULL DEFAULT 1');
   const googleWallet=realMode?createGoogleWalletRuntime({store:s,env,origin:base,values:walletData,clock,providerOptions:walletProviderOptions}):null;
   const walletStatus=t=>({...disconnectedWalletStatus(),...(googleWallet?{google:googleWallet.state(t)}:{})});
+  function progress(user){
+    const current=user?.id&&s.one('SELECT id,role,active FROM os_users WHERE id=?',user.id);requireOwner(current);
+    return {simulation:!realMode,googleWallet:googleWallet?.progress()||{available:false,configured:false,checkedCount:0,enabledCount:0,lastCheck:null},appleWallet:{enabled:false}};
+  }
   const audit = (u, t, a, id, detail = {}) => s.audit(u, t, `fidelity.${a}`, id, detail, 'client');
   const tenant = id => needed(s.one('SELECT * FROM os_clients WHERE id=?', id));
   const program = (id, t) => needed(s.one('SELECT * FROM fi_programs WHERE id=? AND tenant_id=?', id, t));
@@ -404,5 +408,5 @@ export function createFidelityModule({ store: s, origin = 'http://127.0.0.1:4330
       if (!s.one('SELECT id FROM fi_members WHERE id=?', 'fi-demo-bigant-member')) createMember('demo-bigant', { programId: 'fi-demo-points', name: 'Contatto Relazione DEMO', email: 'relazione@bigant.example', marketingConsent: false }, null, 'fixture_demo', 'fi-demo-bigant-member');
     });
   }
-  return { state, seed, handle, tick,googleWallet,runWalletJobs:()=>googleWallet?googleWallet.runJobs():Promise.resolve({processed:0}) };
+  return { state,progress, seed, handle, tick,googleWallet,runWalletJobs:()=>googleWallet?googleWallet.runJobs():Promise.resolve({processed:0}) };
 }

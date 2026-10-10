@@ -9,6 +9,7 @@ import {createServicePlan} from './src/service-plan.js';
 import {createAgentConfig} from './src/agent-config.js';
 import {createClientRecords} from './src/client-records.js';
 import {createWorkspace,navigationFor} from './src/workspace.js';
+import {createPlatformProgress} from './src/platform-progress.js';
 import {readFileSync,mkdirSync,statSync,existsSync} from 'node:fs';
 import {resolve,dirname,extname} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -62,6 +63,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const workspace=createWorkspace({store,clock,budget:()=>orchestrator.budget(),expiring:records.expiring,agentConfig,connections});
   const servicePlan=createServicePlan({store,agentConfig});
   const billing=createBilling({store,administration});
+  const platformProgress=createPlatformProgress({store,realMode,connections,agentConfig,growth,fidelity,backup:()=>backups?.status()||{enabled:false},clock});
   const limits=new Map();
   function rate(key,max=120,window=60000) {let l=limits.get(key);if(!l||l.until<Date.now()){l={count:0,until:Date.now()+window};limits.set(key,l);}if(++l.count>max)throw new AppError('Troppe richieste: riprova tra poco.',429);if(limits.size>10000)for(const[k,v]of limits)if(v.until<Date.now())limits.delete(k);}
   function session(req) {const token=(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('bigant_os='))?.slice(10);if(!token)return null;return store.one('SELECT u.id,u.name,u.email,u.role,u.tenant_id,u.active,u.must_change_password,s.csrf,s.id session_id FROM os_sessions s JOIN os_users u ON u.id=s.user_id WHERE s.id=? AND s.expires_at>? AND u.active=1',digest(token),Date.now());}
@@ -133,7 +135,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
           return json(res,login(res,store.one('SELECT * FROM os_users WHERE id=?',u.id)));
         }
         if(u.must_change_password)throw new AppError('Cambia la password provvisoria prima di continuare.',403);
-        const clientId=clientFrom(url,u,{optional:method==='GET'&&['/api/overview','/api/clients','/api/workspace/home','/api/workspace/approvals','/api/workspace/contracts','/api/workspace/priorities'].includes(path)});
+        const clientId=clientFrom(url,u,{optional:method==='GET'&&['/api/overview','/api/clients','/api/workspace/home','/api/workspace/approvals','/api/workspace/contracts','/api/workspace/priorities','/api/workspace/progress'].includes(path)});
         const b=['GET','HEAD'].includes(method)?{}:await body(req);
         if(path==='/api/billing/state'&&method==='GET')return json(res,billing.state(u));
         const billingMatch=path.match(/^\/api\/billing\/tracker\/([^/]+)$/);if(billingMatch&&method==='PATCH')return json(res,billing.label(u,billingMatch[1],b));
@@ -148,6 +150,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
         const agentMatch=path.match(/^\/api\/agent-config\/([^/]+)$/);if(agentMatch&&method==='PATCH')return json(res,agentConfig.save(u,agentMatch[1],b));
         if(path==='/api/workspace/approvals'&&method==='GET')return json(res,{items:workspace.approvals(u)});
         if(path==='/api/workspace/contracts'&&method==='GET')return json(res,{items:records.expiring(u)});
+        if(path==='/api/workspace/progress'&&method==='GET')return json(res,platformProgress(u));
         if(path==='/api/workspace/home'&&method==='GET')return json(res,workspace.home(u));
         if(path==='/api/workspace/profiles'&&method==='GET')return json(res,workspace.profiles(u,clientId));
         if(path==='/api/workspace/priorities'&&method==='GET')return json(res,workspace.priorities(u));

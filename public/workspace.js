@@ -37,18 +37,41 @@ function workspaceProfilesView(){
  });
 }
 function workspaceProgressView(){
- const a=S.module||{},backup=S.overview.backup||{};
- return title('Avanzamento BigAnt OS.','Cosa funziona, cosa è ancora una prova e cosa aspetta un collegamento.')+sectionNavigator('progress',[
+ const data=S.module||{},groups=[
   {id:'status',name:'Stato della piattaforma',value:'Funziona · Prova · Da collegare',icon:'chart'},
-  {id:'foundations',name:'Fondamenta da completare',value:`${a.foundations?.length||0} aree`,icon:'grid'}
- ],id=>id==='foundations'?`<div class="card-grid">${(a.foundations||[]).map(item=>`<article class="module-card"><h3>${e(item.name)}</h3>${badge('Prova','orange')}<p>${e(item.missing)}</p>${bulletText(item.sections.map(section=>section.name))}</article>`).join('')}</div>`:
-  panel('Stato delle funzioni',table(['Funzione','Stato','Ultima verifica'],[
-   ['Accesso e gestione persone',badge(S.session.demo===false?'Funziona':'Prova',S.session.demo===false?'green':'orange'),'Nell’ambiente attuale'],
-   ['Copia di sicurezza',badge(backup.enabled&&backup.lastSuccess&&!backup.error?'Funziona':'Da collegare'),backup.lastSuccess?date(backup.lastSuccess,true):'Nessuna copia automatica verificata in questo ambiente'],
-   ['Procedure degli agenti',badge('Prova','orange'),'Procedure disponibili; configurazione AI da completare'],
-   ['Growth e Fidelity',badge('Prova','orange'),'Percorsi da collaudare prima dell’attivazione'],
-   ['Google, Meta e altri canali',badge('Da collegare'),'Nessuna fonte esterna attiva']
-  ])));
+  {id:'foundations',name:'Fondamenta da completare',value:Array.isArray(data.foundations)?`${data.foundations.length} aree`:'Da leggere',icon:'grid'}
+ ];
+ const header=title('Avanzamento BigAnt OS.','Cosa funziona, cosa è ancora una prova e cosa aspetta un collegamento.')+
+  `<p class="muted">${e(typeof data.environment==='string'?data.environment:'Ambiente da verificare')} · Lettura dello stato: ${progressDate(data.readAt)}</p>`+
+  notice(typeof data.notice==='string'?data.notice:'Lo stato non è disponibile. Aggiorna i dati per riprovare.');
+ const [section,id,...extra]=String(S.section||'').split('/'),group=groups.find(item=>item.id===section);
+ if(!group){
+  if(S.section&&S.section!=='sections')return header+`<div class="section-back">${btn('Indietro','goto','progress','ghost','arrow')}</div>`+empty('Sezione non disponibile','Torna ad Avanzamento e scegli una delle due schede.');
+  return header+sectionCards(groups.map(item=>({...item,route:'progress:'+item.id})));
+ }
+ const rows=(Array.isArray(data[section==='status'?'items':'foundations'])?data[section==='status'?'items':'foundations']:[]).filter(row=>row&&typeof row.id==='string'&&/^[a-z0-9-]+$/.test(row.id));
+ const back=`<div class="section-back">${btn('Indietro','goto',id!==undefined?'progress:'+section:'progress','ghost','arrow')}<span>${e(group.name)}</span></div>`;
+ if(id!==undefined){
+  const item=!extra.length&&rows.find(row=>row.id===id);
+  return header+back+(item?progressDetail(item):empty('Scheda non disponibile','Questa voce non è presente nello stato appena letto. Torna all’elenco o aggiorna i dati.'));
+ }
+ return header+back+(rows.length?sectionCards(rows.map(item=>({name:item.name||'Voce senza nome',value:progressStatus(item.status),route:`progress:${section}/${item.id}`,icon:group.icon}))):empty('Stato non disponibile','Non ci sono schede consultabili in questa lettura. Aggiorna i dati per riprovare.'));
+}
+function progressStatus(value){return ['Funziona','Prova','Da collegare'].includes(value)?value:'Stato non disponibile';}
+function progressDate(value){
+ if(typeof value!=='string'||!value.trim()||!Number.isFinite(Date.parse(value)))return 'Data non disponibile';
+ return `<time datetime="${e(value)}">${e(new Intl.DateTimeFormat('it-IT',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Rome'}).format(new Date(value)))} · Roma</time>`;
+}
+function progressDetail(item){
+ const status=progressStatus(item.status),strings=value=>Array.isArray(value)?value.filter(row=>typeof row==='string'&&row.trim()):[];
+ const routes=['users:people','clients','catalog:plan','catalog:prices','connections','agents:list','agents:office','agents:approvals','growth:connections','fidelity','fidelity:settings','profiles','administration'];
+ const route=routes.includes(item.route)&&allowedNav().some(row=>row[0]===item.route.split(':')[0])?item.route:null;
+ const evidence=typeof item.evidenceAt==='string'&&Number.isFinite(Date.parse(item.evidenceAt));
+ return panel(item.name||'Scheda senza nome',`${badge(status,status==='Funziona'?'green':'orange')}<p>${e(item.summary||'Descrizione non disponibile.')}</p>`+
+  `<h3>Cosa è disponibile</h3>${bulletText(strings(item.available),'Nessuna capacità documentata in questa lettura.')}`+
+  `<h3>Cosa manca</h3>${bulletText(strings(item.missing),'Nessuna mancanza indicata nella scheda. Consulta il perimetro descritto sopra.')}`+
+  `<dl class="out-obj section"><div><dt>Fonte dello stato</dt><dd>${e(item.source||'Fonte non disponibile.')}</dd></div><div><dt>${e(item.evidenceLabel||'Data dell’evidenza')}</dt><dd>${evidence?progressDate(item.evidenceAt):'Nessuna evidenza datata disponibile.'}</dd></div></dl>`+
+  (route?`<div class="actions section">${btn('Apri la pagina','goto',route,'','arrow')}</div>`:''));
 }
 function agentsUnifiedView(){
  if(!isOwner())return approvalsView();

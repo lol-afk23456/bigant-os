@@ -29,6 +29,15 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
   const engine = createEngine(s, p, { origin: origin + '/api/growth',simulation:!realMode,runtime,...(realMode?{readWebsite:(url,w)=>p.website(w,url),replyContext:(w,m,user)=>mail.conversations.replyReason(user||actor.getStore(),w,m)}:{}) });
   engine.recover();
 
+  function progress(user) {
+    const current=user?.id&&store.one('SELECT id,role,active,must_change_password FROM os_users WHERE id=?',user.id);owner(current);
+    const w='demo-bigant',fallback=()=>({available:false,checked:false,enabled:false,lastCheck:null});
+    const snapshot=runtime?.progress(current,w),simulation=!realMode||!!snapshot?.simulation;
+    const phase=id=>({...((snapshot?.[id])||fallback()),...(simulation?{enabled:false}:{})});
+    return {simulation,paused:snapshot?.paused??!!s.settings(w).paused,research:phase('research'),analysis:phase('analysis'),drafts:phase('drafts'),
+      gmail:mail?.progress(current,w)||{...fallback(),configured:false},calendar:{enabled:false}};
+  }
+
   function state(clientId = 'demo-bigant', user) {
     owner(user); s.workspace(clientId);
     const settings = s.settings(clientId), used = s.costs(clientId),mailState=mail?.state(user,clientId)||null;
@@ -203,5 +212,5 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
     } finally { /* Il contesto attore è isolato per richiesta. */ }
     });
   }
-  return { mail,runtime,state, seed, handle, engine, store: s, providers: p };
+  return { mail,runtime,state,progress, seed, handle, engine, store: s, providers: p };
 }

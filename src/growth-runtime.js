@@ -10,7 +10,8 @@ const analysisTask='Valuta la pertinenza commerciale, non la capacità economica
 export function createGrowthRuntime({store:root,growthStore:s,connections,getActor,externalEnabled=false,providerOptions={}}) {
  const context=new AsyncLocalStorage(),checking=new Set();
  root.db.exec(`CREATE TABLE IF NOT EXISTS gr_runtime(workspace TEXT PRIMARY KEY REFERENCES gr_workspaces(id),provider TEXT NOT NULL DEFAULT '',search_cents INTEGER NOT NULL DEFAULT 0,ai_cents INTEGER NOT NULL DEFAULT 0,version INTEGER NOT NULL DEFAULT 0,checks_json TEXT NOT NULL DEFAULT '{}',enabled_json TEXT NOT NULL DEFAULT '{}',updated_at TEXT,updated_by TEXT);`);
- const config=w=>{s.workspace(w);root.run('INSERT OR IGNORE INTO gr_runtime(workspace) VALUES(?)',w);return root.one('SELECT * FROM gr_runtime WHERE workspace=?',w);};
+ const readConfig=w=>root.one('SELECT * FROM gr_runtime WHERE workspace=?',w)||{workspace:w,provider:'',search_cents:0,ai_cents:0,version:0,checks_json:'{}',enabled_json:'{}'};
+ const config=w=>{s.workspace(w);root.run('INSERT OR IGNORE INTO gr_runtime(workspace) VALUES(?)',w);return readConfig(w);};
  function currentOwner(user=getActor()) {requireOwner(user);const fresh=root.one('SELECT * FROM os_users WHERE id=? AND role=? AND active=1',user.id,'owner');if(!fresh)throw new AppError('Socio non più autorizzato.',403);return fresh;}
  const versions=(c,phase)=>Object.fromEntries(['brave',...(phase==='research'?[]:[c.provider])].filter(Boolean).map(id=>[id,connections.runtimeMetadata(id).version]));
  const fingerprint=(c,phase)=>JSON.stringify({version:c.version,provider:c.provider,versions:versions(c,phase)});
@@ -28,6 +29,21 @@ export function createGrowthRuntime({store:root,growthStore:s,connections,getAct
   if(c.search_cents<1)throw new AppError('Configura la stima per la ricerca.',409);
   if(phase!=='research'&&(!c.provider||c.ai_cents<1))throw new AppError('Scegli AI e stima per chiamata prima del collaudo.',409);
   for(const id of Object.keys(versions(c,phase)))if(!connections.runtimeMetadata(id).configured)throw new AppError('Accessi dei fornitori da inserire in Collegamenti.',409);
+ }
+ // Progress must not initialize a workspace/configuration or use provider credentials.
+ function progress(user,w) {
+  currentOwner(user);const c=readConfig(w),status=phaseState(c),workspace=root.one('SELECT simulation FROM gr_workspaces WHERE id=?',w),paused=!!s.settings(w).paused;
+  const usable=!!workspace&&!workspace.simulation&&s.active(w)&&connections.state(user).vaultReady;
+  const result={paused,simulation:!!workspace?.simulation};
+  for(const phase of phases){let ready=false;try{configured(c,phase);ready=true;}catch{}
+   const checked=!!status[phase].checked;
+   result[phase]={available:externalEnabled,checked,enabled:!!(usable&&!paused&&ready&&status[phase].enabled&&prerequisites[phase].every(id=>result[id].enabled)),lastCheck:checked?status[phase].lastCheck:null};
+  }
+  return result;
+ }
+ function deliveryContext(user,w,{readOnly=false}={}) {
+  currentOwner(user);const c=readOnly?readConfig(w):config(w);
+  return {fingerprint:executionFingerprint(c,'drafts'),ready:readOnly?progress(user,w).drafts.enabled:externalEnabled&&phaseState(c).drafts.enabled&&s.active(w)};
  }
  function permitted(w,phase,{probe=false}={}) {
   const user=currentOwner();if(!externalEnabled)throw new AppError('Operazioni esterne non abilitate sul server.',409);
@@ -101,5 +117,5 @@ export function createGrowthRuntime({store:root,growthStore:s,connections,getAct
   return context.run({workspace:w,phase,userId:user.id,fingerprint:stamp.fingerprint,probe:false},operation);
  }
  function canQueue(w,type) {try{decorate(w,type);return true;}catch{return false;}}
- return {state,save,check,activate,decorate,run,canQueue,providers:p,deliveryContext:(user,w)=>{currentOwner(user);const c=config(w);return {fingerprint:executionFingerprint(c,'drafts'),ready:externalEnabled&&phaseState(c).drafts.enabled&&s.active(w)};}};
+ return {state,progress,save,check,activate,decorate,run,canQueue,providers:p,deliveryContext};
 }

@@ -8,15 +8,22 @@ export function createGoogleWalletRuntime({store:s,env,origin,values,clock=()=>n
  s.db.exec(`CREATE TABLE IF NOT EXISTS fi_google_config(tenant_id TEXT PRIMARY KEY REFERENCES os_clients(id),version INTEGER NOT NULL DEFAULT 0,fingerprint TEXT,checked_at TEXT,test_member_id TEXT,enabled_by TEXT,enabled_at TEXT);
  CREATE TABLE IF NOT EXISTS fi_google_objects(member_id TEXT PRIMARY KEY REFERENCES fi_members(id),tenant_id TEXT NOT NULL REFERENCES os_clients(id),object_id TEXT NOT NULL UNIQUE,class_id TEXT NOT NULL,kind TEXT NOT NULL,fingerprint TEXT NOT NULL,desired_seq INTEGER NOT NULL,synced_seq INTEGER,status TEXT NOT NULL,error TEXT,updated_at TEXT NOT NULL);`);
  s.run("UPDATE fi_jobs SET status='queued',error='Ripresa aggiornamento dopo il riavvio',available_at=? WHERE status='running' AND type IN ('wallet_update','wallet_revoke') AND member_id IN(SELECT member_id FROM fi_google_objects)",time());
- const settings=t=>{s.run('INSERT OR IGNORE INTO fi_google_config(tenant_id) VALUES(?)',t);return s.one('SELECT * FROM fi_google_config WHERE tenant_id=?',t);};
+ const readSettings=t=>s.one('SELECT * FROM fi_google_config WHERE tenant_id=?',t)||{version:0,fingerprint:null,checked_at:null,enabled_by:null};
+ const settings=t=>{s.run('INSERT OR IGNORE INTO fi_google_config(tenant_id) VALUES(?)',t);return readSettings(t);};
  const enabledServer=()=>env.BIGANT_GOOGLE_WALLET_ENABLED==='true';
  function owner(user,t){requireOwner(user);const live=s.one("SELECT * FROM os_users WHERE id=? AND role='owner' AND active=1",user.id);if(!live)throw new AppError('Socio non più autorizzato.',403);requireClient(s,live,t);return live;}
  function configuration(){return googleWalletConfig(env,origin);}
- function state(t){
-  const row=settings(t);let c;try{c=configuration();}catch{}
+ function snapshot(t){
+  const row=readSettings(t);let c;try{c=configuration();}catch{}
   const checked=!!c&&row.fingerprint===c.fingerprint&&!!row.checked_at,by=!!row.enabled_by&&!!s.one("SELECT id FROM os_users WHERE id=? AND role='owner' AND active=1",row.enabled_by);
   const enabled=enabledServer()&&checked&&by;
   return {configured:!!c,available:enabledServer(),checked,enabled,version:row.version,lastCheck:row.checked_at,status:enabled?'enabled':checked?'checked':'disconnected',missing:c?[]:['Issuer e account di servizio da predisporre nelle variabili protette del server.'],note:!enabledServer()?'Google Wallet è disabilitato sul server.':!c?'Configurazione protetta da completare.':enabled?'Emissione e aggiornamento delle tessere abilitati. Le campagne restano disabilitate.':'Collauda una carta e verifica saldo e aggiornamento su Android prima di attivare.'};
+ }
+ function state(t){settings(t);return snapshot(t);}
+ function progress(){
+  const base=snapshot(null),states=s.query("SELECT id FROM os_clients WHERE active=1 AND EXISTS(SELECT 1 FROM json_each(services_json) WHERE value='fidelity')").map(row=>snapshot(row.id));
+  const checked=states.filter(row=>row.checked),dates=checked.map(row=>row.lastCheck).filter(value=>Number.isFinite(Date.parse(value))).sort((a,b)=>Date.parse(b)-Date.parse(a));
+  return {available:base.available,configured:base.configured,checkedCount:checked.length,enabledCount:states.filter(row=>row.enabled).length,lastCheck:dates[0]||null};
  }
  function permitted(t,{probe=false,user,version,fingerprint,revoke=false}={}){
   if(!enabledServer())throw new AppError('Google Wallet non abilitato sul server.',409);
@@ -107,5 +114,5 @@ export function createGoogleWalletRuntime({store:s,env,origin,values,clock=()=>n
   return {processed};
  }
  function retry(user,t,id){owner(user,t);if(typeof id!=='string'||!id)throw new AppError('Scegli un aggiornamento da riprovare.');permitted(t,{revoke:true});const job=s.one("SELECT * FROM fi_jobs WHERE id=? AND tenant_id=? AND EXISTS(SELECT 1 FROM fi_google_objects o WHERE o.member_id=fi_jobs.member_id AND o.tenant_id=fi_jobs.tenant_id) AND type IN ('wallet_update','wallet_revoke') AND status IN ('blocked','failed')",id,t);if(!job)throw new AppError('Aggiornamento non disponibile.',404);s.run("UPDATE fi_jobs SET status='queued',attempts=0,error=NULL,available_at=? WHERE id=?",time(),id);s.audit(user,t,'fidelity.google.retry',id,{},'admin');return {ok:true};}
- return {state,check,activate,issue,enqueue,runJobs,retry};
+ return {state,progress,check,activate,issue,enqueue,runJobs,retry};
 }

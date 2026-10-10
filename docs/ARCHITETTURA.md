@@ -219,3 +219,10 @@ Prima di un rilascio reale servono autenticazione definitiva senza accessi DEMO,
 La procedura concreta è [COME-AGGIUNGERE-UN-MODULO.md](COME-AGGIUNGERE-UN-MODULO.md). Un nuovo modulo deve utilizzare connessione, sessione, clienti, approvazioni, audit e budget comuni. Nessun login parallelo, filesystem credenziali, timer nascosto o invio al solo click di attivazione.
 
 Ogni consegna va provata con isolamento clienti, rifiuto per ruolo, validazione importi/versioni, duplicati/retry e assenza di effetti esterni. Per un provider scollegato si verifica il blocco, non si sostituisce un successo fittizio all'esito. La migrazione funzione per funzione delle app originali rimane una verifica separata da questa architettura.
+
+
+## Avanzamento della piattaforma — aggiornamento 10 ottobre 2026
+
+`src/platform-progress.js` registra la capacità di consultare lo stato dell’installazione tramite `GET /api/workspace/progress`. Soci attivi soltanto, identità riletta, ambito piattaforma indipendente dal cliente selezionato. Aggrega metadati di custodia, agenti, autorizzazione Google, Growth, Wallet e backup senza avviare operazioni, aprire il vault o scrivere record. Risposta minima: 17 schede con perimetro, mancanze, fonte ed eventuale data dell’evidenza, più nove Fondamenta conservate. Nessun account, dato cliente o importo nella risposta.
+
+Gli snapshot dedicati `growth.progress(user)` e `fidelity.progress(user)` riusano i controlli delle configurazioni correnti senza inizializzare workspace o impostazioni. Le API operative mantengono il comportamento precedente. Stati e limiti in [SOP Avanzamento](SOP-AVANZAMENTO.md); questa lettura non certifica i provider o il completamento del progetto.

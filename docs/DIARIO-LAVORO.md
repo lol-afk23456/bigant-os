@@ -221,3 +221,16 @@ Delega con file disgiunti per interfaccia e prove VM, quindi revisione del diff 
 Cinque voci promosse soltanto a implementate in locale, con rilascio e collaudo server ancora da fare. Matrice: 48 implementate localmente, 18 parziali, 26 da fare. Le 92 migliorie e T0–T10 restano incomplete. Avanzamento/Fondamenta hanno descrizioni ormai superate da correggere nel prossimo intervento. Nessuna nuova dipendenza, AI applicativa reale, account collegato, spesa, push o deploy.
 
 Controllo finale **5/5**: 108 file JavaScript, 72 documenti e 138 collegamenti locali, registro e dipendenze verificati offline. Anteprima terminata, tab chiusa, viewport ripristinata; temporanei delle prove e delle immagini rimossi dopo il salvataggio nella cache del progetto.
+
+
+## 10 ottobre 2026 — Avanzamento e Fondamenta affidabili
+
+Corrette descrizioni superate: la custodia cifrata e l’autorizzazione Google risultavano ancora assenti; Growth e Fidelity erano raccolti in una riga generica. SOP scritta prima del codice. Nuova API di sola lettura riservata ai soci, 17 capacità e nove Fondamenta con parti disponibili/mancanti. Interfaccia a due ingressi, griglia compatta e dettaglio singolo con Indietro; fonte ed evidenza datata separate dalla lettura corrente.
+
+Delega su file disgiunti per segnali dei runtime e interfaccia, poi revisione dei diff. La revisione indipendente ha individuato il caso Gmail autorizzato ma chiave del vault assente: corretto e coperto. 42 nuove prove e **449/449 test** complessivi: nessuna scrittura o chiamata esterna alla lettura, scope, permessi/revoche, pausa, versioni obsolete, backup vecchio/futuro/in errore, nessuna promozione dei canali, navigazione asincrona, errori e testi protetti.
+
+Browser in memoria: Stato e Fondamenta, dettaglio custodia e collegamento a Collegamenti, Indietro e 390×844 senza overflow. Verificati anche catalogo e dettaglio social del cliente e testi Report, conservando i dati DEMO. Rimosso il vecchio pulsante Lavori che rimandava alla Home. Nessun errore console osservato. Schermate salvate nella cache tecnica; specifiche e limiti in SOP-AVANZAMENTO.
+
+Quattro voci promosse a implementate soltanto in locale: FUN-004, FUN-008, UI-003, UI-004. Matrice: **52 implementate localmente, 14 parziali, 26 da fare**. Non è una percentuale di prontezza del progetto. Mancano ancora collaudo server, giro completo cliente/collaboratore, collegamenti e altre voci del piano; T0–T10 non conclusi. Nessuna dipendenza aggiunta, account, AI applicativa reale, spesa, push o deploy.
+
+Controllo finale **5/5**: 113 file JavaScript, 73 documenti e 140 collegamenti locali; registro e dipendenze verificati senza rete. Suite ripetuta dopo la correzione del pulsante: 449/449. Anteprima terminata, tab chiusa, viewport ripristinata; temporanei delle prove e delle immagini rimossi dopo il salvataggio nella cache del progetto.
