@@ -1015,8 +1015,8 @@
   ],
   "rilascio": {
     "data": "2026-10-10",
-    "commit": "737876c",
-    "stato": "Railway SUCCESS; verifica pubblica online superata",
+    "commit": "5e84188",
+    "stato": "Railway SUCCESS; verifica pubblica e pannello Meta autenticato superati, letture reali spente",
     "prove": "docs/RILASCIO-2026-10-10.md",
     "limite": "Gli stati delle voci misurano ancora il collaudo locale; collaudo autenticato online e integrazioni restano distinti."
   }

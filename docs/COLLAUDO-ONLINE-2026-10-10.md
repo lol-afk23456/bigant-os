@@ -61,3 +61,9 @@ Restano da autorizzare e collaudare fornitori AI, ricerca, Gmail e Calendar. Il 
 ## 19:37 — Originali: prerequisito per DAT-003
 
 Consultati in sola lettura gli indirizzi già documentati delle due app originali. Fidelity reindirizza alla pagina `/login`; BigAnt Growth mostra «GROWTH · ACCESSO TITOLARI». Nella sessione del browser non sono disponibili accessi autenticati separati. Nessun conteggio è stato ricavato o assunto pari a zero; nessuna password tentata, nessun dato copiato e nessuna modifica alle originali. DAT-003 resta aperto fino alla consultazione autorizzata dei conteggi. La sessione socio BigAnt OS non equivale all’accesso a queste due app.
+
+## Profili Meta — 20:09 Roma
+
+Codice `5e84188` pubblicato e verificato, deployment `458353d9-ac30-4686-b5d3-f66000a568d3` SUCCESS. Backup prima del rilascio: `e3a614c5-0079-4ecd-9b10-554d0959fa0d`, 20:05, 801 MB. Suite **846/846**, controllo progetto **5/5**. Nuove letture Instagram/Facebook con selezione, prova privata, consenso per cliente e aggiornamento giornaliero facoltativo; API di lettura e copie temporanee protette. Dati nel servizio Social solo dopo attivazione.
+
+Online: health ok, `demo:false`, `externalActions:false`, `externalReadsEnabled:false`; due file pubblici corrispondenti, API Meta anonima401. Pannello socio conferma Meta disabilitato e nessun canale selezionato; zero errori console. Nessun account Meta reale collegato. Procedura, prove e limiti in [COLLAUDO-PROFILI-META](COLLAUDO-PROFILI-META.md).

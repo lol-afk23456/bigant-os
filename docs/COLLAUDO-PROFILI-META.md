@@ -29,3 +29,7 @@ Instagram: account professionale collegato alla Pagina, metriche aggregabili del
 Facebook: visualizzazioni, persone raggiunte, interazioni, nuovi follower e follower persi come serie giornaliere. Non sommiamo persone uniche; Page Insights può richiedere almeno 100 Mi piace e task ANALYZE. Assenze e soglie del fornitore producono dati mancanti, mai zero inventato. Nessuna lettura di messaggi, nessuna pubblicazione, gestione campagne o scrittura esterna.
 
 L’interruttore `BIGANT_META_PROFILES_ENABLED` resta falso/assente in produzione. Nessun requisito viene marcato completo per la sola predisposizione.
+
+## Rilascio verificato
+
+Codice `5e84188`, deployment `458353d9-ac30-4686-b5d3-f66000a568d3` SUCCESS. Backup preliminare `e3a614c5-0079-4ecd-9b10-554d0959fa0d`, 20:05 Roma, 801 MB. Alle 20:09: health ok, ambiente reale, azioni e letture esterne false; `cliente.js` e `workspace.js` identici al codice verificato; nuova API senza sessione 401. Browser socio: pannello Instagram con lettura Meta non abilitata, nessun canale selezionato, nessun dato o controllo di attivazione. Zero errori console; schermata `meta-profiles-online.png` nella cache tecnica. Nessuna configurazione reale modificata.
