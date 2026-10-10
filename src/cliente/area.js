@@ -4,7 +4,7 @@ import {catalogoServizi} from '../servizi/catalogo.js';
 
 // The customer and owner preview share this explicit, read-only projection.
 // Internal task/content/agent work is never used to build a customer report.
-export function createClientArea({store:s,records,businessProfile=null,clock=()=>new Date(),clientResults=null,emailMarketing=null,publicProfiles=null}){
+export function createClientArea({store:s,records,businessProfile=null,metaProfiles=null,clock=()=>new Date(),clientResults=null,emailMarketing=null,publicProfiles=null}){
  function scope(user,clientId){
   const current=user?.id?s.one('SELECT * FROM os_users WHERE id=?',user.id):null;
   if(!current?.active||current.must_change_password||!['owner','client'].includes(current.role)||current.id==='os-orchestrator')throw new AppError('Area riservata al cliente e all’anteprima dei soci.',403);
@@ -52,9 +52,11 @@ export function createClientArea({store:s,records,businessProfile=null,clock=()=
    // Owners can read a technical trial in Profili; preview must only show activated data.
    if(state.enabled&&state.data){const {source,sourceUrl,fetchedAt,expiresAt,from,to,reviews,performance}=state.data;google={source,sourceUrl,fetchedAt,expiresAt,from,to,reviews,performance};}
   }
+  let meta=null;
+  if(id==='social'&&metaProfiles){const state=metaProfiles.state(c.user,clientId);if(state.enabled&&state.data)meta=state.data;}
   if(!reports.length)reports.push({id,nome:selected.name,metriche:[]});
   const publishedReports=clientId!=='demo-bigant'&&clientResults?clientResults.published(user,clientId).reports.map(row=>({...row,summary:'Voci verificate per questo servizio.',nextSteps:'',entries:row.entries.filter(entry=>entry.serviceId===id)})).filter(row=>row.entries.length):[];
-  return {demo:c.demo,clientId,clientName:c.client.name,service:serviceCard(selected),reports,google,publishedReports,...(id==='email-marketing'&&emailMarketing?{emailMarketing:emailMarketing.state(user,clientId)}:{}),
+  return {demo:c.demo,clientId,clientName:c.client.name,service:serviceCard(selected),reports,google,meta,publishedReports,...(id==='email-marketing'&&emailMarketing?{emailMarketing:emailMarketing.state(user,clientId)}:{}),
    note:id==='fidelity'?'Gli iscritti appartengono soltanto a questa attività. Gli invii dipendono dalle autorizzazioni del prodotto.':'I valori mancanti restano da collegare. Bozze e calendario editoriale sono gestiti separatamente.'};
  }
  function profiles(user,clientId){

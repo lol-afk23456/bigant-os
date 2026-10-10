@@ -1,3 +1,4 @@
+import {createMetaProfiles} from './src/meta-profiles.js';
 import http from 'node:http';
 import QRCode from 'qrcode';
 import {safePath} from './scripts/backup.js';
@@ -50,7 +51,7 @@ const digest=value=>createHash('sha256').update(String(value)).digest('hex');
 const safeEqual=(a,b)=>{const x=Buffer.from(String(a||'')),y=Buffer.from(String(b||''));return x.length===y.length&&timingSafeEqual(x,y);};
 const profiles=['demo-owner','demo-collaborator','demo-client','demo-client-other'];
 const publicUser={id:'os-public',role:'owner',name:'Visitatore DEMO',active:1};
-export function createApp({database=':memory:',origin='http://127.0.0.1:4330',worker=false,clock=()=>new Date(),motore=null,importaProveSciame=false,env=process.env,growthProviderOptions={},walletProviderOptions={},businessProfileProviderOptions={},agentTrialProviderOptions={},agentWorkProviderOptions={}}={}) {
+export function createApp({database=':memory:',origin='http://127.0.0.1:4330',worker=false,clock=()=>new Date(),motore=null,importaProveSciame=false,env=process.env,growthProviderOptions={},walletProviderOptions={},businessProfileProviderOptions={},metaProfileProviderOptions={},agentTrialProviderOptions={},agentWorkProviderOptions={}}={}) {
   const realMode=env.BIGANT_MODALITA==='reale';
   const base=new URL(origin);
   if(realMode){if(base.protocol!=='https:')throw new Error('Modalità reale: BIGANT_ORIGINE deve essere un indirizzo https.');}
@@ -62,6 +63,8 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const gmailEnabled=realMode&&env.BIGANT_GROWTH_GMAIL_ENABLED==='true',calendarEnabled=()=>realMode&&env.BIGANT_GROWTH_CALENDAR_ENABLED==='true',googleAuth=realMode?createGoogleOAuth({store,connections,env,origin,enabled:gmailEnabled,calendarEnabled,clock,providerOptions:growthProviderOptions}):null;
   const businessProfileEnabled=()=>realMode&&env.BIGANT_GBP_ENABLED==='true';
   const businessProfileAuth=createBusinessProfileOAuth({store,connections,env,origin,enabled:businessProfileEnabled,clock,providerOptions:businessProfileProviderOptions});
+  const metaProfilesEnabled=()=>realMode&&env.BIGANT_META_PROFILES_ENABLED==='true';
+  const metaProfiles=createMetaProfiles({store,connections,enabled:metaProfilesEnabled,clock,providerOptions:metaProfileProviderOptions});
   const businessProfile=createBusinessProfile({store,auth:businessProfileAuth,enabled:businessProfileEnabled,clock,providerOptions:businessProfileProviderOptions});
   const production=createProduction({store}),growth=createGrowthModule({store,origin,realMode,costControl,connections,googleAuth,gmailEnabled,calendarEnabled,clock,externalEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true',providerOptions:growthProviderOptions}),fidelity=createFidelityModule({store,origin,realMode,env,clock,walletProviderOptions}),administration=createAdministrationModule({store,clock});
   growth.seed(realMode);fidelity.seed(realMode);administration.seed(realMode);
@@ -77,11 +80,11 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const records=createClientRecords({store,production,env,clock});
   const clientResults=createClientResults({store,clock});
   const emailMarketing=createEmailMarketing({store,clock});
-  const workspace=createWorkspace({store,clock,budget:()=>orchestrator.budget(),expiring:records.expiring,agentConfig,connections,businessProfile});
-  const cliente=createClientDashboard({store,records,businessProfile,clock,clientResults,emailMarketing,publicProfiles:workspace.publicProfiles});
+  const workspace=createWorkspace({store,clock,budget:()=>orchestrator.budget(),expiring:records.expiring,agentConfig,connections,businessProfile,metaProfiles});
+  const cliente=createClientDashboard({store,records,businessProfile,metaProfiles,clock,clientResults,emailMarketing,publicProfiles:workspace.publicProfiles});
   const servicePlan=createServicePlan({store,agentConfig});
   const billing=createBilling({store,administration});
-  const platformProgress=createPlatformProgress({store,realMode,connections,agentConfig,growth,fidelity,businessProfile,backup:()=>backups?.status()||{enabled:false},clock});
+  const platformProgress=createPlatformProgress({store,realMode,connections,agentConfig,growth,fidelity,businessProfile,metaProfiles,backup:()=>backups?.status()||{enabled:false},clock});
   const limits=new Map();
   function rate(key,max=120,window=60000) {let l=limits.get(key);if(!l||l.until<Date.now()){l={count:0,until:Date.now()+window};limits.set(key,l);}if(++l.count>max)throw new AppError('Troppe richieste: riprova tra poco.',429);if(limits.size>10000)for(const[k,v]of limits)if(v.until<Date.now())limits.delete(k);}
   function session(req) {const token=(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('bigant_os='))?.slice(10);if(!token)return null;return store.one('SELECT u.id,u.name,u.email,u.role,u.tenant_id,u.active,u.must_change_password,s.csrf,s.id session_id FROM os_sessions s JOIN os_users u ON u.id=s.user_id WHERE s.id=? AND s.expires_at>? AND u.active=1',digest(token),Date.now());}
@@ -129,7 +132,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
       else if(!['127.0.0.1','::1','::ffff:127.0.0.1'].includes(req.socket.remoteAddress)||req.headers.host!==expectedHost)throw new AppError('Il prototipo è disponibile solo in locale.',403);
       const url=new URL(req.url,runtimeOrigin),path=url.pathname,method=req.method;
       if(!['GET','HEAD','POST','PATCH','DELETE'].includes(method))throw new AppError('Metodo non consentito.',405);
-      if(method==='GET'&&path==='/health')return json(res,{status:'ok',app:'BigAnt OS',demo:!realMode,externalActions:realMode&&(env.BIGANT_GOOGLE_WALLET_ENABLED==='true'||gmailEnabled||calendarEnabled()),externalReadsEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true'||businessProfileEnabled()});
+      if(method==='GET'&&path==='/health')return json(res,{status:'ok',app:'BigAnt OS',demo:!realMode,externalActions:realMode&&(env.BIGANT_GOOGLE_WALLET_ENABLED==='true'||gmailEnabled||calendarEnabled()),externalReadsEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true'||businessProfileEnabled()||metaProfilesEnabled()});
       const u=session(req);
       if(method==='GET'&&path==='/api/session')return json(res,{user:safeUser(u),csrf:u?.csrf||null,demo:!realMode,profiles:realMode?[]:profiles.map(id=>store.one('SELECT id,name,role FROM os_users WHERE id=? AND active=1',id)).filter(Boolean)});
       if(!['GET','HEAD'].includes(method)&&req.headers.origin!==runtimeOrigin)throw new AppError('Origine della richiesta non autorizzata.',403);
@@ -187,6 +190,13 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
           const action=businessMatch[1];
           if(method==='GET'&&action==='state')return json(res,businessProfile.state(u,clientId));
           if(method==='POST'&&action!=='state'){requireOwner(u);return json(res,await businessProfile[action](u,clientId,b));}
+          throw new AppError('Metodo non consentito.',405);
+        }
+        const metaMatch=path.match(/^\/api\/meta-profiles\/(state|pages|configure|check|activate|refresh|disconnect)$/);
+        if(metaMatch){
+          const action=metaMatch[1];
+          if(method==='GET'&&action==='state')return json(res,metaProfiles.state(u,clientId));
+          if(method==='POST'&&action!=='state'){requireOwner(u);return json(res,await metaProfiles[action](u,clientId,b));}
           throw new AppError('Metodo non consentito.',405);
         }
         if(path==='/api/connections'&&method==='GET')return json(res,connections.state(u));
@@ -268,8 +278,8 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const server=http.createServer(handler);server.requestTimeout=30000;server.headersTimeout=15000;
   const backups=realMode&&worker&&database!==':memory:'?createBackupScheduler({store,sourcePath:database,env,clock}):null;
   let workerError=null,workerRun=null;
-  const timer=worker?setInterval(()=>{if(workerRun)return;workerRun=orchestrator.tick().then(()=>fidelity.runWalletJobs()).then(()=>businessProfile.tick()).then(()=>agentSchedules.tick()).then(()=>{workerError=null;}).catch(()=>{workerError='Controllo delle automazioni da verificare.';}).finally(()=>{workerRun=null;});},2000):null;timer?.unref();
-  return {server,store,clientResults,emailMarketing,costControl,googleAuth,businessProfileAuth,businessProfile,billing,connections,servicePlan,agentConfig,agentTrials,agentWork,agentSchedules,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(workerRun)await workerRun;await backups?.close();if(server.listening)await new Promise(r=>server.close(r));await businessProfile.close();await agentTrials.close();await agentSchedules.close();await agentWork.close();store.close();}};
+  const timer=worker?setInterval(()=>{if(workerRun)return;workerRun=orchestrator.tick().then(()=>fidelity.runWalletJobs()).then(()=>businessProfile.tick()).then(()=>metaProfiles.tick()).then(()=>agentSchedules.tick()).then(()=>{workerError=null;}).catch(()=>{workerError='Controllo delle automazioni da verificare.';}).finally(()=>{workerRun=null;});},2000):null;timer?.unref();
+  return {server,store,clientResults,emailMarketing,costControl,googleAuth,businessProfileAuth,businessProfile,metaProfiles,billing,connections,servicePlan,agentConfig,agentTrials,agentWork,agentSchedules,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(workerRun)await workerRun;await backups?.close();if(server.listening)await new Promise(r=>server.close(r));await businessProfile.close();await metaProfiles.close();await agentTrials.close();await agentSchedules.close();await agentWork.close();store.close();}};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const modalitaReale=process.env.BIGANT_MODALITA==='reale';

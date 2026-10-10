@@ -71,9 +71,11 @@ function clientServiceReportView(){
  if(d.clientId!==S.clientId||!d.service)return clientAreaHeader()+back+empty('Report non disponibile','Torna ai servizi e riprova.');
  clearTimeout(clientReportExpiryTimer);clientReportExpiryTimer=null;
  const google=d.google&&Date.parse(d.google.expiresAt)>Date.now()?d.google:null;
- if(google){const snapshot=viewSnapshot();clientReportExpiryTimer=setTimeout(()=>{if(isCurrentView(snapshot)&&S.module===d){render();load();}},Math.max(1,Date.parse(google.expiresAt)-Date.now()+1));}
+ const meta=d.service.id==='social'&&d.meta&&Date.parse(d.meta.expiresAt)>Date.now()?d.meta:null;
+ const expiry=[google?.expiresAt,meta?.expiresAt].filter(Boolean).map(Date.parse).sort((a,b)=>a-b)[0];
+ if(expiry){const snapshot=viewSnapshot();clientReportExpiryTimer=setTimeout(()=>{if(isCurrentView(snapshot)&&S.module===d){render();load();}},Math.max(1,expiry-Date.now()+1));}
  const reports=d.reports||[];
- return clientAreaHeader()+back+`<h2>${e(d.service.nome)}</h2>`+notice(d.note)+(d.publishedReports||[]).map(row=>`<details class="section"><summary>${e(row.period)} · Report verificato</summary>${resultsBody(row,false)}</details>`).join('')+(google?clientGoogleReport(google):'')+(d.emailMarketing?emailContactsPanel(d.emailMarketing):'')+reports.map(row=>panel(row.nome,row.metriche.length?clientMetricRows(row.metriche):empty('Report non ancora disponibile','Le misure verranno mostrate qui con fonte e data.'))).join('');
+ return clientAreaHeader()+back+`<h2>${e(d.service.nome)}</h2>`+notice(d.note)+(d.publishedReports||[]).map(row=>`<details class="section"><summary>${e(row.period)} · Report verificato</summary>${resultsBody(row,false)}</details>`).join('')+(google?clientGoogleReport(google):'')+(meta?clientMetaReport(meta):'')+(d.emailMarketing?emailContactsPanel(d.emailMarketing):'')+reports.map(row=>panel(row.nome,row.metriche.length?clientMetricRows(row.metriche):empty('Report non ancora disponibile','Le misure verranno mostrate qui con fonte e data.'))).join('');
 }
 function clientProfilesView(){
  const d=S.module||{},preview=S.view==='client',base=preview?'client:profiles':'profiles',section=preview?S.section.slice('profiles'.length).replace(/^\//,''):S.section||'';
@@ -112,3 +114,16 @@ ACTIONS['client-fidelity-source']=async()=>{
   dialog('Origine dei conteggi Fidelity',`<p><strong>${e(source.clientName)}</strong> · ${e(source.source)}</p><p>Letto il ${e(date(source.readAt,true))}. I conteggi vengono riletti all’apertura e possono essere più recenti del report.</p>`+notice(source.definition)+'<div class="fidelity-source-table">'+table(['Programma','Iscrizioni attive','Con consenso marketing'],[...source.programs.map(row=>[e(row.name)+(row.active?'':' · Sospeso'),e(row.inscriptions),e(row.marketing)]),['<strong>Totale</strong>',e(source.totals.inscriptions),e(source.totals.marketing)]])+`</div><p class="muted">Questa vista mostra solo conteggi. Non include nominativi, contatti o dati di altre attività.</p>`);
  }catch(error){if(current())dialog('Origine dei conteggi Fidelity',notice(error.message,true));}
 };
+
+function clientMetaReport(data,onlyChannel=null){
+ if(!data||!Number.isFinite(Date.parse(data.expiresAt))||Date.parse(data.expiresAt)<=Date.now())return '';
+ const names={page_media_view:'Visualizzazioni',page_total_media_view_unique:'Persone raggiunte',page_post_engagements:'Interazioni con i post',page_daily_follows_unique:'Nuovi follower',page_daily_unfollows_unique:'Follower persi',views:'Visualizzazioni',reach:'Account raggiunti',total_interactions:'Interazioni totali'};
+ return ['facebook','instagram'].filter(channel=>(!onlyChannel||channel===onlyChannel)&&data[channel]).map(channel=>{
+  const report=data[channel],profile=report.profile||{},label=channel==='facebook'?'Facebook':'Instagram',expected=channel==='facebook'?['page_media_view','page_total_media_view_unique','page_post_engagements','page_daily_follows_unique','page_daily_unfollows_unique']:['views','reach','total_interactions'];
+  const publicUrl=channel==='facebook'&&/^\d{1,64}$/.test(profile.id||'')?'https://www.facebook.com/'+profile.id:channel==='instagram'&&/^[a-zA-Z0-9._]{1,30}$/.test(profile.username||'')?'https://www.instagram.com/'+profile.username+'/':null;
+  const value=n=>Number.isSafeInteger(n)&&n>=0?e(n):'Non disponibile';
+  const metrics=expected.map(name=>{const row=(report.metrics||[]).find(m=>m.name===name);if(channel==='instagram')return `<div class="kpi"><div class="kpi-label">${e(names[name])}</div><div class="kpi-val">${value(row?.kind==='total'?row.value:null)}</div></div>`;
+   return `<details class="section"><summary>${e(names[name])} · valori giornalieri</summary>${row?.kind==='series'&&row.points?.length?table(['Giorno','Valore fornito da Meta'],row.points.map(p=>[e(p.date),value(p.value)])):empty('Non disponibile','Meta non ha fornito valori per questa metrica.','chart')}</details>`;}).join('');
+  return panel('Risultati '+label,`<h3>${e(profile.name||profile.username||'Profilo senza nome')}</h3><p>Fonte: ${e(label)} · ${publicUrl?profileExternalLink(publicUrl,'Apri il profilo'):e('Indirizzo pubblico non disponibile')}</p><p>Acquisiti ${e(date(data.fetchedAt,true))} · Disponibili fino a ${e(date(data.expiresAt,true))}</p><p>Periodo richiesto: ${e(data.from)} → ${e(data.to)}. I dati possono arrivare in ritardo.</p><dl class="out-obj"><div><dt>Follower al momento della lettura</dt><dd>${value(profile.followers)}</dd></div></dl>${channel==='instagram'?'<div class="kpi-grid">'+metrics+'</div>'+notice('La crescita dei follower Instagram non è ancora disponibile. I valori sopra sono totali del periodo.'):metrics+notice('Ogni riga riguarda un giorno. Le persone raggiunte in giorni diversi possono essere le stesse: i valori non vengono sommati.')}${notice('Valori e giorni mancanti restano non disponibili, non valgono zero. La copia scade entro 24 ore dalla lettura.')}`);
+ }).join('');
+}

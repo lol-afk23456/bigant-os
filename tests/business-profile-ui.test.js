@@ -26,7 +26,7 @@ const locations={items:[{name:'locations/fixture',title:'Bottega DEMO',address:'
 
 test('GBP: conserva sei link pubblici, cache assente distinta da ultima sincronizzazione storica',async()=>{
  const f=await fixture();f.S.module.businessProfile.lastSync='2026-10-09T08:00:00Z';f.S.section='';assert.equal([...f.view().matchAll(/data-view="profiles:/g)].length,6);f.S.section='google-business';const html=f.view();assert.match(html,/profile-edit/);assert.match(html,/Ultima lettura registrata/);assert.match(html,/Non ancora disponibili/);assert.doesNotMatch(html,/Totale dichiarato|Valutazione media|0 recensioni/);assert.equal(f.calls.length,0);
- f.S.section='instagram';assert.match(f.view(),/Ultima sincronizzazione/);assert.doesNotMatch(f.view(),/business-profile-choose|Google Maps/);
+ f.S.section='instagram';assert.match(f.view(),/lettura dei dati Meta non è disponibile/);assert.doesNotMatch(f.view(),/business-profile-choose|Google Maps/);
 });
 
 test('GBP: mostra soltanto dati forniti, fonte/data/scadenza, prima pagina recensioni e nessuna immagine remota',async()=>{

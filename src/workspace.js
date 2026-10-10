@@ -28,18 +28,20 @@ export function navigationFor(user, activeServices = []) {
   ] };
 }
 
-export function createWorkspace({ store, clock = () => new Date(), budget, expiring, agentConfig, connections, businessProfile }) {
+export function createWorkspace({ store, clock = () => new Date(), budget, expiring, agentConfig, connections, businessProfile, metaProfiles }) {
   const profileDirectory = createProfileDirectory({ store, clock });
   function profiles(user, clientId) {
     const directory = profileDirectory.state(user, clientId);
-    if (!businessProfile) return directory;
-    try { return { ...directory, businessProfile: businessProfile.state(user, clientId) }; }
-    catch (error) {
-      // Public links remain readable when the client's local service is absent.
-      if (error.status === 403 && user.role === 'client') return { ...directory, businessProfile: null };
-      throw error;
+    for(const [key,runtime] of [['businessProfile',businessProfile],['metaProfiles',metaProfiles]]){
+      if(!runtime)continue;
+      try{directory[key]=runtime.state(user,clientId);}catch(error){
+        // Public links remain readable without a purchased report service.
+        if(error.status===403&&user.role==='client')directory[key]=null;else throw error;
+      }
     }
+    return directory;
   }
+
   function assignedClients(user) {
     return store.query('SELECT * FROM os_clients WHERE active=1 ORDER BY name').filter(client => canAccessClient(store, user, client.id));
   }

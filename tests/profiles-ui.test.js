@@ -5,7 +5,7 @@ import {readFileSync} from 'node:fs';
 import {randomUUID} from 'node:crypto';
 
 const channels=[['instagram','Instagram'],['facebook','Facebook'],['linkedin','LinkedIn aziendale'],['tiktok','TikTok'],['google-business','Google Business Profile'],['website','Sito web']];
-const data=(clientId='demo-bottega')=>({clientId,canEdit:true,items:channels.map(([id,name])=>({id,name,status:'Da collegare',lastSync:null,metrics:null,reviews:null,link:null}))});
+const data=(clientId='demo-bottega')=>({clientId,canEdit:true,metaProfiles:{available:false,configured:false,version:0,status:"Da collegare",checked:false,enabled:false,daily:false,channels:[],lastSync:null,error:null,canManage:true,data:null,note:"Lettura Meta disabilitata."},items:channels.map(([id,name])=>({id,name,status:'Da collegare',lastSync:null,metrics:null,reviews:null,link:null}))});
 const link=(extra={})=>({url:'https://www.instagram.com/bottega_demo/',sourceUrl:'https://bottega.example/contatti',version:3,updatedAt:'2026-10-13T08:00:00.000Z',confirmation:'owner',...extra});
 const values=(extra={})=>({url:'https://www.instagram.com/bottega_demo/',sourceUrl:'https://bottega.example/contatti',confirmedBusiness:'on',...extra});
 const response=value=>({ok:true,headers:{get:()=> 'application/json'},json:async()=>value});
@@ -32,7 +32,7 @@ test('Profili: griglia compatta di sei canali senza aprire dettagli né richiest
 });
 
 test('Profili: un canale per volta, Indietro, dati mancanti e recensioni Google senza numeri inventati',async()=>{
- const f=await fixture();f.S.section='instagram';let html=f.view();assert.match(html,/data-action="goto" data-id="profiles"/);assert.match(html,/Indirizzo da aggiungere/);assert.match(html,/Non ancora disponibili/);assert.match(html,/Non ancora effettuata/);assert.doesNotMatch(html,/Recensioni|LinkedIn|Facebook|data-view=/);
+ const f=await fixture();f.S.section='instagram';let html=f.view();assert.match(html,/data-action="goto" data-id="profiles"/);assert.match(html,/Indirizzo da aggiungere/);assert.match(html,/Risultati non disponibili/);assert.match(html,/Non ancora effettuata/);assert.doesNotMatch(html,/Recensioni|LinkedIn|Facebook|data-view=/);
  f.S.section='google-business';html=f.view();assert.match(html,/<h3>Recensioni<\/h3>/);assert.match(html,/Non ancora disponibili/);assert.doesNotMatch(html,/0 recensioni|Media|class="stat/);
  f.S.section='linkedin';html=f.view();assert.match(html,/soltanto pagine LinkedIn aziendali/);assert.doesNotMatch(html,/data-view=|Recensioni/);assert.equal(f.calls.length,0);
 });
@@ -40,7 +40,7 @@ test('Profili: un canale per volta, Indietro, dati mancanti e recensioni Google 
 test('Profili: link e fonte distinti, escaped, finestra isolata e data manuale diversa dalla sincronizzazione',async()=>{
  const f=await fixture();f.S.section='instagram';f.S.module.items[0].name='Instagram <img>';f.S.module.items[0].link=link({sourceUrl:'https://fonte.example/scheda?a=uno&b=%22test%22'});const html=f.view();
  assert.match(html,/Instagram &lt;img&gt;/);assert.doesNotMatch(html,/<img|onerror=/);assert.match(html,/Fonte dell’indirizzo/);assert.match(html,/https:\/\/fonte.example\/scheda\?a=uno&amp;b=%22test%22/);
- assert.equal([...html.matchAll(/target="_blank" rel="noopener noreferrer"/g)].length,2);assert.match(html,/aria-label="Apri il profilo pubblico"/);assert.match(html,/aria-label="Apri la fonte"/);assert.match(html,/Corrispondenza confermata manualmente da un socio/);assert.match(html,/verifica indipendente/);assert.match(html,/datetime="2026-10-13T08:00:00.000Z"/);assert.match(html,/Roma/);assert.match(html,/Non ancora effettuata/);assert.match(html,/Account e dati della piattaforma/);assert.match(html,/Da collegare/);
+ assert.equal([...html.matchAll(/target="_blank" rel="noopener noreferrer"/g)].length,2);assert.match(html,/aria-label="Apri il profilo pubblico"/);assert.match(html,/aria-label="Apri la fonte"/);assert.match(html,/Corrispondenza confermata manualmente da un socio/);assert.match(html,/verifica indipendente/);assert.match(html,/datetime="2026-10-13T08:00:00.000Z"/);assert.match(html,/Roma/);assert.match(html,/Non ancora effettuata/);assert.match(html,/Account e dati di Meta/);assert.match(html,/Da collegare/);
 });
 
 test('Profili: URL eseguibili o personali LinkedIn non diventano collegamenti esterni',async()=>{
@@ -51,7 +51,7 @@ test('Profili: URL eseguibili o personali LinkedIn non diventano collegamenti es
 
 test('Profili: assenze, cliente errato e canale sconosciuto non riusano dettagli vecchi o stati operativi',async()=>{
  const f=await fixture();f.S.section='sconosciuto';assert.match(f.view(),/Canale non disponibile/);assert.doesNotMatch(f.view(),/data-view=|profile-edit/);
- f.S.section='instagram';f.S.module.items[0].status='Connesso';assert.match(f.view(),/Stato non disponibile/);assert.doesNotMatch(f.view(),/>Connesso</);
+ f.S.section='linkedin';f.S.module.items[2].status='Connesso';assert.match(f.view(),/Stato non disponibile/);assert.doesNotMatch(f.view(),/>Connesso</);
  f.S.module.clientId='altra-attivita';assert.match(f.view(),/Profili non disponibili/);assert.doesNotMatch(f.view(),/profile-edit|Indirizzo da aggiungere/);f.S.module=null;assert.match(f.view(),/Profili non disponibili/);
 });
 
