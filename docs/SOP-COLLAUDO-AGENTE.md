@@ -11,6 +11,8 @@ FUN-053, preparazione al lavoro reale. La prova tecnica verifica la risposta del
 
 Disponibili soltanto gli agenti con schema AI esistente; gli altri conservano la procedura locale e indicano la mancanza. Non inventare un contratto generico per dichiarare tutti i 32 pronti.
 
+Per il solo social S01 è ora predisposto il [percorso manuale](SOP-AGENTE-SOCIAL.md): richiede un flag distinto e un’autorizzazione separata sulla stessa prova/configurazione. Superare la prova tecnica non avvia lavori né autorizza l’agente da solo.
+
 Prima attivazione reale: verificare costo del modello, limiti del fornitore, chiavi e trasferimento delle istruzioni; richiedere OK del proprietario. Le verifiche di sviluppo impiegano trasporti finti e budget inventati.
 
 Fonti tecniche consultate il 10 ottobre 2026: [OpenAI Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs), [Anthropic Structured Outputs](https://platform.claude.com/docs/en/build-with-claude/structured-outputs). Destinazioni API fisse, nessuno strumento esterno, nessun retry. La compatibilità del modello scelto e il suo prezzo vanno verificati prima del primo utilizzo reale.

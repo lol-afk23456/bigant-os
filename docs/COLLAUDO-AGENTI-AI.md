@@ -2,6 +2,8 @@
 
 10 ottobre 2026 · FUN-053/FUN-055 ancora parziali. [Procedura](SOP-COLLAUDO-AGENTE.md). Nessun agente reale attivato.
 
+Aggiornamento successivo: predisposto e collaudato con fornitori simulati il [primo percorso manuale social](COLLAUDO-AGENTE-SOCIAL.md). I risultati sotto riguardano la precedente tranche tecnica; la prova da sola continua a non autorizzare alcun lavoro.
+
 ## Verifiche eseguite
 
 - 13 test nel nuovo `tests/agent-trials.test.js`: contratti OpenAI/Anthropic con trasporti finti, destinazioni fisse, scheda inventata, versioni, consenso, idempotenza, immutabilità, budget ignoto e limiti interni/globali, concorrenza, cambio chiavi/istruzioni, pausa/revoca/sessione durante la risposta, errori e riavvio, rotte HTTP e CSRF, risposta eccessiva/rifiutata/incompleta.

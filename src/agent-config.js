@@ -4,7 +4,7 @@ import { agentServices } from './agents/catalog.js';
 import { perRegistro } from './sciame/agenti.js';
 import { createMotore, istruzioniAgente } from './motori/index.js';
 
-export function createAgentConfig({ store: s, root, env = {}, clock = () => new Date(), runtimeReady = () => false, connections = null, trialState = () => null }) {
+export function createAgentConfig({ store: s, root, env = {}, clock = () => new Date(), runtimeReady = () => false, connections = null, trialState = () => null, operationalState = () => null }) {
   s.db.exec(`CREATE TABLE IF NOT EXISTS os_agent_config (
     agent TEXT PRIMARY KEY, task TEXT NOT NULL, service TEXT NOT NULL DEFAULT '', instructions TEXT NOT NULL,
     sources TEXT NOT NULL, quality TEXT NOT NULL, estimated_cents INTEGER NOT NULL, provider TEXT NOT NULL,
@@ -23,11 +23,12 @@ export function createAgentConfig({ store: s, root, env = {}, clock = () => new 
       estimated_cents: 40, provider: '', cadence: 'manual', authorized: 0, enabled: 0, version: 0, updated_at: null };
     const prepared = !!perRegistro[id] && !!config.instructions && !!config.task && !!config.sources && !!config.quality;
     const providerReady = providerConfigured(config.provider);
-    const verified = prepared && providerReady && runtimeReady(id);
-    const active = verified && !!config.authorized && !!config.enabled;
-    return { ...definition, config, technicalTrial:trialState(id,config), aiId:perRegistro[id]||null, hasAIInstructions: !!instructions(id), readyForAI: verified,
+    const operational=operationalState(id,config);
+    const verified = prepared && providerReady && (operational?operational.ready:runtimeReady(id));
+    const active = verified && (operational?operational.active:!!config.authorized && !!config.enabled);
+    return { ...definition, config, operational, technicalTrial:trialState(id,config), aiId:perRegistro[id]||null, hasAIInstructions: !!instructions(id), readyForAI: verified,
       operationalStatus: active ? 'Attivo' : verified ? 'AI pronta' : config.task ? 'Base' : 'Da configurare',
-      activationBlock: !runtimeReady(id) ? 'Il percorso con dati reali deve ancora essere collaudato.' : !providerReady ? 'Scegli e configura il fornitore AI.' : null };
+      activationBlock: operational ? (operational.active?null:!operational.supported?operational.note:!operational.available?'Il percorso operativo AI è spento sul server.':operational.ready?'Leggi la prova e autorizza l’agente per le sole bozze manuali.':'Completa configurazione e prova tecnica corrente.') : !runtimeReady(id) ? 'Il percorso con dati reali deve ancora essere collaudato.' : !providerReady ? 'Scegli e configura il fornitore AI.' : null };
   }
   function requireRun(id, { automatic = false } = {}) {
     const agent = entry(id);

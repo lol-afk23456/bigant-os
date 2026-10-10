@@ -20,7 +20,7 @@ const mesi=['gennaio','febbraio','marzo','aprile','maggio','giugno','luglio','ag
 export const STATI_PASSO={in_coda:'In coda',al_lavoro:'Al lavoro',controllo_qualita:'Controllo qualità',in_attesa_approvazione:'In attesa di approvazione',completato:'Completato',bloccato_qualita:'Fermato da Qualità',errore:'Errore'};
 const AZIONI={pubblicazione:'Pubblicare sui canali social',pubblicazione_gbp:'Pubblicare sulla scheda Google',modifica_scheda:'Modificare la scheda Google',risposta_recensioni:'Pubblicare le risposte alle recensioni',invio_email:'Inviare email al potenziale cliente'};
 
-export function createSciame({store:s,production,administration,growth,orchestrator,root,env=process.env,clock=()=>new Date(),motore:motoreIniziale=null}){
+export function createSciame({store:s,production,administration,growth,orchestrator,root,env=process.env,clock=()=>new Date(),motore:motoreIniziale=null,manualState=()=>null}){
  s.db.exec(`CREATE TABLE IF NOT EXISTS os_sciame_giri(id TEXT PRIMARY KEY,richiesta TEXT NOT NULL,flussi TEXT NOT NULL,motore TEXT NOT NULL,stato TEXT NOT NULL,piano TEXT NOT NULL DEFAULT '{}',richiesto_da TEXT NOT NULL,origine TEXT NOT NULL DEFAULT 'locale',errore TEXT,costo_usd_micro INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL,started_at TEXT,finished_at TEXT);
  CREATE TABLE IF NOT EXISTS os_sciame_passi(id TEXT PRIMARY KEY,giro_id TEXT NOT NULL REFERENCES os_sciame_giri(id),ordine INTEGER NOT NULL,flusso TEXT NOT NULL,agente TEXT NOT NULL,reparto TEXT NOT NULL,client_id TEXT NOT NULL REFERENCES os_clients(id),compito TEXT NOT NULL,stato TEXT NOT NULL,motore TEXT NOT NULL,visibilita TEXT NOT NULL DEFAULT 'internal',controlla_passo TEXT,input_json TEXT NOT NULL DEFAULT '{}',output_json TEXT,qualita_json TEXT,esito_qualita TEXT,approvazione_id TEXT,durata_ms INTEGER,costo_usd_micro INTEGER NOT NULL DEFAULT 0,errore TEXT,created_at TEXT NOT NULL,started_at TEXT,finished_at TEXT);
  CREATE TABLE IF NOT EXISTS os_azioni_esterne(id TEXT PRIMARY KEY,giro_id TEXT NOT NULL,passo_id TEXT NOT NULL,client_id TEXT NOT NULL,tipo TEXT NOT NULL,descrizione TEXT NOT NULL,stato TEXT NOT NULL,motivo TEXT NOT NULL,created_at TEXT NOT NULL);
@@ -337,9 +337,15 @@ export function createSciame({store:s,production,administration,growth,orchestra
    if(!ultimi.has(reg)&&!['in_coda','al_lavoro','controllo_qualita'].includes(p.stato))ultimi.set(reg,p);
    if(p.created_at.slice(0,7)===mese)costiMese.set(reg,(costiMese.get(reg)||0)+p.costo_usd_micro);
   }
-  const jobs=new Map();for(const j of s.query('SELECT agent,status,created_at,finished_at,error,result FROM os_jobs ORDER BY created_at DESC LIMIT 300'))if(!jobs.has(j.agent))jobs.set(j.agent,j);
+  const jobs=new Map();for(const j of s.query('SELECT id,client_id,agent,input,status,created_at,finished_at,error,result FROM os_jobs ORDER BY created_at DESC,rowid DESC LIMIT 300'))if(!jobs.has(j.agent))jobs.set(j.agent,j);
   const postazione=(id,nome)=>{
    const lavoro=inCorso.get(id),ultimo=ultimi.get(id),job=jobs.get(id);
+   if(job&&parse(job.input)?.mode==='AI'&&!lavoro&&(!ultimo||job.created_at>=ultimo.created_at)){
+    const r=parse(job.result),pending=(r?.links?.contents||[]).some(link=>s.one("SELECT 1 FROM os_approvals WHERE id=? AND status='pending'",link.approvalId));
+    const stato=job.status==='running'?'al_lavoro':job.status==='failed'||r?.prerequisite?'errore':pending?'in_attesa_approvazione':'libero';
+    const costs=s.one("SELECT COALESCE(SUM(c.cents),0) cents FROM os_costs c JOIN os_agent_work w ON w.cost_id=c.id JOIN os_jobs j ON j.id=w.job_id WHERE j.agent=? AND c.month=? AND c.status IN('reserved','charged')",id,mese).cents;
+    return {id,nome,stato,compito:job.status==='running'?'AI: prepara bozze da verificare':job.error||r?.note||null,diretta:null,ultimoOutput:{jobId:job.id,clientId:job.client_id,titolo:r?.title||'Elaborazione social AI',sintesi:r?.body||job.error||'Risposta ancora in elaborazione',quando:job.finished_at||job.created_at,motore:'ai-manuale',motoreEtichetta:'AI · bozze manuali'},costoMeseCents:costs,costoMeseUsdMicro:costiMese.get(id)||0,sciame:true};
+   }
    let stato='libero',compito=null,uscita=null;
    if(lavoro){stato='al_lavoro';compito=lavoro.stato==='controllo_qualita'?'Output in controllo Qualità · '+lavoro.compito:lavoro.compito;}
    else if(ultimo?.stato==='in_attesa_approvazione'){stato='in_attesa_approvazione';compito='In attesa dell’ok di un socio';}
@@ -354,7 +360,7 @@ export function createSciame({store:s,production,administration,growth,orchestra
   const stanze=[{id:'regia',nome:'Regia',agenti:[postazione('orchestrator','Orchestratore')]},...departments.map(d=>({id:d.id,nome:d.name,agenti:d.agents.map(a=>postazione(a,agentDefinitions.find(x=>x.id===a).name))}))];
   const feed=s.query("SELECT a.id,a.action,a.client_id,a.detail,a.visibility,a.created_at,u.name actor FROM os_audit a LEFT JOIN os_users u ON u.id=a.user_id ORDER BY a.created_at DESC,a.rowid DESC LIMIT 60").map(a=>({...a,detail:parse(a.detail)}));
   const giri=s.query('SELECT id,richiesta,motore,stato,origine,costo_usd_micro,created_at,started_at,finished_at FROM os_sciame_giri ORDER BY created_at DESC LIMIT 12');
-  return {aggiornatoAlle:now(),motore:{id:mot().id,etichetta:mot().etichetta,...statoMotore},autoApprovazioneDemo:autoDemo(),pausa:s.getSetting('paused')==='true',budget:orchestrator.budget(),stanze,feed,giri,inCorso:s.query("SELECT id FROM os_sciame_giri WHERE stato IN('in_coda','in_corso')").map(g=>g.id),
+  return {aggiornatoAlle:now(),motore:manualState()?.active?{id:'ai-manuale',etichetta:'AI · bozze social manuali',disponibile:true,statoCollegamento:'OPERATIVO',motivo:'Avvia un incarico dalla scheda Agenti. Giri multipli e pubblicazione restano spenti.'}:{id:mot().id,etichetta:mot().etichetta,...statoMotore},autoApprovazioneDemo:autoDemo(),pausa:s.getSetting('paused')==='true',budget:orchestrator.budget(),stanze,feed,giri,inCorso:s.query("SELECT id FROM os_sciame_giri WHERE stato IN('in_coda','in_corso')").map(g=>g.id),
    azioniBloccate:s.query("SELECT * FROM os_azioni_esterne ORDER BY created_at DESC LIMIT 30"),stati:STATI_PASSO,flussi:descrizioneFlussi};
  }
  function dettaglioPasso(user,id){requireOwner(user);const p=s.one('SELECT * FROM os_sciame_passi WHERE id=?',id);if(!p)throw new AppError('Passo non trovato.',404);return {...p,input:parse(p.input_json),output:parse(p.output_json),qualita:parse(p.qualita_json),motoreEtichetta:ETICHETTE[p.motore]||p.motore,approvazione:p.approvazione_id?s.one('SELECT * FROM os_approvals WHERE id=?',p.approvazione_id):null,azioni:s.query('SELECT * FROM os_azioni_esterne WHERE passo_id=?',id),input_json:undefined,output_json:undefined,qualita_json:undefined};}
