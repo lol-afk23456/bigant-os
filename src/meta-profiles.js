@@ -32,7 +32,10 @@ export function createMetaProfiles({store,connections,enabled=false,clock=()=>ne
   if(!service&&!(allowMissing&&u.role==='owner'))throw new AppError('Servizio Social non attivo per questa attività.',403);
   return {user:u,service};
  }
- function metadata(){const r=store.one("SELECT version,updated_by FROM os_connections WHERE id='meta'");return {version:r?.version||0,by:r?.updated_by||null,ready:!!r&&!!human(r.updated_by)&&connections.state(human(r.updated_by)).vaultReady===true};}
+ function metadata(){
+  const r=store.one("SELECT version,updated_by FROM os_connections WHERE id='meta'"),a=connections.runtimeMetadata('meta').authorization;
+  return {version:r?.version||0,by:r?.updated_by||null,expiresAt:a?.mode==='oauth'&&a.expiresAt?Date.parse(a.expiresAt):null,ready:!!r&&!!human(r.updated_by)&&connections.state(human(r.updated_by)).vaultReady===true&&a?.readable!==false&&(a?.mode!=='oauth'||a.connected===true)};
+ }
  const configured=(r,m)=>!!r?.page_id&&m.ready&&r.connection_version===m.version&&r.authorized_by===m.by&&!!human(r.configured_by);
  const checked=(r,m)=>configured(r,m)&&!!r.checked_at&&Date.parse(r.checked_at)<=now()&&!!human(r.checked_by);
  const active=(r,m)=>checked(r,m)&&r.enabled===1&&!!r.activated_at&&!!human(r.activated_by);
@@ -50,7 +53,7 @@ export function createMetaProfiles({store,connections,enabled=false,clock=()=>ne
   if(!ready||r?.checked_at&&!proof||r?.enabled&&!enabled)drop(id);
   const data=ready&&!r.error&&(a.user.role==='owner'||enabled)?cached(r):null,error=ready?r.error:null;
   return {available,configured:!!r?.page_id,version:r?.version||0,status:error?'Errore':enabled?'Collegato':'Da collegare',checked:!!proof,enabled:!!enabled,daily:!!(enabled&&r.daily),channels:ready?JSON.parse(r.channels_json):[],lastSync:r?.last_sync||null,error:error||null,canManage:a.user.role==='owner',data:data?(withData?structuredClone(data):true):null,
-   note:!a.service?'Il servizio Social non è attivo per questa attività.':!flag()?'La lettura Meta non è abilitata su questo server.':paused()?'La lettura Meta è in pausa con le attività automatiche.':!m.ready?'Configura il token utente Meta nei Collegamenti.':!r?.page_id?'Scegli la pagina e conferma che appartiene a questa attività.':!ready?'Autorizzazioni cambiate: seleziona nuovamente la pagina e ripeti la prova.':error?'Lettura non riuscita. Verifica permessi e account prima di riprovare.':!data?'Dati temporanei non disponibili. Esegui una nuova lettura.':!enabled?'Prova visibile solo ai soci. Confrontala con Meta prima di attivare.':'Dati Meta conservati temporaneamente per massimo 24 ore.'};
+   note:!a.service?'Il servizio Social non è attivo per questa attività.':!flag()?'La lettura Meta non è abilitata su questo server.':paused()?'La lettura Meta è in pausa con le attività automatiche.':!m.ready?'Autorizza l’account Meta nei Collegamenti.':!r?.page_id?'Scegli la pagina e conferma che appartiene a questa attività.':!ready?'Autorizzazioni cambiate: seleziona nuovamente la pagina e ripeti la prova.':error?'Lettura non riuscita. Verifica permessi e account prima di riprovare.':!data?'Dati temporanei non disponibili. Esegui una nuova lettura.':!enabled?'Prova visibile solo ai soci. Confrontala con Meta prima di attivare.':'Dati Meta conservati temporaneamente per massimo 24 ore.'};
  }
  const state=(u,id)=>view(u,id);
  function snapshot(user,id,{needConfig=false,needActive=false}={}){
@@ -87,12 +90,12 @@ export function createMetaProfiles({store,connections,enabled=false,clock=()=>ne
  async function read(user,id,value,{check=false,claimed=false}={}){
   const b=body(value,['version']);version(b.version);const s=snapshot(user,id,{needConfig:true,needActive:!check});if(s.version!==b.version)throw conflict();
   if(inflight.has(id))throw new AppError('Una lettura Meta è già in corso.',409);
-  const selected=row(id),started=now();if(!claimed&&selected.last_attempt&&started-Date.parse(selected.last_attempt)<60000)throw new AppError('Attendi un minuto prima di un’altra lettura Meta.',429);
+  const selected=row(id),started=now(),deadline=Math.min(started+DAY,metadata().expiresAt??Infinity);if(!claimed&&selected.last_attempt&&started-Date.parse(selected.last_attempt)<60000)throw new AppError('Attendi un minuto prima di un’altra lettura Meta.',429);
   const to=new Date(started-3*DAY).toISOString().slice(0,10),from=new Date(Date.parse(to)-27*DAY).toISOString().slice(0,10),p=provider(s);
   inflight.add(id);drop(id);if(!claimed)store.run('UPDATE os_meta_profiles SET last_attempt=? WHERE client_id=? AND version=?',time(),id,s.version);
   try{
    const reports={};for(const channel of JSON.parse(selected.channels_json)){reports[channel]=await p.report({pageId:selected.page_id,instagramId:selected.instagram_id,channel,from,to});guard(s);}
-   if(now()>=started+DAY)throw conflict();const data={...reports,from,to,fetchedAt:time(),expiresAt:new Date(started+DAY).toISOString()};
+   if(now()>=deadline)throw conflict();const data={...reports,from,to,fetchedAt:time(),expiresAt:new Date(deadline).toISOString()};
    store.transaction(()=>{guard(s);if(check)store.run('UPDATE os_meta_profiles SET enabled=0,daily=0,activated_by=NULL,activated_at=NULL WHERE client_id=? AND version=?',id,s.version);store.run('UPDATE os_meta_profiles SET last_sync=?,error=NULL,checked_at=CASE WHEN ? THEN ? ELSE checked_at END,checked_by=CASE WHEN ? THEN ? ELSE checked_by END WHERE client_id=? AND version=?',data.fetchedAt,check?1:0,data.fetchedAt,check?1:0,s.user.id,id,s.version);store.audit(s.user,id,check?'Lettura Meta collaudata':'Dati Meta aggiornati',id,{version:s.version,channels:JSON.parse(selected.channels_json)},'admin');});
    remember(row(id),data);return state(s.user,id);
   }catch(error){drop(id);try{guard(s);store.run('UPDATE os_meta_profiles SET error=? WHERE client_id=? AND version=?','Lettura Meta non riuscita. Verifica permessi, quote e pagina selezionata.',id,s.version);}catch{}if(error instanceof AppError)throw error;throw new AppError('Lettura Meta non riuscita.',502);}

@@ -17,8 +17,8 @@ const definitions = [...integrations, { id: 'anthropic', name: 'Anthropic', purp
 ].map(row => ({ ...row, fields: fields[row.id] || [], dependsOn: ['gmail', 'calendar', 'ga4', 'gsc', 'google-ads', 'drive', 'sheets'].includes(row.id) ? 'google' : null }));
 
 export function createConnections({ store: s, env = {} }) {
-  const vault = createVault(env);let googleMetadata=null,businessProfileMetadata=null;
-  function gbpOwner(user,id){if(id!=='gbp')return;const current=s.one("SELECT id FROM os_users WHERE id=? AND role='owner' AND active=1 AND must_change_password=0 AND id<>'os-orchestrator'",user?.id||'');if(!current)throw new AppError('Socio non più autorizzato.',403);}
+  const vault = createVault(env);let googleMetadata=null,businessProfileMetadata=null,metaMetadata=null;
+  function gbpOwner(user,id){if(!['gbp','meta'].includes(id))return;const current=s.one("SELECT id FROM os_users WHERE id=? AND role='owner' AND active=1 AND must_change_password=0 AND id<>'os-orchestrator'",user?.id||'');if(!current)throw new AppError('Socio non più autorizzato.',403);}
   s.db.exec(`CREATE TABLE IF NOT EXISTS os_connections (
     id TEXT PRIMARY KEY, sealed TEXT NOT NULL, version INTEGER NOT NULL, updated_at TEXT NOT NULL, updated_by TEXT NOT NULL,
     last_checked TEXT, check_status TEXT NOT NULL DEFAULT 'Da collegare', check_note TEXT NOT NULL DEFAULT ''
@@ -30,7 +30,7 @@ export function createConnections({ store: s, env = {} }) {
   }
   const stored = id => s.one('SELECT * FROM os_connections WHERE id=?', id);
   function metadata(id) {
-    const d = definition(id), row = id==='wallet'?null:stored(id), by = row && s.one('SELECT name FROM os_users WHERE id=?', row.updated_by), authorization=id==='google'&&googleMetadata?googleMetadata(row?.version||0):id==='gbp'&&businessProfileMetadata?businessProfileMetadata():null;
+    const d = definition(id), row = id==='wallet'?null:stored(id), by = row && s.one('SELECT name FROM os_users WHERE id=?', row.updated_by), authorization=id==='google'&&googleMetadata?googleMetadata(row?.version||0):id==='gbp'&&businessProfileMetadata?businessProfileMetadata():id==='meta'&&metaMetadata?metaMetadata():null;
     return { ...d, ...(authorization?{authorization}:{}),status: authorization?(authorization.connected?'Collegato':'Da collegare'):row?.check_status || 'Da collegare', lastCheck: row?.last_checked || null, checkNote: row?.check_note || '',
       configured: !!row, version: row?.version || 0, updatedAt: row?.updated_at || null, configuredBy: by?.name || null,
       activationNote: id==='wallet'?'Chiavi e certificati Wallet si configurano soltanto sul server. Collaudo e attivazione in Fidelity.':'Il salvataggio delle chiavi non attiva il collegamento. Servono collaudo e autorizzazione dei soci.' };
@@ -41,7 +41,8 @@ export function createConnections({ store: s, env = {} }) {
     if (!d.fields.length) throw new AppError('Questo collegamento richiede prima la definizione degli accessi o un’autorizzazione dedicata.', 409);
     if (b.version !== (row?.version || 0)) throw new AppError('Configurazione cambiata. Ricarica prima di salvare.', 409);
     if (!b.fields || typeof b.fields !== 'object' || Array.isArray(b.fields) || Object.keys(b.fields).some(key => !d.fields.some(field => field.id === key))) throw new AppError('Campi del collegamento non validi.');
-    const values = row ? vault.open(row.sealed, 'connection:' + id) : {};
+    let values = row ? vault.open(row.sealed, 'connection:' + id) : {};
+    if(id==='meta'&&values.mode==='oauth')values={};
     if(id==='google'||id==='gbp'){delete values.refreshToken;delete values.scopes;delete values.email;}
     for (const field of d.fields) {
       const value = b.fields[field.id];
@@ -72,7 +73,7 @@ export function createConnections({ store: s, env = {} }) {
     return metadata(id);
   }
   function summary() {
-    return { total: definitions.length, connected: Number(!!googleMetadata?.(stored('google')?.version||0).connected)+Number(!!businessProfileMetadata?.().connected), errors: s.one("SELECT COUNT(*) n FROM os_connections WHERE check_status='Errore'").n };
+    return { total: definitions.length, connected: Number(!!googleMetadata?.(stored('google')?.version||0).connected)+Number(!!businessProfileMetadata?.().connected)+Number(!!metaMetadata?.().connected), errors: s.one("SELECT COUNT(*) n FROM os_connections WHERE check_status='Errore'").n };
   }
   // Internal-only capability. No HTTP route returns decrypted configuration.
   function readForRuntime(user,id,version) {
@@ -90,5 +91,5 @@ export function createConnections({ store: s, env = {} }) {
     s.run("UPDATE os_connections SET sealed=?,version=version+1,updated_at=?,updated_by=?,last_checked=?,check_status='Collegato',check_note='Casella verificata; invii ancora soggetti al collaudo e all’attivazione Growth.' WHERE id='google'",vault.seal(values,'connection:google'),now(),user.id,now());
     s.audit(user,null,'Casella Google autorizzata','google',{version:version+1},'admin');return version+1;
   }
-  return { state, save, check, summary, runtimeMetadata:metadata, readForRuntime, completeGoogle, setGoogleMetadata:fn=>{googleMetadata=fn;}, setBusinessProfileMetadata:fn=>{businessProfileMetadata=fn;} };
+  return { state, save, check, summary, runtimeMetadata:metadata, readForRuntime, completeGoogle, setGoogleMetadata:fn=>{googleMetadata=fn;}, setBusinessProfileMetadata:fn=>{businessProfileMetadata=fn;}, setMetaMetadata:fn=>{metaMetadata=fn;} };
 }

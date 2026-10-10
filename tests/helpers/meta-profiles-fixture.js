@@ -31,8 +31,8 @@ export function metaProfilesFixture(t,{enabled=true,real=true,origin='https://os
  for(const id of [ownerId,client.id,collaborator.id])store.run('INSERT INTO os_sessions VALUES(?,?,?,?)',createHash('sha256').update(sessionKey(id)).digest('hex'),id,csrf,Math.max(Date.now(),at.getTime())+7*86400000);
  app.connections.save(owner,'meta',{version:0,fields:{accessToken:'user-token-fixture'}});
  const handler=app.server.listeners('request')[0];
- async function request(method,path,body,{user=ownerId,token=csrf,requestOrigin=origin}={}){
-  const req={method,url:path,headers:{host:new URL(origin).host,origin:requestOrigin,'content-type':'application/json',...(user?{cookie:'bigant_os='+sessionKey(user),'x-csrf-token':token}:{})},socket:{remoteAddress:'127.0.0.1'},async *[Symbol.asyncIterator](){if(body!==undefined)yield Buffer.from(JSON.stringify(body));}};
+ async function request(method,path,body,{user=ownerId,token=csrf,requestOrigin=origin,beforeBody}={}){
+  const req={method,url:path,headers:{host:new URL(origin).host,origin:requestOrigin,'content-type':'application/json',...(user?{cookie:'bigant_os='+sessionKey(user),'x-csrf-token':token}:{})},socket:{remoteAddress:'127.0.0.1'},async *[Symbol.asyncIterator](){await beforeBody?.();if(body!==undefined)yield Buffer.from(JSON.stringify(body));}};
   const res={status:200,headers:{},headersSent:false,setHeader(k,v){this.headers[k.toLowerCase()]=v;},writeHead(status,headers){this.status=status;this.headersSent=true;for(const[k,v]of Object.entries(headers||{}))this.setHeader(k,v);},end(body){this.body=body?this.headers['content-type']?.startsWith('application/json')?JSON.parse(String(body)):String(body):null;}};
   await handler(req,res);return res;
  }

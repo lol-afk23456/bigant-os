@@ -1,3 +1,4 @@
+import {createMetaOAuth} from './src/meta-oauth.js';
 import {createMetaProfiles} from './src/meta-profiles.js';
 import http from 'node:http';
 import QRCode from 'qrcode';
@@ -64,6 +65,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const businessProfileEnabled=()=>realMode&&env.BIGANT_GBP_ENABLED==='true';
   const businessProfileAuth=createBusinessProfileOAuth({store,connections,env,origin,enabled:businessProfileEnabled,clock,providerOptions:businessProfileProviderOptions});
   const metaProfilesEnabled=()=>realMode&&env.BIGANT_META_PROFILES_ENABLED==='true';
+  const metaAuth=createMetaOAuth({store,connections,env,origin,enabled:metaProfilesEnabled,clock,providerOptions:metaProfileProviderOptions});
   const metaProfiles=createMetaProfiles({store,connections,enabled:metaProfilesEnabled,clock,providerOptions:metaProfileProviderOptions});
   const businessProfile=createBusinessProfile({store,auth:businessProfileAuth,enabled:businessProfileEnabled,clock,providerOptions:businessProfileProviderOptions});
   const production=createProduction({store}),growth=createGrowthModule({store,origin,realMode,costControl,connections,googleAuth,gmailEnabled,calendarEnabled,clock,externalEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true',providerOptions:growthProviderOptions}),fidelity=createFidelityModule({store,origin,realMode,env,clock,walletProviderOptions}),administration=createAdministrationModule({store,clock});
@@ -178,6 +180,13 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
         const billingMatch=path.match(/^\/api\/billing\/tracker\/([^/]+)$/);if(billingMatch&&method==='PATCH')return json(res,billing.label(u,billingMatch[1],b));
         const googleMatch=path.match(/^\/api\/connections\/google\/oauth\/(state|start|finish)$/);
         if(googleMatch){requireOwner(u);if(!googleAuth)throw new AppError('Google non disponibile in modalità DEMO.',409);if(method==='GET'&&googleMatch[1]==='state')return json(res,googleAuth.state(u));if(method==='POST'&&googleMatch[1]==='start')return json(res,googleAuth.start(u,b));if(method==='POST'&&googleMatch[1]==='finish')return json(res,await googleAuth.finish(u,b));}
+        const metaAuthMatch=path.match(/^\/api\/connections\/meta\/oauth\/(state|configure|start|finish|disconnect)$/);
+        if(metaAuthMatch){
+          requireOwner(u);const action=metaAuthMatch[1];
+          if(method==='GET'&&action==='state')return json(res,metaAuth.state(u));
+          if(method==='POST'&&action!=='state')return json(res,await metaAuth[action](u,b));
+          throw new AppError('Metodo non consentito.',405);
+        }
         const businessAuthMatch=path.match(/^\/api\/connections\/gbp\/oauth\/(state|start|finish|disconnect)$/);
         if(businessAuthMatch){
           requireOwner(u);const action=businessAuthMatch[1];
@@ -200,7 +209,12 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
           throw new AppError('Metodo non consentito.',405);
         }
         if(path==='/api/connections'&&method==='GET')return json(res,connections.state(u));
-        const connectionMatch=path.match(/^\/api\/connections\/([^/]+)(\/check)?$/);if(connectionMatch&&method==='POST')return json(res,connectionMatch[2]?connections.check(u,connectionMatch[1]):connections.save(u,connectionMatch[1],b));
+        const connectionMatch=path.match(/^\/api\/connections\/([^/]+)(\/check)?$/);
+        if(connectionMatch&&method==='POST'){
+          const current=session(req);
+          if(!current||current.session_id!==u.session_id||current.must_change_password||current.role!==u.role||!safeEqual(current.csrf,u.csrf))throw new AppError('Sessione cambiata: accedi di nuovo.',403);
+          return json(res,connectionMatch[2]?connections.check(current,connectionMatch[1]):connections.save(current,connectionMatch[1],b));
+        }
         if(path==='/api/service-plan'&&method==='GET')return json(res,servicePlan.state(u));
         if(path==='/api/service-plan/prices'&&method==='POST')return json(res,servicePlan.addPrice(u,b),201);
         const planMatch=path.match(/^\/api\/service-plan\/([^/]+)$/);if(planMatch&&method==='PATCH')return json(res,servicePlan.save(u,planMatch[1],b));
@@ -266,7 +280,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
           const asset=brandAssets[path],bytes=decodeBrandAsset(readFileSync(resolve(root,'public/brand',asset.file),'utf8'),asset.sha256);
           res.writeHead(200,{'Content-Type':'image/png','Content-Length':bytes.length,'Cache-Control':'no-store'});return res.end(method==='HEAD'?undefined:bytes);
         }
-        const appPage=path==='/'||path==='/auth/google/callback'||path==='/auth/google-business/callback'||path.startsWith('/fidelity/')||path.startsWith('/growth/');
+        const appPage=path==='/auth/meta/callback'||path==='/'||path==='/auth/google/callback'||path==='/auth/google-business/callback'||path.startsWith('/fidelity/')||path.startsWith('/growth/');
         const file=appPage?resolve(root,'public/index.html'):resolve(root,'public','.'+decodeURIComponent(path));const publicRoot=resolve(root,'public')+'/';
         if(!file.startsWith(publicRoot)||!existsSync(file)||!statSync(file).isFile())throw new AppError('Pagina non trovata.',404);
         const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.svg':'image/svg+xml','.ttf':'font/ttf'};
@@ -279,7 +293,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const backups=realMode&&worker&&database!==':memory:'?createBackupScheduler({store,sourcePath:database,env,clock}):null;
   let workerError=null,workerRun=null;
   const timer=worker?setInterval(()=>{if(workerRun)return;workerRun=orchestrator.tick().then(()=>fidelity.runWalletJobs()).then(()=>businessProfile.tick()).then(()=>metaProfiles.tick()).then(()=>agentSchedules.tick()).then(()=>{workerError=null;}).catch(()=>{workerError='Controllo delle automazioni da verificare.';}).finally(()=>{workerRun=null;});},2000):null;timer?.unref();
-  return {server,store,clientResults,emailMarketing,costControl,googleAuth,businessProfileAuth,businessProfile,metaProfiles,billing,connections,servicePlan,agentConfig,agentTrials,agentWork,agentSchedules,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(workerRun)await workerRun;await backups?.close();if(server.listening)await new Promise(r=>server.close(r));await businessProfile.close();await metaProfiles.close();await agentTrials.close();await agentSchedules.close();await agentWork.close();store.close();}};
+  return {server,store,clientResults,emailMarketing,costControl,googleAuth,businessProfileAuth,businessProfile,metaAuth,metaProfiles,billing,connections,servicePlan,agentConfig,agentTrials,agentWork,agentSchedules,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(workerRun)await workerRun;await backups?.close();if(server.listening)await new Promise(r=>server.close(r));await metaAuth.close();await businessProfile.close();await metaProfiles.close();await agentTrials.close();await agentSchedules.close();await agentWork.close();store.close();}};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const modalitaReale=process.env.BIGANT_MODALITA==='reale';

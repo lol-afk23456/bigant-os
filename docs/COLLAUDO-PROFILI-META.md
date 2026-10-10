@@ -22,7 +22,7 @@ La revisione indipendente ha rilevato il rischio di un Instagram associabile a d
 
 ## Limiti reali
 
-Non provano il collegamento reale i dati inventati, il salvataggio del token o il superamento dei test. Sono ancora necessari app Meta approvata, verifica aziendale ove richiesta, autorizzazione del titolare e confronto con le piattaforme. L’inserimento del token utente è disponibile; manca un percorso OAuth completo nell’OS. I token scaduti vanno rinnovati dal titolare.
+Non provano il collegamento reale i dati inventati, il salvataggio del token o il superamento dei test. Sono ancora necessari app Meta approvata, verifica aziendale ove richiesta, autorizzazione del titolare e confronto con le piattaforme. Il token manuale rimane compatibile; il percorso OAuth guidato è ora predisposto e testato offline (vedi aggiornamento sotto). I token scaduti richiedono un nuovo consenso del titolare.
 
 Instagram: account professionale collegato alla Pagina, metriche aggregabili del periodo (views, reach, total_interactions). Follower del profilo come fotografia corrente; crescita Instagram ancora assente. Per alcuni ruoli Business Manager Meta indica anche permessi pubblicitari: non vengono aggiunti automaticamente.
 
@@ -33,3 +33,11 @@ L’interruttore `BIGANT_META_PROFILES_ENABLED` resta falso/assente in produzion
 ## Rilascio verificato
 
 Codice `5e84188`, deployment `458353d9-ac30-4686-b5d3-f66000a568d3` SUCCESS. Backup preliminare `e3a614c5-0079-4ecd-9b10-554d0959fa0d`, 20:05 Roma, 801 MB. Alle 20:09: health ok, ambiente reale, azioni e letture esterne false; `cliente.js` e `workspace.js` identici al codice verificato; nuova API senza sessione 401. Browser socio: pannello Instagram con lettura Meta non abilitata, nessun canale selezionato, nessun dato o controllo di attivazione. Zero errori console; schermata `meta-profiles-online.png` nella cache tecnica. Nessuna configurazione reale modificata.
+
+## Aggiornamento — accesso Meta guidato
+
+29 nuove prove offline: trasporto ufficiale, stato monouso, sessione, versione, ruoli, consenso minimo per canale, identità e app, scadenze, permessi aggiuntivi rifiutati, disconnessione, cache e risposte tardive nell’interfaccia. Tre rilievi della revisione indipendente corretti: chiavi non decifrabili bloccano anche la cache; report con scadenza non oltre il consenso OAuth; salvataggio manuale ricontrolla la sessione dopo la ricezione del corpo. Coperti anche `app_id` numerico sicuro e riavvio senza recupero automatico del consenso.
+
+Browser locale con dati inventati: scheda Meta → consenso canali → rifiuto della prosecuzione senza scelte. Checkbox vuoti; desktop e 390 px senza overflow (pagina390/390, dialogo354/354), zero errori/avvisi. Nessuna navigazione al login reale. Schermate `meta-oauth-desktop.png` e `meta-oauth-mobile.png` nella cache tecnica.
+
+Nessuna nuova tabella, migrazione o configurazione eseguita all’avvio: l’autorizzazione usa l’archivio cifrato e la versione già esistenti. Stato del consenso solo in RAM. Il rilascio non modifica dati o accessi Meta presenti sul server. Per questo blocco senza migrazioni si conserva la copia Railway delle20:05 e la possibilità di ripristinare il deployment precedente; nessuna cancellazione di backup né variazione del piano.
