@@ -28,7 +28,9 @@ export function createClientRecords({ store: s, production, env = {}, clock = ()
     if (user.role === 'collaborator') requireOwner(user);
     const docs = s.query("SELECT id,title,start_date,end_date,renewal,notice_days,version,updated_at,LENGTH(pdf_base64)>0 has_document FROM os_client_contract_docs WHERE client_id=? ORDER BY end_date", clientId);
     const legacy = s.query("SELECT id,service title,start_date,end_date,notice_days,0 has_document,1 version FROM os_fin_contracts WHERE client_id=? AND status='active' ORDER BY end_date", clientId);
-    return [...docs, ...legacy.filter(old => !docs.some(doc => doc.end_date === old.end_date))];
+    // Una scadenza condivisa non identifica lo stesso contratto. Conservare ogni
+    // documento finché non esiste un collegamento esplicito alla registrazione precedente.
+    return [...docs, ...legacy];
   }
   function expiring(user) {
     requireOwner(user);
@@ -37,7 +39,7 @@ export function createClientRecords({ store: s, production, env = {}, clock = ()
     const docs = s.query('SELECT d.id,d.client_id,d.end_date,d.title,c.name client_name FROM os_client_contract_docs d JOIN os_clients c ON c.id=d.client_id WHERE c.active=1 AND d.end_date>=? AND d.end_date<=? ORDER BY d.end_date', today, until);
     const legacy = s.query("SELECT d.id,d.client_id,d.end_date,d.service title,c.name client_name FROM os_fin_contracts d JOIN os_clients c ON c.id=d.client_id WHERE c.active=1 AND d.status='active' AND d.end_date>=? AND d.end_date<=? ORDER BY d.end_date", today, until);
     // Keep existing contracts available while their PDF records are completed.
-    return [...docs, ...legacy.filter(old => !docs.some(doc => doc.client_id === old.client_id && doc.end_date === old.end_date))].sort((a, b) => a.end_date.localeCompare(b.end_date));
+    return [...docs, ...legacy].sort((a, b) => a.end_date.localeCompare(b.end_date));
   }
   function record(user, clientId) {
     team(user, clientId);

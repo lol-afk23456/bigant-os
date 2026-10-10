@@ -294,3 +294,16 @@ SOP prima del codice. Aggiunto il percorso S01 con registro immutabile delle aut
 Browser desktop e telefono390×844 con database in memoria, provider e dati inventati: autorizzazione e invio senza checkbox respinti, anteprima, elaborazione singola, bozza e provenienza in “Da approvare”, dialogo di decisione aperto e annullato, postazione Ufficio coerente. Seconda anteprima annullata senza elaborazione; sospensione riporta ad AI pronta e rimuove nuovi incarichi. Nessun overflow orizzontale o errore console osservato. Screenshot nella cache del progetto; processo fermato, tab chiusa, viewport ripristinata, temporanei trasferiti nel progetto.
 
 Percorso operativo limitato al social manuale: altri agenti e automatismi ancora aperti. FUN-053/FUN-055 parziali, matrice92 invariata 60/14/18; T4 non avviata. Nessuna dipendenza, lettura di dati reali, chiamata applicativa a pagamento, account collegato, push o deploy.
+
+
+## 10 ottobre 2026 — Area cliente, report e confini dei dati
+
+SOP scritta prima della modifica. Nuova proiezione comune, home a card e report nel servizio; documenti propri. Bozze, attività operative, memoria, decisioni e trascrizioni escluse dalle risposte cliente, anche tramite i vecchi indirizzi. Growth interno, Fidelity subordinata al servizio; anteprima del socio equivalente, senza dati di collaudo GBP non attivati. Fonte/data sui valori disponibili e nessuno zero inventato.
+
+Revisione indipendente: verificate perdite di dati interne e incongruenza Growth/Fidelity; corretti anche scomparsa dei KPI non coperti, permanenza dei dati Google oltre scadenza offline e deduplicazione impropria dei contratti con uguale data. Nel Browser trovato e corretto il primo login senza sezione inizializzata; azzerata anche la rotta al cambio profilo. Regressioni pertinenti e vecchi test riallineati alle decisioni confermate, incluso lo scenario a 13 passi con upsell solo interno.
+
+**22 nuove prove, suite completa 725/725**, zero saltate. Browser desktop e 390×844: due clienti con servizi diversi, report social/Fidelity, documenti, ritorni, anteprima socio e accesso collaboratore alle approvazioni. Nessun overflow della pagina a 390 px; tabella contratti con scorrimento interno. Dopo le correzioni, nessun errore console osservato. [Collaudo dettagliato](COLLAUDO-VISTA-CLIENTE.md). Anteprima fermata, tab chiusa, viewport ripristinata; immagini temporanee trasferite nella cache del progetto.
+
+Matrice92: **68 locali, 16 parziali, 8 da fare**. I conteggi non chiudono le fasi o il brief esteso. Report completi/Ads, Email marketing autonomo, alcune fonti e collaudi reali restano aperti. Nessun nuovo pacchetto, cliente reale, collegamento, chiamata applicativa a pagamento, push o deploy; T1–T10 mantengono il proprio ordine.
+
+Controllo conclusivo progetto **5/5**: 150 file JavaScript, 86 documenti, 190 link locali. Home verificata anche a 1280×800, senza overflow; immagine `bigant-client-desktop.png`. Suite finale dopo il reset della rotta: **725/725**.

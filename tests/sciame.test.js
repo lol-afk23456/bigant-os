@@ -189,7 +189,7 @@ test('motore Claude Code: sottoagente, nessuno strumento, schema imposto, costo 
  await assert.rejects(m.esegui({agente:'qualita',compito:'x',pacchetto:{},schema:schemi.qualita}),/senza JSON/);
 });
 
-test('diretta: lo stream di Claude Code arriva a pezzi, si salva sul passo e compare nell’ufficio e al cliente senza costi',async t=>{
+test('diretta: lo stream di Claude Code si salva sul passo e compare solo nell’ufficio interno',async t=>{
  // 1. Motore: righe stream-json spezzate a metà tra due blocchi di dati.
  const righe=[{type:'system',subtype:'init'},{type:'stream_event',event:{type:'content_block_delta',delta:{type:'thinking_delta',thinking:'...'}}},{type:'stream_event',event:{type:'content_block_delta',delta:{type:'text_delta',text:'{"esito":"appro'}}},{type:'stream_event',event:{type:'content_block_delta',delta:{type:'text_delta',text:'vabile","sintesi":"ok","rilievi":[]}'}}},{type:'result',subtype:'success',is_error:false,total_cost_usd:0.002,result:'{"esito":"approvabile","sintesi":"ok","rilievi":[]}'}].map(x=>JSON.stringify(x)).join('\n')+'\n';
  const spawnImpl=()=>{const c=new EventEmitter();c.stdout=new EventEmitter();c.stderr=new EventEmitter();c.stdin={end:()=>setImmediate(()=>{c.stdout.emit('data',righe.slice(0,200));c.stdout.emit('data',righe.slice(200));c.emit('close',0);})};c.kill=()=>{};return c;};
@@ -197,7 +197,7 @@ test('diretta: lo stream di Claude Code arriva a pezzi, si salva sul passo e com
  const r=await m.esegui({agente:'qualita',compito:'x',pacchetto:{},schema:schemi.qualita,onProgresso:x=>visti.push(x)});
  assert.equal(r.output.esito,'approvabile');assert.equal(r.meta.costoUsdMicro,2000);
  assert.deepEqual(visti.map(x=>x.fase),['ragionamento','scrittura','scrittura']);assert.match(visti.at(-1).testo,/approvabile.*rilievi/);
- // 2. Sciame: mentre l'agente scrive, l'ufficio mostra il testo; il cliente vede chi lavora, mai i costi.
+ // 2. Sciame: l'ufficio mostra il testo mentre l'agente scrive; il cliente non riceve la diretta interna.
  const a=fixture(t);let sblocca,scritto;const pronto=new Promise(r=>{scritto=r;});
  const finto=motoreFinto();const base=finto.esegui;
  finto.esegui=async x=>{if(x.agente==='local-gbp'&&!sblocca){x.onProgresso({fase:'scrittura',testo:'{"controlli":[{"voce":"Orari di apertura'});scritto();await new Promise(r=>{sblocca=r;});}return base(x);};
@@ -208,8 +208,8 @@ test('diretta: lo stream di Claude Code arriva a pezzi, si salva sul passo e com
  assert.equal(desk.stato,'al_lavoro');assert.equal(desk.diretta.fase,'scrittura');assert.match(desk.diretta.testo,/Orari di apertura/);
  assert.match(a.sciame.dettaglioPasso(a.owner,desk.diretta.passoId).diretta,/Orari di apertura/);
  const clienteId=desk.diretta.cliente,home=a.cliente.dashboard(a.s.one("SELECT * FROM os_users WHERE role='client' AND tenant_id=?",clienteId),clienteId).sezioni.find(x=>x.id==='home');
- const voce=home.squadra.find(q=>q.attivo);assert.equal(voce.agente,agentiSciame['local-gbp'].nome);assert.equal(voce.stato,'Al lavoro');
- assert.equal(JSON.stringify(home.squadra).includes('costo'),false,'nessun costo nella vista cliente');
+ assert.equal(home.squadra,undefined,'la diretta e i compiti interni non arrivano al cliente');
+ assert.doesNotMatch(JSON.stringify(home),/Orari di apertura|costo|local-gbp/);
  sblocca();const fatto=await fine;assert.ok(fatto.passi.every(p=>p.diretta===undefined),'il riepilogo del giro non porta la trascrizione completa');
 });
 

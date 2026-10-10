@@ -22,7 +22,8 @@ const FAMIGLIE=[
 // Numeri chiave della Home: KPI precisi delle schede (codice e posizione nella sezione 7).
 const CHIAVE_HOME=[['Contatti','S14',0],['Chiamate','S06',1],['Prenotazioni','S12',0],['Recensioni','S08',0],['Spesa ADV','S03',4]];
 
-export function createClientDashboard({store:s,records}){
+// Preserved for D-05; this legacy projection is not exported or routed.
+function createLegacyClientDashboard({store:s,records}){
  function dashboard(user,clientId){
   requireClient(s,user,clientId);
   const c=s.one('SELECT * FROM os_clients WHERE id=? AND active=1',clientId);if(!c)throw new AppError('Attività non disponibile.',404);
@@ -70,3 +71,5 @@ export function createClientDashboard({store:s,records}){
  }
  return {dashboard,handle};
 }
+
+export {createClientArea as createClientDashboard} from './area.js';

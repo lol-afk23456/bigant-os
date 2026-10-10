@@ -179,3 +179,12 @@ La revisione finale conferma FUN-013 implementata in locale, COL-002 e FUN-012 p
 ### Stop complessivo dei costi — 10 ottobre 2026
 
 Applicare il limite già richiesto dal proprietario anche ai percorsi onerosi predisposti: totale esterno ignoto blocca le nuove spese, conferma del socio per mese, Railway inclusa e importi OS non duplicati, stop prima di raggiungere l’80% del tetto. Nessuna nuova autorizzazione a spendere o attivazione implicita. Conservare gli impegni incerti e quelli precedenti ancora aperti; costo noto contabilizzato una volta. I pannelli dei fornitori non vengono sincronizzati da questa funzione. Dettagli in [SOP-CONTROLLO-COSTI](SOP-CONTROLLO-COSTI.md).
+
+
+### Area cliente — 10 ottobre 2026
+
+Applicate le decisioni già confermate UI-010, FUN-036…044 e COL-004: una sezione alla volta, report dentro i servizi, documenti propri, vecchie sezioni nascoste. Non è una nuova decisione sul menu definitivo né sostituisce il giro con il titolare. Growth rimane interno per l'istruzione T3; il suo acquisto non dimostra un servizio Email marketing e non concede Fidelity.
+
+Il socio in anteprima usa la stessa proiezione del cliente; risultati interni, test GBP non attivati, task e memoria non fanno parte dei report. Le proposte commerciali rimangono nella memoria interna. Nessuna deduplicazione dei contratti per sola data: due scadenze uguali non identificano lo stesso accordo. I contratti precedenti restano intatti.
+
+Copertura prudente: report ancora incompleti, Email marketing senza identità autonoma, collegamento alla fonte Fidelity mancante. [Prove e stati](COLLAUDO-VISTA-CLIENTE.md). Nessuna attivazione esterna o spesa.

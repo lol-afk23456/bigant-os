@@ -111,8 +111,9 @@ export async function eseguiScenario({motore='demo',database=':memory:',log=()=>
   await passo(13,'Il Direttore Crescita propone un upsell',async()=>{
    const r=await app.sciame.flussi.upsell(giro,{clientId:ctx.clientId});
    if(!r.approvato)throw new Error(`Upsell non approvato (${r.passo?.stato}): ${r.passo?.errore||r.passo?.esito_qualita||''}`);
-   const vista=await http('/api/overview?clientId='+ctx.clientId,{sessione:ctx.sessioneCliente});if(!vista.memory.some(m=>m.kind==='servizi-consigliati'))throw new Error('Servizi consigliati non visibili al cliente.');
-   return `${r.output.priorita.map(p=>p.titolo).join(' · ')} — visibili al cliente come servizi consigliati`;
+   const interna=await http('/api/overview?clientId='+ctx.clientId,{sessione:ctx.sessioneSocio});if(!interna.memory.some(m=>m.kind==='servizi-consigliati'))throw new Error('Proposta interna non registrata per i soci.');
+   const vista=await http('/api/overview?clientId='+ctx.clientId,{sessione:ctx.sessioneCliente});if(vista.memory.length)throw new Error('Memoria interna esposta al cliente.');
+   return `${r.output.priorita.map(p=>p.titolo).join(' · ')} — servizi consigliati conservati per i soci, nascosti al cliente`;
   });
  }finally{
   const g=app.sciame.chiudiGiro(giro.id);ctx.giro=g;

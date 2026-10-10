@@ -34,9 +34,9 @@ test('isola economia, agenti e CRM dal cliente e dal collaboratore, indipendente
 test('servizi non acquistati non compaiono né nella panoramica né nelle API dirette',async t=>{
  const a=await setup(t),u=await a.profile('demo-client');
  a.store.run("UPDATE os_clients SET services_json='[]' WHERE id='demo-bottega'");
- for(const path of ['/api/overview','/api/production/state']){const r=await a.request(path+'?clientId=demo-bottega',{user:u});assert.equal(r.status,200);assert.equal(r.body.contents.length,0);}
+ const r=await a.request('/api/overview?clientId=demo-bottega',{user:u});assert.equal(r.status,200);assert.equal(r.body.contents.length,0);assert.equal((await a.request('/api/production/state?clientId=demo-bottega',{user:u})).status,403);
  assert.equal((await a.request('/api/approvals/approval-demo?clientId=demo-bottega',{user:u,method:'POST',body:{decision:'approved'}})).status,403);
- assert.equal((await a.request('/api/production/ask?clientId=demo-bottega',{user:u,method:'POST',body:{question:'Come va?'}})).body.answer.includes('0 contenuti'),true);
+ assert.equal((await a.request('/api/production/ask?clientId=demo-bottega',{user:u,method:'POST',body:{question:'Come va?'}})).status,403);
 });
 test('approvazione, feedback, revisione obsoleta e pianificazione interna senza pubblicare',async t=>{
  const a=await setup(t),u=await a.profile('demo-owner'),client=await a.profile('demo-collaborator');

@@ -67,7 +67,7 @@ test('Review HTTP: contenuti e approvazioni di un servizio rimosso non compaiono
   app.store.run("UPDATE os_clients SET services_json='[\"fidelity\"]' WHERE id='demo-bottega'");
   const overview = await request('GET', '/api/overview');
   assert.equal(overview.status, 200); assert.equal(overview.data.contents.length, 0); assert.equal(overview.data.approvals.length, 0);
-  const state = await request('GET', '/api/production/state'); assert.equal(state.data.contents.length, 0);
+  const state = await request('GET', '/api/production/state'); assert.equal(state.status, 403);
   assert.equal((await request('POST', '/api/approvals/approval-demo', { decision: 'approved' })).status, 403);
 });
 

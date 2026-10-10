@@ -90,7 +90,7 @@ test('contratti: avviso a 30 giorni inclusi, PDF del proprio cliente e nessun do
   assert.equal((await f.request('/api/client-record/state?clientId=demo-bottega', f.client)).status, 403);
   assert.ok(!('contracts' in (await f.request('/api/client-record/state?clientId=demo-bottega', f.team)).body));
   const docs = (await f.request('/api/cliente/dashboard?clientId=demo-bottega', f.client)).body.sezioni.find(section => section.id === 'documenti');
-  assert.equal(docs.contratti.length, 4); assert.deepEqual(docs.fatture, []); assert.ok(!JSON.stringify(docs).includes('amount_cents'));
+  assert.equal(docs.contratti.length, 4); assert.ok(!Object.hasOwn(docs, 'fatture')); assert.ok(!JSON.stringify(docs).includes('amount_cents'));
   const contract = { title: 'Contratto bisestile di prova', startDate: '2028-02-29', endDate: '2028-03-01', renewal: 'Da concordare', pdfBase64: pdf };
   const countBefore = f.store.one('SELECT count(*) n FROM os_client_contract_docs').n;
   for (const startDate of ['2027-02-29', '2028-02-30', '2028-13-01']) {
@@ -99,6 +99,31 @@ test('contratti: avviso a 30 giorni inclusi, PDF del proprio cliente e nessun do
   }
   assert.equal(f.store.one('SELECT count(*) n FROM os_client_contract_docs').n, countBefore);
   assert.equal((await f.request('/api/client-record/contracts?clientId=demo-bottega', f.owner, 'POST', contract)).status, 201);
+});
+
+test('contratti diversi con la stessa scadenza restano entrambi nei documenti e negli avvisi', async t => {
+  const f = await fixture(t);
+  f.store.run("UPDATE os_fin_contracts SET status='inactive'");
+  f.store.run("UPDATE os_fin_contracts SET status='active',start_date='2026-10-01',end_date='2026-10-20' WHERE id='demo-fin-contract'");
+  const before = f.store.one("SELECT * FROM os_fin_contracts WHERE id='demo-fin-contract'");
+  const created = await f.request('/api/client-record/contracts?clientId=demo-bottega', f.owner, 'POST', {
+    title: 'Contratto sito distinto DEMO', startDate: '2026-10-01', endDate: '2026-10-20', renewal: 'Contratto indipendente inventato'
+  });
+  assert.equal(created.status, 201);
+  const expected = ['demo-fin-contract', created.body.id].sort();
+  for (const user of [f.owner, f.client]) {
+    const contracts = await f.request('/api/client-record/contracts?clientId=demo-bottega', user);
+    assert.equal(contracts.status, 200);
+    assert.deepEqual(contracts.body.items.map(row => row.id).sort(), expected);
+    assert.ok(!JSON.stringify(contracts.body).includes('amount_cents'));
+    const dashboard = await f.request('/api/cliente/dashboard?clientId=demo-bottega', user);
+    assert.deepEqual(dashboard.body.sezioni.find(row => row.id === 'documenti').contratti.map(row => row.id).sort(), expected);
+  }
+  const alerts = (await f.request('/api/workspace/contracts', f.owner)).body.items;
+  assert.deepEqual(alerts.filter(row => row.client_id === 'demo-bottega').map(row => row.id).sort(), expected);
+  const home = (await f.request('/api/workspace/home', f.owner)).body;
+  assert.deepEqual(home.expiringContracts.filter(row => row.client_id === 'demo-bottega').map(row => row.id).sort(), expected);
+  assert.deepEqual(f.store.one("SELECT * FROM os_fin_contracts WHERE id='demo-fin-contract'"), before, 'La nuova documentazione non modifica il contratto esistente');
 });
 
 test('credenziali cifrate e aperte solo dal team assegnato, audit senza segreti e contesto autenticato', async t => {

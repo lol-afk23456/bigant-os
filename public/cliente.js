@@ -1,5 +1,5 @@
 'use strict';
-// Dashboard cliente: le 9 voci della specifica, pensate prima per il telefono.
+// Vista precedente conservata; l'area corrente a sezioni è definita in fondo.
 // Ogni numero mostra la fonte; le misure assenti non vengono presentate come zero.
 const TONI_STATO={OPERATIVO:'green',DEMO:'orange','COLLEGAMENTO MANCANTE':'red','NON ATTIVO':'',Pronto:'green','Pronto per la verifica':'green','Al lavoro':'orange','Controllo qualità':'orange','In coda':'orange','In revisione interna':''};
 const statoBadge=st=>`<span class="badge ${TONI_STATO[st]??''}">${e(st==='SOLO STRUTTURA'?'Dato non disponibile':st)}</span>`;
@@ -24,7 +24,7 @@ function sezioneCliente(x){
  if(x.id==='profilo')return `<div class="grid-two">${panel('La tua attività',`<dl class="out-obj"><div><dt>Nome</dt><dd>${e(x.azienda.nome)}</dd></div><div><dt>Settore</dt><dd>${e(x.azienda.settore||'—')}</dd></div><div><dt>Indirizzo</dt><dd>${e(x.azienda.indirizzo||'[DA VERIFICARE]')}</dd></div></dl>`)}${panel('Chi ha accesso',`<ul class="out-list">${x.utenti.map(u=>`<li>${e(u.name)} · ${e(u.role==='client'?'Titolare':u.role)}</li>`).join('')}</ul>`)}</div>${panel('Collegamenti alle tue fonti dati',`<div class="kpi-list">${x.fonti.map(f=>`<div class="kpi-row"><div><b>${e(f.nome)}</b><small>${e(f.nota)}</small></div><div class="kpi-val">${statoBadge(f.stato)}</div></div>`).join('')||'<p class="muted">Nessuna fonte necessaria per i servizi attivi.</p>'}</div>`)}${notice(x.notifiche.nota)}`;
  return '';
 }
-function clienteDashboardView(){
+function legacyClienteDashboardView(){
  const d=S.module||{},sezioni=d.sezioni||[],iniz=String(d.clientName||'').split(/\s+/).slice(0,2).map(x=>x[0]||'').join('');
  return (isOwner()?notice('Stai guardando la dashboard del cliente in sola lettura.'):'')+`<header class="page-head client-head"><div class="client-brand"><span class="client-logo" aria-hidden="true">${e(iniz)}</span><div><div class="eyebrow">La tua area clienti · BigAnt</div><h1>${e(d.clientName||'La tua attività')}</h1><p>Come sta andando, cosa stiamo facendo e cosa aspetta la tua decisione.</p></div></div></header>
  ${d.demo?notice('Dati DEMO di prova. Le piattaforme esterne (Google, Meta, sito) non sono ancora collegate: dove manca una fonte lo scriviamo, senza numeri inventati.',true):''}
@@ -38,3 +38,53 @@ setInterval(async()=>{
  const home=(S.module?.sezioni||[]).find(x=>x.id==='home');if(!home?.squadra?.some(q=>q.attivo))return;
  S.refreshing=true;try{const y=scrollY;S.module=await api('/api/cliente/dashboard');render();scrollTo(0,y);}catch{}finally{S.refreshing=false;}
 },5000);
+
+function clientAreaHeader(){
+ const d=S.module||{};
+ return (isOwner()?notice('Stai guardando la dashboard del cliente in sola lettura.'):'')+title(d.clientName||'La tua attività','I tuoi servizi e documenti, un passo alla volta.')+(d.demo?notice('Dati DEMO inventati. Le fonti mancanti sono indicate nei singoli servizi.'):'');
+}
+function clientServicesView(){
+ const d=S.module||{},rows=d.sezioni?.find(x=>x.id==='servizi')?.attivi||[];
+ if(d.clientId!==S.clientId)return empty('Servizi non disponibili','Aggiorna la pagina per leggere l’attività selezionata.');
+ return clientAreaHeader()+`<div class="section-back">${btn('Indietro','goto','client','ghost','arrow')}<span>I tuoi servizi</span></div>`+(rows.length?sectionCards(rows.map(row=>({name:row.nome,value:'Apri il report',route:'client:service/'+row.id,icon:row.id==='fidelity'?'card':'chart'}))):empty('Nessun servizio attivo','L’agenzia completerà qui i servizi concordati per la tua attività.','grid'));
+}
+function clientSource(row){
+ let url=null;try{const u=new URL(row.url);if(u.protocol==='https:'&&!u.username&&!u.password)url=u.href;}catch{}
+ return `<small>Fonte: ${e(row.fonte)} · ${row.aggiornato?`Aggiornato ${e(date(row.aggiornato,true))}`:'Aggiornamento non disponibile'}${url?` · <a href="${e(url)}" target="_blank" rel="noopener noreferrer">Apri la fonte</a>`:''}</small>`;
+}
+function clientMetricRows(rows){return `<div class="kpi-list">${rows.map(row=>`<div class="kpi-row"><div><b>${e(row.nome)}</b>${clientSource(row)}${row.nota?`<small>${e(row.nota)}</small>`:''}</div><div class="kpi-val">${row.valore===null||row.valore===undefined?'<span class="muted">—</span>':e(row.valore)}${badge(row.stato)}</div></div>`).join('')}</div>`;}
+let clientReportExpiryTimer=null;
+function clientGoogleReport(g){
+ const source={fonte:g.source,aggiornato:g.fetchedAt,url:g.sourceUrl};
+ const summary=[['Recensioni totali',g.reviews?.totalReviewCount],['Voto medio',g.reviews?.averageRating]].map(([nome,valore])=>({...source,nome,valore:valore??null,stato:valore===undefined?'Dato non disponibile':'Registrato'}));
+ const series=(g.performance?.multiDailyMetricTimeSeries||[]).flatMap(row=>row.dailyMetricTimeSeries||[]);
+ const names={WEBSITE_CLICKS:'Clic al sito',CALL_CLICKS:'Clic sul pulsante chiama',BUSINESS_DIRECTION_REQUESTS:'Richieste di indicazioni'};
+ const daily=Object.entries(names).map(([key,nome])=>{
+  const points=series.find(row=>row.dailyMetric===key)?.timeSeries?.datedValues||[];
+  return panel(nome,clientSource(source)+(points.length?table(['Giorno','Valore'],points.map(row=>[e(`${row.date.day}/${row.date.month}/${row.date.year}`),e(row.value)])):empty('Dati non disponibili','Google non ha restituito valori per questo indicatore.')));
+ }).join('');
+ const reviews=g.reviews?.reviews||[];
+ return panel('Google Business Profile',clientMetricRows(summary)+`<p>Periodo delle misure giornaliere: ${e(date(g.from))} – ${e(date(g.to))}. I giorni assenti non valgono zero.</p>`)+daily+panel('Recensioni',clientSource(source)+`<p>Ultime ${reviews.length} recensioni disponibili in questa lettura, fino a 50. L’elenco può essere parziale.</p>`+(reviews.length?reviews.map(row=>`<article class="list-item"><div class="body"><b>${e(row.reviewer?.displayName||'Utente Google')}</b><small>${e(({ONE:'1',TWO:'2',THREE:'3',FOUR:'4',FIVE:'5'})[row.starRating]||'Voto non disponibile')} / 5 · ${e(date(row.updateTime||row.createTime,true))}</small><p class="preserve">${e(row.comment||'Nessun testo')}</p>${row.reviewReply?`<small>Risposta della tua attività</small><p class="preserve">${e(row.reviewReply.comment||'')}</p>`:''}</div></article>`).join(''):empty('Nessuna recensione nella lettura','')));
+}
+function clientServiceReportView(){
+ const d=S.module||{},back=`<div class="section-back">${btn('Indietro','goto','client:servizi','ghost','arrow')}<span>I tuoi servizi</span></div>`;
+ if(d.clientId!==S.clientId||!d.service)return clientAreaHeader()+back+empty('Report non disponibile','Torna ai servizi e riprova.');
+ clearTimeout(clientReportExpiryTimer);clientReportExpiryTimer=null;
+ const google=d.google&&Date.parse(d.google.expiresAt)>Date.now()?d.google:null;
+ if(google){const snapshot=viewSnapshot();clientReportExpiryTimer=setTimeout(()=>{if(isCurrentView(snapshot)&&S.module===d){render();load();}},Math.max(1,Date.parse(google.expiresAt)-Date.now()+1));}
+ const reports=d.reports||[];
+ return clientAreaHeader()+back+`<h2>${e(d.service.nome)}</h2>`+notice(d.note)+(google?clientGoogleReport(google):'')+reports.map(row=>panel(row.nome,row.metriche.length?clientMetricRows(row.metriche):empty('Report non ancora disponibile','Le misure verranno mostrate qui con fonte e data.'))).join('');
+}
+function clienteDashboardView(){
+ const d=S.module||{};
+ if((S.section||'').startsWith('service/'))return clientServiceReportView();
+ if(S.section==='servizi')return clientServicesView();
+ if(d.clientId!==S.clientId)return clientAreaHeader()+empty('Attività non disponibile','Aggiorna la pagina.');
+ if(S.section==='documenti')return clientAreaHeader()+`<div class="section-back">${btn('Indietro','goto','client','ghost','arrow')}<span>Documenti</span></div>`+panel('I tuoi contratti',contractLinks(d.sezioni?.find(x=>x.id==='documenti')?.contratti||[]))+notice('Qui trovi soltanto i contratti della tua attività. Fatture e pagamenti sono gestiti separatamente dall’agenzia.');
+ if(S.section&&!['home','sections'].includes(S.section))return clientAreaHeader()+btn('Torna alla home','goto','client','','arrow')+empty('Sezione non disponibile','I report si trovano nei servizi attivi.');
+ const home=d.sezioni?.find(x=>x.id==='home')||{};
+ return clientAreaHeader()+workspaceHero('Il tuo spazio.<br>Tutto più chiaro.','Apri un servizio per leggere i suoi dati, oppure consulta i documenti della tua attività.')+sectionCards([
+  {name:'I tuoi servizi',value:home.servicesCount||0,note:'Report e fonti, servizio per servizio',route:'client:servizi',icon:'chart'},
+  {name:'Documenti',value:home.contractsCount||0,note:'I contratti della tua attività',route:'client:documenti',icon:'file'}
+ ]);
+}

@@ -13,7 +13,8 @@
         "Aggiunti Servizi, dettaglio servizio, Listino e Collegamenti; restano Fatturazione e prodotti.",
         "Fidelity riordinata in sette sezioni con Indietro; vecchio codice conservato.",
         "Fatturazione riordinata in quattro card e Costi in tre sottosezioni. Growth resta da riordinare.",
-        "Growth ora a sette sezioni, coda unica, ricerca e analisi DEMO verificate nel Browser; 390 px senza overflow."
+        "Growth ora a sette sezioni, coda unica, ricerca e analisi DEMO verificate nel Browser; 390 px senza overflow.",
+        "Area cliente ora a card e sezioni separate, verificata su desktop e 390 px. Restano giro completo dei ruoli e altre pagine da verificare."
       ]
     },
     {
@@ -515,8 +516,11 @@
       "area": "Vista cliente",
       "modifica": "Applicare PRINC-01: home del cliente a card, ogni sezione si apre da sola",
       "criterio": "Nessuna pagina del cliente mostra più di una sezione completa alla volta",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Home cliente a due card; servizi, singolo report e documenti separati con Indietro. Browser desktop e 390 px, tests/client-area-ui.test.js.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+      ]
     },
     {
       "id": "FUN-035",
@@ -533,41 +537,55 @@
       "area": "Report (presenza, scheda Google, clic al sito, report mensili…)",
       "modifica": "**I report stanno dentro il servizio attivo a cui si riferiscono**, sia nella scheda cliente dell'amministrazione sia in \"I tuoi servizi\" del cliente. Esempi [R]: Sito e SEO → report; **Reputazione e recensioni** → report più elenco delle recensioni; **Email marketing** → report più gestione delle email; **Meta Ads** → report; **Google Ads** → report (**molto importante**). Si toglie \"Report mensili\" come sezione separata. Le sezioni della versione cliente **Sito e SEO, Pubblicità, Social e contenuti** si tengono, ma con **molta pulizia** [R]: dentro i rispettivi servizi, solo dati utili e comprensibili",
       "criterio": "Ogni report si raggiunge solo dal servizio corrispondente; nessuna sezione \"report\" generica",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Report raggiungibili nei servizi, stessi dati per socio in anteprima e cliente; report mensile separato rimosso. GBP attivo e conteggi Fidelity disponibili; altre fonti, report Ads completi e Email marketing restano aperti.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+      ]
     },
     {
       "id": "COL-004",
       "area": "Approvazioni e calendario, Storico delle decisioni",
       "modifica": "**Mettere da parte** queste sezioni. In futuro **collegare il PED** (prima in sola lettura) per mostrare piano e approvazioni in BigAnt OS. Il PED originale non si tocca senza autorizzazione",
       "criterio": "Decisione futura; nel frattempo le sezioni non compaiono",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Approvazioni, calendario e storico cliente nascosti; produzione e decisioni negate anche via API precedenti. PED originale intatto; collegamento futuro ancora assente.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+      ]
     },
     {
       "id": "FUN-037",
       "area": "\"I tuoi servizi\"",
       "modifica": "**Tenere** su entrambi i lati, come contenitore dei report (FUN-036)",
       "criterio": "Lo stesso elenco di servizi attivi compare nei due lati",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Stessi ID di servizi acquistati in scheda, home e anteprima cliente. Growth escluso dalla vista cliente per la decisione già confermata T3; non equivale a Email marketing.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+      ]
     },
     {
       "id": "FUN-038",
       "area": "\"Servizi consigliati per te\"",
       "modifica": "Togliere",
       "criterio": "La sezione non compare",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Servizi consigliati nascosti anche dalla risposta overview; proposta upsell conservata per il team. Scenario a 13 passi aggiornato e verificato.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+      ]
     },
     {
       "id": "FUN-039",
       "area": "\"Documenti e amministrazione\"",
       "modifica": "Card **Documenti** su entrambi i lati, ciascuno limitato al proprio cliente. **Dipendenza:** finché il registro ufficiale dei pagamenti è Trello (D-09), in BigAnt OS i pagamenti non ci sono; vedi D-10",
       "criterio": "Il cliente vede solo i propri documenti, verificato sul server",
-      "stato": "parziale in locale",
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Documenti propri e anteprima equivalente, PDF isolato e nessun importo/fattura. Corretta deduplicazione impropria per sola scadenza, anche negli avvisi.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
       ]
     },
     {
@@ -575,40 +593,55 @@
       "area": "\"Contatti e clienti\"",
       "modifica": "Spostare nel servizio Email marketing, visibile solo a chi lo ha attivo",
       "criterio": "La sezione compare solo dentro Email marketing",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Vecchio CRM generico e associazione impropria Email/Growth/Fidelity rimossi dalla vista cliente. Servizio Email marketing autonomo e gestione contatti da implementare.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+      ]
     },
     {
       "id": "FUN-041",
       "area": "\"Iscritti Fidelity\" e moduli futuri",
       "modifica": "Regola generale: **ogni sezione legata a un servizio compare solo se il servizio è attivo** per quel cliente. Nel menu del cliente la regola esiste già per Fidelity [C: `allowedNav()`]; nella dashboard cliente è [DV]",
       "criterio": "Un cliente senza Fidelity non vede la sezione né riceve i dati dal server",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Fidelity richiede acquisto corrente; senza servizio niente voce, conteggi o API. Growth non abilita Fidelity. Revoche e tenant provati sul server locale.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+      ]
     },
     {
       "id": "FUN-042",
       "area": "\"Chiedi all'agenzia\"",
       "modifica": "Togliere",
       "criterio": "La sezione non compare",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Chiedi all’agenzia nascosto; vecchio POST ask negato al cliente senza creare task.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+      ]
     },
     {
       "id": "FUN-043",
       "area": "\"Il tuo profilo / La tua attività\"",
       "modifica": "Togliere",
       "criterio": "La sezione non compare",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Sezione profilo personale rimossa; vecchio indirizzo non la riapre. Il titolo della home La tua attività resta il nome del contenitore, non la vecchia scheda profilo.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+      ]
     },
     {
       "id": "FUN-044",
       "area": "\"Collegamento alla fonte dei dati\"",
       "modifica": "**Tenere solo nella vista cliente**, accanto a ogni report: fonte, data dell'ultimo aggiornamento e collegamento all'originale. Non serve nel lato amministrazione",
       "criterio": "Ogni dato mostrato al cliente ha la sua fonte e la data",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Fonte/data sui dati disponibili, link Google e rimozione immediata dei dati scaduti anche senza rete. Fidelity dichiara archivio e data di lettura ma manca link alla fonte originale; altre fonti da collegare.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+      ]
     },
     {
       "id": "FUN-045",
@@ -945,7 +978,8 @@
       "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
         "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
-        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow",
+        "Anteprima e cliente usano la stessa proiezione; esclusi dati di collaudo GBP non attivi. Prove in COLLAUDO-VISTA-CLIENTE.md."
       ]
     }
   ]

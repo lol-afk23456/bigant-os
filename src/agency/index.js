@@ -45,13 +45,17 @@ export function createAgencyModule({store:s}){
  function dashboard(user,clientId){
   const c=client(user,clientId),active=purchased(c);
   const services=serviceBlueprints.filter(v=>!v.excluded&&active.includes(v.id)).map(v=>({id:v.id,name:v.name,status:v.status}));
+  if(user.role==='client')return {demo:true,clientId:c.id,clientName:c.name,sections:[],services:services.filter(service=>service.id!=='growth')};
   return {demo:true,clientId:c.id,clientName:c.name,sections:clientSections.filter(v=>!v.services.length||v.services.some(id=>active.includes(id))),services};
  }
  function workspace(user,clientId,id){
   const c=client(user,clientId),service=serviceBlueprints.find(v=>v.id===id);
   if(!service)throw new AppError('Spazio del servizio non trovato.',404);
   const active=purchased(c).includes(id);
-  if(user.role!=='owner'&&(!active||service.excluded))throw new AppError('Questo servizio non è disponibile per la tua attività.',403);
+  if(user.role!=='owner'&&(!active||service.excluded||(user.role==='client'&&id==='growth')))throw new AppError('Questo servizio non è disponibile per la tua attività.',403);
+  // Compatibilità con i vecchi indirizzi: i clienti ricevono il nome del
+  // servizio, mentre lavorazioni, bozze e decisioni restano al team.
+  if(user.role==='client')return {demo:true,clientId:c.id,clientName:c.name,active,service:{id:service.id,name:service.name,status:service.status},sections:[],tasks:[],contents:[],approvals:[],integrations:[]};
   const tasks=s.query('SELECT * FROM os_tasks WHERE client_id=? AND service=? ORDER BY due',c.id,id);
   const contents=s.query('SELECT * FROM os_contents WHERE client_id=? AND service=? ORDER BY updated_at DESC',c.id,id);
   const ids=new Set(contents.map(v=>v.id));

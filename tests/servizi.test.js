@@ -45,20 +45,17 @@ test('R-012: KPI per servizio con fonte dichiarata; nessun valore senza fonte e 
  assert.equal(kpiServizio(a.store,'demo-bottega','S18').kpi.find(k=>/accessi/.test(k.kpi)).valore,'1');
 });
 
-test('R-007 R-259: dashboard cliente a 9 sezioni, solo dati propri, nessuna amministrazione interna',async t=>{
+test('R-007 R-259: dashboard cliente riordinata: card, servizi propri e soli contratti',async t=>{
  const a=fixture(t);
  const g=a.sciame.creaGiro(a.owner,{richiesta:'Social e GBP',flussi:['social','local']});await a.sciame.eseguiGiro(g.id);
  const d=a.cliente.dashboard(a.client,'demo-bottega');
- assert.deepEqual(d.sezioni.map(x=>x.id),['home','risultati','approvazioni','servizi','report','documenti','crm','chiedi','profilo']);
- const home=d.sezioni[0];assert.deepEqual(home.numeri.map(n=>n.nome),['Contatti','Chiamate','Prenotazioni','Recensioni','Spesa ADV']);
- assert.equal(home.numeri.find(n=>n.nome==='Spesa ADV').stato,'NON ATTIVO');assert.equal(home.numeri.find(n=>n.nome==='Chiamate').stato,'COLLEGAMENTO MANCANTE');
- assert.ok(home.numeri.every(n=>n.fonte));
- const testo=JSON.stringify(d);for(const vietato of ['os_fin_','anomal','margin','prelievo','Collaboratore Delta','opening_cents'])assert.ok(!testo.includes(vietato),'dato interno esposto: '+vietato);
- const doc=d.sezioni.find(x=>x.id==='documenti');assert.ok(doc.fatture.every(f=>['Pagata','Pagata in parte','Da pagare'].includes(f.stato_pagamento)));
- assert.ok(d.sezioni.find(x=>x.id==='profilo').fonti.every(f=>f.stato==='COLLEGAMENTO MANCANTE'&&['Google Ads','Meta Ads e social','Google Analytics','Search Console','Google Business Profile'].includes(f.nome)));
+ assert.deepEqual(d.sezioni.map(x=>x.id),['home','servizi','documenti']);
+ assert.deepEqual(d.sezioni.find(x=>x.id==='servizi').attivi.map(x=>x.id).sort(),['fidelity','local','social','website']);
+ const testo=JSON.stringify(d);for(const vietato of ['os_fin_','anomal','margin','prelievo','Collaboratore Delta','opening_cents','approvazioni','chiedi','squadra'])assert.ok(!testo.includes(vietato),'dato interno esposto: '+vietato);
+ assert.equal(d.sezioni.find(x=>x.id==='documenti').fatture,undefined);
  assert.throws(()=>a.cliente.dashboard(a.client,'demo-studio'),/accessibile/);
- assert.ok(!a.cliente.dashboard(a.team,'demo-bottega').sezioni.some(x=>x.id==='documenti'),'il collaboratore non vede i documenti amministrativi');
- const studio=a.cliente.dashboard(a.other,'demo-studio');assert.ok(!studio.sezioni.some(x=>x.id==='crm'));assert.equal(studio.sezioni[0].numeri.find(n=>n.nome==='Spesa ADV').stato,'COLLEGAMENTO MANCANTE');
+ assert.throws(()=>a.cliente.dashboard(a.team,'demo-bottega'),e=>e.status===403);
+ const studio=a.cliente.dashboard(a.other,'demo-studio');assert.ok(!studio.servizi.includes('fidelity'));assert.equal(studio.sezioni[0].servicesCount,studio.servizi.length);
  await new Promise(r=>a.server.listen(0,'127.0.0.1',r));const origin='http://127.0.0.1:'+a.server.address().port;
  const login=async p=>{const r=await fetch(origin+'/api/demo/login',{method:'POST',headers:{Origin:origin,'Content-Type':'application/json'},body:JSON.stringify({profile:p})});return r.headers.get('set-cookie').split(';')[0];};
  const c=await login('demo-client');

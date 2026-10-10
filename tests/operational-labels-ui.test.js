@@ -43,10 +43,10 @@ test('Schede servizio: tutti i contratti attuali espongono mancanze senza promuo
  assert.equal(f.requests,0);
 });
 
-test('Scheda cliente: il testo del lavoro disponibile e delle parti mancanti resta visibile',async t=>{
+test('Scheda cliente: il report dichiara le fonti mancanti senza esporre il lavoro interno',async t=>{
  const app=createApp({env:{},worker:false});t.after(()=>app.close());const f=await fixture(),user=app.store.one("SELECT * FROM os_users WHERE role='client' AND active=1 LIMIT 1");
- const service=app.agency.dashboard(user,user.tenant_id).services[0];f.S.module=app.agency.workspace(user,user.tenant_id,service.id);f.S.view='service';
- const html=f.run('serviceWorkspaceView()');assert.doesNotMatch(html,technical);assert.ok(html.includes(f.S.module.service.available));assert.ok(html.includes(f.S.module.service.missing));assert.match(html,/Le sezioni ancora vuote non eseguono automaticamente il servizio/);
+ f.S.module=app.cliente.service(user,user.tenant_id,'social');f.S.view='service';
+ const html=f.run('serviceWorkspaceView()');assert.doesNotMatch(html,technical);assert.match(html,/I valori mancanti restano da collegare/);assert.match(html,/Fonte del servizio da collegare/);assert.doesNotMatch(html,/Specialisti|Task aperti|Istruzioni/);
 });
 
 test('Cliente: KPI assente, zero registrato e dati DEMO mantengono significati e fonti distinti',async()=>{
@@ -54,10 +54,10 @@ test('Cliente: KPI assente, zero registrato e dati DEMO mantengono significati e
  const html=f.run('kpiTabella(rows)');assert.doesNotMatch(html,technical);assert.match(html,/Dato non disponibile/);assert.equal((html.match(/class="muted">—/g)||[]).length,2);assert.match(html,/class="kpi-val">0<span class="badge orange">DEMO/);assert.match(html,/Misura interna non ancora registrata/);assert.match(html,/Fonte esterna non collegata/);assert.doesNotMatch(html,/OPERATIVO|Funziona/);
 });
 
-test('Dashboard effettiva cliente: KPI e Report escludono gergo tecnico, invio e PDF restano assenti',async t=>{
+test('Dashboard effettiva cliente: sezioni compatte senza gergo tecnico o report duplicati',async t=>{
  const app=createApp({env:{},worker:false});t.after(()=>app.close());const f=await fixture(),user=app.store.one("SELECT * FROM os_users WHERE role='client' AND active=1 LIMIT 1");
  const payload=await app.cliente.handle({method:'GET',path:'/dashboard',user,clientId:user.tenant_id});f.S.module=payload.data;f.S.view='client';
- const html=f.run('clienteDashboardView()');assert.doesNotMatch(html,technical);assert.match(html,/Dati DEMO di prova/);assert.match(html,/Invio email programmato non collegato: nessun messaggio parte dal sistema/);assert.match(html,/Esportazione PDF da costruire/);assert.equal(f.requests,0);
+ const html=f.run('clienteDashboardView()');assert.doesNotMatch(html,technical);assert.match(html,/Dati DEMO inventati/);assert.match(html,/Report e fonti, servizio per servizio/);assert.doesNotMatch(html,/Invio email programmato|Esportazione PDF|Report mensili/);assert.equal(f.requests,0);
 });
 
 test('Testi operativi: nomi, note e fonti restano escaped; stato sconosciuto non diventa operativo',async()=>{

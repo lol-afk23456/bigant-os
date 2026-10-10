@@ -59,6 +59,10 @@ FUN-053 ha ora un passaggio di prova singola con dati inventati, istruzioni salv
 
 S01 ora dispone di incarichi AI manuali: autorizzazione separata, anteprima dei dati dell’attività, consenso per singola elaborazione, controlli di qualità e bozze in “Da approvare”. Provenienza e stima visibili anche nell’Ufficio; revoche e modifiche bloccano nuovi salvataggi. **16 nuove prove, suite 703/703**, controllo 5/5 e Browser desktop/mobile, esclusivamente con fornitori finti. [Collaudo](COLLAUDO-AGENTE-SOCIAL.md). Gli altri percorsi e la prima attivazione reale restano aperti. Matrice invariata 60/14/18; FUN-053/FUN-055 parziali, T4 non avviata.
 
+## Riordino corrente — Area cliente e confini dei dati
+
+Home a card, report nel servizio e documenti propri. Le API precedenti non consegnano più bozze, memoria o decisioni interne. Fidelity richiede acquisto corrente; Growth resta interno. Anteprima socio equivalente, contratti distinti con stessa scadenza conservati. **22 nuove prove, suite 725/725**, revisione indipendente, Browser desktop e 390 px. [Collaudo](COLLAUDO-VISTA-CLIENTE.md). Matrice92: **68 locali, 16 parziali, 8 da fare**; report completi, Email marketing e fonti rimangono parziali. Nessun avvio T1–T10, collegamento reale, spesa applicativa o rilascio.
+
 ## Come riprendere
 
 Continuare le 92 voci dal loro stato reale e il riordino incrementale T0. Lettura manuale delle conversazioni predisposta e verificata con fornitori finti; Calendar Growth predisposto e provato localmente con fornitori finti (consenso separato, inviti autorizzati, prenotazione, riconciliazione e annullamento). Restano, fra l'altro, collaudi Gmail e Calendar reali, completamento dei percorsi operativi dello Sciame oltre al social manuale, collaudi dei ruoli e telefono, collegamenti da autorizzare. Apple non è più un requisito di attivazione reale in questa tranche, per la nuova istruzione T6; mantenere conservata e chiaramente non attiva l'eventuale struttura esistente.

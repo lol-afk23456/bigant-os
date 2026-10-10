@@ -15,7 +15,7 @@ test('R-017: scenario dimostrativo a 13 passaggi con un comando, dal lead all’
  assert.match(prova(8),/PUBBLICATO è rifiutato/);
  assert.match(prova(10),/SDI bloccato/);
  assert.match(prova(12),/Incasso diverso dall’importo dovuto: 9,00 €/);
- assert.match(prova(13),/servizi consigliati/);
+ assert.match(prova(13),/servizi consigliati conservati per i soci, nascosti al cliente/);
  assert.equal(r.giro.motore,'demo');assert.ok(r.giro.passi.every(p=>p.motore==='demo'));
  assert.ok(r.giro.azioni_esterne.length>=6&&r.giro.azioni_esterne.every(a=>a.stato==='bloccata'));
  assert.deepEqual(esterni,[]);

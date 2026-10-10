@@ -52,6 +52,7 @@ export function createProduction({store:s}) {
   async function handle({method,path,body={},user,clientId}) {
     user=currentUser(user);
     requireClient(s,user,clientId);
+    if(user.role==='client')throw new AppError('La produzione è riservata al team BigAnt. Consulta i servizi nella tua area clienti.',403);
     const purchased=JSON.parse(s.one('SELECT services_json FROM os_clients WHERE id=?',clientId).services_json);
     const visible=row=>user.role!=='client'||purchased.includes(row.service)||row.service==='account';
     if(method==='GET'&&path==='/state') return {data:{contents:s.query('SELECT * FROM os_contents WHERE client_id=?',clientId).filter(visible),tasks:s.query('SELECT * FROM os_tasks WHERE client_id=?',clientId).filter(visible),states,scheduling:'PROGRAMMATO significa pianificato nel calendario DEMO; nessun canale esterno aggiornato.',externalPublished:false}};

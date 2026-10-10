@@ -277,7 +277,7 @@ function clientRecordsView(){
   if(['contract','documents'].includes(id))return panel('Contratti',contractLinks(d.contracts||[]),btn('Aggiungi contratto','record-contract','','small','plus'))+notice('Qui trovi i contratti. Per fatture e pagamenti il registro ufficiale resta Trello.');
   if(id==='credentials')return (!d.vaultReady?notice('Archivio protetto da configurare sul server. Potrai salvare gli accessi dopo la configurazione.'):notice('Le credenziali restano nascoste. Ogni apertura viene registrata.'))+panel('Accessi del cliente',list(d.credentials||[],item=>`<div class="list-item"><div class="body"><b>${e(item.label)}</b><small>Aggiornato ${date(item.updated_at,true)}</small></div>${btn('Apri credenziali','record-reveal',item.id,'small','eye')}</div>`),d.vaultReady?btn('Nuovo accesso','record-credential','','small','plus'):'');
   if(id==='brief')return `<div class="card-grid">${[['master','Brief'],['dna','Tono di voce'],['strategy','Strategia'],['feedback','Note e feedback']].map(([kind,name])=>{const row=(d.memory||[]).find(item=>item.kind===kind);return `<article class="module-card"><h3>${name}</h3><small>${row?`Versione ${row.version} · ${date(row.updated_at,true)}`:'Da compilare'}</small><div class="preserve section">${e(row?.content||'')}</div><footer>${btn('Modifica','record-memory',kind,'small')}</footer></article>`;}).join('')}</div>`;
-  if(id==='services')return `<div class="card-grid">${(d.services||[]).map(service=>`<article class="module-card"><h3>${e(serviceName(service))}</h3>${badge('Attivo per il cliente','green')}<p>Report del servizio: da completare con fonti verificate.</p></article>`).join('')||empty('Nessun servizio attivo','Un socio può aggiungere i servizi dalla lista clienti.')}</div>`;
+  if(id==='services')return `<div class="card-grid">${(d.services||[]).map(service=>`<article class="module-card"><h3>${e(serviceName(service))}</h3>${badge('Attivo per il cliente','green')}<p>Report e fonti di questa attività.</p>${isOwner()&&service!=='growth'?btn('Apri il report','goto','client:service/'+service,'small','chart'):''}</article>`).join('')||empty('Nessun servizio attivo','Un socio può aggiungere i servizi dalla lista clienti.')}</div>`;
   if(id==='onboarding')return panel('Avvio cliente',`<div class="pill-row">${badge(d.onboarding.completed?'Completato':'Da completare')}</div><p class="preserve">${e(d.onboarding.notes||'Annota dati mancanti, prossimo passo e responsabile.')}</p><ul class="plain-list"><li>Scheda informativa: ${(d.memory||[]).some(row=>row.kind==='master')?'presente':'da compilare'}</li><li>Servizi assegnati: ${d.services.length}</li><li>Accessi registrati: ${d.credentials.length}</li></ul>`,isOwner()?btn('Aggiorna avvio','record-onboarding','','small'):'');
   return panel('Risultati',empty('Fonti da collegare','Non ci sono ancora metriche verificate per questa attività.','chart'));
  });
@@ -331,7 +331,7 @@ function priceListTable(rows){
  return table(['Prodotto o servizio','Prezzo','Unità','Data','Note'],rows.map(row=>[e(row.name),money(row.price_cents),e(row.unit),date(row.effective_date),e(row.notes)]));
 }
 function servicePlanView(){
- if(!isOwner())return catalogView();
+ if(!isOwner())return clientServicesView();
  const d=S.module||{},rows=d.items||[],prices=d.prices||[],filter=S.filter.toLocaleLowerCase('it');
  const current=rows.find(row=>S.section===`service/${row.id}`||S.section.startsWith(`service/${row.id}/`));
  if(current){
