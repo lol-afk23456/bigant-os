@@ -5,11 +5,12 @@ import {readFileSync} from 'node:fs';
 import {randomUUID} from 'node:crypto';
 
 async function fixture(){
- const node={innerHTML:'',open:false,addEventListener(){},close(){this.open=false;},showModal(){this.open=true;}};
- const context=vm.createContext({URL,Date,Intl,crypto:{randomUUID},setInterval:()=>0,setTimeout:()=>0,clearTimeout(){},window:{},history:{replaceState(){}},location:{origin:'http://127.0.0.1',pathname:'/',hash:'',search:''},document:{querySelector:()=>node,addEventListener(){}},fetch:async()=>({ok:true,headers:{get:()=> 'application/json'},json:async()=>({user:null,demo:true,profiles:[]})})});
+ const handlers={},routes=[];
+ const node={innerHTML:'',open:false,focus(){},addEventListener(){},close(){this.open=false;},showModal(){this.open=true;}};
+ const context=vm.createContext({URL,Date,Intl,crypto:{randomUUID},setInterval:()=>0,setTimeout:()=>0,clearTimeout(){},window:{},history:{replaceState(a,b,route){routes.push(route);}},location:{origin:'http://127.0.0.1',pathname:'/',hash:'',search:''},document:{querySelector:()=>node,addEventListener(name,callback){(handlers[name]||=[]).push(callback);}},fetch:async()=>({ok:true,headers:{get:()=> 'application/json'},json:async()=>({user:null,demo:true,profiles:[]})})});
  for(const file of ['app.js','cliente.js','workspace.js'])vm.runInContext(readFileSync(new URL('../public/'+file,import.meta.url),'utf8'),context,{filename:file});await new Promise(setImmediate);
  const run=code=>vm.runInContext(code,context),S=run('S');S.session={user:{id:'owner',role:'owner',name:'Socio inventato'}};S.clientId='client-a';S.overview={clients:[{id:'client-a',name:'Attività inventata'}],currentClient:{terms_text:'REGOLAMENTO_PROVA',privacy_url:'https://example.com/privacy'},registry:{services:[]}};
- return {S,run};
+ return {S,run,handlers,routes};
 }
 
 function serviceData(){return {clientId:'client-a',clientName:'Attività inventata',active:true,service:{id:'social',name:'Social media',status:'implemented',inputs:['METODO_RISERVATO'],outputs:['Consegna'],agentNames:['SPECIALISTA_UNICO'],deliverables:'CONSEGNA_TEAM'},sections:[{name:'Prima parte',missing:'DETTAGLIO_PARTE_UNO'},{name:'Seconda parte',missing:'DETTAGLIO_PARTE_DUE'}],tasks:[{id:'task-a',title:'Lavoro A',source:'FONTE_LAVORO_A',status:'todo',actual_minutes:12}],contents:[{id:'content-a',title:'Contenuto A',body:'TESTO_CONTENUTO_A <script>',state:'IN PRODUZIONE',source:'FONTE_CONTENUTO_A',version:2},{id:'content-b',title:'Contenuto B',body:'TESTO_CONTENUTO_B',state:'APPROVATO',version:1}],approvals:[{id:'approval-a',title:'DECISIONE_UNICA',status:'pending'}],integrations:[{name:'FONTE_ESTERNA_UNICA',status:'Non collegato'}]};}
@@ -37,6 +38,14 @@ test('pagina servizio: percorsi annidati, sconosciuti e precedenti non riaprono 
  f.run("setViewRoute('work')");assert.equal(f.S.view,'home');assert.equal(f.S.serviceId,'');
  f.S.clientId='another-client';f.run("setViewRoute('service:social/contents/content-a?clientId=client-a')");assert.equal(f.S.clientId,'client-a');assert.equal(f.S.serviceId,'social');assert.equal(f.S.section,'social/contents/content-a');assert.match(f.run('serviceWorkspaceView()'),/TESTO_CONTENUTO_A/);
  f.run("setViewRoute('service:social/contents/content-a?clientId=another-client')");assert.doesNotMatch(f.run('serviceWorkspaceView()'),/TESTO_CONTENUTO_A/);
+});
+
+test('pagina servizio: cambiare attività dal selettore chiude il vecchio dettaglio e aggiorna il percorso',async()=>{
+ const f=await fixture();f.S.module=serviceData();f.run("setViewRoute('service:social/contents/content-a?clientId=client-a');load=async()=>{};");
+ for(const handler of f.handlers.change)await handler({target:{id:'client-picker',value:'client-b'}});
+ assert.equal(f.S.clientId,'client-b');assert.equal(f.S.section,'social');assert.equal(f.routes.at(-1),'#service:social?clientId=client-b');
+ assert.doesNotMatch(f.run('serviceWorkspaceView()'),/TESTO_CONTENUTO_A/);
+ f.S.clientId='client-a';f.run(`setViewRoute('${f.routes.at(-1).slice(1)}')`);assert.equal(f.S.clientId,'client-b');
 });
 
 test('scheda informativa: indice senza testi completi, una nota alla volta e modifica limitata a quella aperta',async()=>{
