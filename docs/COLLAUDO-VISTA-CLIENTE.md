@@ -66,3 +66,5 @@ Browser locale con dati inventati: servizio Social → schede Facebook/Instagram
 Questo completa il riordino locale dei report nei servizi; non dimostra l’intero PRINC-01 per tutte le schermate/ruoli reali e non completa le fonti ancora scollegate.
 
 Verifica finale di questo blocco: **851/851**, zero saltate. Controllo progetto **5/5**: 177 JavaScript, 103 documenti, 246 link.
+
+Rilascio verificato alle20:20: `71aeb3d`, Railway SUCCESS; prova socio online sul report Fidelity del cliente separato, dettaglio e ritorno alla card, fonte/data conservate e nessun errore console. File frontend verificati per hash; nessuna fonte esterna attivata.
