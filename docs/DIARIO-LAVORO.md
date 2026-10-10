@@ -337,3 +337,5 @@ Rilascio dello stesso blocco completato: `a752be3`, Railway SUCCESS, backup 17:0
 ## 10 ottobre — Sottopagine ordinate
 
 Scheda informativa, impostazioni Fidelity e anagrafiche/incassi di Fatturazione riusano il componente di navigazione: indice compatto, una sezione completa, ritorno al proprio indice. Nessun cambiamento di dati o permessi server. Tre nuove prove, suite **772/772**, browser mobile e salvataggio della nota verificati. [Dettaglio e limiti](COLLAUDO-NAVIGAZIONE-RUOLI.md). Matrice92 invariata; l’intero obiettivo resta aperto.
+
+Controllo progetto 5/5 (162 JavaScript, 95 documenti, 221 link). Rilascio `aef13b3` SUCCESS dopo backup 17:09; verifica pubblica 17:11, file identico e tre API 401. Nessun dato reale o collegamento inserito. Anteprima fermata, tab chiusa e dimensioni browser ripristinate.
