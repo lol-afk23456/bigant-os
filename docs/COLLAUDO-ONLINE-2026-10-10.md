@@ -2,6 +2,14 @@
 
 Sessione socio di BigAnt OS sul server Railway. Login e cambio password completati; nessuna credenziale copiata nei file. Le prove seguenti riguardano la sessione socio, non certificano ancora cliente, collaboratore o dispositivi fisici.
 
+## Cliente separato e preparazione degli accessi
+
+Creata sul server l’attività «BigAnt (cliente di prova)», settore «COLLAUDO · dati inventati», con Social media e Fidelity. La scheda ha due servizi e nessun documento. L’anteprima cliente mostra soltanto i due servizi propri. In Fidelity il cliente di prova ha zero iscritti; passando all’agenzia si vede l’unico iscritto inventato del collaudo precedente e tornando al cliente di prova il conteggio resta zero. È una verifica dalla sessione socio, non il collaudo dell’isolamento con un’autenticazione cliente.
+
+Il proprietario ha fornito in chat gli indirizzi nominali. Preparati due moduli non ancora salvati: cliente associato alla sola attività di prova; Vincenzo collaboratore assegnato soltanto alla medesima attività. Campi password lasciati vuoti; il titolare deve inserire e confermare le nuove credenziali direttamente nel browser. Nessuna email inviata, nessuna password copiata, nessun accesso aggiunto da questi moduli. Immagine dei soli permessi, senza indirizzi: `riordino-browser/accesso-vincenzo-pronto.png` nella cache ignorata.
+
+DAT-001 passa a parziale; FUN-001 resta da fare fino al salvataggio, al cambio password obbligatorio e alla verifica dei tre accessi distinti. Nessuna modifica al codice applicativo: le 791 prove già superate non sono state ripetute.
+
 ## Fidelity sul server
 
 Creati un programma `COLLAUDO BigAnt · 10 ottobre` e un solo iscritto esplicitamente inventato, con dominio `.example` e senza consenso marketing. Nessun messaggio, Wallet o premio commerciale emesso.

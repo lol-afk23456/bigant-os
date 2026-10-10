@@ -55,15 +55,19 @@
       "modifica": "Creare da *Accessi*: utente collaboratore (Vincenzo) e utente cliente collegato al cliente di prova \"BigAnt\" (vedi DAT-001). Account nominali, password scelte dai titolari, mai scritte in chat o nei documenti",
       "criterio": "Tre accessi distinti entrano e ciascuno vede solo il proprio spazio",
       "stato": "da fare",
-      "prove": []
+      "prove": [
+        "10 ottobre, COLLAUDO-ONLINE-2026-10-10.md: indirizzi ricevuti e due moduli preparati, non salvati; cliente sulla sola attività di prova e collaboratore assegnato alla stessa. Password e salvataggio richiesti al titolare nel browser. I tre login separati restano da verificare."
+      ]
     },
     {
       "id": "DAT-001",
       "area": "Clienti / Accessi",
       "modifica": "Creare un cliente separato, per esempio \"BigAnt (cliente di prova)\", con servizi attivi propri, e collegarci l'utente cliente",
       "criterio": "Il cliente di prova ha una scheda propria; la vista cliente non mostra dati interni dell'agenzia",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale; scheda creata sul server, accesso cliente da completare",
+      "prove": [
+        "10 ottobre, COLLAUDO-ONLINE-2026-10-10.md: creata BigAnt (cliente di prova), con Social media e Fidelity. Anteprima limitata ai due servizi; zero iscritti Fidelity rispetto all’unico iscritto inventato dell’agenzia. Associazione account e collaudo autenticato cliente ancora aperti."
+      ]
     },
     {
       "id": "FUN-002",
