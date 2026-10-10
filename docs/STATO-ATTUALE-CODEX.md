@@ -3,15 +3,15 @@
 Aggiornato il 10 ottobre 2026. Questo file riassume lo stato; non sostituisce le decisioni del proprietario o la mappatura principale.
 
 - Repository: `~/Documents/BigAnt-OS-Codex`, ramo `bigant-os-notte-1`.
-- **Codice online:** `52a4399`, Railway BigAnt OS / bigant-os-server / production; deployment `9f16e529-2049-44d3-94fa-99f2a8f52f9b` SUCCESS. Documentazione successiva sullo stesso ramo.
-- Backup Railway prima del rilascio: 10 ottobre, 16:01, 796 MB, confermato dal pannello. Copia giornaliera applicativa inclusa; prima esecuzione da verificare. Nessuna pianificazione aggiuntiva Railway impostata.
-- Ultime prove del codice: **739/739**, controllo progetto **5/5**. Health online OK, cinque file corrispondenti, tre API anonime 401; login aggiornato e console senza errori. Non rifare queste prove se il codice non cambia.
-- Ultimo sviluppo: Risultati dei clienti, report mensili versionati, obiettivi/lavori/misure con fonte, verifica prima della visibilità al cliente e revoche persistenti. Commit applicativo `f0f6bfc`.
+- **Codice online:** `699bfdc`, Railway BigAnt OS / bigant-os-server / production; deployment `59abf388-93d6-4905-8be1-5a3923ea2644` SUCCESS. Documentazione successiva sullo stesso ramo.
+- Backup Railway prima del rilascio: 10 ottobre, 16:28, 800 MB referenziati, confermato dall’API ufficiale. Copia giornaliera applicativa inclusa; prima esecuzione da verificare. Nessuna pianificazione aggiuntiva Railway impostata.
+- Ultime prove del codice: **755 prove verificate** (754/755 nella suite, aspettativa del catalogo corretta e relativo file 4/4), controllo progetto **5/5**. Health online OK, cinque file corrispondenti, tre API anonime 401; login aggiornato e console senza errori. Non rifare queste prove se il codice non cambia.
+- Ultimo sviluppo: Email marketing autonomo, contatti con prova del consenso, revoca e nuovo consenso, storico immutabile e servizio acquistato; invii da collegare. Prima tranche: Risultati dei clienti e report mensili.
 - Matrice92: **71 implementate localmente, 14 parziali, 7 da fare**. Rilascio del codice e collaudo funzionale autenticato sono distinti. L’intero obiettivo resta aperto.
 
 ## Prossimo lavoro utile
 
-1. FUN-040 completata e verificata in locale; rilascio in preparazione. Vedi COLLAUDO-EMAIL-MARKETING.md. Nessun invio collegato.
+1. FUN-040 completata, verificata e online. Vedi COLLAUDO-EMAIL-MARKETING.md. Nessun invio collegato. Non ripetere il collaudo già concluso.
 2. FUN-054: ordine di configurazione degli agenti legato ai servizi; configurarne uno alla volta. S01 social manuale già predisposto e verificato con fornitore finto. Non costruire altri percorsi reali senza esigenza confermata.
 3. Completare il giro dei ruoli e delle pagine; fonti automatiche mancanti, collaudi Fidelity/Growth e account reali restano distinti. I contatti esterni richiedono i prerequisiti già concordati.
 4. T0 in corso; T1–T10 seguono il riordino, con stato in [TASK-AVANZAMENTO](TASK-AVANZAMENTO.md). Non dichiararle completate per il solo numero di test.

@@ -320,4 +320,4 @@ Tutte le modifiche applicative collaudate sono online: GitHub `bigant-os-notte-1
 
 ## 10 ottobre — Email marketing autonomo (FUN-040)
 
-Registro contatti/consensi dentro il servizio acquistato, isolamento server, storico immutabile e anteprima in sola lettura. 16 nuove prove e giro browser mirato; dettaglio in [COLLAUDO-EMAIL-MARKETING](COLLAUDO-EMAIL-MARKETING.md). Matrice: 71 locali, 14 parziali, 7 da fare. Nessun provider, invio, dato cliente o dipendenza aggiunta. Pubblicazione autorizzata in preparazione dopo backup manuale.
+Registro contatti/consensi dentro il servizio acquistato, isolamento server, storico immutabile e anteprima in sola lettura. 16 nuove prove e giro browser mirato; dettaglio in [COLLAUDO-EMAIL-MARKETING](COLLAUDO-EMAIL-MARKETING.md). Matrice: 71 locali, 14 parziali, 7 da fare. Nessun provider, invio, dato cliente o dipendenza aggiunta. Pubblicato `699bfdc` dopo backup manuale delle 16:28; Railway SUCCESS e verifica pubblica alle 16:31. Vedi RILASCIO-2026-10-10.md.

@@ -597,7 +597,7 @@
       "area": "\"Contatti e clienti\"",
       "modifica": "Spostare nel servizio Email marketing, visibile solo a chi lo ha attivo",
       "criterio": "La sezione compare solo dentro Email marketing",
-      "stato": "implementata in locale; rilascio in preparazione",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
       "prove": [
         "Registro autonomo email-marketing, attivazione per servizio acquistato, soci/titolare modificano e collaboratore assegnato consulta. Consensi con prova, revoca e nuovo consenso, storico immutabile, isolamento, pagine e ricerca. Nessun invio o collegamento Growth/Fidelity.",
         "COLLAUDO-EMAIL-MARKETING.md: 16 prove specifiche, browser cliente/socio/anteprima e 390 px, revisione indipendente."
@@ -989,7 +989,7 @@
   ],
   "rilascio": {
     "data": "2026-10-10",
-    "commit": "52a4399",
+    "commit": "699bfdc",
     "stato": "Railway SUCCESS; verifica pubblica online superata",
     "prove": "docs/RILASCIO-2026-10-10.md",
     "limite": "Gli stati delle voci misurano ancora il collaudo locale; collaudo autenticato online e integrazioni restano distinti."
