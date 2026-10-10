@@ -325,3 +325,8 @@ Registro contatti/consensi dentro il servizio acquistato, isolamento server, sto
 ## 10 ottobre — Ordine agenti e navigazione per ruolo
 
 Completato il criterio scritto FUN-054. Nel giro browser individuato e corretto il percorso mancante I tuoi profili del cliente: proiezione pubblica comune all’anteprima, nessuna modifica, report nei servizi. Aggiunta testata Accessi. [Prove e limiti](COLLAUDO-NAVIGAZIONE-RUOLI.md); matrice 72 locali, 14 parziali, 6 da fare. Nessuna attivazione o dato reale. Pubblicato `737876c` dopo backup 16:44; Railway SUCCESS e verifica pubblica 16:46.
+
+
+## 10 ottobre — Schede cliente e uscita sicura
+
+Corretti salvataggi dal contesto obsoleto e credenziali restituite dopo navigazione/uscita. Un solo controllo indipendente ha individuato anche una nuova apertura durante logout pendente, ora bloccata. Dieci regressioni UI, **suite completa 769/769**, browser su anagrafica, memoria, avvio e logout con dati inventati; nessun errore console. [Prove e limiti](COLLAUDO-SCHEDE-CLIENTI.md). Nessuna dipendenza o migrazione dati. Matrice invariata, nessuna attivazione esterna.

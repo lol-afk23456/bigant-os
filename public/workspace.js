@@ -286,13 +286,46 @@ function clientRecordsView(){
  });
 }
 
+function recordContext(section,owner=false){
+ if(S.signingOut)throw Error('Uscita in corso. Attendi la pagina di accesso.');
+ const data=S.module,userRole=role();
+ if(S.view!=='clients'||S.section!==section||data?.client?.id!==S.clientId||!['owner','collaborator'].includes(userRole)||(owner&&!isOwner()))throw Error('Riapri la scheda di questa attività con i permessi corretti.');
+ return {data,clientId:S.clientId,role:userRole,snapshot:viewSnapshot()};
+}
+function recordCurrent(c){return !S.signingOut&&isCurrentView(c.snapshot)&&S.module===c.data&&role()===c.role;}
+function recordEditorCurrent(c){return recordCurrent(c)&&$('#dialog').open&&dialogRevision===c.dialogRevision;}
+function recordForm(c,titleText,fields,handler,options){
+ let saving=false;
+ form(titleText,fields,async(b,fd)=>{
+  if(!recordEditorCurrent(c))throw Error('La pagina o la sessione è cambiata. Riapri la scheda dell’attività.');
+  if(saving)return;
+  saving=true;try{await handler(b,fd);}catch(error){if(recordEditorCurrent(c))throw error;}finally{saving=false;}
+ },options);
+ c.dialogRevision=dialogRevision;
+}
+async function recordCommit(c,path,body,message,method='POST'){
+ if(!recordEditorCurrent(c))throw Error('La pagina o la sessione è cambiata. Riapri la scheda dell’attività.');
+ await api('/api/client-record/'+path+'?clientId='+encodeURIComponent(c.clientId),{method,body,scoped:false});
+ if(recordEditorCurrent(c))await saved(message);
+}
+let recordRevealSequence=0;
 Object.assign(ACTIONS,{
- 'record-profile':()=>{const c=S.module.client;form('Anagrafica cliente',[textField('name','Nome',c.name),textField('industry','Settore',c.industry,false),textField('address','Indirizzo',c.address,false)],async b=>{await mutate('/api/client-record/profile',b,'PATCH');await saved('Anagrafica aggiornata');},{intro:''});},
- 'record-memory':kind=>{const row=S.module.memory.find(item=>item.kind===kind);form('Scheda informativa',[{name:'content',label:'Testo',type:'textarea',value:row?.content||'',required:true,full:true}],async b=>{await mutate('/api/client-record/memory',{...b,kind,version:row?.version||0});await saved('Nuova versione salvata');},{intro:'La versione precedente rimane nello storico.'});},
- 'record-credential':()=>form('Accesso del cliente',[textField('label','Nome accesso'),textField('username','Utente o email'),{name:'password',label:'Password',type:'password',required:true},{name:'url',label:'Indirizzo della piattaforma',type:'url'},{name:'notes',label:'Note riservate',type:'textarea',full:true}],async b=>{await mutate('/api/client-record/credentials',b);await saved('Accesso salvato nell’archivio protetto');},{intro:'Visibile ai soci e ai collaboratori assegnati a questo cliente.'}),
- 'record-reveal':async id=>{const item=await mutate('/api/client-record/credentials/'+encodeURIComponent(id)+'/reveal');dialog(item.label,notice('Questa apertura è stata registrata.')+`<dl class="out-obj"><div><dt>Utente</dt><dd>${e(item.username)}</dd></div><div><dt>Password</dt><dd class="preserve">${e(item.password)}</dd></div><div><dt>Piattaforma</dt><dd>${e(item.url)}</dd></div><div><dt>Note</dt><dd>${e(item.notes)}</dd></div></dl>`);},
- 'record-contract':()=>form('Aggiungi contratto',[textField('title','Nome del contratto'),{name:'startDate',label:'Data di inizio',type:'date',required:true},{name:'endDate',label:'Scadenza',type:'date',required:true},{name:'noticeDays',label:'Preavviso in giorni',type:'number',value:30,min:0,max:365},{name:'renewal',label:'Rinnovo e durata',type:'textarea',full:true},{html:'<label for="contract-pdf">Documento PDF (massimo 500 KB)</label><input id="contract-pdf" name="pdf" type="file" accept="application/pdf,.pdf">'}],async(b,fd)=>{const file=fd.get('pdf');let pdfBase64='';if(file?.size){if(file.size>500000)throw Error('Scegli un PDF di massimo 500 KB.');pdfBase64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(Error('Impossibile leggere il PDF.'));reader.readAsDataURL(file);});}await mutate('/api/client-record/contracts',{title:b.title,startDate:b.startDate,endDate:b.endDate,noticeDays:Number(b.noticeDays),renewal:b.renewal,pdfBase64});await saved('Contratto aggiunto');},{intro:'La scadenza alimenta gli avvisi della Home e della pagina Clienti.'}),
- 'record-onboarding':()=>{const row=S.module.onboarding;form('Avvio cliente',[{name:'notes',label:'Prossimi passi, responsabile e note',type:'textarea',full:true,value:row.notes},{name:'completed',label:'Avvio completato',type:'checkbox',value:!!row.completed}],async(b,fd)=>{await mutate('/api/client-record/onboarding',{notes:b.notes,completed:fd.has('completed'),version:row.version});await saved('Avvio aggiornato');},{intro:''});}
+ 'record-profile':()=>{const c=recordContext('profile',true),row=c.data.client;recordForm(c,'Anagrafica cliente',[textField('name','Nome',row.name),textField('industry','Settore',row.industry,false),textField('address','Indirizzo',row.address,false)],b=>recordCommit(c,'profile',b,'Anagrafica aggiornata','PATCH'),{intro:''});},
+ 'record-memory':kind=>{const c=recordContext('brief');if(!['master','dna','strategy','feedback'].includes(kind))throw Error('Scheda informativa non disponibile.');const row=c.data.memory.find(item=>item.kind===kind);recordForm(c,'Scheda informativa',[{name:'content',label:'Testo',type:'textarea',value:row?.content||'',required:true,full:true}],b=>recordCommit(c,'memory',{...b,kind,version:row?.version||0},'Nuova versione salvata'),{intro:'La versione precedente rimane nello storico.'});},
+ 'record-credential':()=>{const c=recordContext('credentials');if(!c.data.vaultReady)throw Error('Archivio protetto non disponibile.');recordForm(c,'Accesso del cliente',[textField('label','Nome accesso'),textField('username','Utente o email'),{name:'password',label:'Password',type:'password',required:true},{name:'url',label:'Indirizzo della piattaforma',type:'url'},{name:'notes',label:'Note riservate',type:'textarea',full:true}],b=>recordCommit(c,'credentials',b,'Accesso salvato nell’archivio protetto'),{intro:'Visibile ai soci e ai collaboratori assegnati a questo cliente.'});},
+ 'record-reveal':async id=>{
+  const c=recordContext('credentials'),sequence=++recordRevealSequence,revision=dialogRevision;
+  if($('#dialog').open||!c.data.credentials.some(row=>row.id===id))throw Error('Riapri l’accesso dalla scheda dell’attività.');
+  const current=()=>recordCurrent(c)&&sequence===recordRevealSequence&&revision===dialogRevision&&!$('#dialog').open;
+  let item;try{item=await api('/api/client-record/credentials/'+encodeURIComponent(id)+'/reveal?clientId='+encodeURIComponent(c.clientId),{method:'POST',body:{},scoped:false});}catch(error){if(current())throw error;return;}
+  if(!current())return;
+  dialog(item.label,notice('Questa apertura è stata registrata.')+`<dl class="out-obj"><div><dt>Utente</dt><dd>${e(item.username)}</dd></div><div><dt>Password</dt><dd class="preserve">${e(item.password)}</dd></div><div><dt>Piattaforma</dt><dd>${e(item.url)}</dd></div><div><dt>Note</dt><dd>${e(item.notes)}</dd></div></dl>`);
+ },
+ 'record-contract':()=>{const c=recordContext(['contract','documents'].includes(S.section)?S.section:'contract',true);recordForm(c,'Aggiungi contratto',[textField('title','Nome del contratto'),{name:'startDate',label:'Data di inizio',type:'date',required:true},{name:'endDate',label:'Scadenza',type:'date',required:true},{name:'noticeDays',label:'Preavviso in giorni',type:'number',value:30,min:0,max:365},{name:'renewal',label:'Rinnovo e durata',type:'textarea',full:true},{html:'<label for="contract-pdf">Documento PDF (massimo 500 KB)</label><input id="contract-pdf" name="pdf" type="file" accept="application/pdf,.pdf">'}],async(b,fd)=>{
+  const file=fd.get('pdf');let pdfBase64='';if(file?.size){if(file.size>500000)throw Error('Scegli un PDF di massimo 500 KB.');pdfBase64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=()=>reject(Error('Impossibile leggere il PDF.'));reader.readAsDataURL(file);});}
+  await recordCommit(c,'contracts',{title:b.title,startDate:b.startDate,endDate:b.endDate,noticeDays:Number(b.noticeDays),renewal:b.renewal,pdfBase64},'Contratto aggiunto');
+ },{intro:'La scadenza alimenta gli avvisi della Home e della pagina Clienti.'});},
+ 'record-onboarding':()=>{const c=recordContext('onboarding',true),row=c.data.onboarding;recordForm(c,'Avvio cliente',[{name:'notes',label:'Prossimi passi, responsabile e note',type:'textarea',full:true,value:row.notes},{name:'completed',label:'Avvio completato',type:'checkbox',value:!!row.completed}],(b,fd)=>recordCommit(c,'onboarding',{notes:b.notes,completed:fd.has('completed'),version:row.version},'Avvio aggiornato'),{intro:''});}
 });
 
 

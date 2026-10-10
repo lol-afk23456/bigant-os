@@ -198,7 +198,8 @@
       "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
       "prove": [
         "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
-        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow",
+        "10 ottobre: COLLAUDO-SCHEDE-CLIENTI.md. Moduli vincolati a cliente/sessione, risposte Accessi obsolete scartate e uscita immediata; dieci regressioni UI, suite 769/769 e browser con dati inventati. Collaudo autenticato online ancora aperto."
       ]
     },
     {
@@ -295,7 +296,8 @@
       "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
       "prove": [
         "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
-        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow",
+        "10 ottobre: COLLAUDO-SCHEDE-CLIENTI.md. Moduli vincolati a cliente/sessione, risposte Accessi obsolete scartate e uscita immediata; dieci regressioni UI, suite 769/769 e browser con dati inventati. Collaudo autenticato online ancora aperto."
       ]
     },
     {
@@ -512,7 +514,8 @@
       "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
       "prove": [
         "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
-        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow",
+        "10 ottobre: COLLAUDO-SCHEDE-CLIENTI.md. Moduli vincolati a cliente/sessione, risposte Accessi obsolete scartate e uscita immediata; dieci regressioni UI, suite 769/769 e browser con dati inventati. Collaudo autenticato online ancora aperto."
       ]
     },
     {

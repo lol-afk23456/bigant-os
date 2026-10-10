@@ -45,9 +45,9 @@ async function api(path, {method='GET',body,scoped=true}={}) {
   if(!response.ok)throw new Error(result.error||result.message||'Operazione non riuscita. Riprova.');return result;
 }
 async function mutate(path,body={},method='POST'){return api(path,{method,body});}
-let toastTimer;
+let toastTimer,dialogRevision=0;
 function toast(message,error=false){clearTimeout(toastTimer);const el=$('#toast');el.textContent=message;el.className=`toast ${error?'error':''}`;el.hidden=false;toastTimer=setTimeout(()=>el.hidden=true,6500);}
-function dialog(titleText,html){$('#dialog-content').innerHTML=`<div class="dialog-head"><h2 id="dialog-title">${e(titleText)}</h2><button class="icon-btn" data-action="close" aria-label="Chiudi finestra">${icon('close')}</button></div><div class="dialog-body">${html}</div>`;if(!$('#dialog').open)$('#dialog').showModal();}
+function dialog(titleText,html){dialogRevision++;$('#dialog-content').innerHTML=`<div class="dialog-head"><h2 id="dialog-title">${e(titleText)}</h2><button class="icon-btn" data-action="close" aria-label="Chiudi finestra">${icon('close')}</button></div><div class="dialog-body">${html}</div>`;if(!$('#dialog').open)$('#dialog').showModal();}
 let formHandler=null;
 function fieldsHTML(fields){return `<div class="form-grid">${fields.map(f=>{if(Object.hasOwn(f,'html'))return f.html?`<div class="field full">${f.html}</div>`:'';const id='field-'+f.name,v=f.value??'',required=f.required?'required':'';if(f.type==='checkbox')return `<div class="field full"><label class="check-field"><input type="checkbox" name="${e(f.name)}" ${required} ${v?'checked':''}><span>${e(f.label)}</span></label>${f.help?`<small>${e(f.help)}</small>`:''}</div>`;let input=f.type==='textarea'?`<textarea id="${id}" name="${e(f.name)}" ${required}>${e(v)}</textarea>`:f.type==='select'?`<select id="${id}" name="${e(f.name)}" ${required}>${(f.options||[]).map(o=>`<option value="${e(Array.isArray(o)?o[0]:o)}" ${String(Array.isArray(o)?o[0]:o)===String(v)?'selected':''}>${e(Array.isArray(o)?o[1]:label(o))}</option>`).join('')}</select>`:`<input id="${id}" name="${e(f.name)}" type="${f.type||'text'}" value="${e(v)}" ${required} ${f.min!==undefined?`min="${f.min}"`:''} ${f.max!==undefined?`max="${f.max}"`:''} ${f.step?`step="${f.step}"`:''} ${f.placeholder?`placeholder="${e(f.placeholder)}"`:''}>`;return `<div class="field ${f.full?'full':''}"><label for="${id}">${e(f.label)}</label>${input}${f.help?`<small>${e(f.help)}</small>`:''}</div>`;}).join('')}</div>`;}
 function form(titleText,fields,handler,{submit='Salva',intro=S.view==='fidelity'&&S.module?.demo===false?'':'Solo dati inventati per la prova.',extra=''}={}){const key=crypto.randomUUID();formHandler=async fd=>handler(Object.fromEntries(fd),fd,key);dialog(titleText,`${intro?notice(intro):''}<form id="modal-form"><div class="form-error" role="alert" hidden></div>${fieldsHTML(fields)}${extra}<div class="form-footer">${btn('Annulla','close','','ghost')}<button type="submit" class="btn primary">${e(submit)}</button></div></form>`);}
@@ -252,7 +252,15 @@ const ACTIONS={
   close:()=>$('#dialog').close(),menu:()=>$('.shell')?.classList.toggle('menu-open'),
   refresh:async()=>{if(!S.session?.user)return start();await load();toast('Dati aggiornati');},
   login:async id=>{S.session=await mutate('/api/demo/login',{profile:id});S.clientId='';setViewRoute(role()==='client'?'client':'home');history.replaceState(null,'','#'+S.view);await load();},
-  logout:async()=>{await mutate('/api/logout');S.session=await api('/api/session',{scoped:false});S.overview=null;S.module=null;S.clientId='';S.approvalFilter='all';$('#dialog').close();login();},
+  logout:async()=>{
+   if(S.signingOut)return;S.signingOut=true;S.navigation++;$('#dialog').close();
+   const ending=mutate('/api/logout');
+   S.session=null;S.overview=null;S.module=null;S.clientId='';S.approvalFilter='all';
+   $('#app').innerHTML='<main class="loading" id="main">Uscita in corso…</main>';
+   try{await ending;S.session=await api('/api/session',{scoped:false});login();}
+   catch{publicShell('Uscita da verificare',notice('Non è stato possibile confermare la chiusura della sessione. Riapri la pagina e riprova.')+'<a class="btn" href="/">Riapri BigAnt OS</a>');}
+   finally{S.signingOut=false;}
+  },
   goto:go,
   'marketing-work':async()=>{const id=S.module?.clientId;if(!id)throw Error('Il contesto BigAnt non è disponibile. Ricarica la sezione.');S.clientId=id;await go('work');},
   'select-client':async id=>{S.clientId=id;await go('clients:sections');},
@@ -501,4 +509,4 @@ async function start(){try{if(await publicPage())return;S.session=await api('/ap
 start();
 
 // Clear revealed credentials and form values as soon as their dialog closes.
-$('#dialog').addEventListener('close',()=>{if(!$('#dialog').open){$('#dialog-content').replaceChildren();formHandler=null;}});
+$('#dialog').addEventListener('close',()=>{if(!$('#dialog').open){dialogRevision++;$('#dialog-content').replaceChildren();formHandler=null;}});
