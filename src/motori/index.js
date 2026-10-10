@@ -50,12 +50,13 @@ function motoreClaudeCode({root,env,spawnImpl=spawn}){
  const bin=env.BIGANT_CLAUDE_BIN||'claude',timeout=Number(env.BIGANT_MOTORE_TIMEOUT_MS||420000);
  return {id:'claude-code',etichetta:ETICHETTE['claude-code'],
   stato(){const ok=claudeDisponibile(bin);return {disponibile:ok,statoCollegamento:ok?'OPERATIVO':'COLLEGAMENTO MANCANTE',motivo:ok?'Claude Code risponde in modalità non interattiva; strumenti disattivati per ogni agente.':'Comando claude non trovato o non autenticato in questo ambiente.'};},
-  esegui({agente,compito,pacchetto,schema,onProgresso=()=>{}}){
+  esegui({agente,compito,pacchetto,schema,onProgresso=()=>{},beforeDispatch=()=>{}}){
    // Nessuno strumento: l'agente non legge file, non naviga e non esegue comandi. Il pacchetto arriva da stdin.
    // stream-json: il testo arriva mentre l'agente lo scrive, così l'ufficio virtuale lo mostra in diretta.
    const args=['-p','--agent',`bigant-${agente}`,'--tools','','--output-format','stream-json','--verbose','--include-partial-messages','--json-schema',JSON.stringify(schema),'--no-session-persistence'];
    const inizio=Date.now();
    return new Promise((ok,ko)=>{
+    beforeDispatch();
     const child=spawnImpl(bin,args,{cwd:root,env,stdio:['pipe','pipe','pipe']});
     let resto='',err='',testo='',r=null;const timer=setTimeout(()=>{child.kill('SIGTERM');ko(new Error(`Claude Code non ha risposto entro ${Math.round(timeout/1000)} s.`));},timeout);
     const riga=x=>{let j;try{j=JSON.parse(x);}catch{return;}
@@ -88,11 +89,12 @@ function motoreApi({root,env,importSdk=()=>import('@anthropic-ai/sdk')}){
  const chiave=env.BIGANT_ANTHROPIC_API_KEY,modello=env.BIGANT_API_MODELLO,maxCent=Number(env.BIGANT_API_COSTO_MAX_CENT||25);
  return {id:'api',etichetta:ETICHETTE.api,costoMassimoCent:maxCent,
   stato(){const mancanti=[!chiave&&'BIGANT_ANTHROPIC_API_KEY',!modello&&'BIGANT_API_MODELLO',(!Number.isSafeInteger(maxCent)||maxCent<1||maxCent>5000)&&'BIGANT_API_COSTO_MAX_CENT valido'].filter(Boolean);return {disponibile:!mancanti.length,statoCollegamento:mancanti.length?'COLLEGAMENTO MANCANTE':'OPERATIVO',motivo:mancanti.length?'Impostare '+mancanti.join(' e ')+' nelle impostazioni dell’ambiente.':'Chiave e modello configurati.'};},
-  async esegui({agente,compito,pacchetto,schema}){
+  async esegui({agente,compito,pacchetto,schema,beforeDispatch=()=>{}}){
    if(!chiave||!modello)throw new Error('Motore API non configurato: servono BIGANT_ANTHROPIC_API_KEY e BIGANT_API_MODELLO.');
    if(!Number.isSafeInteger(maxCent)||maxCent<1||maxCent>5000)throw new Error('Costo massimo API non valido.');
-   const {default:Anthropic}=await importSdk(),client=new Anthropic({apiKey:chiave,baseURL:env.BIGANT_API_URL||'https://api.anthropic.com'});
+   const {default:Anthropic}=await importSdk(),client=new Anthropic({apiKey:chiave,baseURL:env.BIGANT_API_URL||'https://api.anthropic.com',maxRetries:0,timeout:120000});
    const inizio=Date.now();
+   beforeDispatch();
    const r=await client.messages.create({model:modello,max_tokens:16000,system:istruzioniAgente(root,agente),messages:[{role:'user',content:promptPasso({compito,pacchetto})}],output_config:{format:{type:'json_schema',schema}}});
    if(r.stop_reason==='refusal')throw new Error('Il modello ha rifiutato la richiesta.');
    if(r.stop_reason==='max_tokens')throw new Error('Risposta troncata: limite di lunghezza raggiunto.');
@@ -107,10 +109,11 @@ function motoreOpenAI({root,env,fetchImpl=globalThis.fetch}){
  const chiave=env.BIGANT_OPENAI_API_KEY,modello=env.BIGANT_OPENAI_MODELLO,maxCent=Number(env.BIGANT_OPENAI_COSTO_MAX_CENT||25);
  return {id:'openai',etichetta:ETICHETTE.openai,costoMassimoCent:maxCent,
   stato(){const disponibile=!!chiave&&!!modello&&Number.isSafeInteger(maxCent)&&maxCent>0&&maxCent<=5000;return {disponibile,statoCollegamento:disponibile?'OPERATIVO':'COLLEGAMENTO MANCANTE',motivo:disponibile?'Chiave e modello configurati.':'Configurare chiave OpenAI, modello e tetto per chiamata.'};},
-  async esegui({agente,compito,pacchetto,schema}){
+  async esegui({agente,compito,pacchetto,schema,beforeDispatch=()=>{}}){
    if(!this.stato().disponibile)throw new Error('Motore OpenAI non configurato: servono chiave, modello e tetto validi.');
    const inizio=Date.now();
    let response;
+   beforeDispatch();
    try{response=await fetchImpl('https://api.openai.com/v1/responses',{
     method:'POST',redirect:'error',signal:AbortSignal.timeout(120000),
     headers:{Authorization:`Bearer ${chiave}`,'Content-Type':'application/json'},

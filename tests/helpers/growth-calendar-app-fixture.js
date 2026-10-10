@@ -1,3 +1,4 @@
+import {confirmFixtureBudget} from './budget-fixture.js';
 // Full production composition with an in-memory store and invented provider data.
 // No global fetch, account or external service is used by this fixture.
 import {createHash} from 'node:crypto';
@@ -21,6 +22,7 @@ export function calendarAppFixture(t){
  const call=async(method,path,body={})=>(await app.growth.handle({method,path,body,user:owner,clientId:'demo-bigant'})).data;
  const state=()=>app.growth.state('demo-bigant',owner);
  async function prerequisites(){
+  confirmFixtureBudget(store,{owner});
   for(const id of ['brave','openai'])app.connections.save(owner,id,{version:0,fields:{apiKey:'chiave-inventata',...(id==='openai'?{model:'modello-inventato'}:{})}});
   app.connections.save(owner,'google',{version:0,fields:{clientId:'client-inventato',clientSecret:'segreto-inventato'}});
   const url=new URL(app.googleAuth.start(owner,{version:1,email:env.BIGANT_SOCIO_EMAIL,acknowledged:true,calendar:true}).url);

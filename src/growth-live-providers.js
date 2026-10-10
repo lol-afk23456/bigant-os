@@ -38,8 +38,9 @@ function validOutput(output,analysis) {
 export function createGrowthLiveProviders({credentials=async()=>null,allow=async()=>false,budget=null,settings=()=>({}),aiProvider=null,estimatedCents={},fetchImpl=globalThis.fetch,readWebsite=createPublicWebsiteReader(),clock=()=>new Date(),origin=''}={}) {
  const gate=async(w,operation,context={})=>{if(await allow(w,operation,context)!==true)throw new AppError('Collegamento non attivato o operazione non autorizzata.',409);};
  async function secret(w,provider,fields) {const value=await credentials(w,provider);if(!value||fields.some(field=>typeof value[field]!=='string'||!value[field].trim()))throw new AppError('Accessi del fornitore da configurare.',409);return value;}
- async function json(url,options={}) {
+ async function json(url,options={},beforeDispatch) {
   let r;
+  beforeDispatch?.();
   try {r=await fetchImpl(url,{...options,redirect:'error',signal:AbortSignal.timeout(25000)});}catch{throw new AppError('Fornitore non raggiungibile. Nessun nuovo tentativo automatico.',502);}
   if(!r.ok){try{await r.body?.cancel();}catch{}const error=new AppError(`Errore del fornitore (${r.status}). Verifica il collegamento.`,502);error.remoteStatus=r.status;throw error;}
   if(r.status===204)return {};
@@ -49,14 +50,17 @@ export function createGrowthLiveProviders({credentials=async()=>null,allow=async
   const cents=estimatedCents[category];
   if(!budget||typeof budget.reserve!=='function'||typeof budget.settle!=='function'||!Number.isSafeInteger(cents)||cents<1||cents>5000)throw new AppError('Budget e stima per chiamata da configurare.',409);
   const reservation=await budget.reserve(w,category,cents,'Stima prudenziale, non fattura del fornitore');
+  // Recheck synchronously at dispatch; a failed preflight has not consumed credit.
+  let submitted=false;
+  const beforeDispatch=()=>{budget.dispatch?.(reservation);submitted=true;};
   // Once submitted, even a timeout may have consumed provider credit. No free retry.
-  try{return await operation();}finally{await budget.settle(reservation,true);}
+  try{return await operation(beforeDispatch);}finally{await budget.settle(reservation,submitted);}
  }
  async function search(w,query,count=5) {
   if(typeof query!=='string'||!query.trim()||query.length>600||!Number.isSafeInteger(count)||count<1||count>10)throw new AppError('Ricerca non valida.');
   await gate(w,'search',{query,count});const key=await secret(w,'brave',['apiKey']);
   const url=new URL('https://api.search.brave.com/res/v1/web/search');url.search=new URLSearchParams({q:query,count:String(count),country:'IT',search_lang:'it'});
-  return paid(w,'search',async()=>{const result=await json(url,{headers:{'X-Subscription-Token':key.apiKey,Accept:'application/json'}});const rows=result.web?.results||[];if(!Array.isArray(rows))throw new AppError('Risultati ricerca non leggibili.',502);
+  return paid(w,'search',async beforeDispatch=>{const result=await json(url,{headers:{'X-Subscription-Token':key.apiKey,Accept:'application/json'}},beforeDispatch);const rows=result.web?.results||[];if(!Array.isArray(rows))throw new AppError('Risultati ricerca non leggibili.',502);
    return rows.slice(0,count).flatMap(row=>{let u;try{u=new URL(row.url);}catch{return [];}if(!['https:','http:'].includes(u.protocol)||u.username||u.password)return [];return [{title:String(row.title||'').slice(0,500),url:u.href,description:String(row.description||'').slice(0,2000),source:'Brave Search',retrievedAt:clock().toISOString(),simulation:false}];});});
  }
  async function website(w,url){await gate(w,'website',{url});return readWebsite(url);}
@@ -65,13 +69,13 @@ export function createGrowthLiveProviders({credentials=async()=>null,allow=async
   if(typeof task!=='string'||!task.trim()||task.length>6000)throw new AppError('Compito AI non valido.');
   const payload=JSON.stringify(input);if(!payload||payload.length>24000)throw new AppError('Dati AI incompleti o troppo grandi.');
   await gate(w,'ai',{provider:aiProvider});const keys=await secret(w,aiProvider,['apiKey','model']),analysis=task.startsWith('Valuta'),schema=analysis?analysisSchema:draftSchema;
-  return paid(w,'ai',async()=>{
+  return paid(w,'ai',async beforeDispatch=>{
    let raw;
    if(aiProvider==='openai'){
-    const result=await json('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:`Bearer ${keys.apiKey}`,'Content-Type':'application/json'},body:JSON.stringify({model:keys.model,store:false,max_output_tokens:1600,instructions:instructions+'\n'+task,input:payload,text:{format:{type:'json_schema',name:'growth_output',strict:true,schema}}})});
+    const result=await json('https://api.openai.com/v1/responses',{method:'POST',headers:{Authorization:`Bearer ${keys.apiKey}`,'Content-Type':'application/json'},body:JSON.stringify({model:keys.model,store:false,max_output_tokens:1600,instructions:instructions+'\n'+task,input:payload,text:{format:{type:'json_schema',name:'growth_output',strict:true,schema}}})},beforeDispatch);
     if(!Array.isArray(result.output))throw new AppError('Risposta AI incompleta o non valida.',502);const content=result.output.filter(row=>row.type==='message').flatMap(row=>row.content||[]);if(result.status!=='completed'||content.some(row=>row.type==='refusal'))throw new AppError('Risposta AI incompleta o rifiutata.',502);raw=content.filter(row=>row.type==='output_text').map(row=>row.text).join('');
    }else{
-    const result=await json('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':keys.apiKey,'anthropic-version':'2023-06-01','Content-Type':'application/json'},body:JSON.stringify({model:keys.model,max_tokens:1600,system:instructions+'\n'+task,messages:[{role:'user',content:payload}],output_config:{format:{type:'json_schema',schema}}})});
+    const result=await json('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':keys.apiKey,'anthropic-version':'2023-06-01','Content-Type':'application/json'},body:JSON.stringify({model:keys.model,max_tokens:1600,system:instructions+'\n'+task,messages:[{role:'user',content:payload}],output_config:{format:{type:'json_schema',schema}}})},beforeDispatch);
     if(result.stop_reason!=='end_turn'||!Array.isArray(result.content))throw new AppError('Risposta AI incompleta o rifiutata.',502);raw=(result.content||[]).filter(row=>row.type==='text').map(row=>row.text).join('');
    }
    let output;try{output=JSON.parse(raw);}catch{throw new AppError('Risposta AI non in formato JSON.',502);}return validOutput(output,analysis);

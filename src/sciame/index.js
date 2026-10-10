@@ -45,24 +45,25 @@ export function createSciame({store:s,production,administration,growth,orchestra
  function feedback(clientId,agente){const reg=agentiSciame[agente]?.registro;return (s.one('SELECT content FROM os_memory WHERE client_id=? AND kind=?',clientId,'agent-feedback:'+reg)?.content||'').split('\n').filter(x=>x&&!x.startsWith('#')).slice(-10);}
 
  // ---------- Costi: tetto mensile comune (os_costs). 1 USD conteggiato come 1 € (prudenziale). ----------
- function prenota(clientId,agente){const stima=mot().id==='demo'?0:Math.max(Number(env.BIGANT_SCIAME_STIMA_CENT||40),Number(mot().costoMassimoCent||0));const b=orchestrator.budget();if(stima>b.availableCents)throw new AppError(`Tetto di spesa mensile raggiunto: disponibili ${euro(b.availableCents)}. Lo sciame si ferma e avvisa i soci.`,409);return orchestrator.reserve(clientId,'sciame:'+agente,stima);}
+ function prenota(clientId,agente){const stima=mot().id==='demo'?0:Math.max(Number(env.BIGANT_SCIAME_STIMA_CENT||40),Number(mot().costoMassimoCent||0));const b=orchestrator.budget();if(stima>b.availableCents)throw new AppError(`Tetto di spesa mensile raggiunto: disponibili ${euro(b.availableCents)}. Lo sciame si ferma e avvisa i soci.`,409);return orchestrator.reserve(clientId,'sciame:'+agente,stima,{paid:mot().id!=='demo'});}
  function addebita(costId,usdMicro){s.run("UPDATE os_costs SET cents=?,status='charged' WHERE id=?",Math.ceil(usdMicro/10000),costId);}
 
  // ---------- Esecuzione di un agente con il motore ----------
  async function chiamaMotore(passo,{agente,compito,pacchetto}){
   if(env.BIGANT_MODALITA==='reale')throw new AppError('Percorso AI reale da collaudare: i giri dimostrativi sono disponibili soltanto in DEMO.',409);
   const costo=prenota(passo.client_id,agente);
+  let submitted=false;const beforeDispatch=()=>{if(mot().id!=='demo')orchestrator.assertPaidReservation(costo);submitted=true;};
   try{
    let scritto=0,ultimo=null;
    const salva=({fase,testo})=>s.run('UPDATE os_sciame_passi SET diretta=?,diretta_fase=?,diretta_at=? WHERE id=?',String(testo||'').slice(-20000),fase,now(),passo.id);
    const onProgresso=x=>{ultimo=x;if(Date.now()-scritto<600)return;scritto=Date.now();salva(x);};
-   const {output,meta}=await mot().esegui({agente,compito,pacchetto,schema:schemi[agente],onProgresso});
+   const {output,meta}=await mot().esegui({agente,compito,pacchetto,schema:schemi[agente],onProgresso,beforeDispatch});
    if(ultimo)salva({...ultimo,fase:'finito'});
    const errori=valida(schemi[agente],output);
    addebita(costo,meta.costoUsdMicro||0);
    if(errori.length)throw new AppError('Uscita non conforme al contratto: '+errori.slice(0,5).join('; '));
    return {output,meta};
-  }catch(e){s.run("UPDATE os_costs SET status=CASE WHEN status='reserved' THEN 'released' ELSE status END WHERE id=?",costo);throw e;}
+  }catch(e){s.run("UPDATE os_costs SET status=CASE WHEN status='reserved' THEN ? ELSE status END WHERE id=?",mot().id==='demo'||!submitted?'released':'charged',costo);throw e;}
  }
  function nuovoPasso(giro,{flusso,agente,clientId,compito,pacchetto,visibilita='internal',controlla=null}){
   const id=uid(),ordine=(s.one('SELECT MAX(ordine) n FROM os_sciame_passi WHERE giro_id=?',giro.id).n||0)+1,a=agentiSciame[agente];

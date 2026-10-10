@@ -1,3 +1,4 @@
+import {confirmFixtureBudget} from './helpers/budget-fixture.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {openStore,seedCore} from '../src/store.js';
@@ -6,7 +7,7 @@ import {createGrowthModule} from '../src/growth.js';
 import {createApp} from '../server.js';
 
 function setup(t,{externalEnabled=true,provider='openai',overrideFetch,control={}}={}) {
- const store=openStore();seedCore(store);t.after(()=>store.close());const owner=store.one("SELECT * FROM os_users WHERE id='demo-owner'");
+ const store=openStore();seedCore(store);confirmFixtureBudget(store);t.after(()=>store.close());const owner=store.one("SELECT * FROM os_users WHERE id='demo-owner'");
  const env={BIGANT_SECRET_KEY:Buffer.alloc(32,7).toString('base64')},connections=createConnections({store,env}),calls=[];
  for(const id of ['brave','openai','anthropic'])connections.save(owner,id,{version:0,fields:{apiKey:'chiave-inventata-'+id,...(id==='brave'?{}:{model:'modello-inventato'})}});
  const response=value=>new Response(JSON.stringify(value),{headers:{'Content-Type':'application/json'}});

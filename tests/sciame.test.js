@@ -1,3 +1,4 @@
+import {confirmFixtureBudget} from './helpers/budget-fixture.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtempSync,rmSync,readFileSync,existsSync} from 'node:fs';
@@ -15,7 +16,7 @@ import {controlliAutomatici} from '../src/sciame/qualita.js';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const RICHIESTA='Priorità dai KPI, piano marketing BigAnt della prossima settimana, analisi gratuita di un’azienda DEMO, social e GBP di Bottega, controllo prima nota';
 function fixture(t,opzioni={}){
- const a=createApp({motore:'demo',...opzioni});t.after(()=>a.close());
+ const a=createApp({motore:'demo',...opzioni});if(opzioni.motore?.id&&opzioni.motore.id!=='demo')confirmFixtureBudget(a.store);t.after(()=>a.close());
  t.mock.method(globalThis,'fetch',()=>{throw Error('Rete vietata nel collaudo dello sciame');});
  const user=id=>a.store.one('SELECT * FROM os_users WHERE id=?',id);
  return {...a,s:a.store,owner:user('demo-owner'),client:user('demo-client'),team:user('demo-collaborator')};
@@ -24,7 +25,7 @@ function fixture(t,opzioni={}){
 function motoreFinto(altera={},{id='demo',costoUsdMicro=0}={}){
  const chiamate=[];
  return {id,etichetta:'Motore di prova',chiamate,stato:()=>({disponibile:true,statoCollegamento:'DEMO',motivo:'test'}),
-  async esegui({agente,compito,pacchetto}){chiamate.push({agente,compito});const base=cervelloDemo(agente,pacchetto);return {output:altera[agente]?altera[agente](base,chiamate.filter(c=>c.agente===agente).length):base,meta:{motore:id,durataMs:1,costoUsdMicro}};}};
+  async esegui({agente,compito,pacchetto,beforeDispatch=()=>{}}){beforeDispatch();chiamate.push({agente,compito});const base=cervelloDemo(agente,pacchetto);return {output:altera[agente]?altera[agente](base,chiamate.filter(c=>c.agente===agente).length):base,meta:{motore:id,durataMs:1,costoUsdMicro}};}};
 }
 
 test('ogni agente dello sciame ha istruzioni proprie in .claude/agents con frontmatter e contratto di uscita',()=>{
@@ -106,7 +107,7 @@ test('una correzione richiesta da Qualità che va a buon fine entra nella coda a
  assert.ok(a.s.one("SELECT * FROM os_audit WHERE action LIKE '%correzione richiesta da Qualità' AND entity_id=?",p.id));
 });
 
-test('uscita fuori contratto: errore visibile, costo rilasciato, nessuna approvazione',async t=>{
+test('uscita fuori contratto: errore visibile, costo contabilizzato, nessuna approvazione',async t=>{
  const motore=motoreFinto({marketing:o=>({...o,bozze:'non un elenco'})},{id:'claude-code',costoUsdMicro:120000});
  const a=fixture(t,{motore}),giro=a.sciame.creaGiro(a.owner,{richiesta:'Marketing',flussi:['marketing']});
  const r=await a.sciame.eseguiGiro(giro.id),p=r.passi.find(x=>x.agente==='marketing');

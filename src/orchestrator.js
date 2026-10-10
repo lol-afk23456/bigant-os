@@ -5,6 +5,7 @@ import {runCoreAgent,coreAgentIds} from './agents/core.js';
 import {runSpecialist,specialistDemoInputs} from './agents/specialists.js';
 import {createModuleAgentRunner} from './agents/modules.js';
 import {createAgentOutputs} from './agents/outputs.js';
+import {createCostControl} from './cost-control.js';
 const agentMap=new Map(agentDefinitions.map(a=>[a.id,a]));
 const romeFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Rome',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',weekday:'short',hourCycle:'h23'});
 function romeParts(date) {return Object.fromEntries(romeFormatter.formatToParts(date).map(p=>[p.type,p.value]));}
@@ -15,7 +16,7 @@ export function nextRun(trigger,after=new Date()) {
   for(let i=0;i<46081;i++,t+=60000){const p=romeParts(new Date(t));if(p.hour!=='09'||p.minute!=='00')continue;if(trigger==='weekly-monday'&&p.weekday!=='Mon')continue;if(trigger==='weekly-friday'&&p.weekday!=='Fri')continue;if(trigger==='monthly'&&p.day!=='01')continue;return new Date(t).toISOString();}
   throw new AppError('Impossibile calcolare la prossima esecuzione.');
 }
-export function createOrchestrator({store:s,production,administration,growth=null,fidelity=null,clock=()=>new Date(),testHandlers={},guard=null}) {
+export function createOrchestrator({store:s,production,administration,growth=null,fidelity=null,clock=()=>new Date(),testHandlers={},guard=null,realMode=false,costControl=createCostControl({store:s,clock})}) {
   const instant=()=>clock().toISOString();
   const month=()=>{const p=romeParts(clock());return `${p.year}-${p.month}`;};
   let ticking=false;
@@ -26,8 +27,8 @@ export function createOrchestrator({store:s,production,administration,growth=nul
   function eligibility(clientId,agent) {guard?.(agent);const c=s.one('SELECT id,name,services_json FROM os_clients WHERE id=? AND active=1',clientId);if(!c)throw new AppError('Attività non disponibile.',403);const r=eligibleAgent(agent,c);if(!r.eligible)throw new AppError(r.unavailableReason,403);return c;}
   function checkedInput(input) {if(!input||typeof input!=='object'||Array.isArray(input)||JSON.stringify(input).length>40000)throw new AppError('Input della procedura non valido.');if(input.fixture&&input.fixture.demo!==true)throw new AppError('Sono ammessi solo dati di esempio marcati DEMO.');return structuredClone(input);} 
 
-  function budget() {const used=s.one("SELECT COALESCE(SUM(cents),0) n FROM os_costs WHERE month=? AND status IN('reserved','charged')",month()).n;const cap=Number(s.getSetting('budget_cents')),fixed=Number(s.getSetting('fixed_cents'));return {capCents:cap,fixedCents:fixed,usedCents:used,availableCents:Math.max(0,cap-fixed-used),month:month(),simulation:true};}
-  function reserve(clientId,agent,cents) {integer(cents);return s.transaction(()=>{const b=budget();if(cents>b.availableCents)throw new AppError('Budget disponibile esaurito. Attività in attesa.',409);const id=uid();s.run('INSERT INTO os_costs VALUES(?,?,?,?,?,?,?)',id,clientId,agent,cents,'reserved',month(),instant());return id;});}
+  function budget() {const used=s.one("SELECT COALESCE(SUM(cents),0) n FROM os_costs WHERE month=? AND status IN('reserved','charged')",month()).n;const cap=Number(s.getSetting('budget_cents')),fixed=Number(s.getSetting('fixed_cents')),control=costControl.snapshot();return {capCents:cap,fixedCents:fixed,usedCents:used,availableCents:Math.max(0,Math.min(cap-fixed-used,realMode?control.availableCents:Infinity)),month:month(),simulation:!realMode,costControl:control};}
+  function reserve(clientId,agent,cents,{paid=realMode}={}) {integer(cents);return s.transaction(()=>{const b=budget();if(cents>Math.max(0,b.capCents-b.fixedCents-b.usedCents))throw new AppError('Budget disponibile esaurito. Attività in attesa.',409);if(paid)costControl.assertCanReserve(cents);const id=uid();s.run('INSERT INTO os_costs VALUES(?,?,?,?,?,?,?)',id,clientId,agent,cents,'reserved',month(),instant());return id;});}
   function enqueue(user,clientId,agent,input={},dedupe=null) {
     requireOwner(user);requireClient(s,user,clientId);const def=agentMap.get(agent);
     if(!def||def.status!=='implemented')throw new AppError('Questo specialista è predisposto: usa il modulo indicato o completa prima la sua attivazione.',409);
@@ -90,7 +91,7 @@ export function createOrchestrator({store:s,production,administration,growth=nul
     return results;
   }
   async function tick(clientId=null) {
-    if(ticking||s.getSetting('paused')==='true')return {processed:0,paused:s.getSetting('paused')==='true'};if(budget().availableCents===0)return {processed:0,budgetBlocked:true};ticking=true;
+    if(ticking||s.getSetting('paused')==='true')return {processed:0,paused:s.getSetting('paused')==='true'};const internalBudget=budget();if(internalBudget.capCents-internalBudget.fixedCents-internalBudget.usedCents<=0)return {processed:0,budgetBlocked:true};ticking=true;
     try {
       s.run("UPDATE os_jobs SET status=CASE WHEN attempts>=3 THEN 'failed' ELSE 'queued' END,lease_until=NULL,error='Esecuzione interrotta: ripresa automatica controllata' WHERE status='running' AND lease_until<?",instant());
       if(!clientId)schedule();
@@ -123,6 +124,8 @@ export function createOrchestrator({store:s,production,administration,growth=nul
   async function handle({method,path,body={},user,clientId}) {
     requireOwner(user);
     if(method==='GET'&&path==='/state')return {data:state(user,clientId)};
+    if(method==='GET'&&path==='/cost-control')return {data:costControl.state(user)};
+    if(method==='POST'&&path==='/cost-control')return {data:costControl.confirm(user,body)};
     if(method==='POST'&&path==='/run')return {data:enqueue(user,clientId,body.agent,body.input||{},body.dedupe||null),status:201};
     if(method==='POST'&&path==='/tick')return {data:await tick(clientId)};
     if(method==='POST'&&path==='/run-all') {requireClient(s,user,clientId);if(s.getSetting('paused')==='true')throw new AppError('La regia è in pausa.',409);const batch=uid(),c=s.one('SELECT * FROM os_clients WHERE id=?',clientId);return {data:{batch,jobs:s.transaction(()=>agentDefinitions.filter(a=>eligibleAgent(a.id,c).eligible).map(a=>enqueue(user,clientId,a.id,clientId==='demo-bigant'?(specialistDemoInputs[a.id]||{}):{},'trial:'+batch)))},status:201};}
@@ -137,5 +140,5 @@ export function createOrchestrator({store:s,production,administration,growth=nul
     m=path.match(/^\/jobs\/([^/]+)\/retry$/);if(m&&method==='POST'){const j=s.one("SELECT * FROM os_jobs WHERE id=? AND status='failed'",m[1]);if(!j||j.client_id!==clientId)throw new AppError('Attività non ritentabile.',409);eligibility(clientId,j.agent);s.run("UPDATE os_jobs SET status='queued',attempts=0,available_at=?,error=NULL WHERE id=?",instant(),j.id);s.audit(user,j.client_id,'Nuovo tentativo richiesto',j.id);return {data:{ok:true}};}
     return null;
   }
-  return {handle,state,tick,enqueue,event,reserve,budget,nextRun,outputs};
+  return {handle,state,tick,enqueue,event,reserve,budget,nextRun,outputs,assertPaidReservation:costControl.assertReserved};
 }

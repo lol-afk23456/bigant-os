@@ -7,6 +7,7 @@ import {createGrowthMail} from './growth-mail.js';
 import {createGrowthCalendar} from './growth-calendar.js';
 import { createGrowthRuntime } from './growth-runtime.js';
 import { emailHTML, emailPreviewText } from './growth-brand.js';
+import {createCostControl} from './cost-control.js';
 
 const EXTERNAL_DISABLED = 'Servizio non collegato: operazione esterna disabilitata nella demo';
 const jobTypes = ['research', 'analyze', 'draft', 'sync', 'reconcile', 'reconcileMeeting'];
@@ -21,9 +22,9 @@ function fixture(input) {
 }
 function data(value, status = 200) { return { data: value, status }; }
 
-export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', realMode=false, connections=null, externalEnabled=false, providerOptions={}, googleAuth=null, gmailEnabled=false, calendarEnabled=false, clock=()=>new Date() }) {
+export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', realMode=false, connections=null, externalEnabled=false, providerOptions={}, googleAuth=null, gmailEnabled=false, calendarEnabled=false, clock=()=>new Date(),costControl=createCostControl({store,clock}) }) {
   const actor = new AsyncLocalStorage();
-  const s = growthStore(store, () => actor.getStore(),{realMode});
+  const s = growthStore(store, () => actor.getStore(),{realMode,clock,costControl});
   const runtime=realMode?createGrowthRuntime({store,growthStore:s,connections,getActor:()=>actor.getStore(),externalEnabled,providerOptions}):null;
   const mail=realMode?createGrowthMail({store,growthStore:s,runtime,googleAuth,origin,enabled:gmailEnabled,providerOptions,clock}):null;
   const calendar=realMode?createGrowthCalendar({store,growthStore:s,runtime,mail,googleAuth,origin,enabled:calendarEnabled,providerOptions,clock}):null;
@@ -53,7 +54,7 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
       jobs: s.query('SELECT * FROM jobs WHERE workspace=? ORDER BY created DESC', clientId),
       costs: s.query('SELECT * FROM costs WHERE workspace=? ORDER BY created DESC', clientId),
       approvals: s.query('SELECT a.* FROM gr_approvals a JOIN leads l ON l.id=(SELECT lead_id FROM messages WHERE id=a.message_id) WHERE l.workspace=?', clientId),
-      budget: { used, total: Number(store.getSetting('budget_cents')), fixed: Number(store.getSetting('fixed_cents')), available: Math.max(0, Number(store.getSetting('budget_cents')) - Number(store.getSetting('fixed_cents')) - used), simulatedCostCents: 0, source: 'Budget centrale OS' },
+      budget: { used, total: Number(store.getSetting('budget_cents')), fixed: Number(store.getSetting('fixed_cents')), available: Math.max(0, Math.min(Number(store.getSetting('budget_cents')) - Number(store.getSetting('fixed_cents')) - used,realMode?costControl.snapshot().availableCents:Infinity)), simulatedCostCents: 0, source: 'Budget centrale OS',costControl:costControl.snapshot() },
       auditSource: 'Registro attività centrale OS',
     };
   }

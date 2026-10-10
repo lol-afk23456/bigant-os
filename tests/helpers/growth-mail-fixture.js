@@ -1,10 +1,11 @@
+import {confirmFixtureBudget} from './budget-fixture.js';
 // Invented data and in-memory database. Every provider request is replaced here.
 import {openStore,seedCore} from '../../src/store.js';
 import {createConnections} from '../../src/connections.js';
 import {createGoogleOAuth,GMAIL_SCOPES} from '../../src/google-oauth.js';
 import {createGrowthModule} from '../../src/growth.js';
 export function mailFixture(t,{gmailEnabled=true}={}){
- const store=openStore();seedCore(store);t?.after(()=>store.close());const owner={...store.one("SELECT * FROM os_users WHERE id='demo-owner'"),session_id:'mail-fixture-session'},env={BIGANT_SECRET_KEY:Buffer.alloc(32,9).toString('base64')},connections=createConnections({store,env}),calls=[],control={};
+ const store=openStore();seedCore(store);confirmFixtureBudget(store);t?.after(()=>store.close());const owner={...store.one("SELECT * FROM os_users WHERE id='demo-owner'"),session_id:'mail-fixture-session'},env={BIGANT_SECRET_KEY:Buffer.alloc(32,9).toString('base64')},connections=createConnections({store,env}),calls=[],control={};
  store.run('INSERT INTO os_sessions VALUES(?,?,?,?)',owner.session_id,owner.id,'csrf-fixture',Date.now()+3600000);
  for(const id of ['brave','openai'])connections.save(owner,id,{version:0,fields:{apiKey:'chiave-inventata',...(id==='brave'?{}:{model:'modello-inventato'})}});
  connections.save(owner,'google',{version:0,fields:{clientId:'client-inventato',clientSecret:'segreto-inventato'}});

@@ -8,6 +8,7 @@ import {createBusinessProfileOAuth} from './src/business-profile-oauth.js';
 import {createBusinessProfile} from './src/business-profile.js';
 import {createConnections} from './src/connections.js';
 import {createServicePlan} from './src/service-plan.js';
+import {createCostControl} from './src/cost-control.js';
 import {createAgentConfig} from './src/agent-config.js';
 import {createClientRecords} from './src/client-records.js';
 import {createWorkspace,navigationFor} from './src/workspace.js';
@@ -51,15 +52,16 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   else if(base.protocol!=='http:'||!['localhost','127.0.0.1'].includes(base.hostname))throw new Error('Prototipo DEMO: è consentito soltanto un indirizzo HTTP locale.');
   const store=openStore(database);
   if(realMode)seedRealCore(store,{socioEmail:env.BIGANT_SOCIO_EMAIL,socioPassword:env.BIGANT_SOCIO_PASSWORD_INIZIALE});else seedCore(store);
+  const costControl=createCostControl({store,clock});
   const connections=createConnections({store,env});
   const gmailEnabled=realMode&&env.BIGANT_GROWTH_GMAIL_ENABLED==='true',calendarEnabled=()=>realMode&&env.BIGANT_GROWTH_CALENDAR_ENABLED==='true',googleAuth=realMode?createGoogleOAuth({store,connections,env,origin,enabled:gmailEnabled,calendarEnabled,clock,providerOptions:growthProviderOptions}):null;
   const businessProfileEnabled=()=>realMode&&env.BIGANT_GBP_ENABLED==='true';
   const businessProfileAuth=createBusinessProfileOAuth({store,connections,env,origin,enabled:businessProfileEnabled,clock,providerOptions:businessProfileProviderOptions});
   const businessProfile=createBusinessProfile({store,auth:businessProfileAuth,enabled:businessProfileEnabled,clock,providerOptions:businessProfileProviderOptions});
-  const production=createProduction({store}),growth=createGrowthModule({store,origin,realMode,connections,googleAuth,gmailEnabled,calendarEnabled,clock,externalEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true',providerOptions:growthProviderOptions}),fidelity=createFidelityModule({store,origin,realMode,env,clock,walletProviderOptions}),administration=createAdministrationModule({store,clock});
+  const production=createProduction({store}),growth=createGrowthModule({store,origin,realMode,costControl,connections,googleAuth,gmailEnabled,calendarEnabled,clock,externalEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true',providerOptions:growthProviderOptions}),fidelity=createFidelityModule({store,origin,realMode,env,clock,walletProviderOptions}),administration=createAdministrationModule({store,clock});
   growth.seed(realMode);fidelity.seed(realMode);administration.seed(realMode);
   const agentConfig=createAgentConfig({store,root,env,clock});
-  const orchestrator=createOrchestrator({store,production,administration,growth,fidelity,clock,guard:realMode?(id,options)=>agentConfig.requireRun(id,options):null});
+  const orchestrator=createOrchestrator({store,production,administration,growth,fidelity,clock,realMode,costControl,guard:realMode?(id,options)=>agentConfig.requireRun(id,options):null});
   const agency=createAgencyModule({store});
   const sciame=createSciame({store,production,administration,growth,orchestrator,root,env,clock,motore:motore?(typeof motore==='string'?createMotore({nome:motore,root,env}):motore):null});
   if(importaProveSciame)sciame.importaProve(resolve(root,'docs/demo-sciame'));
@@ -235,7 +237,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const backups=realMode&&worker&&database!==':memory:'?createBackupScheduler({store,sourcePath:database,env,clock}):null;
   let workerError=null,workerRun=null;
   const timer=worker?setInterval(()=>{if(workerRun)return;workerRun=orchestrator.tick().then(()=>fidelity.runWalletJobs()).then(()=>businessProfile.tick()).then(()=>{workerError=null;}).catch(()=>{workerError='Controllo delle automazioni da verificare.';}).finally(()=>{workerRun=null;});},2000):null;timer?.unref();
-  return {server,store,googleAuth,businessProfileAuth,businessProfile,billing,connections,servicePlan,agentConfig,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(workerRun)await workerRun;await backups?.close();if(server.listening)await new Promise(r=>server.close(r));await businessProfile.close();store.close();}};
+  return {server,store,costControl,googleAuth,businessProfileAuth,businessProfile,billing,connections,servicePlan,agentConfig,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(workerRun)await workerRun;await backups?.close();if(server.listening)await new Promise(r=>server.close(r));await businessProfile.close();store.close();}};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const modalitaReale=process.env.BIGANT_MODALITA==='reale';

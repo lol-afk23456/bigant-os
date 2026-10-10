@@ -65,7 +65,7 @@ export function createGrowthRuntime({store:root,growthStore:s,connections,getAct
   const read=(w,provider)=>{const {user,c,permit}=assertPermit(w,provider==='brave'?'search':'ai');const expected=versions(c,permit.phase)[provider];if(!expected)throw new AppError('Fornitore non autorizzato.',409);return connections.readForRuntime(user,provider,expected);};
   const call=async(name,w,...args)=>{
    const {c}=assertPermit(w,name==='website'?'website':name==='search'?'search':'ai');
-   const p=createGrowthLiveProviders({...providerOptions,credentials:read,allow:async(workspace,operation)=>{assertPermit(workspace,operation);return true;},budget:{reserve:s.reserve,settle:s.settle},settings:s.settings,aiProvider:c.provider,estimatedCents:{search:c.search_cents,ai:c.ai_cents}});
+   const p=createGrowthLiveProviders({...providerOptions,credentials:read,allow:async(workspace,operation)=>{assertPermit(workspace,operation);return true;},budget:{reserve:s.reserve,settle:s.settle,dispatch:id=>{assertPermit(w,name==='search'?'search':'ai');s.dispatch(id);}},settings:s.settings,aiProvider:c.provider,estimatedCents:{search:c.search_cents,ai:c.ai_cents}});
    const result=await p[name](w,...args);assertPermit(w,name==='website'?'website':name==='search'?'search':'ai');return result;
   };
   const blocked=async()=>{throw new AppError('Invii, posta e calendario richiedono una fase di attivazione successiva.',409);};

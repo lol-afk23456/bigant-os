@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import {createCostControl} from './cost-control.js';
 export const stages = ['new','qualified','contacted','interested','meeting','proposal','won','lost'];
 export const now = () => new Date().toISOString();
 export const uid = () => randomUUID();
@@ -14,7 +15,7 @@ export const defaultSettings = {
 
 
 const mapSql=sql=>sql.replace(/\b(workspaces|leads|messages|meetings|tokens|jobs|costs|suppressions)\b/g,name=>'gr_'+name).replace(/\b(leads_domain|leads_email|messages_provider|meeting_provider)\b/g,name=>'gr_'+name);
-export function growthStore(root,getActor=()=>null,{realMode=false}={}){
+export function growthStore(root,getActor=()=>null,{realMode=false,clock=()=>new Date(),costControl=createCostControl({store:root,clock})}={}){
  root.db.exec(mapSql(`  CREATE TABLE IF NOT EXISTS workspaces(id TEXT PRIMARY KEY REFERENCES os_clients(id), name TEXT NOT NULL, settings TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS leads(id TEXT PRIMARY KEY, workspace TEXT NOT NULL REFERENCES workspaces(id), company TEXT NOT NULL, website TEXT NOT NULL DEFAULT '', domain TEXT NOT NULL DEFAULT '', email TEXT NOT NULL DEFAULT '', contact TEXT NOT NULL DEFAULT '', sector TEXT NOT NULL DEFAULT '', city TEXT NOT NULL DEFAULT '', stage TEXT NOT NULL DEFAULT 'new', score INTEGER NOT NULL DEFAULT 0, source TEXT NOT NULL DEFAULT '', notes TEXT NOT NULL DEFAULT '', analysis TEXT NOT NULL DEFAULT '', consent TEXT NOT NULL DEFAULT 'none', consent_proof TEXT NOT NULL DEFAULT '', consent_at TEXT, suppressed INTEGER NOT NULL DEFAULT 0, value INTEGER NOT NULL DEFAULT 0, owner TEXT NOT NULL DEFAULT 'Socio DEMO', created TEXT NOT NULL, updated TEXT NOT NULL,client_id TEXT REFERENCES os_clients(id));
   CREATE UNIQUE INDEX IF NOT EXISTS leads_domain ON leads(workspace,domain) WHERE domain<>'';
@@ -52,16 +53,18 @@ export function growthStore(root,getActor=()=>null,{realMode=false}={}){
  const log=(w,agent,action,detail='',lead=null)=>root.audit(getActor()||{id:realMode?'growth-runtime':'growth-demo',name:realMode?'Agente Growth':'Agente Growth DEMO',role:'agent'},w,action,lead,{module:'growth',agent,detail,simulation:!realMode},'internal');
  const lead=(w,id)=>one('SELECT * FROM leads WHERE workspace=? AND id=?',w,id);
  const active=w=>!!root.one('SELECT 1 FROM os_clients WHERE id=? AND active=1',w);
- const budgetMonth=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Rome',year:'numeric',month:'2-digit'}).format(new Date());
+ const budgetMonth=()=>costControl.month();
  const costs=()=>root.one("SELECT COALESCE(SUM(cents),0) total FROM os_costs WHERE month=? AND status IN ('reserved','charged')",budgetMonth()).total;
  const reserve=(w,category,cents,note)=>transaction(()=>{
    if(!Number.isSafeInteger(cents)||cents<0)throw Error('Costo non valido.');
    const st=settings(w),budget=Number(root.getSetting?.('budget_cents')??st.totalBudget),fixed=Number(root.getSetting?.('fixed_cents')??(st.hostingBudget+st.emailBudget+st.reserveBudget));
    if(costs()+cents>budget-fixed)throw Object.assign(new Error('Budget globale disponibile esaurito.'),{status:409});
+   if(realMode)costControl.assertCanReserve(cents);
    const id=uid();run('INSERT INTO costs VALUES(?,?,?,?,?,?,?)',id,w,category,cents,'reserved',note,now());
    root.run('INSERT INTO os_costs VALUES(?,?,?,?,?,?,?)',id,w,'growth:'+category,cents,'reserved',budgetMonth(),now());return id;
  });
  const settle=(id,ok=true)=>transaction(()=>{const status=ok?'charged':'released';run('UPDATE costs SET status=? WHERE id=?',status,id);root.run('UPDATE os_costs SET status=? WHERE id=?',status,id);});
+ const dispatch=id=>{if(realMode)costControl.assertReserved(id);};
  const approvalBody=(w,m)=>realMode?`Mittente: ${settings(w).senderEmail||'Da configurare'}\nDestinatario: ${lead(w,m.lead_id)?.email||'Da indicare'}\n\n${m.body}`:m.body;
  function invalidateApprovals(w,leadId=null){for(const m of query("SELECT * FROM messages WHERE workspace=? AND direction='out' AND status IN ('draft','approved') AND (? IS NULL OR lead_id=?)",w,leadId,leadId)){run("UPDATE messages SET status='draft' WHERE id=?",m.id);requestApproval(w,m.id,{changed:true});}}
  function requestApproval(w,messageId,{status='pending',reason='',decidedBy=null,changed=false}={}){
@@ -76,5 +79,5 @@ export function growthStore(root,getActor=()=>null,{realMode=false}={}){
  const hasApproval=(w,id)=>!!root.one("SELECT 1 FROM os_approvals a JOIN gr_messages m ON m.id=a.entity_id JOIN os_users u ON u.id=a.decision_by WHERE a.kind='growth_message' AND a.status='approved' AND a.version=(SELECT MAX(version) FROM os_approvals WHERE kind='growth_message' AND entity_id=a.entity_id) AND m.workspace=? AND m.id=? AND u.role='owner' AND u.active=1",w,id);
  const getSecret=(_w,name)=>!realMode&&['brave','openai'].includes(name)?'DEMO_PROVIDER': '';
  const source=(w,leadId,kind,value)=>{const lead=one('SELECT id FROM leads WHERE workspace=? AND id=?',w,leadId);if(!lead)throw new Error('Azienda non trovata per la fonte.');let url;try{url=new URL(value.url);}catch{throw new Error('URL della fonte non valido.');}if(!['http:','https:'].includes(url.protocol)||url.username||url.password||!['search','website'].includes(kind)||typeof value.retrievedAt!=='string'||!Number.isFinite(Date.parse(value.retrievedAt)))throw new Error('Fonte incompleta o non valida.');run('INSERT INTO gr_sources VALUES(?,?,?,?,?,?,?,?)',uid(),w,leadId,kind,url.href,value.retrievedAt,String(value.text||value.description||'').slice(0,14000),JSON.stringify({provider:value.source||'Sito pubblico',simulation:!realMode}));};
- return {simulation:!realMode,source,active,approvalBody,invalidateApprovals,db:root.db,query,one,run,transaction,workspace,settings,saveSettings,log,lead,costs,reserve,settle,enqueue,getSecret,requestApproval,hasApproval};
+ return {simulation:!realMode,source,active,approvalBody,invalidateApprovals,db:root.db,query,one,run,transaction,workspace,settings,saveSettings,log,lead,costs,reserve,settle,dispatch,enqueue,getSecret,requestApproval,hasApproval};
 }
