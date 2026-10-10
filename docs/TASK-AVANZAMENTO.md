@@ -47,6 +47,10 @@ Link pubblici e fonte ora registrabili per attività, con conferma manuale del s
 
 Prima fonte dei Profili predisposta: consenso separato, scheda scelta e verificata, recensioni e serie giornaliere, aggiornamento manuale/giornaliero esplicito. Prove locali con Google simulato: **652/652**, Browser desktop e 390 px, revisione indipendente. Dettagli in [COLLAUDO-GOOGLE-BUSINESS](COLLAUDO-GOOGLE-BUSINESS.md). Le 92 voci sono ora **60 locali, 14 parziali, 18 da fare**; non è una misura di completamento T0–T10. Nessun avvio T5/T6, dato cliente, collegamento reale o rilascio.
 
+## Riordino corrente — Controllo complessivo dei costi
+
+Prerequisito dei motori onerosi aggiunto: verifica mensile dei costi esterni, impegni condivisi Growth/Sciame, blocco prima di raggiungere 40 € su 50 €. Conferma esplicita dei soci e storico immutabile; nessuna lettura automatica dei pannelli. **669/669 prove**, controllo **5/5**, Browser desktop/mobile. [Collaudo](COLLAUDO-CONTROLLO-COSTI.md). Totali reali ancora ignoti, nessuna attivazione. FUN-053/FUN-055 ancora parziali; T0–T10 mantiene il proprio ordine.
+
 ## Come riprendere
 
 Continuare le 92 voci dal loro stato reale e il riordino incrementale T0. Lettura manuale delle conversazioni predisposta e verificata con fornitori finti; Calendar Growth predisposto e provato localmente con fornitori finti (consenso separato, inviti autorizzati, prenotazione, riconciliazione e annullamento). Restano, fra l'altro, collaudi Gmail e Calendar reali, motore reale dello Sciame, collaudi dei ruoli e telefono, collegamenti da autorizzare. Apple non è più un requisito di attivazione reale in questa tranche, per la nuova istruzione T6; mantenere conservata e chiaramente non attiva l'eventuale struttura esistente.

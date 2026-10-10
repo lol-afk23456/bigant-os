@@ -124,3 +124,28 @@ test('Elaborato social: il collegamento apre la bozza effettiva nello Sciame, an
   await f.actions['agent-content'](c.id);assert.equal(f.S.view,'agents');assert.equal(f.S.section,'approvals');assert.match(f.node('#dialog-content').innerHTML,/Bozza collegata/);assert.match(f.node('#dialog-content').innerHTML,/Versione del testo/);assert.match(f.node('#dialog-content').innerHTML,/data-action="edit-content"/);assert.ok(f.calls.every(x=>x.method==='GET'));
  }
 });
+
+const unknownBudget=()=>({month:'2026-10',version:0,verified:false,externalCents:null,osCents:0,previousReservedCents:0,totalCents:null,capCents:5000,stopCents:4000,availableCents:0,blocked:true,reason:'Verifica i consumi e gli impegni esterni del mese prima di autorizzare spese.',confirmedBy:null,confirmedAt:null});
+async function budgetFixture(){const f=await fixture();f.S.section='budget';f.S.module={budget:{capCents:5000,fixedCents:3500,usedCents:0,availableCents:0,simulation:false,costControl:unknownBudget()},configuration:{costs:{rows:[],otherCents:0}}};return f;}
+test('Budget: il totale ignoto non viene rappresentato come zero e la prova DEMO è riconoscibile',async()=>{
+ const f=await budgetFixture(),html=f.run('agentsUnifiedView()');assert.match(html,/Totale da verificare/);assert.match(html,/Non verificato/);assert.match(html,/40,00/);assert.match(html,/DEMO: i dati/);assert.match(html,/Verifica consumi esterni/);
+});
+test('Budget: verifica esplicita, centesimi esatti e versione del mese; nessuna attivazione implicita',async()=>{
+ const f=await budgetFixture();f.actions['cost-control-confirm']();const html=f.node('#dialog-content').innerHTML;
+ assert.match(html,/non sommarli di nuovo/);assert.ok(!/name="confirmed"[^>]*checked/.test(html));
+ const fd=new FormData();fd.set('externalEuros','20.01');await assert.rejects(f.run('formHandler')(fd),/Conferma la verifica/);assert.equal(f.calls.length,0);
+ fd.set('confirmed','on');f.serve(call=>({...unknownBudget(),verified:true,blocked:false,reason:null,externalCents:2001,totalCents:2001,availableCents:1998,version:1,confirmedName:'Socio DEMO'}));
+ await f.run('formHandler')(fd);assert.deepEqual(f.calls[0].body,{month:'2026-10',version:0,externalCents:2001,confirmed:true});assert.equal(f.calls[0].path,'/api/agents/cost-control');assert.equal(f.calls.length,1);
+ assert.equal(f.S.module.budget.availableCents,1500);assert.equal(f.S.module.budget.costControl.version,1);assert.equal(f.node('#dialog').open,false);
+});
+test('Budget: ruolo e pagina errati non aprono la conferma',async()=>{
+ const f=await budgetFixture();f.S.session.user.role='collaborator';assert.throws(()=>f.actions['cost-control-confirm'](),/socio/);f.S.session.user.role='owner';f.S.section='office';assert.throws(()=>f.actions['cost-control-confirm'](),/Budget/);assert.equal(f.calls.length,0);
+});
+test('Budget: invio obsoleto e risposta tardiva non modificano un’altra pagina o sessione',async()=>{
+ const f=await budgetFixture();f.actions['cost-control-confirm']();const handler=f.run('formHandler'),fd=new FormData();fd.set('externalEuros','20');fd.set('confirmed','on');f.run("setViewRoute('agents:list')");await assert.rejects(handler(fd),/Pagina o accesso/);assert.equal(f.calls.length,0);
+ for(const change of ['navigation','session']){const f=await budgetFixture(),pending=deferred();f.serve(()=>pending.promise);f.actions['cost-control-confirm']();const request=f.run('formHandler')(fd);
+  if(change==='navigation')f.run("setViewRoute('agents:list')");else f.S.session={...f.S.session};
+  const newer={budget:{costControl:{version:99}}};f.S.module=newer;f.node('#dialog-content').innerHTML='Nuova pagina';
+  pending.resolve({...unknownBudget(),verified:true,version:1});await request;assert.equal(f.S.module,newer);assert.equal(f.node('#dialog-content').innerHTML,'Nuova pagina');
+ }
+});

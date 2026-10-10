@@ -165,6 +165,38 @@ function progressDetail(item){
   `<dl class="out-obj section"><div><dt>Fonte dello stato</dt><dd>${e(item.source||'Fonte non disponibile.')}</dd></div><div><dt>${e(item.evidenceLabel||'Data dell’evidenza')}</dt><dd>${evidence?progressDate(item.evidenceAt):'Nessuna evidenza datata disponibile.'}</dd></div></dl>`+
   (route?`<div class="actions section">${btn('Apri la pagina','goto',route,'','arrow')}</div>`:''));
 }
+function costControlPanel(b){
+ const c=b.costControl;
+ if(!c)return notice('Verifica complessiva dei costi non disponibile. Ricarica la pagina.',true);
+ const margin=c.verified?Math.min(c.availableCents,Math.max(0,b.capCents-b.fixedCents-b.usedCents)):0;
+ return panel('Controllo dei costi complessivi',`${badge(c.verified?(c.blocked?'Spese bloccate':'Totale verificato da un socio'):'Totale da verificare',c.verified&&!c.blocked?'green':'orange')}${S.session.demo!==false?notice('DEMO: i dati di questa prova sono inventati. Non indicano i consumi degli account reali.'):''}
+ <p>Mese ${e(c.month)} · Stop prima di raggiungere ${money(c.stopCents)} (80% del tetto).</p>
+ <div class="stats">${stat('Totale del mese',c.verified?money(c.totalCents):'Non verificato','Costi e impegni complessivi')}${stat('Margine per nuove chiamate',money(margin),'Include anche il limite delle quote interne')}</div>
+ <dl class="out-obj"><div><dt>Esterni, inclusa Railway</dt><dd>${c.externalCents===null?'Da verificare':money(c.externalCents)}</dd></div><div><dt>Registrati o prenotati nell’OS</dt><dd>${money(c.osCents)}</dd></div><div><dt>Prenotazioni precedenti ancora aperte</dt><dd>${money(c.previousReservedCents)}</dd></div><div><dt>Ultima verifica</dt><dd>${c.confirmedAt?progressDate(c.confirmedAt):'Mai effettuata'}</dd></div><div><dt>Socio</dt><dd>${e(c.confirmedName||'Non ancora indicato')}</dd></div></dl>
+ ${c.reason?notice(c.reason,true):''}<p class="muted">Il contatore non legge i pannelli dei fornitori. Aggiorna la verifica quando cambiano i consumi esterni. Le stime OS non sono fatture.</p>${btn('Verifica consumi esterni','cost-control-confirm','','primary','wallet')}`);
+}
+ACTIONS['cost-control-confirm']=()=>{
+ const data=S.module,c=data?.budget?.costControl;
+ if(!isOwner()||S.view!=='agents'||S.section!=='budget'||!c)throw Error('Apri Budget come socio.');
+ const snapshot=viewSnapshot(),token=crypto.randomUUID();let saving=false;
+ const current=()=>isCurrentView(snapshot)&&isOwner()&&S.module===data&&$('#dialog').open&&$('#dialog-content').innerHTML.includes(`data-budget-editor="${token}"`);
+ form('Verifica i consumi del mese',[
+  {html:`<p data-budget-editor="${token}">Mese: <strong>${e(c.month)}</strong>. Contatore OS del mese: ${money(c.osCents)}; prenotazioni precedenti: ${money(c.previousReservedCents)}. Questi importi sono già conteggiati: non sommarli di nuovo.</p>`},
+  numberField('externalEuros','Costi e impegni esterni · euro',c.externalCents===null?'':c.externalCents/100,20,'.01'),
+  {name:'confirmed',label:'Ho verificato tutti i costi e gli impegni esterni del mese, inclusa Railway, escludendo gli importi già conteggiati nell’OS',type:'checkbox'}
+ ],async(b,fd)=>{
+  if(!current())throw Error('Pagina o accesso cambiati. Riapri la verifica.');
+  if(saving)throw Error('Salvataggio già in corso.');
+  if(!fd.has('confirmed'))throw Error('Conferma la verifica dei consumi prima di salvare.');
+  const externalCents=cents(b.externalEuros);if(!Number.isSafeInteger(externalCents)||externalCents<2000)throw Error('Includi almeno 20 € di Railway.');
+  let updated;saving=true;
+  try{updated=await api('/api/agents/cost-control',{method:'POST',scoped:false,body:{month:c.month,version:c.version,externalCents,confirmed:true}});}catch(error){if(!current())return;throw error;}finally{saving=false;}
+  if(!current())return;
+  data.budget.costControl=updated;
+  if(data.budget.simulation===false)data.budget.availableCents=Math.min(updated.availableCents,Math.max(0,data.budget.capCents-data.budget.fixedCents-data.budget.usedCents));
+  $('#dialog').close();render();toast(updated.blocked?'Verifica salvata. Nuove spese bloccate.':'Verifica dei consumi salvata.');
+ },{submit:'Registra verifica',intro:(S.session.demo!==false?'Solo importi inventati per il collaudo. ':'')+'Controlla i pannelli dei fornitori: includi Railway, imposte e cambio prudenziale. Non inserire credenziali o fatture. Registrare la verifica non attiva account, agenti o invii.'});
+};
 function agentsUnifiedView(){
  if(!isOwner())return approvalsView();
  const a=S.module||{},jobs=(a.jobs||[]).filter(job=>job.client_id===S.clientId);
@@ -178,7 +210,7 @@ function agentsUnifiedView(){
   if(id==='approvals')return approvalsView();
   if(id==='list')return notice('Base = procedura di prova. AI pronta = configurazione e collaudo completati. Attivo = autorizzato per il lavoro reale.')+`<div class="toolbar"><label class="sr-only" for="local-filter">Cerca un agente</label><input id="local-filter" class="search" placeholder="Cerca un agente o un compito…" value="${e(S.filter)}"></div><div class="card-grid">${(a.configuration?.items||[]).filter(agent=>`${agent.name} ${agent.config.task}`.toLocaleLowerCase('it').includes(S.filter.toLocaleLowerCase('it'))).map(agent=>`<article class="module-card"><h3>${e(agent.name)}</h3>${badge(agent.operationalStatus,agent.operationalStatus==='Attivo'?'green':'orange')}<p>${e(agent.config.task)}</p><small>${agent.hasAIInstructions?'Istruzioni AI presenti':'Procedura base disponibile'} · ${e(agent.config.cadence==='manual'?'Avvio manuale':label(agent.config.cadence))}</small><footer>${btn('Configura','agent-config',agent.id,'small')}${btn('Registro','agent-record',agent.id,'small ghost')}${S.session.demo!==false?btn('Prova procedura','run-agent',agent.id,'small ghost'):''}</footer></article>`).join('')}</div>`;
   if(id==='history')return panel('Esecuzioni dello sciame AI',table(['Agente','Quando','Stato','Qualità',''],(a.configuration?.history||[]).filter(row=>row.client_id===S.clientId).map(row=>[e(row.agente),date(row.created_at,true),badge(STATI_PASSO_UI[row.stato]||row.stato),e(row.esito_qualita||'Da verificare'),btn('Leggi','ufficio-postazione',row.id,'small')])))+panel('Procedure di prova',table(['Agente','Quando','Stato','Esito',''],jobs.map(job=>[e(agentName(job.agent)),date(job.created_at,true),badge(agentJobStatus(job)),e(job.result?.summary||job.error||'In attesa'),job.result?btn('Leggi elaborato','agent-result',job.id,'small'):''])));
-  if(id==='budget'){const b=a.budget||{},costs=a.configuration?.costs||{};return panel('Budget dello sciame',`<div class="stats">${stat('Tetto mensile',money(b.capCents),'Limite condiviso')}${stat('Speso e impegnato',money(b.usedCents),'Nel mese corrente')}${stat('Disponibile',money(b.availableCents),'Dopo quote fisse e riserva')}</div>${btn('Modifica ripartizione','budget','','','wallet')}`)+panel('Costo per agente',table(['Agente','Contabilizzato','Impegnato'],(costs.rows||[]).map(row=>[e(row.name),money(row.chargedCents),money(row.reservedCents)])))+notice(`Regia e altri consumi: ${money(costs.otherCents)}. I costi AI sono stime prudenziali finché il listino del modello non è verificato.`);}
+  if(id==='budget'){const b=a.budget||{},costs=a.configuration?.costs||{};return costControlPanel(b)+panel('Ripartizione interna',`<div class="stats">${stat('Tetto mensile',money(b.capCents),'Limite condiviso')}${stat('Speso e impegnato',money(b.usedCents),'Nel mese corrente')}${stat('Quote fisse e riserva',money(b.fixedCents),'Ripartizione interna del tetto')}</div>${btn('Modifica ripartizione','budget','','','wallet')}`)+panel('Costo per agente',table(['Agente','Contabilizzato','Impegnato'],(costs.rows||[]).map(row=>[e(row.name),money(row.chargedCents),money(row.reservedCents)])))+notice(`Regia e altri consumi: ${money(costs.otherCents)}. I costi AI sono stime prudenziali finché il listino del modello non è verificato.`);}
   return sectionCards((a.departments||[]).map(department=>({name:department.name,value:`${department.agents?.length||0} ${department.agents?.length===1?'agente':'agenti'}`,note:department.purpose||department.trigger,route:'agents:structure/'+department.id,icon:'agents'})));
  });
 }

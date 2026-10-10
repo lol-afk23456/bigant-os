@@ -175,3 +175,7 @@ Prima integrazione dei Profili: OAuth GBP con chiavi proprie e consenso distinto
 Cache soltanto in RAM: 24 ore dall’inizio lettura, 64 attività/8 MiB. Il database conserva identificativi, versioni, soci e date/esiti senza payload Google. Aggiornamento giornaliero solo esplicito; massimo cinque attività per giro, fallimenti senza retry ravvicinati. Il cliente legge la propria cache autorizzata con servizio locale; collaboratori esclusi da questo percorso e menu cliente definitivo rinviato al giro. Sospensione e revoca impediscono riuso; nessuna rete alla consultazione. Dati mancanti distinti dallo zero codificato da Google come campo value omesso in un punto datato.
 
 La revisione finale conferma FUN-013 implementata in locale, COL-002 e FUN-012 parziali. Rilascio, account/quote e confronto reale ancora da autorizzare e verificare. Nessuna modifica al budget o ai vincoli T0–T10. [Collaudo](COLLAUDO-GOOGLE-BUSINESS.md).
+
+### Stop complessivo dei costi — 10 ottobre 2026
+
+Applicare il limite già richiesto dal proprietario anche ai percorsi onerosi predisposti: totale esterno ignoto blocca le nuove spese, conferma del socio per mese, Railway inclusa e importi OS non duplicati, stop prima di raggiungere l’80% del tetto. Nessuna nuova autorizzazione a spendere o attivazione implicita. Conservare gli impegni incerti e quelli precedenti ancora aperti; costo noto contabilizzato una volta. I pannelli dei fornitori non vengono sincronizzati da questa funzione. Dettagli in [SOP-CONTROLLO-COSTI](SOP-CONTROLLO-COSTI.md).

@@ -799,7 +799,8 @@
       "criterio": "Il budget mostra speso e tetto aggiornati",
       "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo."
+        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo.",
+        "Controllo complessivo dei costi: dichiarazione mensile immutabile dei soci, stop prima del 40 € su 50 €, impegni condivisi Growth/Sciame e verifica prima del trasporto; 17 nuove prove, suite 669/669, Browser desktop/mobile. docs/COLLAUDO-CONTROLLO-COSTI.md. Importi inventati: consumi reali ancora da verificare, nessuna attivazione."
       ]
     },
     {

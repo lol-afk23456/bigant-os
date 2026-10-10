@@ -30,3 +30,7 @@ Una revisione manuale mostra il testo corrente, senza riproporre le priorità st
 Catalogo API: `GET /api/workspace/priorities`, sola lettura e soltanto soci, restituisce l’ultima proposta dell’agenzia oppure nessuna proposta. Esclude credenziali, input completi e movimenti contabili; non accoda lavori, non contatta modelli o fornitori e non scrive dati.
 
 La scheda **Struttura** apre un reparto alla volta: responsabilità, specialisti, cosa preparano e accesso alla configurazione. Le procedure descritte non diventano agenti attivi per il solo fatto di essere visibili. Gli aggiornamenti della diretta appartengono alla pagina e alla sessione che li hanno richiesti; se l’utente cambia pagina, la risposta vecchia viene scartata.
+
+## Budget dei motori onerosi
+
+Prima di usare un motore oneroso, anche in un giro con input DEMO, si applica il [controllo dei costi complessivi](SOP-CONTROLLO-COSTI.md). La prova deterministica a costo zero resta distinta. Scheda Budget → Verifica consumi esterni: nessuna conferma viene precompilata per rendere attiva l’AI. [Collaudo locale](COLLAUDO-CONTROLLO-COSTI.md).
