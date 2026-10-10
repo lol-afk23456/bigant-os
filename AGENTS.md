@@ -4,6 +4,8 @@ Prima di ogni sessione rileggere `docs/BRIEF-BIGANT.md`, `docs/VERIFICA-COPERTUR
 
 Leggere README, docs/BRIEF-BIGANT.md, docs/DECISIONI.md e docs/REPORT-NOTTE.md prima di modificare.
 
+Prima di modificare `public/` (aspetto dell'interfaccia) leggere anche `docs/GUIDA-ESTETICA-FRONTEND.md`: token, componenti e criteri di accettazione valgono per ogni modifica visiva.
+
 - Progetto interno, due ditte individuali sotto un marchio. Non costruire un SaaS commerciale.
 - Lavorare sul branch bigant-os-notte-1; niente main, force push, merge o deploy senza nuova istruzione esplicita.
 - Growth, Fidelity e PED originali restano intatti. Railway solo lettura dei metadati, mai valori riservati.

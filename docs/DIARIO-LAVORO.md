@@ -65,3 +65,10 @@ Fase 1 (`docs/FASE-1-SERVER-REALE.md`), autorizzata l'8 ottobre. Lavoro fatto da
 
 Nessun dato reale di clienti è stato inserito. Nessuna email, messaggio o pubblicazione esterna. Il dominio `os.bigant.it` non è stato toccato (serve un'azione DNS separata, da autorizzare). La chiave AI non è stata impostata, come da istruzione del proprietario.
 
+## Sessione Claude Code cloud — 10 ottobre 2026
+
+| Ora | Ciclo / macro-area | Requisiti R-xxx | Risultato | Problemi |
+|---|---|---|---|---|
+| 12:40 | Frontend: tre direzioni | R-006, R-051, R-169 | Tre prove di interfaccia cliccabili (cabina di regia, prima le decisioni, studio per cliente) su una tela privata dei soci, con dati DEMO del repository | Nessun file del repository modificato in questo passo |
+| 13:20 | Frontend: guida estetica | R-006, R-051, R-169 | Ricerca sulle buone pratiche (gerarchia, token, contrasto WCAG 2.2, stati vuoti, tabelle dense); app avviata in locale (DEMO) e fotografata; CSS misurato. `docs/GUIDA-ESTETICA-FRONTEND.md` con diagnosi, token, componenti, piano e criteri; schermate "prima" in `docs/estetica/prima/`; puntatore in `AGENTS.md` | Node 22 nel container: l'app parte comunque (SQLite sperimentale). Rilevato che `scripts/build-online.js` legge i file di `public/` per nome: la guida vieta di dividerli in questa fase |
+
