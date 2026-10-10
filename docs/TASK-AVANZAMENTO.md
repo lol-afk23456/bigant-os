@@ -51,6 +51,10 @@ Prima fonte dei Profili predisposta: consenso separato, scheda scelta e verifica
 
 Prerequisito dei motori onerosi aggiunto: verifica mensile dei costi esterni, impegni condivisi Growth/Sciame, blocco prima di raggiungere 40 € su 50 €. Conferma esplicita dei soci e storico immutabile; nessuna lettura automatica dei pannelli. **669/669 prove**, controllo **5/5**, Browser desktop/mobile. [Collaudo](COLLAUDO-CONTROLLO-COSTI.md). Totali reali ancora ignoti, nessuna attivazione. FUN-053/FUN-055 ancora parziali; T0–T10 mantiene il proprio ordine.
 
+## Riordino corrente — Prove tecniche individuali AI
+
+FUN-053 ha ora un passaggio di prova singola con dati inventati, istruzioni salvate, fornitore scelto e conferma esplicita. Risposta e configurazione della prova conservate, schema verificato, controllo costi e sessione corrente, nessuna attivazione implicita. **18 nuove prove, suite 687/687**, controllo 5/5 e Browser desktop/mobile. [Collaudo](COLLAUDO-AGENTI-AI.md). Primo agente reale e T4 restano da autorizzare; nessuna equivalenza tra prova tecnica e servizio operativo. Le 92 voci restano 60 locali, 14 parziali, 18 da fare.
+
 ## Come riprendere
 
 Continuare le 92 voci dal loro stato reale e il riordino incrementale T0. Lettura manuale delle conversazioni predisposta e verificata con fornitori finti; Calendar Growth predisposto e provato localmente con fornitori finti (consenso separato, inviti autorizzati, prenotazione, riconciliazione e annullamento). Restano, fra l'altro, collaudi Gmail e Calendar reali, motore reale dello Sciame, collaudi dei ruoli e telefono, collegamenti da autorizzare. Apple non è più un requisito di attivazione reale in questa tranche, per la nuova istruzione T6; mantenere conservata e chiaramente non attiva l'eventuale struttura esistente.

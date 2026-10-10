@@ -149,3 +149,27 @@ test('Budget: invio obsoleto e risposta tardiva non modificano un’altra pagina
   pending.resolve({...unknownBudget(),verified:true,version:1});await request;assert.equal(f.S.module,newer);assert.equal(f.node('#dialog-content').innerHTML,'Nuova pagina');
  }
 });
+
+const trialAgent=()=>({id:'quality',name:'Qualità DEMO',technicalTrial:{available:true,supported:true,configured:true,connectionVersion:7},config:{version:3,provider:'openai',estimated_cents:40,task:'Prova <script>',instructions:'Istruzioni inventate',sources:'Fonti inventate',quality:'Verifica <img>'}});
+const trialResult=()=>({id:'prova-fixture',agent:'quality',status:'passed',current:true,provider:'openai',configVersion:3,connectionVersion:1,createdAt:'2026-10-10T10:00:00Z',costCents:40,costStatus:'charged',note:'COLLAUDO TECNICO · dati inventati; nessuna attivazione o pubblicazione.',output:{sintesi:'Prova <script>'}});
+test('Prova AI: consenso vuoto, testi visibili, idempotenza e singola chiamata esplicita',async()=>{
+ const f=await fixture();f.S.section='list';f.serve(call=>call.method==='GET'?{items:[trialAgent()]}:trialResult());await f.actions['agent-trial']('quality');
+ const html=f.node('#dialog-content').innerHTML;assert.match(html,/Laboratorio Arancio DEMO/);assert.match(html,/Prova &lt;script&gt;/);assert.doesNotMatch(html,/<script>|name="confirmed"[^>]*checked/);
+ const handler=f.run('formHandler'),fd=new FormData();await assert.rejects(handler(fd),/Conferma la prova/);assert.equal(f.calls.length,1);fd.set('confirmed','on');await handler(fd);
+ assert.equal(f.calls[1].path,'/api/agent-config/quality/check');assert.equal(f.calls[1].clientId,null);assert.equal(f.calls[1].body.version,3);assert.equal(f.calls[1].body.connectionVersion,7);assert.equal(f.calls[1].body.confirmed,true);assert.match(f.calls[1].body.requestId,/^[a-f0-9-]{36}$/);
+ assert.match(f.node('#dialog-content').innerHTML,/Prova tecnica riuscita/);assert.match(f.node('#dialog-content').innerHTML,/da riconciliare/);assert.match(f.node('#dialog-content').innerHTML,/nessuna attivazione/);assert.doesNotMatch(f.node('#dialog-content').innerHTML,/<script>/);
+});
+test('Prova AI: flag spento, collegamento o salvataggio mancante non offrono un invio',async()=>{
+ for(const kind of ['flag','connection','version']){const f=await fixture(),agent=trialAgent();if(kind==='flag')agent.technicalTrial.available=false;if(kind==='connection')agent.technicalTrial.configured=false;if(kind==='version')agent.config.version=0;f.serve(()=>({items:[agent]}));await f.actions['agent-trial']('quality');assert.doesNotMatch(f.node('#dialog-content').innerHTML,/Avvia prova tecnica/);assert.equal(f.calls.length,1);assert.equal(f.calls[0].method,'GET');}
+});
+test('Prova AI: niente invio obsoleto, doppio clic o risultato tardivo su finestra diversa',async()=>{
+ const f=await fixture();f.serve(()=>({items:[trialAgent()]}));await f.actions['agent-trial']('quality');const old=f.run('formHandler'),fd=new FormData();fd.set('confirmed','on');f.S.session={...f.S.session};await assert.rejects(old(fd),/Pagina o accesso/);assert.equal(f.calls.length,1);
+ for(const change of ['page','session','dialog']){const f=await fixture(),pending=deferred();f.serve(call=>call.method==='GET'?{items:[trialAgent()]}:pending.promise);await f.actions['agent-trial']('quality');const handler=f.run('formHandler'),run=handler(fd);await assert.rejects(handler(fd),/già in corso/);if(change==='page')f.run("setViewRoute('agents:budget')");if(change==='session')f.S.session={...f.S.session};f.node('#dialog-content').innerHTML='Finestra successiva';pending.resolve(trialResult());await run;assert.equal(f.node('#dialog-content').innerHTML,'Finestra successiva');assert.equal(f.calls.filter(x=>x.method==='POST').length,1);}
+});
+test('Storico AI: sola lettura, prova superata riconoscibile, nessun invio o HTML eseguibile',async()=>{
+ const f=await fixture();f.serve(()=>[{...trialResult(),current:false,configuration:{instructions:'Testo <img>'}}]);await f.actions['agent-trial-history']('quality');const html=f.node('#dialog-content').innerHTML;assert.match(html,/Prova superata: ripetere/);assert.match(html,/Istruzioni usate/);assert.doesNotMatch(html,/<img>|<script>/);assert.equal(f.calls[0].path,'/api/agent-config/quality/trials');assert.equal(f.calls[0].method,'GET');
+ f.S.session.user.role='collaborator';await assert.rejects(f.actions['agent-trial-history']('quality'),/soci/);await assert.rejects(f.actions['agent-trial']('quality'),/soci/);
+});
+test('Configurazione agente: un form rimasto aperto non salva dopo cambio sessione',async()=>{
+ const f=await fixture();f.serve(()=>({items:[trialAgent()]}));await f.actions['agent-config']('quality');const handler=f.run('formHandler');f.S.session={...f.S.session};await assert.rejects(handler(new FormData()),/Pagina o accesso/);assert.equal(f.calls.length,1);
+});

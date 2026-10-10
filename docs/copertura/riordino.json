@@ -761,7 +761,8 @@
       "criterio": "L'elenco mostra lo stato di ciascun agente; un agente non Attivo non parte nel lavoro vero",
       "stato": "parziale in locale",
       "prove": [
-        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo."
+        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo.",
+        "10 ottobre: prova tecnica individuale Anthropic/OpenAI, consenso esplicito, schema, storico immutabile, invalidazione per istruzioni/chiavi/revoca, budget condiviso; 18 nuove prove, suite 687/687. Browser desktop/mobile. SOP-COLLAUDO-AGENTE e COLLAUDO-AGENTI-AI. Nessuna attivazione reale: stato ancora parziale."
       ]
     },
     {
