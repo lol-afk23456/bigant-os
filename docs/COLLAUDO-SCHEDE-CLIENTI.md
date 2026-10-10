@@ -11,7 +11,7 @@
 
 Due regressioni riprodotte prima della correzione; dieci prove mirate ora superate in `tests/client-record-ui.test.js`. Revisione indipendente limitata al blocco: rilevata e corretta anche la possibilità di una nuova apertura durante l’uscita pendente; nessun problema residuo nel ricontrollo.
 
-**Suite completa 769/769, zero errori e zero saltate**, eseguita una volta sul blocco finale. Evidenza locale `.cache/client-record-full.log`. Nessuna nuova dipendenza.
+**Suite completa 769/769, zero errori e zero saltate**, eseguita una volta sul blocco finale; controllo progetto **5/5** (161 JavaScript, 95 documenti, 219 collegamenti locali). Evidenza locale `.cache/client-record-full.log`. Nessuna nuova dipendenza.
 
 Browser locale con archivio in memoria e soli dati inventati: aggiornamento anagrafica, nota versionata, avvio cliente e ritorno alla pagina di accesso riusciti. Nessun errore console osservato. Immagine `.cache/riordino-browser/bigant-collaudo-scheda.png`. Le risposte ritardate, le credenziali e il PDF sono verificati nelle prove automatiche, senza inserire password reali nel browser.
 

@@ -330,3 +330,5 @@ Completato il criterio scritto FUN-054. Nel giro browser individuato e corretto 
 ## 10 ottobre — Schede cliente e uscita sicura
 
 Corretti salvataggi dal contesto obsoleto e credenziali restituite dopo navigazione/uscita. Un solo controllo indipendente ha individuato anche una nuova apertura durante logout pendente, ora bloccata. Dieci regressioni UI, **suite completa 769/769**, browser su anagrafica, memoria, avvio e logout con dati inventati; nessun errore console. [Prove e limiti](COLLAUDO-SCHEDE-CLIENTI.md). Nessuna dipendenza o migrazione dati. Matrice invariata, nessuna attivazione esterna.
+
+Rilascio dello stesso blocco completato: `a752be3`, Railway SUCCESS, backup 17:00 e verifica HTTP 17:02. Due file identici e due API anonime 401. Anteprima locale fermata; pagina online conservata per l’accesso del socio già richiesto.
