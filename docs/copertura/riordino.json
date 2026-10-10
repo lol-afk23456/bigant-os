@@ -156,10 +156,11 @@
       "area": "Mappa agenzia → I 10 moduli del gestionale",
       "modifica": "Ripartizione decisa dal proprietario: tabella \"Dove finiscono i 10 moduli\" qui sotto",
       "criterio": "La sezione \"Gestionale\" non esiste più come elenco astratto; ogni modulo tenuto vive nella sua pagina",
-      "stato": "parziale in locale",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
       "prove": [
         "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
-        "T0, 10 ottobre: controllo date condiviso senza cambi di comportamento; date impossibili rifiutate senza scritture e bisestile valido verificato nei contratti. 284/284 test e check 5/5; stati e limiti del riordino invariati."
+        "T0, 10 ottobre: controllo date condiviso senza cambi di comportamento; date impossibili rifiutate senza scritture e bisestile valido verificato nei contratti. 284/284 test e check 5/5; stati e limiti del riordino invariati.",
+        "Audit 10 ottobre: AUDIT-RESIDUI-RIORDINO.md. Destinazioni confrontate con menu, instradamento e decisioni aggiornate; moduli mantenuti nelle proprie pagine. Trello, fonti reali e collaudo autenticato restano separati e aperti."
       ]
     },
     {
