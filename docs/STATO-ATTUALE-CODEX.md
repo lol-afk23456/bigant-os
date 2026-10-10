@@ -14,7 +14,7 @@ Aggiornato il 10 ottobre 2026. Questo file riassume lo stato; non sostituisce le
 1. FUN-040 completata, verificata e online. Vedi COLLAUDO-EMAIL-MARKETING.md. Nessun invio collegato. Non ripetere il collaudo già concluso.
 2. FUN-054 completata: ORDINE-CONFIGURAZIONE-AGENTI.md. Sequenza scritta dal brief, nessuna attivazione e T4 ancora aperta. Nuovo percorso Profili cliente verificato e online.
 3. Audit residui concluso: AUDIT-RESIDUI-RIORDINO.md. FUN-007 soddisfa il criterio locale delle destinazioni; FUN-053/055/062 restano parziali perché non provano percorsi automatici/esterni funzionanti. Non ripetere audit o collaudi equivalenti. Le modifiche sono online; proseguire dal collaudo autenticato e dai prerequisiti del primo fornitore, mantenendo Fidelity prima di Growth.
-4. Richiesta di accesso al socio già inviata il 10 ottobre: attendere la risposta senza ripetere la domanda. Verificata nuovamente dopo il quinto rilascio: la scheda mostra ancora “Entra nel tuo spazio”. I collaudi autenticati sul server richiedono la sessione del socio e gli accessi nominali ancora da predisporre con password scelte dai titolari. Non leggere variabili/credenziali. Fonti reali, Fidelity/Growth e telefoni Wallet restano distinti; Apple esclusa.
+4. **Login automatico del socio riuscito** dopo nuova autorizzazione esplicita. Il browser online è su «Scegli la tua password»: account con password provvisoria, cambio obbligatorio. Richiesta al titolare già inviata per completare direttamente nel browser «Salva ed entra»; nessuna password nuova in chat. Non ripetere login, cercare altre password o aggirare il cambio. La sessione è conservata nel browser; verificare la schermata dopo la conferma. Il cambio credenziali richiede handoff per le regole del controllo browser.
 5. T0 in corso; T1–T10 seguono il riordino, con stato in [TASK-AVANZAMENTO](TASK-AVANZAMENTO.md). Non dichiararle completate per il solo numero di test.
 
 ## Autorizzazioni e accessi
@@ -28,3 +28,9 @@ CLI ufficiale Railway disponibile in `.cache/release-tools/railway`, già autent
 [Rilascio e limiti](RILASCIO-2026-10-10.md) · [Matrice92](copertura/riordino.json) · [Mappatura principale](MAPPATURA-FINALE-CODEX.md) · [Piano](PIANO-RIORDINO-CODEX.md) · [Collaudo risultati](COLLAUDO-RISULTATI-CLIENTI.md).
 
 Leggere solo ciò che serve al prossimo intervento. Aggiornare questo riepilogo quando cambia codice, rilascio o impedimento. Non ripetere esplorazioni e test già risolti.
+
+## Ultime direttive del proprietario
+
+Accelerare e finire entro la quota residua: il controllo Codex del 10 ottobre indica 40% consumato, 60% disponibile nella finestra settimanale, nessun credito aggiuntivo. Questa percentuale non misura il lavoro restante e non è il budget operativo dell’app. Usare blocchi di lavoro più grandi, letture mirate, test pertinenti e una sola verifica finale per blocco; niente nuovi audit o pubblicazioni per sole modifiche documentali.
+
+Il proprietario autorizza esplicitamente gli accessi automatici e il recupero mirato delle sole credenziali necessarie a BigAnt OS da GitHub/Railway. Questa istruzione successiva supera la precedente richiesta che il socio esegua personalmente il normale login. Il login è già riuscito con le credenziali fornite in precedenza: non è servita alcuna lettura di segreti GitHub/Railway. Non copiarle in documenti o log. Restano distinti cambio password obbligatorio (titolare), costi, consensi ai fornitori, nuovi permessi e operazioni irreversibili. «Riprendi obiettivo» deve continuare con queste nuove direttive, senza ricominciare l’audit.
