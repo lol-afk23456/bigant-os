@@ -16,7 +16,8 @@
         "Growth ora a sette sezioni, coda unica, ricerca e analisi DEMO verificate nel Browser; 390 px senza overflow.",
         "Area cliente ora a card e sezioni separate, verificata su desktop e 390 px. Restano giro completo dei ruoli e altre pagine da verificare.",
         "COLLAUDO-NAVIGAZIONE-RUOLI.md: menu e card Profili cliente, proiezione uguale all’anteprima, fonte/data e report nel servizio; giro delle schermate principali per ruolo e telefono. Collegamenti reali e giro completo restano aperti.",
-        "10 ottobre: COLLAUDO-NAVIGAZIONE-RUOLI.md, sottopagine. Note cliente, regolamento/Wallet e anagrafiche/incassi separati; ritorni e ruoli verificati, suite 772/772 e browser a 390 px. Audit complessivo e collaudo autenticato online ancora aperti."
+        "10 ottobre: COLLAUDO-NAVIGAZIONE-RUOLI.md, sottopagine. Note cliente, regolamento/Wallet e anagrafiche/incassi separati; ritorni e ruoli verificati, suite 772/772 e browser a 390 px. Audit complessivo e collaudo autenticato online ancora aperti.",
+        "Report nei servizi riordinati a card con un solo dettaglio aperto: fonti Meta separate, risultati/recensioni Google, report verificati, indicatori e contatti Email marketing. Navigazione e API vincolate a cliente/servizio; scadenze e percorsi obsoleti senza ripiego su altri dati. Cinque nuove prove e browser desktop/mobile: docs/COLLAUDO-VISTA-CLIENTE.md. Non certifica tutte le pagine/ruoli reali né attiva fonti esterne."
       ]
     },
     {
@@ -534,7 +535,8 @@
       "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
       "prove": [
         "Home cliente a due card; servizi, singolo report e documenti separati con Indietro. Browser desktop e 390 px, tests/client-area-ui.test.js.",
-        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente.",
+        "Report nei servizi riordinati a card con un solo dettaglio aperto: fonti Meta separate, risultati/recensioni Google, report verificati, indicatori e contatti Email marketing. Navigazione e API vincolate a cliente/servizio; scadenze e percorsi obsoleti senza ripiego su altri dati. Cinque nuove prove e browser desktop/mobile: docs/COLLAUDO-VISTA-CLIENTE.md. Non certifica tutte le pagine/ruoli reali né attiva fonti esterne."
       ]
     },
     {
@@ -558,7 +560,8 @@
         "Report raggiungibili nei servizi, stessi dati per socio in anteprima e cliente; report mensile separato rimosso. GBP attivo e conteggi Fidelity disponibili; altre fonti, report Ads completi e Email marketing restano aperti.",
         "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente.",
         "Report manuali verificati ora anche nel servizio pertinente; riepilogo trasversale separato richiesto da FUN-035. Restano integrazioni automatiche, Ads e Email marketing.",
-        "Lettura Meta predisposta per Facebook e Instagram professionali: scelta canali, prova privata, attivazione esplicita, aggiornamento giornaliero facoltativo, dati nel servizio Social e cache RAM 24h; identità Page e Instagram esclusive fra clienti. Prove e limiti in docs/COLLAUDO-PROFILI-META.md. Nessun account reale attivato; OAuth completo, confronto reale, crescita Instagram e altri canali ancora aperti."
+        "Lettura Meta predisposta per Facebook e Instagram professionali: scelta canali, prova privata, attivazione esplicita, aggiornamento giornaliero facoltativo, dati nel servizio Social e cache RAM 24h; identità Page e Instagram esclusive fra clienti. Prove e limiti in docs/COLLAUDO-PROFILI-META.md. Nessun account reale attivato; OAuth completo, confronto reale, crescita Instagram e altri canali ancora aperti.",
+        "Report nei servizi riordinati a card con un solo dettaglio aperto: fonti Meta separate, risultati/recensioni Google, report verificati, indicatori e contatti Email marketing. Navigazione e API vincolate a cliente/servizio; scadenze e percorsi obsoleti senza ripiego su altri dati. Cinque nuove prove e browser desktop/mobile: docs/COLLAUDO-VISTA-CLIENTE.md. Non certifica tutte le pagine/ruoli reali né attiva fonti esterne."
       ]
     },
     {
@@ -660,7 +663,8 @@
         "Fonte/data sui dati disponibili, link Google e rimozione immediata dei dati scaduti anche senza rete. Fidelity dichiara archivio e data di lettura ma manca link alla fonte originale; altre fonti da collegare.",
         "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente.",
         "Fonte Fidelity apribile dall’area cliente: conteggi per programma riconciliati col totale, criterio e data, senza contatti. API GET isolata per attività; 818/818 test e collaudo cliente DEMO desktop/390 px. COLLAUDO-VISTA-CLIENTE.md. Fonti esterne ancora da collegare.",
-        "Lettura Meta predisposta per Facebook e Instagram professionali: scelta canali, prova privata, attivazione esplicita, aggiornamento giornaliero facoltativo, dati nel servizio Social e cache RAM 24h; identità Page e Instagram esclusive fra clienti. Prove e limiti in docs/COLLAUDO-PROFILI-META.md. Nessun account reale attivato; OAuth completo, confronto reale, crescita Instagram e altri canali ancora aperti."
+        "Lettura Meta predisposta per Facebook e Instagram professionali: scelta canali, prova privata, attivazione esplicita, aggiornamento giornaliero facoltativo, dati nel servizio Social e cache RAM 24h; identità Page e Instagram esclusive fra clienti. Prove e limiti in docs/COLLAUDO-PROFILI-META.md. Nessun account reale attivato; OAuth completo, confronto reale, crescita Instagram e altri canali ancora aperti.",
+        "Report nei servizi riordinati a card con un solo dettaglio aperto: fonti Meta separate, risultati/recensioni Google, report verificati, indicatori e contatti Email marketing. Navigazione e API vincolate a cliente/servizio; scadenze e percorsi obsoleti senza ripiego su altri dati. Cinque nuove prove e browser desktop/mobile: docs/COLLAUDO-VISTA-CLIENTE.md. Non certifica tutte le pagine/ruoli reali né attiva fonti esterne."
       ]
     },
     {
@@ -1009,7 +1013,8 @@
       "prove": [
         "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
         "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow",
-        "Anteprima e cliente usano la stessa proiezione; esclusi dati di collaudo GBP non attivi. Prove in COLLAUDO-VISTA-CLIENTE.md."
+        "Anteprima e cliente usano la stessa proiezione; esclusi dati di collaudo GBP non attivi. Prove in COLLAUDO-VISTA-CLIENTE.md.",
+        "Report nei servizi riordinati a card con un solo dettaglio aperto: fonti Meta separate, risultati/recensioni Google, report verificati, indicatori e contatti Email marketing. Navigazione e API vincolate a cliente/servizio; scadenze e percorsi obsoleti senza ripiego su altri dati. Cinque nuove prove e browser desktop/mobile: docs/COLLAUDO-VISTA-CLIENTE.md. Non certifica tutte le pagine/ruoli reali né attiva fonti esterne."
       ]
     }
   ],

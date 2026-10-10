@@ -52,3 +52,17 @@ Browser con login cliente DEMO: I tuoi servizi → Fidelity → Apri la fonte, t
 Verifica del blocco: **818/818** test, zero saltati; controllo progetto **5/5**. Dopo la sola correzione della tabella mobile: 11/11 prove UI pertinenti e browser confermano larghezza visibile/contenuto 314/314 px. Log `.cache/fidelity-source-full-suite.log`, `fidelity-source-ui-final.log` e `fidelity-source-check.log`.
 
 Pubblicato `b6540a7`, Railway `6231fd20-46ef-412e-8a1f-f84f6498af7e` SUCCESS, backup precedente `91a0b9ed-420c-4b65-bf20-b91d22d0edb6` (19:43, 801 MB). Alle 19:45 health/file verificati e nuova API anonima 401. Alle 19:46 browser socio sul cliente di prova: dettaglio fonte aperto, totale 0 distinto dall’agenzia, nessun contatto e nessun errore console. Durante il cambio attività, un clic anticipato è stato respinto dal controllo della pagina corrente; completato il caricamento, il dettaglio corretto si è aperto. `.cache/fidelity-source-release-verification.json`, immagine `riordino-browser/fonte-fidelity-online.png`. Login cliente reale ancora rinviato.
+
+## Riordino dei report per servizio — 10 ottobre, dopo Meta
+
+Ogni servizio ora si apre su una griglia di schede. Facebook, Instagram, risultati Google, recensioni Google, report verificati, indicatori del catalogo e contatti Email marketing si aprono separatamente. Il dettaglio contiene un solo report; Indietro torna al servizio, poi all’elenco dei servizi. Si riusa il componente delle card, senza nuove voci nel menu.
+
+L’indirizzo della sottosezione carica soltanto l’API del servizio: un ID di report non diventa un percorso o una fonte arbitraria. Il dettaglio deve esistere nella proiezione corrente e corrispondere al cliente e al servizio selezionati. Cambio servizio/cliente, report rimosso e scadenza delle copie non mostrano un altro report come ripiego. L’anteprima socio usa la stessa navigazione; i comandi di gestione dei contatti conservano i permessi precedenti.
+
+Cinque nuovi test coprono schede/dettagli separati, Google risultati/recensioni, percorso malformato o servizio diverso, API del servizio e Email marketing. Aggiornati i controlli delle schermate precedenti; la prima suite ha segnalato soltanto due aspettative rimaste sul vecchio layout, poi corrette e superate nelle 13 prove pertinenti.
+
+Browser locale con dati inventati: servizio Social → schede Facebook/Instagram/indicatori → dettaglio Instagram da solo → ricaricamento dell’indirizzo → Indietro. A 390 px: nessuno scorrimento orizzontale (390/390). Cambiando attività sul dettaglio, appare Report non disponibile e il contenuto precedente sparisce. Zero errori console. Schermate tecniche: `report-cards-desktop.png`, `report-cards-mobile.png`, `report-detail-mobile.png`.
+
+Questo completa il riordino locale dei report nei servizi; non dimostra l’intero PRINC-01 per tutte le schermate/ruoli reali e non completa le fonti ancora scollegate.
+
+Verifica finale di questo blocco: **851/851**, zero saltate. Controllo progetto **5/5**: 177 JavaScript, 103 documenti, 246 link.

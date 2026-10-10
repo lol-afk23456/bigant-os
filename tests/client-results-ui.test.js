@@ -38,5 +38,5 @@ test('risultati UI: cliente legge la proiezione pubblicata senza comandi di modi
 test('risultati UI: la card compare solo con un report pubblicato e la bozza non esce dal servizio',async()=>{
  const f=await fixture();f.S.session.user.role='client';f.S.view='client';f.S.section='';f.S.module={clientId:f.S.clientId,clientName:'Attività inventata',sezioni:[{id:'home',servicesCount:1,contractsCount:0}]};assert.doesNotMatch(f.run('clienteDashboardView()'),/client:results/);
  f.S.module.sezioni.push({id:'results'});assert.match(f.run('clienteDashboardView()'),/client:results/);
- f.S.section='service/social';f.S.module={clientId:f.S.clientId,service:{id:'social',nome:'Social media'},reports:[],publishedReports:[f.report]};assert.match(f.run('clienteDashboardView()'),/Report verificato/);
+ f.S.section='service/social';f.S.module={clientId:f.S.clientId,service:{id:'social',nome:'Social media'},reports:[],publishedReports:[f.report]};assert.match(f.run('clienteDashboardView()'),/Verificato/);assert.ok(f.run('clienteDashboardView()').includes('published/'+f.report.id));f.S.section='service/social/published/'+f.report.id;assert.match(f.run('clienteDashboardView()'),/Archivio inventato/);
 });

@@ -45,8 +45,8 @@ test('Schede servizio: tutti i contratti attuali espongono mancanze senza promuo
 
 test('Scheda cliente: il report dichiara le fonti mancanti senza esporre il lavoro interno',async t=>{
  const app=createApp({env:{},worker:false});t.after(()=>app.close());const f=await fixture(),user=app.store.one("SELECT * FROM os_users WHERE role='client' AND active=1 LIMIT 1");
- f.S.module=app.cliente.service(user,user.tenant_id,'social');f.S.view='service';
- const html=f.run('serviceWorkspaceView()');assert.doesNotMatch(html,technical);assert.match(html,/I valori mancanti restano da collegare/);assert.match(html,/Fonte del servizio da collegare/);assert.doesNotMatch(html,/Specialisti|Task aperti|Istruzioni/);
+ f.S.module=app.cliente.service(user,user.tenant_id,'social');f.S.view='service';f.S.serviceId='social';
+ let html=f.run('serviceWorkspaceView()');assert.doesNotMatch(html,technical);assert.match(html,/Dati da collegare/);assert.doesNotMatch(html,/Fonte del servizio da collegare/);f.S.view='client';f.S.section='service/social/report/'+f.S.module.reports[0].id;html=f.run('clienteDashboardView()');assert.match(html,/Fonte del servizio da collegare/);assert.doesNotMatch(html,/Specialisti|Task aperti|Istruzioni/);
 });
 
 test('Cliente: KPI assente, zero registrato e dati DEMO mantengono significati e fonti distinti',async()=>{

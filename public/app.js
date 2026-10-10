@@ -96,7 +96,7 @@ async function load(){
     else if(S.section!=='sections'){const [state,configuration]=await Promise.all([api('/api/agents/state'),api('/api/agent-config/state')]);nextModule={...state,configuration};}
   }
   else if(S.view==='service')nextModule=await api((role()==='client'?'/api/cliente/services/':'/api/agency/services/')+encodeURIComponent(S.serviceId));
-  else if(S.view==='client')nextModule=await api(/^profiles(?:\/|$)/.test(S.section||'')?'/api/cliente/profiles':(S.section||'').startsWith('service/')?'/api/cliente/services/'+encodeURIComponent(S.section.slice(8)):S.section==='results'?'/api/cliente/results':'/api/cliente/dashboard');
+  else if(S.view==='client')nextModule=await api(/^profiles(?:\/|$)/.test(S.section||'')?'/api/cliente/profiles':(S.section||'').startsWith('service/')?clientServiceApiPath():S.section==='results'?'/api/cliente/results':'/api/cliente/dashboard');
   else if(S.view==='catalog')nextModule=await api('/api/cliente/dashboard');
   else nextModule=S.view==='users'?await api('/api/users'):moduleName?await api(`/api/${moduleName}/state`):null;
   if(sequence!==S.loading)return;S.module=nextModule;render();S.lastRefresh=Date.now();

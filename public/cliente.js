@@ -54,28 +54,50 @@ function clientSource(row){
 }
 function clientMetricRows(rows){return `<div class="kpi-list">${rows.map(row=>`<div class="kpi-row"><div><b>${e(row.nome)}</b>${clientSource(row)}${row.nota?`<small>${e(row.nota)}</small>`:''}</div><div class="kpi-val">${row.valore===null||row.valore===undefined?'<span class="muted">—</span>':e(row.valore)}${badge(row.stato)}</div></div>`).join('')}</div>`;}
 let clientReportExpiryTimer=null;
-function clientGoogleReport(g){
+// Routes select a report from the current service payload, never a new data source.
+function clientServiceRoute(){
+ const parts=S.view==='service'?['service',S.serviceId]:String(S.section||'').split('/');
+ if(parts[0]!=='service'||!/^([a-z][a-z0-9-]{0,63})$/.test(parts[1]||'')||parts.length>4||parts.slice(2).some(x=>!/^([a-zA-Z0-9][a-zA-Z0-9_-]{0,159})$/.test(x)))return null;
+ return {id:parts[1],detail:parts.slice(2).join('/')};
+}
+function clientServiceApiPath(){const route=clientServiceRoute();if(!route)throw Error('Indirizzo del servizio non valido. Torna a I tuoi servizi.');return '/api/cliente/services/'+encodeURIComponent(route.id);}
+function clientGoogleReport(g,kind){
  const source={fonte:g.source,aggiornato:g.fetchedAt,url:g.sourceUrl};
+ if(kind==='google-results'){
+  const series=(g.performance?.multiDailyMetricTimeSeries||[]).flatMap(row=>row.dailyMetricTimeSeries||[]);
+  const names={WEBSITE_CLICKS:'Clic al sito',CALL_CLICKS:'Clic sul pulsante chiama',BUSINESS_DIRECTION_REQUESTS:'Richieste di indicazioni'};
+  const daily=Object.entries(names).map(([key,nome])=>{
+   const points=series.find(row=>row.dailyMetric===key)?.timeSeries?.datedValues||[];
+   return `<details class="section"><summary>${e(nome)}</summary>${points.length?table(['Giorno','Valore'],points.map(row=>[e(`${row.date.day}/${row.date.month}/${row.date.year}`),e(row.value)])):empty('Dati non disponibili','Google non ha restituito valori per questo indicatore.')}</details>`;
+  }).join('');
+  return panel('Risultati Google Business Profile',clientSource(source)+`<p>Periodo delle misure giornaliere: ${e(date(g.from))} – ${e(date(g.to))}. I giorni assenti non valgono zero.</p>`+daily);
+ }
  const summary=[['Recensioni totali',g.reviews?.totalReviewCount],['Voto medio',g.reviews?.averageRating]].map(([nome,valore])=>({...source,nome,valore:valore??null,stato:valore===undefined?'Dato non disponibile':'Registrato'}));
- const series=(g.performance?.multiDailyMetricTimeSeries||[]).flatMap(row=>row.dailyMetricTimeSeries||[]);
- const names={WEBSITE_CLICKS:'Clic al sito',CALL_CLICKS:'Clic sul pulsante chiama',BUSINESS_DIRECTION_REQUESTS:'Richieste di indicazioni'};
- const daily=Object.entries(names).map(([key,nome])=>{
-  const points=series.find(row=>row.dailyMetric===key)?.timeSeries?.datedValues||[];
-  return panel(nome,clientSource(source)+(points.length?table(['Giorno','Valore'],points.map(row=>[e(`${row.date.day}/${row.date.month}/${row.date.year}`),e(row.value)])):empty('Dati non disponibili','Google non ha restituito valori per questo indicatore.')));
- }).join('');
  const reviews=g.reviews?.reviews||[];
- return panel('Google Business Profile',clientMetricRows(summary)+`<p>Periodo delle misure giornaliere: ${e(date(g.from))} – ${e(date(g.to))}. I giorni assenti non valgono zero.</p>`)+daily+panel('Recensioni',clientSource(source)+`<p>Ultime ${reviews.length} recensioni disponibili in questa lettura, fino a 50. L’elenco può essere parziale.</p>`+(reviews.length?reviews.map(row=>`<article class="list-item"><div class="body"><b>${e(row.reviewer?.displayName||'Utente Google')}</b><small>${e(({ONE:'1',TWO:'2',THREE:'3',FOUR:'4',FIVE:'5'})[row.starRating]||'Voto non disponibile')} / 5 · ${e(date(row.updateTime||row.createTime,true))}</small><p class="preserve">${e(row.comment||'Nessun testo')}</p>${row.reviewReply?`<small>Risposta della tua attività</small><p class="preserve">${e(row.reviewReply.comment||'')}</p>`:''}</div></article>`).join(''):empty('Nessuna recensione nella lettura','')));
+ return panel('Recensioni Google',clientMetricRows(summary)+`<p>Ultime ${reviews.length} recensioni disponibili in questa lettura, fino a 50. L’elenco può essere parziale.</p>`+(reviews.length?reviews.map(row=>`<article class="list-item"><div class="body"><b>${e(row.reviewer?.displayName||'Utente Google')}</b><small>${e(({ONE:'1',TWO:'2',THREE:'3',FOUR:'4',FIVE:'5'})[row.starRating]||'Voto non disponibile')} / 5 · ${e(date(row.updateTime||row.createTime,true))}</small><p class="preserve">${e(row.comment||'Nessun testo')}</p>${row.reviewReply?`<small>Risposta della tua attività</small><p class="preserve">${e(row.reviewReply.comment||'')}</p>`:''}</div></article>`).join(''):empty('Nessuna recensione nella lettura','')));
 }
 function clientServiceReportView(){
- const d=S.module||{},back=`<div class="section-back">${btn('Indietro','goto','client:servizi','ghost','arrow')}<span>I tuoi servizi</span></div>`;
- if(d.clientId!==S.clientId||!d.service)return clientAreaHeader()+back+empty('Report non disponibile','Torna ai servizi e riprova.');
+ const d=S.module||{},route=clientServiceRoute(),servicesBack=`<div class="section-back">${btn('Indietro','goto','client:servizi','ghost','arrow')}<span>I tuoi servizi</span></div>`;
  clearTimeout(clientReportExpiryTimer);clientReportExpiryTimer=null;
- const google=d.google&&Date.parse(d.google.expiresAt)>Date.now()?d.google:null;
- const meta=d.service.id==='social'&&d.meta&&Date.parse(d.meta.expiresAt)>Date.now()?d.meta:null;
+ if(!route||d.clientId!==S.clientId||d.service?.id!==route.id)return clientAreaHeader()+servicesBack+empty('Report non disponibile','Torna ai servizi e riprova.');
+ const base='client:service/'+route.id,google=['local','presence','multisite'].includes(route.id)&&d.google&&Date.parse(d.google.expiresAt)>Date.now()?d.google:null;
+ const meta=route.id==='social'&&d.meta&&Date.parse(d.meta.expiresAt)>Date.now()?d.meta:null;
  const expiry=[google?.expiresAt,meta?.expiresAt].filter(Boolean).map(Date.parse).sort((a,b)=>a-b)[0];
  if(expiry){const snapshot=viewSnapshot();clientReportExpiryTimer=setTimeout(()=>{if(isCurrentView(snapshot)&&S.module===d){render();load();}},Math.max(1,expiry-Date.now()+1));}
- const reports=d.reports||[];
- return clientAreaHeader()+back+`<h2>${e(d.service.nome)}</h2>`+notice(d.note)+(d.publishedReports||[]).map(row=>`<details class="section"><summary>${e(row.period)} · Report verificato</summary>${resultsBody(row,false)}</details>`).join('')+(google?clientGoogleReport(google):'')+(meta?clientMetaReport(meta):'')+(d.emailMarketing?emailContactsPanel(d.emailMarketing):'')+reports.map(row=>panel(row.nome,row.metriche.length?clientMetricRows(row.metriche):empty('Report non ancora disponibile','Le misure verranno mostrate qui con fonte e data.'))).join('');
+ const options=[],validId=id=>typeof id==='string'&&/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,159}$/.test(id);
+ const add=(id,name,value,note,body,icon='chart')=>options.push({id,name,value,note,body,icon,route:base+'/'+id});
+ for(const row of d.publishedReports||[])if(validId(row.id))add('published/'+row.id,'Report '+row.period,'Verificato','Report pubblicato dall’agenzia',()=>panel('Report '+row.period,resultsBody(row,false)),'file');
+ if(google){add('google-results','Risultati Google','Apri','Clic al sito, chiamate e indicazioni',()=>clientGoogleReport(google,'google-results'));add('google-reviews','Recensioni Google','Apri','Valutazioni e recensioni disponibili',()=>clientGoogleReport(google,'google-reviews'),'star');}
+ for(const channel of ['facebook','instagram'])if(meta?.[channel])add(channel,channel==='facebook'?'Facebook':'Instagram','Apri il report','Dati acquisiti '+date(meta.fetchedAt,true),()=>clientMetaReport(meta,channel));
+ if(route.id==='email-marketing'&&d.emailMarketing)add('contacts','Contatti e consensi',Number.isSafeInteger(d.emailMarketing.counts?.total)?String(d.emailMarketing.counts.total)+' contatti':'Apri','Registro della tua attività',()=>emailContactsPanel(d.emailMarketing),'users');
+ for(const row of d.reports||[])if(validId(row.id)){
+  const metrics=Array.isArray(row.metriche)?row.metriche:[],available=metrics.filter(x=>x.valore!==null&&x.valore!==undefined).length;
+  add('report/'+row.id,row.nome,available?available+' indicatori disponibili':'Dati da collegare','Indicatori previsti per questo servizio',()=>panel(row.nome,metrics.length?clientMetricRows(metrics):empty('Report non ancora disponibile','Le misure verranno mostrate qui con fonte e data.')));
+ }
+ const header=clientAreaHeader();
+ if(!route.detail)return header+servicesBack+`<h2>${e(d.service.nome)}</h2>`+notice('Scegli un report o una sezione del servizio. Fonte e data si trovano accanto ai dati.')+(options.length?sectionCards(options):empty('Report non ancora disponibili','L’agenzia completerà qui le fonti di questo servizio.'));
+ const back=`<div class="section-back">${btn('Indietro','goto',base,'ghost','arrow')}<span>${e(d.service.nome)}</span></div>`,selected=options.find(x=>x.id===route.detail);
+ return header+back+(selected?selected.body():empty('Report non disponibile','La fonte può essere scaduta o la sezione rimossa. Torna al servizio e scegli un report disponibile.'));
 }
 function clientProfilesView(){
  const d=S.module||{},preview=S.view==='client',base=preview?'client:profiles':'profiles',section=preview?S.section.slice('profiles'.length).replace(/^\//,''):S.section||'';
