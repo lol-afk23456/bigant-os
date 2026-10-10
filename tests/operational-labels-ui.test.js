@@ -32,13 +32,18 @@ test('Schede servizio: tutti i contratti attuali espongono mancanze senza promuo
  const app=createApp({env:{},worker:false});t.after(()=>app.close());const f=await fixture();
  const owner=app.store.one("SELECT * FROM os_users WHERE role='owner' AND active=1 LIMIT 1");f.S.session.user=owner;f.S.view='service';
  for(const service of serviceBlueprints){
-  f.S.module=app.agency.workspace(owner,'demo-bottega',service.id);const html=f.run('serviceWorkspaceView()');
-  assert.doesNotMatch(html,technical,service.id);assert.match(html,/Da completare/,service.id);assert.match(html,/data-id="catalog"/,service.id);
+  f.S.module=app.agency.workspace(owner,'demo-bottega',service.id);f.S.serviceId=service.id;f.S.section=service.id;const html=f.run('serviceWorkspaceView()');
+  assert.doesNotMatch(html,technical,service.id);assert.match(html,/Sezioni del servizio/,service.id);assert.match(html,/data-id="catalog:plan"/,service.id);
   if(service.status==='Flusso DEMO parziale')assert.match(html,/Alcune funzioni DEMO sono disponibili; il servizio completo resta da attivare/,service.id);
   else if(service.excluded)assert.match(html,/Questo servizio non è previsto nell’offerta/,service.id);
   else assert.match(html,/Il metodo è descritto; il lavoro specialistico resta da attivare/,service.id);
   assert.doesNotMatch(html,/data-action="(?:run-agent|agent-config|service-plan-edit|google-oauth-start)"/);
   assert.doesNotMatch(html,/data-action="goto" data-id="work"|Apri i lavori dell’attività/);
+  for(const [index,part] of f.S.module.sections.entries()){
+   f.S.section=service.id+'/parts/'+index;const detail=f.run('serviceWorkspaceView()');f.context.partMissing=part.missing;
+   assert.doesNotMatch(detail,technical,service.id);
+   if(part.missing)assert.ok(detail.includes(f.run('e(humanText(partMissing))')),service.id);
+  }
  }
  assert.equal(f.requests,0);
 });

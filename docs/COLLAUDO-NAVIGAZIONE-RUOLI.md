@@ -32,3 +32,15 @@ Tre nuove prove UI su contenuti esclusi dalle altre sottopagine, ritorni, ruoli 
 Browser locale, dati inventati: apertura della nota, salvataggio versione 2, ritorno all’indice; regolamento e Google Wallet singoli; incassi cliente, ditte e persone separati. A 390 px non c’è overflow nelle pagine misurate; nessun errore console. Screenshot `.cache/riordino-browser/bigant-sottopagine-desktop.png` e `bigant-sottopagine-mobile.png`. Le API e i permessi server non sono cambiati.
 
 PRINC-01 resta parziale nell’audit complessivo: questo è il collaudo delle sottopagine modificate, non la certificazione di ogni schermata o dell’uso autenticato sul server. Matrice92 invariata.
+
+## Pagina operativa del servizio — completamento del riordino
+
+Il percorso diretto `service:<id>` mostrava ancora metodo, sezioni, lavori, contenuti, approvazioni e fonti insieme. Ora mostra un indice a card e una sola sezione aperta. Sezioni, lavori e contenuti hanno un proprio elenco e un dettaglio singolo; il contenuto riporta versione, fonte e calendario interno. Indietro torna al proprio elenco e poi all’indice. I collegamenti conservano l’attività anche dopo una ricarica; percorsi inesistenti o dati caricati per un’altra attività non mostrano il contenuto precedente. Nessuna riapertura del menu Lavori e contenuti.
+
+Prove automatiche: suite completa **893 prove, 892 superate al primo giro**, una fixture ancora riferita alla pagina precedente. Aggiornata la fixture con servizio/sezione correnti, ritorno al piano e verifica delle mancanze in ogni dettaglio di tutti i contratti. **29/29 prove mirate superate** dopo la sola correzione del test; codice applicativo invariato dopo la suite. Controllo progetto **5/5**, 182 file JavaScript, 103 documenti e 253 collegamenti verificati prima di questo aggiornamento documentale. Tre nuove prove coprono indice/dettagli separati, escaping, dati obsoleti, percorso e contesto dell’attività.
+
+Browser locale, dati inventati: socio, indice Social, elenco e dettaglio contenuto; ricarica conserva Bottega Aurora, ritorni corretti, desktop e telefono a 390 px senza overflow. Console del socio senza errori. Screenshot in `.cache/riordino-browser/service-index-desktop.png`, `service-index-mobile.png`, `service-detail-desktop.png`, `service-detail-mobile.png`.
+
+Permessi: il server conserva `/api/agency/*` riservato ai soci. Accesso diretto del collaboratore provato nel browser e rifiutato con 403; la proiezione collaboratore coperta dal test UI è solo difensiva, non un nuovo accesso operativo. La delega cliente al proprio report resta invariata e coperta dalle regressioni. Gli account nominali online attendono il salvataggio del proprietario. PRINC-01 rimane parziale per il giro completo delle altre pagine e dei ruoli reali.
+
+Backup Railway delle 20:05, 801 MB, riconfermato via metadati prima del rilascio. Modifica solo interfaccia: nessuna migrazione o scrittura automatica ai dati.
