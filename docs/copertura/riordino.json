@@ -19,7 +19,8 @@
         "10 ottobre: COLLAUDO-NAVIGAZIONE-RUOLI.md, sottopagine. Note cliente, regolamento/Wallet e anagrafiche/incassi separati; ritorni e ruoli verificati, suite 772/772 e browser a 390 px. Audit complessivo e collaudo autenticato online ancora aperti.",
         "Report nei servizi riordinati a card con un solo dettaglio aperto: fonti Meta separate, risultati/recensioni Google, report verificati, indicatori e contatti Email marketing. Navigazione e API vincolate a cliente/servizio; scadenze e percorsi obsoleti senza ripiego su altri dati. Cinque nuove prove e browser desktop/mobile: docs/COLLAUDO-VISTA-CLIENTE.md. Non certifica tutte le pagine/ruoli reali né attiva fonti esterne.",
         "Giro online del 10 ottobre: il percorso diretto service:social usa ancora serviceWorkspaceView in app.js con pannelli completi affiancati. Riordino di questa pagina residua da fare; non riaprire la verifica degli indici Servizi gia completata.",
-        "Pagina operativa service:<id> residua riordinata: indice, sezione e singolo dettaglio separati, ritorni e attività persistente nella ricarica. Browser socio desktop/390 px e rifiuto server del collaboratore verificati; suite finale 894/894, mirate 30/30 e cambio attività con ricarica verificato nel browser. Dettagli in COLLAUDO-NAVIGAZIONE-RUOLI.md. Giro completo e account nominali restano aperti. Codice 4c04e8a online: socio sul cliente di prova, indice/dettaglio/ritorno/ricarica e mobile 390 px verificati, zero errori console."
+        "Pagina operativa service:<id> residua riordinata: indice, sezione e singolo dettaglio separati, ritorni e attività persistente nella ricarica. Browser socio desktop/390 px e rifiuto server del collaboratore verificati; suite finale 894/894, mirate 30/30 e cambio attività con ricarica verificato nel browser. Dettagli in COLLAUDO-NAVIGAZIONE-RUOLI.md. Giro completo e account nominali restano aperti. Codice 4c04e8a online: socio sul cliente di prova, indice/dettaglio/ritorno/ricarica e mobile 390 px verificati, zero errori console.",
+        "624dcc0 online: contesto cliente conservato anche in scheda/anteprima; note, contratto e report verificati. 899/899 prove; COLLAUDO-ONLINE-2026-10-10.md. Giro completo dei ruoli ancora aperto."
       ]
     },
     {
@@ -312,7 +313,8 @@
       "prove": [
         "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
         "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow",
-        "10 ottobre: COLLAUDO-SCHEDE-CLIENTI.md. Moduli vincolati a cliente/sessione, risposte Accessi obsolete scartate e uscita immediata; dieci regressioni UI, suite 769/769 e browser con dati inventati. Collaudo autenticato online ancora aperto."
+        "10 ottobre: COLLAUDO-SCHEDE-CLIENTI.md. Moduli vincolati a cliente/sessione, risposte Accessi obsolete scartate e uscita immediata; dieci regressioni UI, suite 769/769 e browser con dati inventati. Collaudo autenticato online ancora aperto.",
+        "Online: nota inventata del solo cliente di prova salvata, ricaricata e aggiornata alla versione 2. Nessun cambio involontario attività dopo ricarica."
       ]
     },
     {
@@ -376,7 +378,8 @@
       "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
       "prove": [
         "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
-        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow",
+        "Online: scadenza antecedente rifiutata; contratto inventato fino al 25 ottobre compare nell’avviso entro 30 giorni con cliente corretto. PDF scaricato identico alla fixture."
       ]
     },
     {
@@ -553,7 +556,8 @@
       "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
       "prove": [
         "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
-        "Report periodici con obiettivi, lavori e misure manuali, fonti/date, versioni immutabili e visibilità esplicita dopo verifica dei soci. Revoca persistente su servizi/ruoli; UI desktop/mobile e 14 prove dedicate. COLLAUDO-RISULTATI-CLIENTI.md."
+        "Report periodici con obiettivi, lavori e misure manuali, fonti/date, versioni immutabili e visibilità esplicita dopo verifica dei soci. Revoca persistente su servizi/ruoli; UI desktop/mobile e 14 prove dedicate. COLLAUDO-RISULTATI-CLIENTI.md.",
+        "Online: report inventato ottobre, anteprima versione corrente, conferma, visibilità in Social e nuova revisione che lo rende privato verificati. Report finale nascosto."
       ]
     },
     {
@@ -569,7 +573,8 @@
         "Lettura Meta predisposta per Facebook e Instagram professionali: scelta canali, prova privata, attivazione esplicita, aggiornamento giornaliero facoltativo, dati nel servizio Social e cache RAM 24h; identità Page e Instagram esclusive fra clienti. Prove e limiti in docs/COLLAUDO-PROFILI-META.md. Nessun account reale attivato; OAuth completo, confronto reale, crescita Instagram e altri canali ancora aperti.",
         "Report nei servizi riordinati a card con un solo dettaglio aperto: fonti Meta separate, risultati/recensioni Google, report verificati, indicatori e contatti Email marketing. Navigazione e API vincolate a cliente/servizio; scadenze e percorsi obsoleti senza ripiego su altri dati. Cinque nuove prove e browser desktop/mobile: docs/COLLAUDO-VISTA-CLIENTE.md. Non certifica tutte le pagine/ruoli reali né attiva fonti esterne.",
         "Accesso Meta guidato predisposto: ID/chiave cifrati, consenso per canale, stato monouso vincolato a sessione e versione, identità/app/permessi/scadenze verificati, disconnessione locale, scadenza report limitata dal consenso. Collaudo offline e browser in docs/COLLAUDO-PROFILI-META.md; attivazione e prova con Meta reale ancora aperte.",
-        "Crescita follower Instagram predisposta con metrica dedicata, stesso periodo, nuovi/persi/netta separati e soglia 100; dati mancanti/non classificati non diventano zero. Otto nuove prove in docs/COLLAUDO-PROFILI-META.md. Confronto e attivazione reali ancora aperti."
+        "Crescita follower Instagram predisposta con metrica dedicata, stesso periodo, nuovi/persi/netta separati e soglia 100; dati mancanti/non classificati non diventano zero. Otto nuove prove in docs/COLLAUDO-PROFILI-META.md. Confronto e attivazione reali ancora aperti.",
+        "Online: report manuale verificato nel servizio Social; fonte/data visibili, nuova revisione nasconde il report. Non sostituisce le fonti esterne e le altre prove ancora aperte."
       ]
     },
     {
@@ -614,7 +619,8 @@
       "prove": [
         "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
         "Documenti propri e anteprima equivalente, PDF isolato e nessun importo/fattura. Corretta deduplicazione impropria per sola scadenza, anche negli avvisi.",
-        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente.",
+        "Online: PDF inventato del cliente di prova presente in scheda e anteprima, scaricato identico. Gli accessi cliente nominali restano da collaudare."
       ]
     },
     {

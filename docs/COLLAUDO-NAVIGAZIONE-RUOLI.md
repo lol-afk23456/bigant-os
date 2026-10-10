@@ -58,3 +58,5 @@ Ora tutti i percorsi con attività (Clienti, Vista cliente, Profili, Fidelity, G
 Cinque nuove prove di navigazione verificano ricarica, chiamate effettive con attività corretta, report nuovi/precedenti, parametri invalidi, chiusura dei moduli e rifiuto senza ripiego. **51/51 mirate, 899/899 nella suite completa**, zero saltate; controllo progetto **5/5**, 183 JavaScript, 103 documenti e 254 collegamenti.
 
 Browser locale: nota Bottega Aurora salvata come versione 2, ricarica conserva nota e attività; Guarda come il cliente conserva la stessa attività anche dopo ricarica; cambio a Studio Orizzonte e nuova ricarica mantengono Studio Orizzonte. Zero errori/avvisi console. Copia Railway delle 20:05, 801 MB, riconfermata prima del rilascio; nessuna migrazione o scrittura automatica ai dati.
+
+Verifica online conclusa su `624dcc0`: nota del cliente di prova salvata e ricaricata senza cambio attività, PDF/contratto e avviso della scadenza corretti, report mostrato nel solo servizio Social e nascosto dopo nuova revisione. Prove dettagliate in COLLAUDO-ONLINE-2026-10-10.md. Nessuna modifica al codice dopo le 899 prove; solo documentazione.

@@ -89,3 +89,18 @@ Collaudo tramite normali API autenticate, con credenziali già autorizzate e sol
 Browser socio: riletto il contenuto nel servizio Social, fonte di collaudo, stato IN PRODUZIONE, testo «COLLAUDO CONCLUSO», nessuna data pianificata e nessuna approvazione pendente. Desktop e telefono 390/390 px; zero errori/avvisi. Immagini `production-mode-online.png` e `production-mode-mobile.png`, prove API in `production-mode-online.json`, tutte nella cache ignorata. La prova non attesta gli accessi nominali del collaboratore/cliente né la pubblicazione esterna. UI-006 passa a parziale: matrice 73 locali, 15 parziali, 4 da fare.
 
 Durante questo giro è emersa una pagina residua per PRINC-01: `#service:social`, gestita da `serviceWorkspaceView()`, mostra ancora più pannelli completi. L'indice Servizi già riordinato non basta a coprire questo percorso diretto: prossimo intervento da fare sulla pagina, senza ripetere il collaudo del calendario.
+
+## Scheda cliente, contratto e report — verifica successiva
+
+Codice `624dcc0` pubblicato, deployment `3642c246-fd42-4759-8c01-bce4f130a74e` SUCCESS. Health ok e `app.js` identico al codice verificato. **899/899 prove automatiche**, controllo progetto 5/5. Il giro ha prima riprodotto e poi corretto il ritorno involontario a BigAnt dopo una ricarica della scheda di prova; ora l’attività rimane nel collegamento anche per note, anteprima, profili e prodotti. Dettagli in [Navigazione](COLLAUDO-NAVIGAZIONE-RUOLI.md).
+
+Operazioni online dalla sessione socio, esclusivamente su **BigAnt (cliente di prova)**:
+
+- Note e feedback: creato testo esplicitamente inventato, ricarica conserva attività e testo; seconda versione salvata come «COLLAUDO CONCLUSO», nessun incarico da eseguire. Nota interna, distinta dalle informazioni destinate al cliente.
+- Contratto: data finale precedente all’inizio rifiutata con «La scadenza precede l’inizio». Poi salvato un PDF inventato, intitolato «COLLAUDO · documento inventato, nessun incarico», dal 10 al 25 ottobre 2026, senza impegni o pagamenti. L’avviso entro 30 giorni compare nella lista Clienti con la corretta attività.
+- Documento: presente dopo ricarica e nell’anteprima cliente in sola lettura. Il PDF scaricato è identico byte per byte alla fixture. Download spostato nella cache del progetto. Identificativo contratto `bce2bbc2-7a30-4738-883e-713c3f064a53`; resta un documento inventato del cliente di prova e può produrre l’avviso di collaudo fino alla sua scadenza.
+- Report ottobre: bozza privata, una voce Social con fonte/data e conteggio tecnico del contenuto inventato. Anteprima della versione 2 controllata, conferma registrata e report visibile dentro Social. Report `ea809bc9-e37f-475e-aea2-81dd4f3b7448`. Successiva modifica della sintesi lo rende «Da verificare di nuovo»; il report scompare dalla vista Social del cliente. **Stato finale: report privato, prova conclusa, nessuna attività da eseguire.**
+
+Screenshot nella cache: `client-note-online.png`, `client-contract-online.png`, `client-report-online.png` (il report è fotografato durante la fase visibile, poi è stato reso nuovamente privato). La misura del viewport del giro corrente era 1280 px: questi scatti documentano il desktop, non una nuova prova mobile. Le verifiche precedenti a 390 px restano distinte. Nessun errore/avviso nei log raccolti alla fine del giro.
+
+Queste prove non sostituiscono gli accessi nominali cliente/collaboratore, la fotocamera fisica, Wallet o i collegamenti esterni. Nessun dato di clienti reali, nuova credenziale, invio o costo di un fornitore introdotto. Il database applicativo è stato aggiornato soltanto con i record di collaudo indicati sopra; il rilascio non ha migrazioni o scritture automatiche.
