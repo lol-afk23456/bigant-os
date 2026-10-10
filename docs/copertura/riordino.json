@@ -127,9 +127,10 @@
       "area": "Mappa agenzia → Reparti e specialisti",
       "modifica": "Spostare in **Sciame di agenti** come \"Struttura dello sciame\" (reparti, specialisti, procedure)",
       "criterio": "La struttura per reparto si trova solo dentro Sciame di agenti",
-      "stato": "parziale in locale",
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Struttura → reparto → specialisti e metodo → Configura; sei sezioni preservate. tests/swarm-workspace-ui.test.js, Browser desktop/390 px e COLLAUDO-SCIAME-UI del 10 ottobre 2026."
       ]
     },
     {
@@ -289,9 +290,10 @@
       "area": "Direzione → \"La tua cabina di regia\"",
       "modifica": "**Conservare lo stile** di questo riquadro come riferimento grafico: in testa a *Sciame di agenti* e come modello per la testata delle home (FUN-002)",
       "criterio": "Il riquadro esiste in Sciame di agenti, con lo stesso aspetto",
-      "stato": "parziale in locale",
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Cabina di regia conservata nello Sciame e nella home; nuove azioni nello stesso componente e stile. Browser desktop e 390 px, schermate nella cache tecnica."
       ]
     },
     {
@@ -299,9 +301,10 @@
       "area": "Direzione → cabina di regia, \"Esplora lo sciame\", priorità del Direttore",
       "modifica": "Spostare in **Sciame di agenti**",
       "criterio": "Questi blocchi si trovano solo in Sciame di agenti",
-      "stato": "parziale in locale",
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Cabina, Esplora e priorità nel percorso Sciame. GET riservato ai soci: fonte, versione corrente, stato DEMO, revisione manuale e rifiuto di output incoerenti senza fallback obsoleto. 6 test backend/HTTP e prove UI/Browser."
       ]
     },
     {
@@ -598,9 +601,10 @@
       "area": "Lavori e contenuti",
       "modifica": "**Togliere la voce** dai menu di amministrazione, collaboratore e cliente. Il codice resta (D-05) perché ci si appoggiano lo sciame e le approvazioni",
       "criterio": "La voce non compare in nessun menu; sciame e approvazioni funzionano ancora (test verdi)",
-      "stato": "parziale in locale",
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Lavori assente nei menu socio, collaboratore e cliente, verificati nel Browser. Elaborato social → bozza specifica nella coda; test UI e suite 407/407. Codice precedente conservato secondo D-05."
       ]
     },
     {
@@ -717,9 +721,10 @@
       "area": "Ufficio virtuale",
       "modifica": "**Conservare** l'aspetto e la diretta così come sono",
       "criterio": "Nessuna regressione dell'Ufficio dopo il riordino",
-      "stato": "parziale in locale",
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Stanze, feed e dettagli conservati; nuovo giro DEMO visibile nel Browser. Risposte tardive scartate dopo cambio pagina/sessione; test positivo della diretta fino al risultato finale. Nessuna AI reale o prova su telefono fisico."
       ]
     },
     {

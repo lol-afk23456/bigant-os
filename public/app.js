@@ -2,7 +2,9 @@
 const $ = s => document.querySelector(s);
 const escapeHTML = v => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const e = escapeHTML;
-const S = {session:null, overview:null, module:null, clientId:'', view:'agency', serviceId:'', filter:'', loading:0, agentBusy:false, agentProgress:null};
+const S = {session:null, overview:null, module:null, clientId:'', view:'agency', serviceId:'', filter:'', loading:0, navigation:0, agentBusy:false, agentProgress:null};
+function viewSnapshot(){return {view:S.view,section:S.section,clientId:S.clientId,loading:S.loading,navigation:S.navigation,session:S.session,userId:S.session?.user?.id,csrf:S.session?.csrf};}
+function isCurrentView(snapshot){return Object.entries(snapshot).every(([key,value])=>value===(key==='userId'?S.session?.user?.id:key==='csrf'?S.session?.csrf:S[key]));}
 const icons = {
   grid:'M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM14 14h7v7h-7z',
   wallet:'M3 5h16v4M3 5v14h18V9H3V5Zm12 7h6v4h-6z', users:'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M18 8a3 3 0 0 1 0 6M22 21v-2a4 4 0 0 0-3-3',
@@ -84,9 +86,9 @@ async function load(){
   else if(S.view==='catalog'&&isOwner())nextModule=await api('/api/service-plan',{scoped:false});
   else if(S.view==='progress')nextModule=await api('/api/agency/state',{scoped:false});
   else if(S.view==='agents'){
-    if(!isOwner())S.section='approvals';else if(!['sections','office','list','approvals','history','budget','structure'].includes(S.section))S.section='office';
+    if(!isOwner())S.section='approvals';else if(!['sections','office','list','approvals','history','budget','structure'].includes(S.section)&&!/^structure\/[a-z-]+$/.test(S.section))S.section='office';
     if(S.section==='office')nextModule=await api('/api/sciame/ufficio',{scoped:false});
-    else if(S.section==='structure')nextModule=await api('/api/agency/state',{scoped:false});
+    else if(S.section==='structure'||S.section.startsWith('structure/'))nextModule=await api('/api/agency/state',{scoped:false});
     else if(S.section==='approvals')nextModule=await api('/api/workspace/approvals',{scoped:false});
     else if(S.section!=='sections'){const [state,configuration]=await Promise.all([api('/api/agents/state'),api('/api/agent-config/state')]);nextModule={...state,configuration};}
   }
@@ -181,14 +183,16 @@ function agentRelatedLinks(links,fallbackService){
     if(typeof link==='string')return '';
     if(!link||typeof link!=='object')return '';
     let view=link.view||link.module||(link.leadId||link.leadIds||link.messageId?'growth':link.campaignId||link.programId?'fidelity':link.contentId?'work':'')||({growth:'growth',fidelity:'fidelity',social:'work'})[fallbackService];
-    if(view==='production')view='work';
+    if(view==='work'||view==='production'||link.contentId)return btn(link.label||link.title||'Apri bozza collegata','agent-content',link.contentId||'','small','arrow');
     if(!view&&typeof link.href==='string'&&link.href.startsWith('#'))view=link.href.slice(1);
     if(view&&(/^(?:work|growth|fidelity|administration|marketing|approvals|activity|agency)$/.test(view)||/^service:[a-z-]+$/.test(view)))return btn(link.label||link.title||'Apri lavoro collegato','agent-related',view,'small','arrow');
     return '';
   }).join('');
 }
 async function openAgentOutput(outputId,clientId,fallback={}){
+  const snapshot=viewSnapshot();
   const response=await api('/api/agents/outputs/'+encodeURIComponent(outputId)+'?clientId='+encodeURIComponent(clientId),{scoped:false});
+  if(!isCurrentView(snapshot))return;
   const output=response.output||response;S.agentOutput={...fallback,...output,id:output.id||outputId,client_id:output.client_id||clientId};
   showAgentOutput(S.agentOutput);
 }
@@ -222,6 +226,7 @@ async function runAgentQueue(all=false){
 
 
 function setViewRoute(route){
+ S.navigation++;S.passoAperto=null;
  const aliases={agency:'progress',marketing:'profiles',direction:'home',work:'home',approvals:'agents:approvals',ufficio:'agents:office',activity:'users:registry'};
  route=aliases[route]||route;const [view,section]=route.split(':');S.section=section||'';
  if(view==='service'){S.view='service';S.serviceId=section;}else{S.view=view;S.serviceId='';}
@@ -369,7 +374,16 @@ Object.assign(ACTIONS,{
       await openAgentOutput(id,output.client_id);
     },{submit:'Salva nuova versione',intro:'La versione precedente rimane nello storico. La sua approvazione sarà superata; la nuova bozza torna nella coda delle decisioni.'});
   },
-  'agent-related':async view=>{if(S.agentOutput?.client_id)S.clientId=S.agentOutput.client_id;await go(view);}
+  'agent-related':async view=>{if(['work','production'].includes(view))return ACTIONS['agent-content'](S.agentOutput?.links?.contentId||'');if(S.agentOutput?.client_id)S.clientId=S.agentOutput.client_id;await go(view);},
+  'agent-content':async id=>{
+    if(S.agentOutput?.client_id)S.clientId=S.agentOutput.client_id;
+    const loading=go('agents:approvals'),snapshot=viewSnapshot();await loading;if(!isCurrentView(snapshot))return;
+    if(!id)return;
+    if(S.overview.contents.some(content=>content.id===id))return ACTIONS.content(id);
+    const approval=approvalItems().find(item=>item.kind==='content'&&item.entity_id===id);
+    if(approval)return ACTIONS.approval(approval.id);
+    toast('La bozza non è più disponibile per questa attività. La coda mostra le richieste attuali.',true);
+  }
 
 });
 

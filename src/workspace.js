@@ -1,6 +1,7 @@
 import { agentDefinitions } from './registry.js';
 import { agentiSciame } from './sciame/agenti.js';
 import { canAccessClient, requireOwner, AppError } from './store.js';
+import { directorPriorities } from './swarm-priorities.js';
 
 export const ownerNavigation = [
   ['home', 'Home', 'grid', 'Lavoro'], ['clients', 'Clienti', 'users', 'Lavoro'],
@@ -58,5 +59,5 @@ export function createWorkspace({ store, clock = () => new Date(), budget, expir
       ['instagram', 'Instagram'], ['facebook', 'Facebook'], ['linkedin', 'LinkedIn aziendale'], ['tiktok', 'TikTok'], ['google-business', 'Google Business Profile'], ['website', 'Sito web']
     ].map(([id, name]) => ({ id, name, status: 'Da collegare', lastSync: null, metrics: null })) };
   }
-  return { home, profiles, approvals };
+  return { home, profiles, approvals, priorities: user => directorPriorities(store, user) };
 }

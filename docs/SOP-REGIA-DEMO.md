@@ -20,3 +20,13 @@ Queste procedure lavorano su dati inventati nell'archivio comune. Non chiamano u
 | Amministrazione | Esegue il motore anomalie comune su dati DEMO. | Riepilogo riservato, anomalie e decisione del socio; nessuna correzione dei movimenti. |
 
 Le schede dettagliate fornite nel nuovo documento dell'utente sono il riferimento del metodo. La loro presenza non certifica il completamento dell'intero BigAnt OS. I servizi reali, i partner, le decisioni commerciali e il pilota restano da validare.
+
+## Consultazione nello Sciame — FUN-005 / FUN-019, 10 ottobre 2026
+
+La cabina di regia dell’Ufficio permette di esplorare gli agenti e leggere le priorità del Direttore dell’agenzia. La lettura non avvia un giro e non approva nulla. Si usa l’ultimo risultato registrato per BigAnt, distinguendo la procedura locale dallo Sciame, con fonte, data, versione e stato della decisione. I risultati prodotti per singoli clienti non diventano priorità dell’agenzia.
+
+Una revisione manuale mostra il testo corrente, senza riproporre le priorità strutturate della versione precedente. Se l’ultimo risultato è incompleto, fermato da Qualità o non leggibile, il motivo viene mostrato senza sostituirlo silenziosamente con una proposta precedente. I passaggi approvati dall’identità tecnica DEMO restano dichiarati simulati.
+
+Catalogo API: `GET /api/workspace/priorities`, sola lettura e soltanto soci, restituisce l’ultima proposta dell’agenzia oppure nessuna proposta. Esclude credenziali, input completi e movimenti contabili; non accoda lavori, non contatta modelli o fornitori e non scrive dati.
+
+La scheda **Struttura** apre un reparto alla volta: responsabilità, specialisti, cosa preparano e accesso alla configurazione. Le procedure descritte non diventano agenti attivi per il solo fatto di essere visibili. Gli aggiornamenti della diretta appartengono alla pagina e alla sessione che li hanno richiesti; se l’utente cambia pagina, la risposta vecchia viene scartata.

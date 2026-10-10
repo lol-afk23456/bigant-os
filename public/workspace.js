@@ -57,15 +57,44 @@ function agentsUnifiedView(){
   {id:'approvals',name:'Da approvare',value:approvalItems().filter(item=>item.status==='pending').length,icon:'approval'},
   {id:'history',name:'Storico',value:'Risultati ed esecuzioni',icon:'clock'},{id:'budget',name:'Budget',value:'Spesa e tetto mensile',icon:'wallet'},{id:'structure',name:'Struttura',value:'Reparti e specialisti',icon:'grid'}];
  const header=title('Sciame di agenti.','Una sola regia, dal lavoro degli agenti alle tue decisioni.',S.section==='office'?btn('Avvia un giro','ufficio-avvia','','primary','play'):'');
- return header+(S.section==='office'?workspaceHero('La testa resta umana.<br>Il lavoro trova il suo ritmo.','Le postazioni mostrano il lavoro registrato. Ogni uscita richiede una decisione umana.'):'')+sectionNavigator('agents',sections,id=>{
+ if(S.section.startsWith('structure/'))return header+`<div class="section-back">${btn('Indietro','goto','agents:structure','ghost','arrow')}<span>Struttura dello sciame</span></div>`+swarmDepartmentView(a,S.section.slice('structure/'.length));
+ return header+(S.section==='office'?workspaceHero('La testa resta umana.<br>Il lavoro trova il suo ritmo.','Le postazioni mostrano il lavoro registrato. Ogni contenuto richiede una decisione umana.',`<div class="actions">${btn('Esplora lo sciame','goto','agents:list','primary','arrow')}${btn('Priorità del Direttore','director-priorities','','','chart')}</div>`):'')+sectionNavigator('agents',sections,id=>{
   if(id==='office')return `<div id="ufficio-root">${ufficioCorpo()}</div>`;
   if(id==='approvals')return approvalsView();
   if(id==='list')return notice('Base = procedura di prova. AI pronta = configurazione e collaudo completati. Attivo = autorizzato per il lavoro reale.')+`<div class="toolbar"><label class="sr-only" for="local-filter">Cerca un agente</label><input id="local-filter" class="search" placeholder="Cerca un agente o un compito…" value="${e(S.filter)}"></div><div class="card-grid">${(a.configuration?.items||[]).filter(agent=>`${agent.name} ${agent.config.task}`.toLocaleLowerCase('it').includes(S.filter.toLocaleLowerCase('it'))).map(agent=>`<article class="module-card"><h3>${e(agent.name)}</h3>${badge(agent.operationalStatus,agent.operationalStatus==='Attivo'?'green':'orange')}<p>${e(agent.config.task)}</p><small>${agent.hasAIInstructions?'Istruzioni AI presenti':'Procedura base disponibile'} · ${e(agent.config.cadence==='manual'?'Avvio manuale':label(agent.config.cadence))}</small><footer>${btn('Configura','agent-config',agent.id,'small')}${btn('Registro','agent-record',agent.id,'small ghost')}${S.session.demo!==false?btn('Prova procedura','run-agent',agent.id,'small ghost'):''}</footer></article>`).join('')}</div>`;
   if(id==='history')return panel('Esecuzioni dello sciame AI',table(['Agente','Quando','Stato','Qualità',''],(a.configuration?.history||[]).filter(row=>row.client_id===S.clientId).map(row=>[e(row.agente),date(row.created_at,true),badge(STATI_PASSO_UI[row.stato]||row.stato),e(row.esito_qualita||'Da verificare'),btn('Leggi','ufficio-postazione',row.id,'small')])))+panel('Procedure di prova',table(['Agente','Quando','Stato','Esito',''],jobs.map(job=>[e(agentName(job.agent)),date(job.created_at,true),badge(agentJobStatus(job)),e(job.result?.summary||job.error||'In attesa'),job.result?btn('Leggi elaborato','agent-result',job.id,'small'):''])));
   if(id==='budget'){const b=a.budget||{},costs=a.configuration?.costs||{};return panel('Budget dello sciame',`<div class="stats">${stat('Tetto mensile',money(b.capCents),'Limite condiviso')}${stat('Speso e impegnato',money(b.usedCents),'Nel mese corrente')}${stat('Disponibile',money(b.availableCents),'Dopo quote fisse e riserva')}</div>${btn('Modifica ripartizione','budget','','','wallet')}`)+panel('Costo per agente',table(['Agente','Contabilizzato','Impegnato'],(costs.rows||[]).map(row=>[e(row.name),money(row.chargedCents),money(row.reservedCents)])))+notice(`Regia e altri consumi: ${money(costs.otherCents)}. I costi AI sono stime prudenziali finché il listino del modello non è verificato.`);}
-  return `<div class="card-grid">${(a.departments||[]).map(department=>`<article class="module-card"><h3>${e(department.name)}</h3><p>${e(department.purpose||'')}</p><ul class="plain-list">${(a.agents||[]).filter(agent=>(department.agents||[]).includes(agent.id)).map(agent=>`<li>${e(agent.name)}</li>`).join('')}</ul></article>`).join('')}</div>`;
+  return sectionCards((a.departments||[]).map(department=>({name:department.name,value:`${department.agents?.length||0} ${department.agents?.length===1?'agente':'agenti'}`,note:department.purpose||department.trigger,route:'agents:structure/'+department.id,icon:'agents'})));
  });
 }
+
+function swarmDepartmentView(data,id){
+ const department=(data.departments||[]).find(row=>row.id===id);
+ if(!department)return empty('Reparto non disponibile','Torna alla Struttura e scegli un reparto.','agents');
+ const members=(data.agents||[]).filter(agent=>(department.agents||[]).includes(agent.id));
+ return panel(department.name,`<p>${e(department.purpose||department.trigger||'')}</p><p><strong>Responsabilità:</strong> ${e(department.owner||'Da definire con i soci')}</p>`)+`<div class="card-grid">${members.map(agent=>`<article class="module-card"><h3>${e(agent.name)}</h3><p>${e(agent.purpose||'')}</p><h4>Cosa prepara</h4>${bulletText(agent.outputs)}<h4>Come lavora</h4><p>${e(agent.execution?.mode||'Procedura da configurare')}</p><small>Metodo ${e(agent.sop?.version||'da verificare')} · ${e(agent.sop?.validation||'Da collaudare')}</small><h4>Controllo umano</h4><p>${e(agent.gate||'Decisione del team prima di qualsiasi azione esterna.')}</p><footer>${btn('Configura','agent-config',agent.id,'small','agents')}</footer></article>`).join('')}</div>`;
+}
+
+function directorPriorityBody(current){
+ if(!current)return empty('Nessuna priorità registrata','Il Direttore non ha ancora un risultato per BigAnt. Questa lettura non avvia agenti o modelli.','chart');
+ const approval={pending:'Da approvare',approved:'Approvata',rejected:'Rifiutata',changes:'Modifiche richieste',obsolete:'Versione superata',simulated:'Passaggio interno DEMO',needs_review:'Da verificare'}[current.approvalStatus]||'Da verificare';
+ const meta=`<div class="pill-row">${badge(current.mode||'Origine da verificare')}${badge(approval,current.approvalStatus==='approved'?'green':'orange')}</div><dl class="out-obj"><div><dt>Fonte</dt><dd>${e(agentValue(current.source))}</dd></div><div><dt>Aggiornato</dt><dd>${date(current.updatedAt,true)}</dd></div><div><dt>Versione</dt><dd>${e(current.version??'—')}</dd></div>${current.quality?`<div><dt>Controllo qualità</dt><dd>${e(agentValue(current.quality))}</dd></div>`:''}${current.decisionAt?`<div><dt>Decisione</dt><dd>${date(current.decisionAt,true)}${current.decisionBy?' · '+e(agentValue(current.decisionBy)):''}</dd></div>`:''}</dl>`;
+ const items=Array.isArray(current.items)?current.items:[];
+ const content=current.available===false?'':`<h3>${e(current.title||'Proposte del Direttore')}</h3>`+(items.length?list(items,(item,i)=>`<div class="list-item"><span class="number">${i+1}</span><div class="body"><b>${e(item.title)}</b><p>${e(item.reason)}</p><small>${e(item.next)}</small></div></div>`):`<p class="preserve">${e(current.body||'Nessun testo disponibile.')}</p>`);
+ return meta+notice(current.notice||'Sono proposte da valutare. Questa lettura non approva né avvia alcuna attività.',current.approvalStatus!=='approved')+content+(current.available!==false&&current.id&&['procedure','sciame'].includes(current.kind)?`<div class="actions section">${btn('Leggi il risultato di origine','director-source','','','file')}</div>`:'');
+}
+
+Object.assign(ACTIONS,{
+ 'director-priorities':async()=>{
+  const snapshot=viewSnapshot(),token={};S.priorityDialogToken=token;S.directorPriority=null;
+  dialog('Priorità del Direttore',notice('Sto leggendo le proposte registrate per BigAnt.'));
+  const visible=()=>isCurrentView(snapshot)&&S.priorityDialogToken===token&&$('#dialog').open&&$('#dialog-title')?.textContent==='Priorità del Direttore';
+  let result;try{result=await api('/api/workspace/priorities',{scoped:false});}catch(error){if(visible())dialog('Priorità del Direttore',notice(error.message||'Le priorità non sono disponibili. Riprova.',true)+btn('Riprova','director-priorities','','','refresh'));throw error;}
+  if(!visible())return;
+  S.directorPriority=result.current;dialog('Priorità del Direttore',directorPriorityBody(result.current));
+ },
+ 'director-source':async()=>{const current=S.directorPriority;if(!current||current.available===false)return;if(current.kind==='sciame')return ACTIONS['ufficio-postazione'](current.id);if(current.kind==='procedure')return openAgentOutput(current.id,'demo-bigant');}
+});
 
 function usersView(){
  return sectionNavigator('users',[
@@ -118,7 +147,7 @@ Object.assign(ACTIONS,{
 
 
 Object.assign(ACTIONS,{
- 'agent-config':id=>{const agent=S.module.configuration.items.find(item=>item.id===id),c=agent.config;form('Configura · '+agent.name,[
+ 'agent-config':async id=>{const snapshot=viewSnapshot(),configuration=S.module.configuration||await api('/api/agent-config/state',{scoped:false});if(!isCurrentView(snapshot))return;const agent=configuration.items.find(item=>item.id===id);if(!agent)throw Error('Agente non disponibile. Ricarica lo Sciame.');const c=agent.config;form('Configura · '+agent.name,[
   {name:'task',label:'Compito',type:'textarea',value:c.task,required:true,full:true},
   selectField('service','Servizio',[['','Trasversale'],...S.overview.registry.services.map(row=>[row.id,row.name])],c.service),
   selectField('provider','Fornitore AI',[['','Scelta rinviata'],['api','Anthropic'],['openai','OpenAI']],c.provider),

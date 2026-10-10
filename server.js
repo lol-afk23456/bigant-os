@@ -133,7 +133,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
           return json(res,login(res,store.one('SELECT * FROM os_users WHERE id=?',u.id)));
         }
         if(u.must_change_password)throw new AppError('Cambia la password provvisoria prima di continuare.',403);
-        const clientId=clientFrom(url,u,{optional:method==='GET'&&['/api/overview','/api/clients','/api/workspace/home','/api/workspace/approvals','/api/workspace/contracts'].includes(path)});
+        const clientId=clientFrom(url,u,{optional:method==='GET'&&['/api/overview','/api/clients','/api/workspace/home','/api/workspace/approvals','/api/workspace/contracts','/api/workspace/priorities'].includes(path)});
         const b=['GET','HEAD'].includes(method)?{}:await body(req);
         if(path==='/api/billing/state'&&method==='GET')return json(res,billing.state(u));
         const billingMatch=path.match(/^\/api\/billing\/tracker\/([^/]+)$/);if(billingMatch&&method==='PATCH')return json(res,billing.label(u,billingMatch[1],b));
@@ -150,6 +150,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
         if(path==='/api/workspace/contracts'&&method==='GET')return json(res,{items:records.expiring(u)});
         if(path==='/api/workspace/home'&&method==='GET')return json(res,workspace.home(u));
         if(path==='/api/workspace/profiles'&&method==='GET')return json(res,workspace.profiles(u,clientId));
+        if(path==='/api/workspace/priorities'&&method==='GET')return json(res,workspace.priorities(u));
         if(path==='/api/overview'&&method==='GET')return json(res,overview(u,clientId));
         if(path==='/api/clients'&&method==='GET')return json(res,{items:allClients(u)});
         if(path==='/api/catalogo'&&method==='GET'){requireOwner(u);return json(res,{servizi:catalogoServizi,pacchetti});}

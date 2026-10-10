@@ -1,5 +1,17 @@
 # Sciame BigAnt — interfaccia DEMO
 
+## Riordino Struttura e priorità — 10 ottobre 2026
+
+FUN-005, FUN-019, FUN-046, UI-008 e UI-011 verificati in locale. Lo Sciame si apre sull’Ufficio, conserva la cabina di regia, le stanze e il feed, e offre sei sezioni: Ufficio, Agenti, Da approvare, Storico, Budget e Struttura. Struttura apre un reparto alla volta, con responsabilità, specialisti, risultati della procedura, metodo e controllo umano; Configura apre la scheda senza avviare lavori.
+
+Le priorità del Direttore leggono soltanto risultati registrati dell’agenzia, anche quando è selezionato un altro cliente. Fonte, data, versione e decisione restano visibili; il passaggio interno DEMO è distinto da una decisione umana. Una revisione manuale mostra il nuovo testo; un risultato incoerente o fermato non ripropone silenziosamente una proposta precedente. La lettura non genera AI, scritture o approvazioni.
+
+Browser su archivio in memoria e rete esterna disabilitata: socio, Bottega selezionata → priorità dell’agenzia → risultato di origine; Struttura → Direzione e crescita → Configura; Esplora lo sciame → ricerca del Direttore; Storico social → elaborato → bozza effettiva nella coda. Un nuovo giro DEMO compare nel feed e nel dettaglio dei giri. La vecchia voce Lavori è assente dai menu socio, collaboratore e cliente. Nessun errore console rilevato.
+
+Verifica a 390×844: reparto e priorità leggibili, documento largo 390 px e dialogo 356 px. Schermate nella cache tecnica: `bigant-swarm-structure.jpg`, `bigant-swarm-structure-mobile.jpg`, `bigant-swarm-priorities.jpg` e `bigant-swarm-priorities-mobile.jpg`, sotto `.cache/riordino-browser/`. Non è una prova su telefono fisico.
+
+**407/407 test nella suite completa**, inclusi 6 nuovi sul servizio priorità e 19 sulle regressioni di interfaccia. Le risposte tardive dell’Ufficio e dei suoi dettagli sono scartate dopo cambio pagina, sezione, sessione o caricamento; la prova positiva della diretta verifica aggiornamento della trascrizione e passaggio al risultato finale. Permessi, revoche, isolamento, versioni, escaping ed errori di lettura sono coperti. Revisione indipendente del backend senza difetti bloccanti individuati. Nessun rilascio o attivazione reale; rimangono aperti collaudo sul server, integrazioni e le altre voci delle 92 migliorie.
+
 ## Aggiornamento FUN-062 — 10 ottobre 2026
 
 Su un nuovo archivio soltanto in memoria, il flusso social DEMO produce otto bozze **DA APPROVARE**, senza auto-approvazione né data in calendario. Browser locale: accesso Collaboratore DEMO, coda di nove richieste (otto Sciame e una fixture preesistente), lettura di Contenuto 1 e decisione registrata; la richiesta decisa scompare e le altre restano pendenti. Verificato il dialogo di Contenuto 2 a 390×844: documento 390 px, finestra 356 px, nessuno scorrimento orizzontale e nessun errore console rilevato.

@@ -40,7 +40,7 @@ function ufficioCorpo(){
    ${stat('In attesa di un socio',String(attesa),'Azioni esterne bloccate finché non c’è collegamento e ok','approval')}
    ${stat('Errori o fermi Qualità',String(errori),'Motivo visibile nella postazione','info')}
   </div>
-  ${u.autoApprovazioneDemo?notice('Modalità DEMO: i passaggi interni (bozze, revisioni, avanzamenti) si approvano da soli e restano registrati come “auto-approvato (DEMO)”. Pubblicare, inviare, spendere e modificare account restano bloccati dal codice.',true):''}
+  ${u.autoApprovazioneDemo?notice('Modalità DEMO: solo i passaggi interni dello sciame proseguono automaticamente. I contenuti restano sempre in attesa della decisione di una persona. Pubblicare, inviare, spendere e modificare account restano bloccati.',true):''}
   <div class="office">
    <div class="office-floor">${(u.stanze||[]).map(s=>`<section class="room ${s.agenti.length>3?'wide':''}" aria-label="Stanza ${e(s.nome)}"><header><h2>${e(s.nome)}</h2><span>${s.agenti.filter(a=>a.stato==='al_lavoro').length?`<b class="live-dot"></b>${s.agenti.filter(a=>a.stato==='al_lavoro').length} al lavoro`:`${s.agenti.length} postazioni`}</span></header><div class="desks">${s.agenti.map(scrivania).join('')}</div></section>`).join('')}</div>
    <aside class="office-feed" aria-label="Attività in tempo reale"><header><h2>In tempo reale</h2><small>Aggiornato ${e(new Date(u.aggiornatoAlle||Date.now()).toLocaleTimeString('it-IT'))}</small></header><ol>${(u.feed||[]).map(rigaFeed).join('')||'<li><div><b>Nessuna attività registrata</b></div></li>'}</ol></aside>
@@ -70,18 +70,21 @@ function mostraPasso(p){
 }
 async function aggiornaUfficio(){
  if(!(S.view==='agents'&&S.section==='office'))return;
- S.module=await api('/api/sciame/ufficio',{scoped:false});S.lastRefresh=Date.now();
- const root=$('#ufficio-root');if(root)root.innerHTML=ufficioCorpo();
+ const snapshot=viewSnapshot(),module=await api('/api/sciame/ufficio',{scoped:false});
+ if(!isCurrentView(snapshot))return;
+ const root=$('#ufficio-root');if(!root)return;
+ S.module=module;S.lastRefresh=Date.now();root.innerHTML=ufficioCorpo();
 }
 Object.assign(ACTIONS,{
- 'ufficio-postazione':async id=>{if(!id)return toast('Questa postazione non ha ancora un output dello sciame.');S.passoAperto=id;mostraPasso(await api('/api/sciame/passi/'+encodeURIComponent(id),{scoped:false}));},
- 'ufficio-giro':async id=>{const g=await api('/api/sciame/giri/'+encodeURIComponent(id),{scoped:false});dialog('Giro dello sciame',`${notice(`${g.richiesta} · motore ${g.motore} · ${g.stato}`)}<div class="list">${g.passi.map(p=>`<button class="list-item office-row" data-action="ufficio-postazione" data-id="${e(p.id)}"><span><b>${p.ordine}. ${e(p.compito)}</b><small>${e(p.agente)} · ${e(p.flusso)} · ${e(usd(p.costo_usd_micro))}${p.esito_qualita?' · qualità '+e(p.esito_qualita):''}</small></span>${badge(STATI_PASSO_UI[p.stato]||p.stato,tonoPasso(p.stato))}</button>`).join('')}</div>`);},
+ 'ufficio-postazione':async id=>{if(!id)return toast('Questa postazione non ha ancora un output dello sciame.');S.passoAperto=id;const snapshot=viewSnapshot(),passo=await api('/api/sciame/passi/'+encodeURIComponent(id),{scoped:false});if(isCurrentView(snapshot)&&S.passoAperto===id)mostraPasso(passo);},
+ 'ufficio-giro':async id=>{const snapshot=viewSnapshot(),g=await api('/api/sciame/giri/'+encodeURIComponent(id),{scoped:false});if(!isCurrentView(snapshot))return;dialog('Giro dello sciame',`${notice(`${g.richiesta} · motore ${g.motore} · ${g.stato}`)}<div class="list">${g.passi.map(p=>`<button class="list-item office-row" data-action="ufficio-postazione" data-id="${e(p.id)}"><span><b>${p.ordine}. ${e(p.compito)}</b><small>${e(p.agente)} · ${e(p.flusso)} · ${e(usd(p.costo_usd_micro))}${p.esito_qualita?' · qualità '+e(p.esito_qualita):''}</small></span>${badge(STATI_PASSO_UI[p.stato]||p.stato,tonoPasso(p.stato))}</button>`).join('')}</div>`);},
  'ufficio-avvia':async()=>{const flussi=(S.module?.flussi||[]);form('Avvia un giro dello sciame',[{name:'richiesta',label:'Cosa deve fare lo sciame?',type:'textarea',required:true,full:true,value:'Piano marketing di BigAnt della prossima settimana, analisi gratuita di un’azienda DEMO e controllo della prima nota.'},{html:`<label>Reparti (facoltativo: se non scegli, decide l’Orchestratore)</label><div class="service-checks">${flussi.map(f=>`<label><input type="checkbox" name="flussi" value="${e(f.id)}">${e(f.reparto)} — ${e(f.cosa_fa)}</label>`).join('')}</div>`}],async(b,fd)=>{const scelti=fd.getAll('flussi');const g=await mutate('/api/sciame/giri',{richiesta:b.richiesta,flussi:scelti.length?scelti:null});$('#dialog').close();toast(`Giro avviato con motore ${g.motore}: guarda le postazioni.`);await aggiornaUfficio();},{submit:'Avvia',intro:`Motore attuale: ${S.module?.motore?.etichetta||'—'}. Solo dati DEMO; nessuna azione verso l’esterno.`});}
 });
 // Ogni 2 secondi: ufficio e, se è aperta, la diretta dell'agente scelto (finché lavora).
 async function aggiornaDiretta(){
  const id=S.passoAperto;if(!id||!$('#dialog').open)return;
+ const snapshot=viewSnapshot();
  const p=await api('/api/sciame/passi/'+encodeURIComponent(id),{scoped:false});
- if(S.passoAperto===id&&$('#dialog').open&&$('#dialog-title')?.textContent===p.compito){const prima=$('.live-transcript');if(prima||['al_lavoro','controllo_qualita'].includes(p.stato))mostraPasso(p);}
+ if(isCurrentView(snapshot)&&S.passoAperto===id&&$('#dialog').open&&$('#dialog-title')?.textContent===p.compito){const prima=$('.live-transcript');if(prima||['al_lavoro','controllo_qualita'].includes(p.stato))mostraPasso(p);}
 }
 setInterval(()=>{if(!S.session?.user||!(S.view==='agents'&&S.section==='office')||document.hidden||S.refreshing)return;S.refreshing=true;($('#dialog').open?aggiornaDiretta():aggiornaUfficio()).catch(()=>{}).finally(()=>{S.refreshing=false;});},2000);

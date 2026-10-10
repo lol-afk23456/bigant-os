@@ -209,3 +209,15 @@ Test delegati in file disgiunti e riesame dei sorgenti senza ulteriori difetti b
 FUN-062 passa da da fare a parziale in locale: mancano connettore, esecuzione e ricevute del canale, oltre al collaudo autorizzato sul server. Le 92 voci e il nuovo incarico non sono conclusi. Nessuna dipendenza aggiunta, account collegato, AI applicativa reale, pubblicazione, spesa, push o deploy.
 
 Controllo conclusivo: **check 5/5**, 105 file JavaScript, 72 documenti, 137 collegamenti locali, registro e dipendenze verificati senza rete.
+
+## 10 ottobre 2026 — Struttura dello Sciame e priorità del Direttore
+
+FUN-005/FUN-019/UI-008/UI-011, con correzione del collegamento social FUN-046. La revisione ha individuato priorità rimaste nella vecchia Direzione, Struttura limitata ai nomi, un collegamento alle bozze che finiva sulla Home e aggiornamenti tardivi dell’Ufficio capaci di sovrascrivere un’altra pagina. SOP aggiornata prima del codice. Backend di lettura separato: ambito agenzia, identità corrente, risultati versionati, revisione manuale, decisioni simulate distinte e nessun ripiego su proposte obsolete quando il risultato corrente è incompleto.
+
+Delega con file disgiunti per interfaccia e prove VM, quindi revisione del diff e controllo indipendente del backend. Struttura ora apre un reparto con specialisti e metodo, e da lì la configurazione. La cabina conserva l’aspetto e offre esplorazione e priorità. Il collegamento social apre la bozza giusta; Ufficio, dettaglio del passo e giro scartano le risposte appartenenti alla navigazione precedente. Corretti i messaggi sulle approvazioni interne DEMO.
+
+**407/407 test finali**, inclusi 25 nuovi: 6 backend/HTTP e 19 UI. Le prove controllano revoca e isolamento, versioni e testo, assenza di scritture/AI, errori, escaping e risposte tardive; la diretta aggiorna correttamente il passo corrente fino al risultato finale. Browser con archivio in memoria e rete esterna disabilitata: priorità da un cliente selezionato, origine, reparto/configurazione, ricerca agente, elaborato social/bozza e nuovo giro nel feed. Menu dei tre ruoli senza Lavori. Reparto e priorità a 390×844 senza overflow; dialogo 356 px. Nessun errore console rilevato. Prove dettagliate in COLLAUDO-SCIAME-UI e immagini nella cache tecnica.
+
+Cinque voci promosse soltanto a implementate in locale, con rilascio e collaudo server ancora da fare. Matrice: 48 implementate localmente, 18 parziali, 26 da fare. Le 92 migliorie e T0–T10 restano incomplete. Avanzamento/Fondamenta hanno descrizioni ormai superate da correggere nel prossimo intervento. Nessuna nuova dipendenza, AI applicativa reale, account collegato, spesa, push o deploy.
+
+Controllo finale **5/5**: 108 file JavaScript, 72 documenti e 138 collegamenti locali, registro e dipendenze verificati offline. Anteprima terminata, tab chiusa, viewport ripristinata; temporanei delle prove e delle immagini rimossi dopo il salvataggio nella cache del progetto.
