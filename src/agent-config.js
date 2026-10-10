@@ -28,7 +28,7 @@ export function createAgentConfig({ store: s, root, env = {}, clock = () => new 
     const active = verified && (operational?operational.active:!!config.authorized && !!config.enabled);
     return { ...definition, config, operational, technicalTrial:trialState(id,config), aiId:perRegistro[id]||null, hasAIInstructions: !!instructions(id), readyForAI: verified,
       operationalStatus: active ? 'Attivo' : verified ? 'AI pronta' : config.task ? 'Base' : 'Da configurare',
-      activationBlock: operational ? (operational.active?null:!operational.supported?operational.note:!operational.available?'Il percorso operativo AI è spento sul server.':operational.ready?'Leggi la prova e autorizza l’agente per le sole bozze manuali.':'Completa configurazione e prova tecnica corrente.') : !runtimeReady(id) ? 'Il percorso con dati reali deve ancora essere collaudato.' : !providerReady ? 'Scegli e configura il fornitore AI.' : null };
+      activationBlock: operational ? (operational.active?null:!operational.supported?operational.note:!operational.available?'Il percorso operativo AI è spento sul server.':operational.ready?'Leggi la prova e autorizza il percorso manuale dell’agente.':'Completa configurazione e prova tecnica corrente.') : !runtimeReady(id) ? 'Il percorso con dati reali deve ancora essere collaudato.' : !providerReady ? 'Scegli e configura il fornitore AI.' : null };
   }
   function requireRun(id, { automatic = false } = {}) {
     const agent = entry(id);

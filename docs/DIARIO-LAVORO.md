@@ -344,3 +344,7 @@ Controllo progetto 5/5 (162 JavaScript, 95 documenti, 221 link). Rilascio `aef13
 ## 10 ottobre — Audit residui e prerequisiti
 
 [AUDIT-RESIDUI-RIORDINO](AUDIT-RESIDUI-RIORDINO.md): destinazioni FUN-007 confermate da codice, decisioni e prove già disponibili; passa a implementata localmente. Matrice 73 locali, 13 parziali, 6 da fare. FUN-053/055/062 restano parziali: protezioni verificate, percorsi operativi automatici/esterni ancora incompleti. Nessuna modifica codice, nuova suite o nuovo rilascio. Pagina di produzione ancora al login; l’accesso del socio già richiesto resta il prerequisito del collaudo reale. Nessuna lettura di segreti o dati reali.
+
+## 10 ottobre 2026 — Percorso manuale Qualità
+
+Aggiunto il controllo di una singola bozza social, con pacchetto e consenso esatti, risultato immutabile e rilievi leggibili dal team assegnato. Testo/fonti modificati rendono superato il parere; l'approvazione resta umana. SOP e prove in [COLLAUDO-AGENTE-QUALITA](COLLAUDO-AGENTE-QUALITA.md). 804/804 test, browser locale desktop/390 px e revisione indipendente; nessuna attivazione o spesa reale. FUN-053 rimane parziale. Il proprietario ha rinviato il completamento dei due accessi nominali: moduli lasciati aperti, password vuote.

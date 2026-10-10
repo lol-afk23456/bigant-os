@@ -699,7 +699,8 @@
       "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
       "prove": [
         "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare.",
-        "COLLAUDO-AGENTE-SOCIAL: primo percorso S01 manuale, autorizzazione distinta, anteprima/consenso, bozze con provenienza e approvazione umana; 703/703 test, controllo 5/5 e Browser desktop/mobile con fornitore simulato. Pianificazioni, altri percorsi e attivazioni reali ancora aperti."
+        "COLLAUDO-AGENTE-SOCIAL: primo percorso S01 manuale, autorizzazione distinta, anteprima/consenso, bozze con provenienza e approvazione umana; 703/703 test, controllo 5/5 e Browser desktop/mobile con fornitore simulato. Pianificazioni, altri percorsi e attivazioni reali ancora aperti.",
+        "10 ottobre, COLLAUDO-AGENTE-QUALITA: secondo percorso manuale predisposto, bozza e fonti vincolate, parere superato dopo modifiche e visibile al team assegnato; nessuna approvazione automatica. 804/804 prove, browser desktop e 390 px, fornitori simulati e revisione indipendente. Prima attivazione reale, altri percorsi e pianificazioni ancora aperti."
       ]
     },
     {

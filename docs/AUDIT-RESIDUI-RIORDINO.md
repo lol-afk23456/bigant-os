@@ -28,7 +28,7 @@ FUN-007 passa a implementata localmente, con codice online e collaudo autenticat
 
 | Requisito | Evidenza attuale | Cosa non dimostra |
 |---|---|---|
-| FUN-053 | `src/agent-config.js` produce stati e configurazioni; `requireRun` rifiuta agenti non Attivi. `src/agent-work.js` verifica configurazione, prova, collegamento e socio autorizzante. Test agent-config, agent-trials e agent-work nella suite. | Il percorso operativo predisposto è soltanto social manuale; gli altri percorsi e l’uso reale non sono collaudati. |
+| FUN-053 | `src/agent-config.js` produce stati e configurazioni; `requireRun` rifiuta agenti non Attivi. `src/agent-work.js` verifica configurazione, prova, collegamento e socio autorizzante. Dopo questo audit è stato aggiunto anche il [percorso Qualità](COLLAUDO-AGENTE-QUALITA.md), con prove dedicate. | Predisposti Social e Qualità manuali; altri percorsi e primo uso reale restano aperti. |
 | FUN-055 | Frequenza nel singolo agente; `src/orchestrator.js` blocca modifiche agli automatismi in modalità reale, non elabora la coda DEMO e non avvia lo scheduler reale. Revoca della configurazione spegne i calendari. | Non esiste ancora una pianificazione AI reale collaudata e autorizzata. Il campo frequenza non equivale a un automatismo operativo. |
 | FUN-062 | `src/production.js` controlla stessa versione/titolo/testo, decisione umana e permessi correnti; modificare la bozza annulla approvazione e data. `tests/production-approval.test.js` verifica rifiuti e calendario interno valido. | PUBBLICATO è sempre rifiutato anche con approvazione valida: manca un canale di pubblicazione collaudato. Il solo rifiuto delle richieste non prova il percorso reale. |
 

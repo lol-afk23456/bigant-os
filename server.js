@@ -70,7 +70,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   agentTrials=createAgentTrials({store,connections,costControl,reserve:orchestrator.reserve,configFor:id=>agentConfig.entry(id).config,enabled:()=>realMode&&env.BIGANT_SCIAME_AI_TRIALS_ENABLED==='true',clock,providerOptions:agentTrialProviderOptions});
   agentWork=createAgentWork({store,connections,trials:agentTrials,configFor:id=>agentConfig.entry(id).config,orchestrator,production,clock,enabled:()=>realMode&&env.BIGANT_SCIAME_AI_ENABLED==='true',providerOptions:agentWorkProviderOptions});
   const agency=createAgencyModule({store});
-  const sciame=createSciame({store,production,administration,growth,orchestrator,root,env,clock,manualState:()=>agentWork.state('social',agentConfig.entry('social').config),motore:motore?(typeof motore==='string'?createMotore({nome:motore,root,env}):motore):null});
+  const sciame=createSciame({store,production,administration,growth,orchestrator,root,env,clock,manualState:()=>({active:['social','quality'].some(id=>agentWork.state(id,agentConfig.entry(id).config).active)}),motore:motore?(typeof motore==='string'?createMotore({nome:motore,root,env}):motore):null});
   if(importaProveSciame)sciame.importaProve(resolve(root,'docs/demo-sciame'));
   const records=createClientRecords({store,production,env,clock});
   const clientResults=createClientResults({store,clock});
@@ -194,7 +194,8 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
         const planMatch=path.match(/^\/api\/service-plan\/([^/]+)$/);if(planMatch&&method==='PATCH')return json(res,servicePlan.save(u,planMatch[1],b));
         if(path==='/api/agent-config/state'&&method==='GET')return json(res,agentConfig.state(u));
         const workMatch=path.match(/^\/api\/agent-work\/([^/]+)\/(authorize|preview|run)$/);
-        if(workMatch&&method==='POST'){const id=workMatch[1],action=workMatch[2];return json(res,action==='authorize'?agentWork.authorize(u,id,b):action==='preview'?agentWork.preview(u,clientId,id,b.brief):await agentWork.run(u,clientId,id,b));}
+        if(workMatch&&method==='POST'){const id=workMatch[1],action=workMatch[2];return json(res,action==='authorize'?agentWork.authorize(u,id,b):action==='preview'?agentWork.preview(u,clientId,id,b.brief,b):await agentWork.run(u,clientId,id,b));}
+        if(path==='/api/agent-work/quality/review'&&method==='GET')return json(res,agentWork.review(u,clientId,url.searchParams.get('contentId')));
         const workResult=path.match(/^\/api\/agent-work\/results\/([^/]+)$/);if(workResult&&method==='GET')return json(res,agentWork.result(u,clientId,workResult[1]));
         const trialMatch=path.match(/^\/api\/agent-config\/([^/]+)\/(check|trials)$/);
         if(trialMatch&&method==='POST'&&trialMatch[2]==='check')return json(res,await agentTrials.check(u,trialMatch[1],b));

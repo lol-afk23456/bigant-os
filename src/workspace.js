@@ -3,6 +3,7 @@ import { agentiSciame } from './sciame/agenti.js';
 import { canAccessClient, AppError } from './store.js';
 import { directorPriorities } from './swarm-priorities.js';
 import { createProfileDirectory } from './profile-directory.js';
+import { latestQualityReview } from './agent-quality.js';
 
 export const ownerNavigation = [
   ['home', 'Home', 'grid', 'Lavoro'], ['clients', 'Clienti', 'users', 'Lavoro'],
@@ -47,7 +48,10 @@ export function createWorkspace({ store, clock = () => new Date(), budget, expir
     const ids = new Set(assignedClients(user).map(client => client.id));
     return store.query("SELECT a.*,c.service,c.source,o.agent origin_agent,o.quality origin_quality,p.agente ai_agent,p.esito_qualita ai_quality,ao.agent procedure_agent,u.name requested_name FROM os_approvals a LEFT JOIN os_contents c ON a.kind='content' AND c.id=a.entity_id LEFT JOIN os_approval_origins o ON o.approval_id=a.id LEFT JOIN os_sciame_passi p ON a.kind='sciame_output' AND p.id=a.entity_id AND p.approvazione_id=a.id LEFT JOIN os_agent_outputs ao ON a.kind='agent_output' AND ao.id=a.entity_id AND ao.version=a.version LEFT JOIN os_users u ON u.id=a.requested_by WHERE a.status='pending' ORDER BY a.created_at")
       .filter(item => ids.has(item.client_id) && (user.role === 'owner' || (item.kind === 'content' && item.service === 'social')))
-      .map(item => ({ ...item, author: item.origin_agent || agentiSciame[item.ai_agent]?.nome || agentDefinitions.find(row => row.id === item.procedure_agent)?.name || item.requested_name || 'Autore da verificare', quality: item.origin_quality || item.ai_quality || 'Da verificare' }));
+      .map(item => {
+        const review=item.kind==='content'&&item.service==='social'?latestQualityReview(store,item.client_id,item.entity_id):null;
+        return { ...item, qualityReview:review, author: item.origin_agent || agentiSciame[item.ai_agent]?.nome || agentDefinitions.find(row => row.id === item.procedure_agent)?.name || item.requested_name || 'Autore da verificare', quality: review?(review.current?'Parere AI: '+({approvabile:'approvabile, decisione umana necessaria',da_correggere:'da correggere',bloccato:'bloccato'})[review.verdict]:'Parere AI superato'):item.origin_quality || item.ai_quality || 'Da verificare' };
+      });
   }
   function home(user) {
     if (user.role === 'client') throw new AppError('La tua home è nella tua area clienti.', 403);
