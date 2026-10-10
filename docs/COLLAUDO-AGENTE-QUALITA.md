@@ -22,3 +22,7 @@ Il motore automatico esamina la bozza originale: le frasi problematiche citate d
 Le risposte, le chiavi di prova e gli importi del browser sono inventati. La stima resta da riconciliare, non attesta un prezzo del modello. Primo uso reale e attivazione richiedono chiavi, consumi verificati e consenso al trasferimento. Social rimane il primo agente da attivare; Qualità segue singolarmente. Pianificazioni, altri agenti e pubblicazione reale restano aperti. FUN-053 resta parziale e T4 non è dichiarata completata.
 
 Rilascio e verifiche sul server sono riportati nel [registro](RILASCIO-2026-10-10.md); la pubblicazione del codice non attiva il fornitore.
+
+## Verifica della pubblicazione
+
+Codice `ad5dc36`, deployment Railway `730e7fa0-ed2b-4fcd-8a78-200e8aed1746` SUCCESS. Health e file app/workspace verificati alle 19:17; nuove API protette con risposta anonima 401. Browser socio: scheda Qualità presente, stato Base, messaggio «Il percorso operativo AI è spento sul server»; console senza errori. La schermata non offre l'avvio di un incarico reale. Prova nella cache ignorata `riordino-browser/qualita-online.png`. Nessuna variabile, chiave o autorizzazione operativa modificata.
