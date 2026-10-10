@@ -63,9 +63,9 @@ test('Instagram usa token utente, total_value, ID esatto e ricontrolla il colleg
 test('nessun dato, valore o follower mancante viene trasformato in zero',async()=>{
  const f=fixture([scopes('facebook'),{id:'123',name:page.name,access_token:page.access_token},{data:[fbMetric('page_media_view',[{end_time:'2026-09-02T07:00:00+0000'}]),fbMetric('page_post_engagements',[])]}]);
  const result=await f.provider.report(input);assert.deepEqual(result.profile,{id:'123',name:page.name});assert.ok(result.metrics.every(m=>m.points.length===0));
- const g=fixture([scopes('instagram'),page,{id:'456',username:'fixture'}, {data:[{id:'456/insights/views/day',name:'views',period:'day',total_value:{}}]},page]);
+ const g=fixture([scopes('instagram'),page,{id:'456',username:'fixture'}, {data:[{id:'456/insights/views/day',name:'views',period:'day',total_value:{}}]},{data:[]},page]);
  const missing=await g.provider.report({...input,channel:'instagram'});assert.deepEqual(missing.profile,{id:'456',name:'fixture',username:'fixture'});assert.deepEqual(missing.metrics,[{name:'views',kind:'total'}]);
- const h=fixture([scopes('instagram'),page,{id:'456'}, {data:[]},page]);const empty=await h.provider.report({...input,channel:'instagram'});assert.deepEqual(empty.metrics,[]);assert.deepEqual(empty.profile,{id:'456',name:''});
+ const h=fixture([scopes('instagram'),page,{id:'456'}, {data:[]},{data:[]},page]);const empty=await h.provider.report({...input,channel:'instagram'});assert.deepEqual(empty.metrics,[]);assert.deepEqual(empty.profile,{id:'456',name:''});
 });
 
 test('revoca scope blocca report prima della pagina; non richiede scope di scrittura',async()=>{
@@ -125,4 +125,37 @@ test('limiti risposta, duplicati, date e contatori malformati sono rifiutati',as
  const invalid=[fbMetric('impressions'),{...fbMetric(),period:'week'},fbMetric('page_media_view',[{value:1,end_time:'2026-09-01T07:00:00+0000'}]),fbMetric('page_media_view',[{value:1,end_time:'2026-09-31T07:00:00+0000'}]),fbMetric('page_media_view',[{value:-1,end_time:'2026-09-02T07:00:00+0000'}]),fbMetric('page_media_view',[{value:Number.MAX_SAFE_INTEGER+1,end_time:'2026-09-02T07:00:00+0000'}]),fbMetric('page_media_view',[{value:'12',end_time:'2026-09-02T07:00:00+0000'}]),fbMetric('page_media_view',[{value:1,end_time:'2026-09-02T07:00:00+0000'},{value:1,end_time:'2026-09-02T07:00:00+0000'}])];
  for(const value of invalid){const f=fixture([scopes('facebook'),page,{data:[value]}]);await assert.rejects(f.provider.report(input),e=>e.status===502);}
  for(const value of [{...igMetric(),id:'999/insights/views/day'},igMetric('impressions'),igMetric('views',1.2),igMetric('views',{})]){const f=fixture([scopes('instagram'),page,instagram,{data:[value]}]);await assert.rejects(f.provider.report({...input,channel:'instagram'}),e=>e.status===502);}
+});
+
+const growth=(results,total)=>({data:[{name:'follows_and_unfollows',period:'day',id:'456/insights/follows_and_unfollows/day',total_value:{...(total===undefined?{}:{value:total}),breakdowns:[{dimension_keys:['follow_type'],results:results.map(([key,value])=>({dimension_values:[key],value}))}]}}]});
+const growthFixture=(response,options={})=>fixture([scopes('instagram'),page,{...instagram,followers_count:100},{data:[igMetric()]},response,page],options);
+test('Instagram crescita: richiesta separata, stesso periodo, netta positiva/negativa/zero e fonte senza token',async()=>{
+ for(const [follows,unfollows] of [[12,5],[2,7],[0,0]]){
+  const f=growthFixture(growth([['FOLLOWER',follows],['NON_FOLLOWER',unfollows]],follows+unfollows));
+  const result=await f.provider.report({...input,channel:'instagram'}),request=f.calls[4].url;
+  assert.deepEqual(result.growth,{status:'available',follows,unfollows,net:follows-unfollows,sourceUrl:request.href});
+  assert.equal(request.searchParams.get('metric'),'follows_and_unfollows');assert.equal(request.searchParams.get('breakdown'),'follow_type');assert.equal(request.searchParams.get('metric_type'),'total_value');assert.equal(request.searchParams.get('period'),'day');
+  for(const key of ['since','until'])assert.equal(request.searchParams.get(key),f.calls[3].url.searchParams.get(key));
+  assert.equal(f.calls[3].url.searchParams.get('breakdown'),null);assert.equal(f.calls.length,6);assert.equal(f.calls[5].url.pathname,'/v26.0/123');assert.ok(f.calls.every(c=>c.init.headers.Authorization==='Bearer user-token-fixture'&&c.init.method==='GET'));assert.doesNotMatch(JSON.stringify(result.growth),/access_token|user-token/);
+ }
+});
+test('Instagram crescita: sotto soglia non interroga metriche non disponibili; totale ignoto non viene assunto sotto soglia',async()=>{
+ const f=fixture([scopes('instagram'),page,{...instagram,followers_count:99},{data:[]},page]);const result=await f.provider.report({...input,channel:'instagram'});assert.deepEqual(result.growth,{status:'below_threshold'});assert.equal(f.calls.length,5);
+ const unknown=fixture([scopes('instagram'),page,{id:'456'},{data:[]},{data:[]},page]);const missing=await unknown.provider.report({...input,channel:'instagram'});assert.equal(missing.growth.status,'not_available');assert.equal(unknown.calls.length,6);
+});
+test('Instagram crescita: categorie mancanti, nulle o sconosciute non diventano zero né netta',async()=>{
+ for(const response of [{data:[]},{data:[{...igMetric('follows_and_unfollows'),total_value:{value:0}}]},growth([['FOLLOWER',5]]),growth([['FOLLOWER',5],['NON_FOLLOWER',null]]),growth([['FOLLOWER',5],['NON_FOLLOWER',2],['UNKNOWN',1]]),growth([['FOLLOWER',5],['NON_FOLLOWER',2],['UNKNOWN',null]])]){
+  const f=growthFixture(response),out=(await f.provider.report({...input,channel:'instagram'})).growth;assert.equal(out.net,undefined);assert.notEqual(out.status,'available');
+ }
+ const zero=growthFixture(growth([['FOLLOWER',0],['NON_FOLLOWER',0],['UNKNOWN',0]]));assert.equal((await zero.provider.report({...input,channel:'instagram'})).growth.net,0);
+});
+test('Instagram crescita: ID, dimensioni, duplicati, valori invalidi e payload inattesi respinti',async()=>{
+ const base=growth([['FOLLOWER',3],['NON_FOLLOWER',2]]);
+ const cases=[growth([['FOLLOWER',1],['FOLLOWER',2]]),growth([['FOLLOWER','3']]),growth([['FOLLOWER',-1]]),growth([['FOLLOWER',1.5]]),growth([['FOLLOWER',Number.MAX_SAFE_INTEGER+1]]),growth([['FOLLOWS',5]]),growth([[['FOLLOWER'],5]])];
+ for(const modify of [x=>x.data[0].id='999/insights/follows_and_unfollows/day',x=>x.data[0].period='lifetime',x=>x.data[0].total_value.breakdowns[0].dimension_keys=['media_product_type'],x=>x.data[0].total_value.breakdowns.push(x.data[0].total_value.breakdowns[0]),x=>x.data.push(x.data[0])]){const value=structuredClone(base);modify(value);cases.push(value);}
+ for(const response of cases){const f=growthFixture(response);await assert.rejects(f.provider.report({...input,channel:'instagram'}),e=>e.status===502);assert.equal(f.calls.length,5);}
+});
+test('Instagram crescita: revoca o errore durante il trasporto non mantiene un report parziale o riprova',async()=>{
+ let allowed=true;const f=growthFixture(()=>{allowed=false;return json(growth([['FOLLOWER',3],['NON_FOLLOWER',2]]));},{allow:()=>allowed});await assert.rejects(f.provider.report({...input,channel:'instagram'}),e=>e.status===409);assert.equal(f.calls.length,5);
+ const denied=growthFixture(new Response('segreto-provider-fixture',{status:403}));await assert.rejects(denied.provider.report({...input,channel:'instagram'}),e=>e.status===502&&!e.message.includes('segreto-provider'));assert.equal(denied.calls.length,5);
 });

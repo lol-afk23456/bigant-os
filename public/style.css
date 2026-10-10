@@ -109,6 +109,11 @@ div.office-row{cursor:default}
 .client-numbers{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
 .client-numbers .stat-value{font-size:20px;overflow-wrap:anywhere}
 .kpi-list{display:grid}
+.kpi-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:16px 0}
+.kpi-grid .kpi{min-width:0;padding:16px;background:var(--paper,#faf9f5);border:1px solid var(--line);border-radius:12px}
+.kpi-grid .kpi-label{color:var(--muted);font-size:12px;margin-bottom:10px}
+.kpi-grid .kpi-val{min-width:0;align-items:flex-start;text-align:left;font-size:24px;font-weight:700;line-height:1.3}
+@media(max-width:620px){.kpi-grid{grid-template-columns:1fr}}
 .kpi-row{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #f0eee8;align-items:flex-start}
 .kpi-row small{display:block;color:var(--muted)}
 .kpi-val{display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right;min-width:110px;overflow-wrap:anywhere}

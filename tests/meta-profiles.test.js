@@ -56,3 +56,8 @@ test('Meta: aggiornamento massimo giornaliero, niente retry dopo errore, refresh
 test('Meta: blocca letture concorrenti e close attende lo scarto delle risposte tardive',async t=>{
  const f=metaProfilesFixture(t);await f.configure();let release,entered;const started=new Promise(r=>entered=r),wait=new Promise(r=>release=r);f.hook(async()=>{entered();await wait;});const first=f.check();await started;await assert.rejects(f.check(),deny(409));const ending=f.runtime.close();release();await assert.rejects(first,deny(409));await ending;assert.equal(f.state().data,null);assert.equal(f.store.one('SELECT checked_at FROM os_meta_profiles').checked_at,null);
 });
+
+test('Meta: crescita Instagram attraversa prova/attivazione, resta isolata e viene rimossa dopo errore',async t=>{
+ const f=metaProfilesFixture(t);await f.configure();await f.check();assert.equal(f.state().data.instagram.growth.net,7);assert.equal(f.state(f.client).data,null);f.activate();assert.equal(f.state(f.client).data.instagram.growth.net,7);
+ f.advance(60001);f.hook(u=>u.searchParams.get('metric')==='follows_and_unfollows'?new Response('errore-fixture',{status:403}):undefined);await assert.rejects(f.runtime.refresh(f.owner,'demo-bigant',{version:f.state().version}));assert.equal(f.state(f.client).data,null);
+});

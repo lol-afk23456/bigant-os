@@ -24,7 +24,7 @@ La revisione indipendente ha rilevato il rischio di un Instagram associabile a d
 
 Non provano il collegamento reale i dati inventati, il salvataggio del token o il superamento dei test. Sono ancora necessari app Meta approvata, verifica aziendale ove richiesta, autorizzazione del titolare e confronto con le piattaforme. Il token manuale rimane compatibile; il percorso OAuth guidato è ora predisposto e testato offline (vedi aggiornamento sotto). I token scaduti richiedono un nuovo consenso del titolare.
 
-Instagram: account professionale collegato alla Pagina, metriche aggregabili del periodo (views, reach, total_interactions). Follower del profilo come fotografia corrente; crescita Instagram ancora assente. Per alcuni ruoli Business Manager Meta indica anche permessi pubblicitari: non vengono aggiunti automaticamente.
+Instagram: account professionale collegato alla Pagina, metriche aggregabili del periodo (views, reach, total_interactions). Follower del profilo come fotografia corrente; crescita nel periodo predisposta con la metrica dedicata (vedi aggiornamento sotto). Per alcuni ruoli Business Manager Meta indica anche permessi pubblicitari: non vengono aggiunti automaticamente.
 
 Facebook: visualizzazioni, persone raggiunte, interazioni, nuovi follower e follower persi come serie giornaliere. Non sommiamo persone uniche; Page Insights può richiedere almeno 100 Mi piace e task ANALYZE. Assenze e soglie del fornitore producono dati mancanti, mai zero inventato. Nessuna lettura di messaggi, nessuna pubblicazione, gestione campagne o scrittura esterna.
 
@@ -47,3 +47,15 @@ Esito finale del blocco: **880/880** test superati, zero saltati; controllo prog
 ## Rilascio accesso Meta guidato
 
 Codice `305a8da`, deployment `87705bd3-c11e-4f20-aa02-ec24b415eb7f` SUCCESS. Verifica delle 20:39 Roma: health ok, azioni e letture esterne false; file app.js e workspace.js coincidenti con il codice verificato; API OAuth senza sessione 401. Browser socio: scheda Meta aggiornata, account non configurato, accesso guidato disabilitato sul server, zero errori. Schermata `meta-oauth-online.png` nella cache tecnica. Nessuna configurazione reale salvata. Backup delle 20:05 riconfermato; nessuna migrazione o scrittura automatica ai dati introdotta da questo rilascio.
+
+## Aggiornamento — crescita follower Instagram
+
+FUN-012: nuovi follower, follower persi e variazione netta letti dalla metrica dedicata `follows_and_unfollows`, con breakdown `follow_type`, nella stessa finestra dei report. Richiesta separata per evitare combinazioni non supportate con views/reach/interazioni. Nessun nuovo scope. Sotto 100 follower noti la richiesta aggiuntiva viene evitata, come previsto dalla soglia Meta.
+
+Otto nuove prove: crescita positiva/negativa/zero, soglia e totale ignoto, categorie mancanti/nulle/non classificate, ID/dimensioni/duplicati/valori invalidi, revoca ed errore nel trasporto, isolamento della prova e cancellazione della copia, presentazione con segno e dato mancante. Prove pertinenti: **36/36**. Il totale grezzo della metrica non viene confuso con la netta; i dati assenti non diventano zero e non si stima il totale storico dei follower.
+
+Confronto con Instagram reale ancora da eseguire durante il collaudo autorizzato. Restano flag spento e account scollegati. Fonti e regole nella [SOP](SOP-PROFILI-META.md).
+
+Suite completa **888/888**, zero saltate; controllo progetto **5/5** (182 JavaScript, 103 documenti, 251 link). Browser locale con dati inventati: totale corrente 120, nuovi 12, persi 5, variazione +7; desktop e telefono 390/390 px senza overflow, zero errori/avvisi. Il collaudo visivo ha evidenziato l’assenza dello stile della griglia KPI: corretta con schede distinte e impilamento su telefono, poi 7/7 prove UI e nuova verifica browser. Schermate `instagram-growth-desktop.png` e `instagram-growth-mobile.png` nella cache tecnica. Nessuna richiesta al fornitore reale.
+
+Nessuna modifica a database, configurazione o consensi. Backup delle 20:05 (`e3a614c5-0079-4ecd-9b10-554d0959fa0d`, 801 MB) riconfermato via API prima del rilascio; disponibile il deployment precedente `87705bd3-c11e-4f20-aa02-ec24b415eb7f` per ripristinare il codice.

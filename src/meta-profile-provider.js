@@ -73,6 +73,26 @@ function instagramMetrics(value,profileId){
   return out;
  });
 }
+function instagramGrowth(value,profileId){
+ const rows=list(value.data??[],1);if(!rows.length)return {status:'not_available'};
+ const src=metricBase(rows[0],profileId,['follows_and_unfollows'],new Set());
+ if(src.total_value===undefined||src.total_value===null)return {status:'not_available'};
+ const total=object(src.total_value);if(total.value!==undefined&&total.value!==null)count(total.value);
+ const breakdowns=list(total.breakdowns??[],1);if(!breakdowns.length)return {status:'not_available'};
+ const breakdown=object(breakdowns[0]);if(!Array.isArray(breakdown.dimension_keys)||breakdown.dimension_keys.length!==1||breakdown.dimension_keys[0]!=='follow_type')throw malformed();
+ const out={status:'incomplete'},seen=new Set();let unknownMissing=false;
+ const fields={FOLLOWER:'follows',NON_FOLLOWER:'unfollows',UNKNOWN:'unclassified'};
+ for(const raw of list(breakdown.results??[],3)){
+  const result=object(raw),dimensions=list(result.dimension_values,1),key=string(dimensions[0],32);
+  if(dimensions.length!==1||!Object.hasOwn(fields,key)||seen.has(key))throw malformed();seen.add(key);
+  if(result.value!==undefined&&result.value!==null)out[fields[key]]=count(result.value);
+  else if(key==='UNKNOWN')unknownMissing=true;
+ }
+ if(Number.isSafeInteger(out.follows)&&Number.isSafeInteger(out.unfollows)&&!unknownMissing&&(!Object.hasOwn(out,'unclassified')||out.unclassified===0)){
+  out.net=out.follows-out.unfollows;out.status='available';
+ }
+ return out;
+}
 function profile(value,expected,instagram=false){
  const src=object(value);if(id(src.id,true)!==expected)throw malformed();
  const out={id:src.id,name:src.name===undefined&&instagram?'':string(src.name)};
@@ -130,9 +150,14 @@ export function createMetaProfileProvider({accessToken=async()=>null,allow=()=>f
     const raw=await get(url(instagramId,{fields:'id,name,username,followers_count'}),bearer),account=profile(raw,instagramId,true);
     request=url(instagramId+'/insights',{metric:metaInstagramMetrics.join(','),period:'day',metric_type:'total_value',...range});
     const metrics=instagramMetrics(await get(request,bearer),instagramId);
+    let growth={status:'below_threshold'};
+    if(account.followers===undefined||account.followers>=100){
+     const growthRequest=url(instagramId+'/insights',{metric:'follows_and_unfollows',period:'day',metric_type:'total_value',breakdown:'follow_type',...range});
+     growth={...instagramGrowth(await get(growthRequest,bearer),instagramId),sourceUrl:growthRequest.href};
+    }
     // Recheck the relationship after the report transport as well as before it.
     if(page(await readPage(pageId,bearer),pageId).instagramId!==instagramId)throw new AppError('Il collegamento Instagram è cambiato durante la lettura.',409);
-    result={profile:account,metrics};
+    result={profile:account,metrics,growth};
    }else{
     const pageToken=token(rawPage.access_token);request=url(pageId+'/insights',{metric:metaFacebookMetrics.join(','),period:'day',...range});
     result={profile:profile(rawPage,pageId),metrics:facebookMetrics(await get(request,pageToken),pageId,from,to)};

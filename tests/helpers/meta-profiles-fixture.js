@@ -6,7 +6,7 @@ export function metaProfilesFixture(t,{enabled=true,real=true,origin='https://os
  if(!real&&origin==='https://os.example')origin='http://127.0.0.1:4460';
  let at=newAt||new Date('2026-10-10T12:00:00Z'),hook=null;
  const env={...(real?{BIGANT_MODALITA:'reale',BIGANT_SOCIO_EMAIL:'socio@fixture.example',BIGANT_SOCIO_PASSWORD_INIZIALE:'password-inventata-fixture-meta'}:{}),BIGANT_SECRET_KEY:Buffer.alloc(32,15).toString('base64'),BIGANT_META_PROFILES_ENABLED:String(enabled)};
- const calls=[],payload={page:{id:'123',name:'Bottega Meta DEMO',instagram_business_account:{id:'456'}},instagram:{id:'456',name:'Bottega Instagram DEMO',username:'bottega_fixture',followers_count:120},after:null};
+ const calls=[],payload={page:{id:'123',name:'Bottega Meta DEMO',instagram_business_account:{id:'456'}},instagram:{id:'456',name:'Bottega Instagram DEMO',username:'bottega_fixture',followers_count:120},after:null,growth:{follows:12,unfollows:5}};
  const json=data=>new Response(JSON.stringify(data),{headers:{'content-type':'application/json'}});
  const fetchImpl=async(input,options)=>{
   const u=new URL(String(input));calls.push({url:u.href,method:options.method});const replacement=await hook?.(u,options);if(replacement!==undefined)return replacement;
@@ -15,6 +15,7 @@ export function metaProfilesFixture(t,{enabled=true,real=true,origin='https://os
   if(u.pathname==='/v26.0/me/accounts')return json({data:[payload.page],...(payload.after?{paging:{cursors:{after:payload.after},next:'https://unrequested.invalid/'}}:{})});
   if(u.pathname===`/v26.0/${payload.page.id}`)return json({...payload.page,access_token:'page-token-fixture',followers_count:1000});
   if(u.pathname===`/v26.0/${payload.instagram.id}`)return json(payload.instagram);
+  if(u.pathname===`/v26.0/${payload.instagram.id}/insights`&&u.searchParams.get('metric')==='follows_and_unfollows')return json({data:payload.growth?[{name:'follows_and_unfollows',period:'day',id:`${payload.instagram.id}/insights/follows_and_unfollows/day`,total_value:{breakdowns:[{dimension_keys:['follow_type'],results:[['FOLLOWER',payload.growth.follows],['NON_FOLLOWER',payload.growth.unfollows]].map(([key,value])=>({dimension_values:[key],value}))}]}}]:[]});
   if(u.pathname.endsWith('/insights')){
    const ig=u.searchParams.get('metric_type')==='total_value',id=ig?payload.instagram.id:payload.page.id;
    return json({data:(ig?metaInstagramMetrics:metaFacebookMetrics).map((name,index)=>({name,period:'day',id:`${id}/insights/${name}/day`,...(ig?{total_value:{value:index===0?180:0}}:{values:[{end_time:new Date(Number(u.searchParams.get('since'))*1000+86400000).toISOString().replace('.000Z','+0000'),value:index===0?25:0}]})}))});

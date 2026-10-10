@@ -137,6 +137,14 @@ ACTIONS['client-fidelity-source']=async()=>{
  }catch(error){if(current())dialog('Origine dei conteggi Fidelity',notice(error.message,true));}
 };
 
+function instagramFollowerGrowth(growth){
+ const g=growth||{},count=n=>Number.isSafeInteger(n)&&n>=0,display=n=>count(n)?e(n):'Non disponibile';
+ const complete=g.status==='available'&&count(g.follows)&&count(g.unfollows)&&Number.isSafeInteger(g.net)&&g.net===g.follows-g.unfollows;
+ const net=complete?e(g.net>0?'+'+g.net:g.net):'Non disponibile';
+ const note=g.status==='below_threshold'?'Meta non rende disponibile la crescita per gli account con meno di 100 follower.':g.status==='available'?'Variazione netta = nuovi follower meno follower persi nel periodo. I follower persi includono gli account che abbandonano Instagram.':g.status==='incomplete'?'Dati parziali o non classificati: la variazione netta non viene calcolata.':'Meta non ha fornito i dati della crescita per questo periodo.';
+ return `<h4 class="section">Follower nel periodo</h4><div class="kpi-grid"><div class="kpi"><div class="kpi-label">Nuovi follower</div><div class="kpi-val">${display(g.follows)}</div></div><div class="kpi"><div class="kpi-label">Follower persi</div><div class="kpi-val">${display(g.unfollows)}</div></div><div class="kpi"><div class="kpi-label">Variazione netta</div><div class="kpi-val">${net}</div></div></div>${notice(note)}`;
+}
+
 function clientMetaReport(data,onlyChannel=null){
  if(!data||!Number.isFinite(Date.parse(data.expiresAt))||Date.parse(data.expiresAt)<=Date.now())return '';
  const names={page_media_view:'Visualizzazioni',page_total_media_view_unique:'Persone raggiunte',page_post_engagements:'Interazioni con i post',page_daily_follows_unique:'Nuovi follower',page_daily_unfollows_unique:'Follower persi',views:'Visualizzazioni',reach:'Account raggiunti',total_interactions:'Interazioni totali'};
@@ -146,6 +154,6 @@ function clientMetaReport(data,onlyChannel=null){
   const value=n=>Number.isSafeInteger(n)&&n>=0?e(n):'Non disponibile';
   const metrics=expected.map(name=>{const row=(report.metrics||[]).find(m=>m.name===name);if(channel==='instagram')return `<div class="kpi"><div class="kpi-label">${e(names[name])}</div><div class="kpi-val">${value(row?.kind==='total'?row.value:null)}</div></div>`;
    return `<details class="section"><summary>${e(names[name])} · valori giornalieri</summary>${row?.kind==='series'&&row.points?.length?table(['Giorno','Valore fornito da Meta'],row.points.map(p=>[e(p.date),value(p.value)])):empty('Non disponibile','Meta non ha fornito valori per questa metrica.','chart')}</details>`;}).join('');
-  return panel('Risultati '+label,`<h3>${e(profile.name||profile.username||'Profilo senza nome')}</h3><p>Fonte: ${e(label)} · ${publicUrl?profileExternalLink(publicUrl,'Apri il profilo'):e('Indirizzo pubblico non disponibile')}</p><p>Acquisiti ${e(date(data.fetchedAt,true))} · Disponibili fino a ${e(date(data.expiresAt,true))}</p><p>Periodo richiesto: ${e(data.from)} → ${e(data.to)}. I dati possono arrivare in ritardo.</p><dl class="out-obj"><div><dt>Follower al momento della lettura</dt><dd>${value(profile.followers)}</dd></div></dl>${channel==='instagram'?'<div class="kpi-grid">'+metrics+'</div>'+notice('La crescita dei follower Instagram non è ancora disponibile. I valori sopra sono totali del periodo.'):metrics+notice('Ogni riga riguarda un giorno. Le persone raggiunte in giorni diversi possono essere le stesse: i valori non vengono sommati.')}${notice('Valori e giorni mancanti restano non disponibili, non valgono zero. La copia scade entro 24 ore dalla lettura.')}`);
+  return panel('Risultati '+label,`<h3>${e(profile.name||profile.username||'Profilo senza nome')}</h3><p>Fonte: ${e(label)} · ${publicUrl?profileExternalLink(publicUrl,'Apri il profilo'):e('Indirizzo pubblico non disponibile')}</p><p>Acquisiti ${e(date(data.fetchedAt,true))} · Disponibili fino a ${e(date(data.expiresAt,true))}</p><p>Periodo richiesto: ${e(data.from)} → ${e(data.to)}. I dati possono arrivare in ritardo.</p><dl class="out-obj"><div><dt>Follower al momento della lettura</dt><dd>${value(profile.followers)}</dd></div></dl>${channel==='instagram'?'<div class="kpi-grid">'+metrics+'</div>'+instagramFollowerGrowth(report.growth):metrics+notice('Ogni riga riguarda un giorno. Le persone raggiunte in giorni diversi possono essere le stesse: i valori non vengono sommati.')}${notice('Valori e giorni mancanti restano non disponibili, non valgono zero. La copia scade entro 24 ore dalla lettura.')}`);
  }).join('');
 }

@@ -20,7 +20,7 @@ async function fixture(){
 }
 const data=()=>({from:'2026-09-10',to:'2026-10-07',fetchedAt:'2026-10-10T12:00:00Z',expiresAt:'2099-10-11T12:00:00Z',instagram:{profile:{id:'456',name:'Profilo <b>DEMO</b>',username:'demo_fixture',followers:120},metrics:[{name:'views',kind:'total',value:0},{name:'reach',kind:'total'}]},facebook:{profile:{id:'123',name:'Pagina DEMO'},metrics:[{name:'page_total_media_view_unique',kind:'series',points:[{date:'2026-09-10',value:5},{date:'2026-09-11',value:5}]}]}});
 test('Meta UI: distingue vuoti da zero, escape, periodo, follower correnti e nessuna somma di reach',async()=>{
- const f=await fixture();Object.assign(f.S.module.metaProfiles,{configured:true,checked:true,channels:['facebook','instagram'],data:data()});let html=f.view();assert.match(html,/Profilo &lt;b&gt;DEMO&lt;\/b&gt;/);assert.match(html,/kpi-val">0/);assert.match(html,/Non disponibile/);assert.match(html,/crescita dei follower Instagram non è ancora disponibile/);assert.match(html,/meta-profiles-activate/);assert.doesNotMatch(html,/Risultati Facebook|href="https:\/\/graph/);
+ const f=await fixture();Object.assign(f.S.module.metaProfiles,{configured:true,checked:true,channels:['facebook','instagram'],data:data()});let html=f.view();assert.match(html,/Profilo &lt;b&gt;DEMO&lt;\/b&gt;/);assert.match(html,/kpi-val">0/);assert.match(html,/Non disponibile/);assert.match(html,/Meta non ha fornito i dati della crescita/);assert.match(html,/meta-profiles-activate/);assert.doesNotMatch(html,/Risultati Facebook|href="https:\/\/graph/);
  f.S.section='facebook';html=f.view();assert.match(html,/valori non vengono sommati/);assert.match(html,/2026-09-10/);assert.doesNotMatch(html,/Somma|kpi-val">10/);
  f.S.module.metaProfiles.data.expiresAt='2000-01-01';assert.doesNotMatch(f.view(),/Pagina DEMO|meta-profiles-activate/);
 });
@@ -39,4 +39,15 @@ test('Meta UI: anteprima cliente senza controlli; scadenza rimuove dati prima di
 });
 test('Meta UI: timer vecchia pagina non tocca una nuova vista',async()=>{
  const f=await fixture();Object.assign(f.S.module.metaProfiles,{configured:true,channels:['instagram'],data:data()});f.view();const oldTimer=f.timers.at(-1);f.S.module={...f.S.module,metaProfiles:{...f.S.module.metaProfiles,data:data()}};const root=f.S.module;oldTimer.callback();assert.equal(f.S.module,root);assert.ok(root.metaProfiles.data);
+});
+
+test('Meta UI: nuovi/persi/netta distinti dal totale attuale, con segno e zero esplicito',async()=>{
+ const f=await fixture();for(const [follows,unfollows,net,label]of [[12,5,7,'+7'],[2,7,-5,'-5'],[0,0,0,'0']]){
+  const d=data();d.instagram.growth={status:'available',follows,unfollows,net};Object.assign(f.S.module.metaProfiles,{configured:true,channels:['instagram'],data:d});const html=f.view();assert.match(html,/Follower al momento della lettura/);assert.match(html,/Follower nel periodo/);assert.match(html,/Nuovi follower/);assert.match(html,/Follower persi/);assert.ok(html.includes('Variazione netta</div><div class="kpi-val">'+label));assert.doesNotMatch(html,/crescita dei follower Instagram non/);
+ }
+});
+test('Meta UI: dati assenti, parziali o sotto soglia non presentano una crescita calcolata',async()=>{
+ const f=await fixture();for(const growth of [undefined,{status:'below_threshold'},{status:'incomplete',follows:12},{status:'incomplete',follows:12,unfollows:2,unclassified:4},{status:'available',follows:12,unfollows:2,net:999}]){
+  const d=data();d.instagram.growth=growth;Object.assign(f.S.module.metaProfiles,{configured:true,channels:['instagram'],data:d});const html=f.view();assert.match(html,/Variazione netta<\/div><div class="kpi-val">Non disponibile/);if(growth?.status==='below_threshold')assert.match(html,/meno di 100 follower/);
+ }
 });
