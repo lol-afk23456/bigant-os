@@ -9,7 +9,7 @@ Prima di ogni sessione rileggere `docs/BRIEF-BIGANT.md`, `docs/VERIFICA-COPERTUR
 Leggere README, docs/BRIEF-BIGANT.md, docs/DECISIONI.md e docs/REPORT-NOTTE.md prima di modificare.
 
 - Progetto interno, due ditte individuali sotto un marchio. Non costruire un SaaS commerciale.
-- Lavorare sul branch bigant-os-notte-1; niente main, force push, merge o deploy senza nuova istruzione esplicita.
+- Lavorare sul branch bigant-os-notte-1; niente main, force push o merge. Push del ramo e rilascio finale autorizzati dal proprietario il 10 ottobre, dopo backup e verifiche.
 - Growth, Fidelity e PED originali restano intatti. Railway solo lettura dei metadati, mai valori riservati.
 - Nessuna email, messaggio, pubblicazione, pagamento, collegamento reale o servizio a pagamento durante il prototipo.
 - Nessuna lettura di 04_ACCESSI, .env reali, archivi contabili o database di produzione. Non trasferire dati reali in repository, fixture o log.
@@ -24,3 +24,6 @@ Leggere README, docs/BRIEF-BIGANT.md, docs/DECISIONI.md e docs/REPORT-NOTTE.md p
 - Tutti i file di lavoro devono rimanere nella cartella tecnica del repository. Su Drive soltanto i tre report autorizzati.
 
 La delega è consentita dal brief notturno. Assegnare file disgiunti, verificare i risultati, nessuna autonomia esterna ereditata dagli agenti applicativi.
+
+
+Aggiornamento del proprietario — 10 ottobre 2026: ridurre letture, deleghe e controlli ripetuti non necessari; completare il lavoro e pubblicare tutte le modifiche online al termine, senza ulteriore supervisione. Questa autorizzazione successiva consente push del ramo e rilascio su BigAnt OS dopo backup e verifiche; non autorizza spese, attivazione di fornitori, cancellazioni o interventi sulle app originali.

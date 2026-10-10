@@ -307,3 +307,8 @@ Revisione indipendente: verificate perdite di dati interne e incongruenza Growth
 Matrice92: **68 locali, 16 parziali, 8 da fare**. I conteggi non chiudono le fasi o il brief esteso. Report completi/Ads, Email marketing autonomo, alcune fonti e collaudi reali restano aperti. Nessun nuovo pacchetto, cliente reale, collegamento, chiamata applicativa a pagamento, push o deploy; T1–T10 mantengono il proprio ordine.
 
 Controllo conclusivo progetto **5/5**: 150 file JavaScript, 86 documenti, 190 link locali. Home verificata anche a 1280×800, senza overflow; immagine `bigant-client-desktop.png`. Suite finale dopo il reset della rotta: **725/725**.
+
+
+## 10 ottobre 2026 — Risultati dei clienti
+
+Riepilogo comune dei soci e report mensili con obiettivi, lavori, misure e fonti. Bozza privata, anteprima della versione esatta e conferma prima della visibilità al cliente; servizio o autore revocato non ripubblicano automaticamente lo storico al ripristino. Revisione indipendente: chiuso anche l’aggiramento delle versioni tramite INSERT OR REPLACE. Nel Browser corretti aggiunta voce e contesto dell’attività alla ricarica. **14 nuove prove, suite 739/739**, controllo **5/5** (155 JavaScript, 88 documenti, 191 link locali); desktop e 390×844, nessun errore console finale. [Collaudo](COLLAUDO-RISULTATI-CLIENTI.md). Matrice92: **70 locali, 15 parziali, 7 da fare**. Report manuali, fonti automatiche ancora parziali. Nessun account, dato reale, invio, costo applicativo o rilascio. Il rilascio finale è ora autorizzato senza ulteriore conferma.

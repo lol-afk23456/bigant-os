@@ -1,0 +1,13 @@
+# Risultati dei clienti — 10 ottobre 2026
+
+FUN-015 e FUN-035: riepilogo comune dei soci, report mensile dell’attività, obiettivi, lavori e misure con fonte/data. Procedura e percorsi in [SOP-RISULTATI-CLIENTI](SOP-RISULTATI-CLIENTI.md). Il modulo è registrato nel server e nelle viste Clienti, scheda attività e area cliente; i dettagli pertinenti compaiono anche nel servizio acquistato.
+
+Il report viene preparato manualmente dai soci; non è una sincronizzazione dei canali. Prima bozza privata, poi anteprima completa e conferma della versione corrente. Modifiche successive nascondono il report fino alla nuova verifica. Revocare e riaggiungere un servizio non ripubblica lo storico; lo stesso vale per revoca/ripristino del socio che aveva pubblicato. Nessun obiettivo di fatturato dell’agenzia e nessuna copia automatica di bozze, memoria, contabilità o cache Google.
+
+**14 prove dedicate:** sette dominio, sei interfaccia, una integrazione HTTP. Coprono permessi e sessione correnti, isolamento, periodi distinti, conflitti, approvazioni obsolete, revoche persistenti, idempotenza della decisione, assenza di scritture/rete dalle letture, fonti/date, null/zero, HTML escapato, contesto dei dialoghi e ricarica della pagina. Le versioni sono protette da UPDATE, DELETE e anche INSERT OR REPLACE: quest’ultimo aggiramento è stato trovato dalla revisione indipendente e corretto.
+
+Browser con database in memoria: bozza, aggiunta obiettivo social inventato, anteprima, conferma obbligatoria, riepilogo comune aggiornato, login cliente e apertura dei risultati. Corretti due difetti trovati durante la prova: aggiunta voce senza identificativo e perdita dell’attività selezionata alla ricarica. Le relative regressioni sono incluse. Desktop 1280×800 e cliente a 390×844, senza overflow della pagina o errori console finali. Nessuna password o dato reale. Screenshot `.cache/riordino-browser/bigant-results-owner.png` e `bigant-results-client-mobile.png`; anteprima terminata e browser ripristinato.
+
+I report manuali completano il flusso locale richiesto da FUN-015/FUN-035; non sostituiscono i collegamenti automatici previsti da FUN-012/FUN-036. Matrice92: **70 implementate in locale, 15 parziali, 7 da fare**. Rimangono il collaudo online, le altre voci del riordino e T0–T10. Il proprietario ha autorizzato il rilascio finale senza ulteriore conferma; questa tranche non è ancora online e non attiva fornitori o invii.
+
+Verifica finale: **739/739 test**, nessuno saltato; controllo progetto **5/5**, 155 file JavaScript, 88 documenti e 191 collegamenti locali. Log locali `.cache/results-full.log` e `.cache/results-check.log`.

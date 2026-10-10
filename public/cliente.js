@@ -50,7 +50,7 @@ function clientServicesView(){
 }
 function clientSource(row){
  let url=null;try{const u=new URL(row.url);if(u.protocol==='https:'&&!u.username&&!u.password)url=u.href;}catch{}
- return `<small>Fonte: ${e(row.fonte)} · ${row.aggiornato?`Aggiornato ${e(date(row.aggiornato,true))}`:'Aggiornamento non disponibile'}${url?` · <a href="${e(url)}" target="_blank" rel="noopener noreferrer">Apri la fonte</a>`:''}</small>`;
+ return `<small>Fonte: ${e(row.fonte)} · ${row.aggiornato?`Aggiornato ${e(date(row.aggiornato,!row.dateOnly))}`:'Aggiornamento non disponibile'}${url?` · <a href="${e(url)}" target="_blank" rel="noopener noreferrer">Apri la fonte</a>`:''}</small>`;
 }
 function clientMetricRows(rows){return `<div class="kpi-list">${rows.map(row=>`<div class="kpi-row"><div><b>${e(row.nome)}</b>${clientSource(row)}${row.nota?`<small>${e(row.nota)}</small>`:''}</div><div class="kpi-val">${row.valore===null||row.valore===undefined?'<span class="muted">—</span>':e(row.valore)}${badge(row.stato)}</div></div>`).join('')}</div>`;}
 let clientReportExpiryTimer=null;
@@ -73,10 +73,11 @@ function clientServiceReportView(){
  const google=d.google&&Date.parse(d.google.expiresAt)>Date.now()?d.google:null;
  if(google){const snapshot=viewSnapshot();clientReportExpiryTimer=setTimeout(()=>{if(isCurrentView(snapshot)&&S.module===d){render();load();}},Math.max(1,Date.parse(google.expiresAt)-Date.now()+1));}
  const reports=d.reports||[];
- return clientAreaHeader()+back+`<h2>${e(d.service.nome)}</h2>`+notice(d.note)+(google?clientGoogleReport(google):'')+reports.map(row=>panel(row.nome,row.metriche.length?clientMetricRows(row.metriche):empty('Report non ancora disponibile','Le misure verranno mostrate qui con fonte e data.'))).join('');
+ return clientAreaHeader()+back+`<h2>${e(d.service.nome)}</h2>`+notice(d.note)+(d.publishedReports||[]).map(row=>`<details class="section"><summary>${e(row.period)} · Report verificato</summary>${resultsBody(row,false)}</details>`).join('')+(google?clientGoogleReport(google):'')+reports.map(row=>panel(row.nome,row.metriche.length?clientMetricRows(row.metriche):empty('Report non ancora disponibile','Le misure verranno mostrate qui con fonte e data.'))).join('');
 }
 function clienteDashboardView(){
  const d=S.module||{};
+ if(S.section==='results')return clientResultsView();
  if((S.section||'').startsWith('service/'))return clientServiceReportView();
  if(S.section==='servizi')return clientServicesView();
  if(d.clientId!==S.clientId)return clientAreaHeader()+empty('Attività non disponibile','Aggiorna la pagina.');
@@ -85,6 +86,7 @@ function clienteDashboardView(){
  const home=d.sezioni?.find(x=>x.id==='home')||{};
  return clientAreaHeader()+workspaceHero('Il tuo spazio.<br>Tutto più chiaro.','Apri un servizio per leggere i suoi dati, oppure consulta i documenti della tua attività.')+sectionCards([
   {name:'I tuoi servizi',value:home.servicesCount||0,note:'Report e fonti, servizio per servizio',route:'client:servizi',icon:'chart'},
-  {name:'Documenti',value:home.contractsCount||0,note:'I contratti della tua attività',route:'client:documenti',icon:'file'}
+  {name:'Documenti',value:home.contractsCount||0,note:'I contratti della tua attività',route:'client:documenti',icon:'file'},
+  ...(d.sezioni?.some(row=>row.id==='results')?[{name:'I tuoi risultati',value:'Apri',note:'Obiettivi e lavoro svolto',route:'client:results',icon:'chart'}]:[])
  ]);
 }

@@ -13,6 +13,7 @@ import {createAgentWork} from './src/agent-work.js';
 import {createAgentTrials} from './src/agent-trials.js';
 import {createAgentConfig} from './src/agent-config.js';
 import {createClientRecords} from './src/client-records.js';
+import {createClientResults} from './src/client-results.js';
 import {createWorkspace,navigationFor} from './src/workspace.js';
 import {createPlatformProgress} from './src/platform-progress.js';
 import {readFileSync,mkdirSync,statSync,existsSync} from 'node:fs';
@@ -71,7 +72,8 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const sciame=createSciame({store,production,administration,growth,orchestrator,root,env,clock,manualState:()=>agentWork.state('social',agentConfig.entry('social').config),motore:motore?(typeof motore==='string'?createMotore({nome:motore,root,env}):motore):null});
   if(importaProveSciame)sciame.importaProve(resolve(root,'docs/demo-sciame'));
   const records=createClientRecords({store,production,env,clock});
-  const cliente=createClientDashboard({store,records,businessProfile,clock});
+  const clientResults=createClientResults({store,clock});
+  const cliente=createClientDashboard({store,records,businessProfile,clock,clientResults});
   const workspace=createWorkspace({store,clock,budget:()=>orchestrator.budget(),expiring:records.expiring,agentConfig,connections,businessProfile});
   const servicePlan=createServicePlan({store,agentConfig});
   const billing=createBilling({store,administration});
@@ -159,8 +161,12 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
           return json(res,login(res,store.one('SELECT * FROM os_users WHERE id=?',u.id)));
         }
         if(u.must_change_password)throw new AppError('Cambia la password provvisoria prima di continuare.',403);
-        const clientId=clientFrom(url,u,{optional:method==='GET'&&['/api/overview','/api/clients','/api/workspace/home','/api/workspace/approvals','/api/workspace/contracts','/api/workspace/priorities','/api/workspace/progress'].includes(path)});
+        const clientId=clientFrom(url,u,{optional:method==='GET'&&['/api/overview','/api/clients','/api/workspace/home','/api/workspace/approvals','/api/workspace/contracts','/api/workspace/priorities','/api/workspace/progress','/api/client-results/index'].includes(path)});
         const b=['GET','HEAD'].includes(method)?{}:await body(req);
+        if(path==='/api/client-results/index'&&method==='GET')return json(res,clientResults.index(u));
+        if(path==='/api/client-results'&&method==='GET')return json(res,clientResults.state(u,clientId,url.searchParams.get('period')));
+        const reportAction=path.match(/^\/api\/client-results\/(save|publish|hide)$/);
+        if(reportAction&&method==='POST')return json(res,clientResults[reportAction[1]](u,clientId,b));
         if(path==='/api/billing/state'&&method==='GET')return json(res,billing.state(u));
         const billingMatch=path.match(/^\/api\/billing\/tracker\/([^/]+)$/);if(billingMatch&&method==='PATCH')return json(res,billing.label(u,billingMatch[1],b));
         const googleMatch=path.match(/^\/api\/connections\/google\/oauth\/(state|start|finish)$/);
@@ -256,7 +262,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const backups=realMode&&worker&&database!==':memory:'?createBackupScheduler({store,sourcePath:database,env,clock}):null;
   let workerError=null,workerRun=null;
   const timer=worker?setInterval(()=>{if(workerRun)return;workerRun=orchestrator.tick().then(()=>fidelity.runWalletJobs()).then(()=>businessProfile.tick()).then(()=>{workerError=null;}).catch(()=>{workerError='Controllo delle automazioni da verificare.';}).finally(()=>{workerRun=null;});},2000):null;timer?.unref();
-  return {server,store,costControl,googleAuth,businessProfileAuth,businessProfile,billing,connections,servicePlan,agentConfig,agentTrials,agentWork,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(workerRun)await workerRun;await backups?.close();if(server.listening)await new Promise(r=>server.close(r));await businessProfile.close();await agentTrials.close();await agentWork.close();store.close();}};
+  return {server,store,clientResults,costControl,googleAuth,businessProfileAuth,businessProfile,billing,connections,servicePlan,agentConfig,agentTrials,agentWork,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(workerRun)await workerRun;await backups?.close();if(server.listening)await new Promise(r=>server.close(r));await businessProfile.close();await agentTrials.close();await agentWork.close();store.close();}};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const modalitaReale=process.env.BIGANT_MODALITA==='reale';

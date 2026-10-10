@@ -270,8 +270,10 @@
       "area": "Marketing BigAnt → Obiettivi e risultati",
       "modifica": "Obiettivi e risultati vanno **nella vista cliente**, insieme ai **report**: un report generale di tutto quello che è stato fatto per il cliente. Nessun riquadro \"obiettivo di fatturato\" per l'agenzia (D-08)",
       "criterio": "Il cliente vede obiettivi, risultati e report nella sua area; l'agenzia non ha più questa sezione",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Report periodici con obiettivi, lavori e misure manuali, fonti/date, versioni immutabili e visibilità esplicita dopo verifica dei soci. Revoca persistente su servizi/ruoli; UI desktop/mobile e 14 prove dedicate. COLLAUDO-RISULTATI-CLIENTI.md."
+      ]
     },
     {
       "id": "FUN-016",
@@ -527,9 +529,10 @@
       "area": "\"I tuoi risultati\"",
       "modifica": "Due livelli. **Amministrazione:** una vista **\"Risultati dei clienti\"** con i risultati di ogni cliente in un unico posto. **Cliente:** \"I tuoi risultati\", solo i propri. **Ordine di rilascio deciso [R]:** prima solo nella dashboard dell'amministrazione; quando è configurata bene, anche nella dashboard del cliente",
       "criterio": "L'amministrazione vede i risultati di tutti i clienti in una pagina; il cliente, quando abilitato, vede solo i suoi",
-      "stato": "parziale in locale",
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Report periodici con obiettivi, lavori e misure manuali, fonti/date, versioni immutabili e visibilità esplicita dopo verifica dei soci. Revoca persistente su servizi/ruoli; UI desktop/mobile e 14 prove dedicate. COLLAUDO-RISULTATI-CLIENTI.md."
       ]
     },
     {
@@ -540,7 +543,8 @@
       "stato": "parziale in locale",
       "prove": [
         "Report raggiungibili nei servizi, stessi dati per socio in anteprima e cliente; report mensile separato rimosso. GBP attivo e conteggi Fidelity disponibili; altre fonti, report Ads completi e Email marketing restano aperti.",
-        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente.",
+        "Report manuali verificati ora anche nel servizio pertinente; riepilogo trasversale separato richiesto da FUN-035. Restano integrazioni automatiche, Ads e Email marketing."
       ]
     },
     {

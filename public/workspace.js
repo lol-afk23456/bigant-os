@@ -261,7 +261,8 @@ function clientRecordsView(){
   const due=S.module?.items||[];
   return (isOwner()&&due.length?panel('Contratti in scadenza entro 30 giorni',list(due,item=>`<div class="list-item"><div class="body"><b>${e(item.client_name)}</b><small>${e(item.title)} · ${date(item.end_date)}</small></div>${btn('Apri cliente','select-client',item.client_id,'small')}</div>`)):'')+clientsView()+(isOwner()?`<div class="section">${btn('Risultati dei clienti','goto','clients:results','','chart')}</div>`:'');
  }
- if(S.section==='results')return title('Risultati dei clienti.','Una vista comune. Fonte e data accompagneranno ogni dato disponibile.',btn('Indietro','goto','clients','','arrow'))+`<div class="card-grid">${S.overview.clients.map(client=>`<article class="module-card"><h3>${e(client.name)}</h3>${badge('Da collegare')}<p>Le fonti esterne non sono ancora collegate.</p>${btn('Apri cliente','select-client',client.id,'small')}</article>`).join('')}</div>`;
+ if(S.section==='results')return resultsIndexView();
+ if(/^client-results(?:\/|$)/.test(S.section||''))return resultsEditorView();
  const d=S.module||{},c=d.client||{},items=[
   {id:'profile',name:'Anagrafica',value:c.industry||'Da completare',icon:'users'},
   ...(isOwner()?[{id:'contract',name:'Contratto',value:d.contracts?.length||0,icon:'file'}]:[]),
@@ -270,7 +271,7 @@ function clientRecordsView(){
   {id:'services',name:'Servizi attivi',value:d.services?.length||0,icon:'grid'},
   ...(isOwner()?[{id:'documents',name:'Documenti',value:'Contratti',icon:'file'}]:[]),
   {id:'onboarding',name:'Avvio cliente',value:d.onboarding?.completed?'Completato':'Da completare',icon:'check'},
-  {id:'client-results',name:'Risultati',value:'Fonti da collegare',icon:'chart'}
+  ...(isOwner()&&c.id!=='demo-bigant'?[{id:'client-results',name:'Risultati',value:'Obiettivi e report',icon:'chart'}]:[])
  ];
  return title(c.name||'Scheda cliente','Lo spazio di lavoro dell’agenzia per questa attività.',btn('Tutti i clienti','goto','clients','','arrow')+(isOwner()?btn('Guarda come il cliente','goto','client','','eye'):''))+sectionNavigator('clients',items,id=>{
   if(id==='profile')return panel('Anagrafica',`<dl class="out-obj"><div><dt>Nome</dt><dd>${e(c.name)}</dd></div><div><dt>Settore</dt><dd>${e(c.industry||'Da completare')}</dd></div><div><dt>Indirizzo</dt><dd>${e(c.address||'Da completare')}</dd></div></dl>`,isOwner()?btn('Modifica','record-profile','','small'):'');

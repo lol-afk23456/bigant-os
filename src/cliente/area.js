@@ -4,7 +4,7 @@ import {catalogoServizi} from '../servizi/catalogo.js';
 
 // The customer and owner preview share this explicit, read-only projection.
 // Internal task/content/agent work is never used to build a customer report.
-export function createClientArea({store:s,records,businessProfile=null,clock=()=>new Date()}){
+export function createClientArea({store:s,records,businessProfile=null,clock=()=>new Date(),clientResults=null}){
  function scope(user,clientId){
   const current=user?.id?s.one('SELECT * FROM os_users WHERE id=?',user.id):null;
   if(!current?.active||current.must_change_password||!['owner','client'].includes(current.role)||current.id==='os-orchestrator')throw new AppError('Area riservata al cliente e all’anteprima dei soci.',403);
@@ -22,7 +22,8 @@ export function createClientArea({store:s,records,businessProfile=null,clock=()=
   return {demo:c.demo,clientId,clientName:c.client.name,servizi:attivi.map(row=>row.id),sezioni:[
    {id:'home',nome:'Home',servicesCount:attivi.length,contractsCount:contracts.length},
    {id:'servizi',nome:'I tuoi servizi',attivi},
-   {id:'documenti',nome:'Documenti',contratti:contracts}
+   {id:'documenti',nome:'Documenti',contratti:contracts},
+   ...(clientId!=='demo-bigant'&&clientResults?.published(user,clientId).reports.length?[{id:'results',nome:'I tuoi risultati'}]:[])
   ]};
  }
  function service(user,clientId,id){
@@ -41,12 +42,14 @@ export function createClientArea({store:s,records,businessProfile=null,clock=()=
    if(state.enabled&&state.data){const {source,sourceUrl,fetchedAt,expiresAt,from,to,reviews,performance}=state.data;google={source,sourceUrl,fetchedAt,expiresAt,from,to,reviews,performance};}
   }
   if(!reports.length)reports.push({id,nome:selected.name,metriche:[]});
-  return {demo:c.demo,clientId,clientName:c.client.name,service:serviceCard(selected),reports,google,
+  const publishedReports=clientId!=='demo-bigant'&&clientResults?clientResults.published(user,clientId).reports.map(row=>({...row,summary:'Voci verificate per questo servizio.',nextSteps:'',entries:row.entries.filter(entry=>entry.serviceId===id)})).filter(row=>row.entries.length):[];
+  return {demo:c.demo,clientId,clientName:c.client.name,service:serviceCard(selected),reports,google,publishedReports,
    note:id==='fidelity'?'Gli iscritti appartengono soltanto a questa attività. Gli invii dipendono dalle autorizzazioni del prodotto.':'I valori mancanti restano da collegare. Bozze e calendario editoriale sono gestiti separatamente.'};
  }
  async function handle({method,path,user,clientId}){
   if(method!=='GET')throw new AppError('Area cliente in sola lettura.',405);
   if(path==='/dashboard')return {data:dashboard(user,clientId)};
+  if(path==='/results'&&clientResults){scope(user,clientId);return {data:clientResults.published(user,clientId)};}
   const match=path.match(/^\/services\/([a-z-]+)$/);
   if(match)return {data:service(user,clientId,match[1])};
   return null;

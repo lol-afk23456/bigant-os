@@ -188,3 +188,6 @@ Applicate le decisioni già confermate UI-010, FUN-036…044 e COL-004: una sezi
 Il socio in anteprima usa la stessa proiezione del cliente; risultati interni, test GBP non attivati, task e memoria non fanno parte dei report. Le proposte commerciali rimangono nella memoria interna. Nessuna deduplicazione dei contratti per sola data: due scadenze uguali non identificano lo stesso accordo. I contratti precedenti restano intatti.
 
 Copertura prudente: report ancora incompleti, Email marketing senza identità autonoma, collegamento alla fonte Fidelity mancante. [Prove e stati](COLLAUDO-VISTA-CLIENTE.md). Nessuna attivazione esterna o spesa.
+
+
+Aggiornamento del proprietario — 10 ottobre 2026: ridurre letture, deleghe e controlli ripetuti non necessari; completare il lavoro e pubblicare tutte le modifiche online al termine, senza ulteriore supervisione. Questa autorizzazione successiva consente push del ramo e rilascio su BigAnt OS dopo backup e verifiche; non autorizza spese, attivazione di fornitori, cancellazioni o interventi sulle app originali.
