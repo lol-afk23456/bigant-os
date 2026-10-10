@@ -246,3 +246,14 @@ Revisione: corretti il blocco permanente dopo 412 e il possibile ripristino dell
 Matrice riordino ancora **52 implementate in locale, 14 parziali e 26 da fare**. COL-005/FUN-050 conservano stato parziale; aggiornate le prove delle righe MIG-GR-33–37/49, senza promuovere i collaudi reali o ridefinire la vecchia copertura storica. Fasi 0–7 e T0–T10 non concluse. Nessuna nuova dipendenza, account, invito reale, spesa, push o deploy. Anteprima terminata, schede chiuse, dimensioni ripristinate e immagini temporanee trasferite nel progetto.
 
 Controllo finale **5/5**: 121 file JavaScript, 74 documenti e 144 collegamenti locali; registro, dipendenze e prototipo DEMO verificati senza rete. Suite finale 543/543 dopo tutte le correzioni al codice.
+
+
+### 10 ottobre 2026 — Profili e controllo della copertura del riordino
+
+- Letti regole, fonte del riordino, contesto e conferma sulla cartella. SOP-PROFILI scritta prima del codice. File disgiunti a backend, UI e revisore; parent integrazione HTTP, Browser, documentazione e verifica finale.
+- FUN-012/UI-007: link pubblici e fonte, attestazione manuale dei soci, storico immutabile, transazione e conflitti; controlli correnti del ruolo e dell’attività. Nessuna rete; query non necessarie, host locali e LinkedIn personale rifiutati. Audit senza URL.
+- UI a sei card e dettaglio singolo, modifica nel contesto fissato all’apertura. Risposte ed errori tardivi non modificano un’altra scheda. Avanzamento distingue il registro dei link dalla sincronizzazione ancora assente. FUN-013 parziale: spazio recensioni dentro GBP, dati non ancora acquisiti.
+- Verifica indipendente di otto criteri: UI-005, UI-007, FUN-011, FUN-016, FUN-020, FUN-021 e DAT-002 erano già implementati localmente; matrice riallineata con prove. FUN-013 non completato. Totale 59 locali, 14 parziali, 19 da fare; fasi 0–7 e intero obiettivo ancora aperti.
+- Prove nuove 18 dominio + 5 HTTP + 15 UI = 38. Suite completa **581/581**, nessun salto/fallimento. Controllo progetto **5/5** (125 JS, 76 documenti, 150 collegamenti locali); nessuna dipendenza aggiunta. HTTP e Avanzamento 12/12; log nella cache tecnica. Iniziali casi HTTP rifiutati perché usavano suffisso .example; fixture corrette a sottodomini IANA example.com/org, senza cambiare la validazione o visitare indirizzi.
+- Browser: inserimento e modifica del sito inventato con fonte, separazione fra due clienti, GBP con recensioni mancanti, desktop e 390 px (dialogo 356 px, nessun overflow). Nessun errore console osservato. Screenshot conservati nella cache del progetto, temporanei rimossi. Nessun collaudo su telefono fisico o server reale.
+- Revisione statica indipendente senza ulteriori difetti concreti; nessun nuovo pacchetto, account, chiamata provider, spesa, dato reale, push o deploy. Il totale economico esterno resta non verificato. Procedura ed esiti in COLLAUDO-PROFILI.

@@ -39,8 +39,12 @@ L'istruzione finale «parti con T0» consente ora la selezione degli strumenti e
 - Estratto il predicato delle date in `src/date-validation.js`; preservati messaggi e obbligatorietà nei due chiamanti. Test HTTP contratti esteso: date impossibili rifiutate senza inserimenti, data bisestile valida accettata.
 - Prove mirate: **10/10**. Suite completa: **284/284**, controllo progetto **5/5**. Log della suite nella cache tecnica `t0-tests.log`; revisione indipendente del diff senza regressioni individuate. Nessuna modifica visiva, nessuna nuova attestazione di collaudo Browser o del server reale.
 
+## Riordino corrente — Profili
+
+Link pubblici e fonte ora registrabili per attività, con conferma manuale del socio, versioni immutabili e isolamento. Questo prepara l'app per l'inserimento futuro, **non avvia T5** e non sostituisce la verifica indipendente dei clienti. Account e dati dei canali restano scollegati; nessuna lettura delle cartelle reali. Prove: **581/581**, 38 nuove, controllo **5/5**, Browser desktop e 390 px; [collaudo Profili](COLLAUDO-PROFILI.md). Le sette voci già presenti sono state riallineate dopo verifica indipendente: **59 locali, 14 parziali, 19 da fare**. T0–T10 mantengono l'ordine e gli stati sopra.
+
 ## Come riprendere
 
-Continuare le 92 voci dal loro stato reale e il riordino incrementale T0. Lettura manuale delle conversazioni predisposta e verificata con fornitori finti; restano, fra l'altro, collaudo Gmail reale e Calendar Growth, motore reale dello Sciame, collaudi dei ruoli e telefono, collegamenti da autorizzare. Apple non è più un requisito di attivazione reale in questa tranche, per la nuova istruzione T6; mantenere conservata e chiaramente non attiva l'eventuale struttura esistente.
+Continuare le 92 voci dal loro stato reale e il riordino incrementale T0. Lettura manuale delle conversazioni predisposta e verificata con fornitori finti; Calendar Growth predisposto e provato localmente con fornitori finti (consenso separato, inviti autorizzati, prenotazione, riconciliazione e annullamento). Restano, fra l'altro, collaudi Gmail e Calendar reali, motore reale dello Sciame, collaudi dei ruoli e telefono, collegamenti da autorizzare. Apple non è più un requisito di attivazione reale in questa tranche, per la nuova istruzione T6; mantenere conservata e chiaramente non attiva l'eventuale struttura esistente.
 
 Ogni gate esterno va preparato con istruzioni, costo verificato, prova locale e risultato da approvare. Non dichiarare concluso l'intero obiettivo mentre restano codice o verifiche eseguibili.

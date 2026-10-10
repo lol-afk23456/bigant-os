@@ -122,8 +122,10 @@
       "area": "Mappa agenzia",
       "modifica": "Togliere. L'accesso allo sciame resta dalla sua voce di menu",
       "criterio": "Nessun pulsante \"DEMO\" in modalità reale",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Revisione indipendente del riordino: docs/COLLAUDO-PROFILI.md. Navigazione, alias, home, contratti e fonte ufficiale confrontati con il criterio; suite completa e limiti locali nel collaudo."
+      ]
     },
     {
       "id": "FUN-005",
@@ -202,9 +204,10 @@
       "area": "Marketing BigAnt",
       "modifica": "**Eliminare la voce \"Marketing BigAnt\"** e sostituirla con la nuova sezione **Profili** (FUN-012). Il resto si sposta o si toglie come indicato sotto",
       "criterio": "La voce \"Marketing BigAnt\" non c'è più nel menu",
-      "stato": "parziale in locale",
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Revisione indipendente del riordino: docs/COLLAUDO-PROFILI.md. Navigazione, alias, home, contratti e fonte ufficiale confrontati con il criterio; suite completa e limiti locali nel collaudo."
       ]
     },
     {
@@ -214,7 +217,8 @@
       "criterio": "Ogni profilo collegato mostra dati veri con la data dell'ultimo aggiornamento; il cliente vede solo i propri profili (verifica sul server)",
       "stato": "parziale in locale",
       "prove": [
-        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Registro di link pubblici con fonte, conferma manuale del socio, versioni immutabili e isolamento: src/profile-directory.js; tests/profile-directory.test.js, tests/profiles-http.test.js, tests/profiles-ui.test.js; docs/COLLAUDO-PROFILI.md. Metriche e recensioni non ancora acquisite; provider e sincronizzazione mancanti. Nessuna modifica al menu cliente definitivo."
       ]
     },
     {
@@ -222,16 +226,21 @@
       "area": "Profili",
       "modifica": "Togliere i canali dei soci; restano solo i canali dell'agenzia",
       "criterio": "Nessun profilo personale nella sezione",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Revisione indipendente del riordino: docs/COLLAUDO-PROFILI.md. Navigazione, alias, home, contratti e fonte ufficiale confrontati con il criterio; suite completa e limiti locali nel collaudo.",
+        "Salvataggio LinkedIn limitato a pagine /company/. Nessun canale personale nel catalogo; la corrispondenza aziendale resta dichiarazione manuale del socio, non verifica indipendente T5."
+      ]
     },
     {
       "id": "FUN-013",
       "area": "Profili → Google Business Profile",
       "modifica": "Le recensioni stanno **dentro Google Business Profile**",
       "criterio": "Nessuna voce \"Recensioni\" separata; le recensioni si leggono nella scheda GBP",
-      "stato": "da fare",
-      "prove": []
+      "stato": "parziale in locale",
+      "prove": [
+        "Registro di link pubblici con fonte, conferma manuale del socio, versioni immutabili e isolamento: src/profile-directory.js; tests/profile-directory.test.js, tests/profiles-http.test.js, tests/profiles-ui.test.js; docs/COLLAUDO-PROFILI.md. Metriche e recensioni non ancora acquisite; provider e sincronizzazione mancanti. Nessuna modifica al menu cliente definitivo."
+      ]
     },
     {
       "id": "COL-002",
@@ -264,8 +273,10 @@
       "area": "Marketing BigAnt → Lavori registrati, Contenuti registrati",
       "modifica": "Togliere",
       "criterio": "La pagina non esiste più (FUN-011)",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Revisione indipendente del riordino: docs/COLLAUDO-PROFILI.md. Navigazione, alias, home, contratti e fonte ufficiale confrontati con il criterio; suite completa e limiti locali nel collaudo."
+      ]
     },
     {
       "id": "FUN-017",
@@ -316,16 +327,20 @@
       "area": "Direzione → quattro numeri (attività nel sistema, lavori in corso, decisioni in attesa, cassa registrata)",
       "modifica": "Togliere. \"Decisioni in attesa\" sopravvive come contatore **Da approvare** nella home dell'amministrazione, con il collegamento a Sciame → Da approvare (FUN-061)",
       "criterio": "Nessuna fila di numeri senza azione",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Revisione indipendente del riordino: docs/COLLAUDO-PROFILI.md. Navigazione, alias, home, contratti e fonte ufficiale confrontati con il criterio; suite completa e limiti locali nel collaudo."
+      ]
     },
     {
       "id": "FUN-021",
       "area": "Direzione → \"Le sei domande della settimana\"",
       "modifica": "**Decisione [R]:** cassa e incassi → **Fatturazione** (secondo piano, FUN-009); clienti e consegne a rischio → **Trello** (non in BigAnt OS, D-03); **contratti in scadenza → pagina iniziale di *Clienti*** come avviso in evidenza (FUN-023); decisioni da prendere → **Trello**, come task; \"chi è sovraccarico\" → **tolta**",
       "criterio": "Nessuna delle sei domande resta in una pagina a sé; i contratti in scadenza compaiono come avviso aprendo *Clienti*",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Revisione indipendente del riordino: docs/COLLAUDO-PROFILI.md. Navigazione, alias, home, contratti e fonte ufficiale confrontati con il criterio; suite completa e limiti locali nel collaudo."
+      ]
     },
     {
       "id": "FUN-023",
@@ -464,8 +479,10 @@
       "area": "Fatturazione",
       "modifica": "Decidere la fonte ufficiale (D-09). Se diventa BigAnt OS: importazione una tantum dalla bacheca, poi la bacheca resta in sola lettura. Se resta Trello: BigAnt OS la legge e la mostra (COL-001)",
       "criterio": "Esiste un solo registro ufficiale dichiarato",
-      "stato": "da fare",
-      "prove": []
+      "stato": "implementata in locale, rilascio e collaudo sul server da fare",
+      "prove": [
+        "Revisione indipendente del riordino: docs/COLLAUDO-PROFILI.md. Navigazione, alias, home, contratti e fonte ufficiale confrontati con il criterio; suite completa e limiti locali nel collaudo."
+      ]
     },
     {
       "id": "FUN-033",

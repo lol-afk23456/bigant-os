@@ -30,12 +30,42 @@ function workspaceHomeView(){
  return heading+workspaceHero('La testa resta umana.<br>Il lavoro trova il suo ritmo.','Clienti, approvazioni e agenti. Scegli il prossimo passo.',btn('Apri lo sciame','goto','agents','primary','arrow'))+sectionCards(cards)+(S.overview.backup?.error?notice(S.overview.backup.error,true):'');
 }
 function workspaceProfilesView(){
- const rows=S.module?.items||[];
- return title('I profili, tutti qui.',`Canali di ${clientName(S.clientId)}. I dati compariranno dopo il collegamento alla piattaforma.`)+sectionNavigator('profiles',rows.map(row=>({id:row.id,name:row.name,value:row.status,icon:'globe'})),id=>{
-  const row=rows.find(item=>item.id===id);
-  return panel(row.name,empty('Da collegare','Collega la fonte per vedere dati aggiornati, crescita e risultati.','link')+(id==='google-business'?notice('Le recensioni di Google saranno raccolte dentro questa scheda.'):'')+(isOwner()?btn('Apri Collegamenti','goto','connections','','link'):''));
- });
+ const data=S.module,header=title('I profili, tutti qui.',`Indirizzi pubblici e fonti di ${clientName(S.clientId)}. Registrare un indirizzo non collega l’account né acquisisce dati.`);
+ if(!data||data.clientId!==S.clientId||!Array.isArray(data.items))return header+empty('Profili non disponibili','Aggiorna la pagina per leggere i canali dell’attività selezionata.','globe');
+ const rows=data.items.filter(row=>row&&PROFILE_CHANNELS.includes(row.id));
+ if(!S.section||S.section==='sections')return header+(rows.length?sectionCards(rows.map(row=>({id:row.id,name:row.name,value:row.link?'Indirizzo registrato':'Da aggiungere',note:'Account: '+profileConnectionStatus(row.status),icon:'globe',route:'profiles:'+row.id}))):empty('Nessun canale disponibile','Aggiorna la pagina per riprovare.','globe'));
+ const row=rows.find(item=>item.id===S.section),back=`<div class="section-back">${btn('Indietro','goto','profiles','ghost','arrow')}</div>`;
+ if(!row)return header+back+empty('Canale non disponibile','Torna all’elenco e scegli uno dei profili.','globe');
+ const link=row.link,manual=link?.confirmation==='owner',canEdit=isOwner()&&data.canEdit===true;
+ const links=link?`<dl class="out-obj"><div><dt>Indirizzo pubblico</dt><dd class="out-text">${profileExternalLink(link.url,'Apri il profilo pubblico',row.id)}</dd></div><div><dt>Fonte dell’indirizzo</dt><dd class="out-text">${profileExternalLink(link.sourceUrl,'Apri la fonte')}</dd></div><div><dt>Conferma dell’attività</dt><dd>${manual?'Corrispondenza confermata manualmente da un socio.':'Conferma non disponibile.'}</dd></div><div><dt>Ultimo inserimento o modifica</dt><dd>${progressDate(link.updatedAt)}</dd></div></dl>${notice('L’indirizzo è stato registrato manualmente. La verifica indipendente della corrispondenza con l’attività resta da completare.')}`:empty('Indirizzo da aggiungere',canEdit?'Inserisci il profilo pubblico e la fonte dopo aver controllato a quale attività appartengono.':'Un socio può registrare il profilo pubblico e la sua fonte.','link');
+ return header+back+panel(row.name,links+(row.id==='linkedin'?notice('Questa scheda accetta soltanto pagine LinkedIn aziendali, con indirizzo /company/.'):'')+`<div class="section"><h3>Account e dati della piattaforma</h3>${badge(profileConnectionStatus(row.status),'orange')}<p>Il collegamento dell’account e la lettura dei dati richiedono un’attivazione separata.</p><dl class="out-obj"><div><dt>Ultima sincronizzazione</dt><dd>Non ancora effettuata</dd></div><div><dt>Metriche</dt><dd>Non ancora disponibili</dd></div></dl></div>`+(row.id==='google-business'?`<div class="section"><h3>Recensioni</h3>${empty('Non ancora disponibili','Compariranno qui dopo il collegamento e la verifica di Google Business Profile.','star')}</div>`:'')+(canEdit?`<div class="actions section">${btn(link?'Modifica indirizzo e fonte':'Aggiungi indirizzo e fonte','profile-edit',row.id,'primary','link')}</div>`:''));
 }
+const PROFILE_CHANNELS=['instagram','facebook','linkedin','tiktok','google-business','website'];
+function profileConnectionStatus(value){return value==='Da collegare'?value:'Stato non disponibile';}
+function profilePublicURL(value,channel=''){
+ if(typeof value!=='string'||!value.trim())return null;
+ try{const url=new URL(value);if(url.protocol!=='https:'||url.username||url.password||url.port)return null;if(channel==='linkedin'&&(!['linkedin.com','www.linkedin.com'].includes(url.hostname)||!/^\/company\/[^/]+\/?$/.test(url.pathname)))return null;return url.href;}catch{return null;}
+}
+function profileExternalLink(value,label,channel=''){const url=profilePublicURL(value,channel);return url?`<a href="${e(url)}" target="_blank" rel="noopener noreferrer" aria-label="${e(label)}">${e(url)}</a>`:'Indirizzo non disponibile o da verificare.';}
+ACTIONS['profile-edit']=id=>{
+ const data=S.module,row=data?.items?.find(item=>item.id===id);
+ if(S.view!=='profiles'||!isOwner()||data?.canEdit!==true||data.clientId!==S.clientId||!PROFILE_CHANNELS.includes(id)||!row)throw Error('Solo un socio può modificare i profili dell’attività selezionata.');
+ const snapshot=viewSnapshot(),clientId=S.clientId,channel=row.id,version=row.link?.version??0,editorToken=crypto.randomUUID(),activity=clientName(clientId);
+ if(!Number.isSafeInteger(version)||version<0)throw Error('Versione del profilo non disponibile. Aggiorna la scheda.');
+ let saving=false;
+ const current=()=>isCurrentView(snapshot)&&isOwner()&&S.module===data&&data.canEdit===true&&data.clientId===clientId&&(data.items.find(item=>item.id===channel)?.link?.version??0)===version&&$('#dialog').open&&$('#dialog-content').innerHTML.includes(`data-profile-editor="${editorToken}"`);
+ form('Profilo '+row.name+' · '+activity,[{name:'url',label:channel==='linkedin'?'Pagina LinkedIn aziendale · https://www.linkedin.com/company/…':'Indirizzo pubblico HTTPS',type:'url',value:row.link?.url||'',required:true,full:true},{name:'sourceUrl',label:'URL della fonte usata per riconoscere l’attività',type:'url',value:row.link?.sourceUrl||'',required:true,full:true},{html:`<label class="check-field" data-profile-editor="${editorToken}"><input type="checkbox" name="confirmedBusiness" required><span>Confermo che questo profilo appartiene a ${e(activity)} e ho controllato la fonte indicata</span></label>`}],async(b,fd)=>{
+  if(!current())throw Error('Attività, pagina o accesso cambiati. Riapri la scheda prima di salvare.');
+  if(saving)throw Error('Salvataggio già in corso. Attendi l’esito.');
+  if(!fd.has('confirmedBusiness'))throw Error('Conferma che il profilo appartenga all’attività indicata.');
+  const url=profilePublicURL(b.url,channel),sourceUrl=profilePublicURL(b.sourceUrl);
+  if(!url||!sourceUrl)throw Error(channel==='linkedin'?'Inserisci una pagina LinkedIn aziendale /company/ e una fonte HTTPS valide.':'Inserisci indirizzo pubblico e fonte HTTPS validi, senza credenziali o porte personalizzate.');
+  let updated;saving=true;try{updated=await api('/api/workspace/profiles/'+encodeURIComponent(channel)+'?clientId='+encodeURIComponent(clientId),{method:'PATCH',body:{version,url,sourceUrl,confirmedBusiness:true},scoped:false});}catch(error){if(!current())return;throw error;}finally{saving=false;}
+  if(!current())return;
+  if(updated?.clientId!==clientId||!Array.isArray(updated.items))throw Error('Risposta del profilo non verificabile. Riapri la scheda per controllare il salvataggio.');
+  S.module=updated;$('#dialog').close();toast('Indirizzo e fonte salvati. Account ancora da collegare.');render();
+ },{submit:'Salva indirizzo e fonte',intro:'Registra soltanto indirizzi pubblici. Usa indirizzi senza parametri di tracciamento. Non inserire password, token o accessi riservati. Il salvataggio non collega account e non visita i siti.',extra:`<div class="actions section">${btn('Rileggi scheda','goto','profiles:'+channel,'ghost','refresh')}</div>`});
+};
 function workspaceProgressView(){
  const data=S.module||{},groups=[
   {id:'status',name:'Stato della piattaforma',value:'Funziona · Prova · Da collegare',icon:'chart'},

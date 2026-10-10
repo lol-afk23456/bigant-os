@@ -234,3 +234,10 @@ Gli snapshot dedicati `growth.progress(user)` e `fidelity.progress(user)` riusan
 Le prenotazioni usano intenzioni persistenti, payload immutabile, calendario originale, identificativo evento stabile e marcatura OS. Link monouso conservati come hash; transazioni e intervalli UTC per gli impegni locali sullo stesso calendario. Timeout o riavvio non autorizzano nuovi invii. Le verifiche remote confrontano i dati approvati; l’annullamento usa la versione remota dell’evento. Le note interne non escono dal CRM.
 
 Il flag `BIGANT_GROWTH_CALENDAR_ENABLED` è spento per impostazione predefinita. Nessuna autorizzazione o collaudo reale è implicito nel codice. Le fasi Growth precedenti e il consenso Google restano prerequisiti delle nuove prenotazioni; una pausa degli invii non impedisce la verifica di un evento già registrato. La disponibilità può cambiare per azioni esterne all’OS fra la lettura e l’inserimento Google.
+
+
+## Registro dei profili pubblici — aggiornamento 10 ottobre 2026
+
+`src/profile-directory.js` registra la capacità di leggere e aggiornare i link pubblici per attività, dietro le API comuni di Workspace. Sei canali fissi, proprietario e cliente riletti dal database, scrittura solo dei soci e controllo della versione corrente. Lo storico append-only conserva ogni versione e l’audit comune registra soltanto metadati. Contratto e responsabilità nella [SOP Profili](SOP-PROFILI.md).
+
+Il registro conserva URL e fonte dichiarati dal socio, senza chiamare servizi esterni. Non è un connettore e non trasforma il link in un account collegato. Metriche, sincronizzazione e recensioni restano assenti. Google Business Profile ospita il punto di raccolta delle recensioni future. La vista cliente definitiva attende il giro dedicato; l’API ne verifica già l’isolamento. [Prove e limiti](COLLAUDO-PROFILI.md).

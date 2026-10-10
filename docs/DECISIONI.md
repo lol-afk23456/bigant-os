@@ -159,3 +159,10 @@ COL-005 fase 5: consenso Calendar facoltativo, nessuna estensione implicita dal 
 Calendar reale separato dal motore DEMO, con versioni, token hash e intenzioni persistenti. Il calendario originale viene conservato per riconciliazione e annullamento, anche se le impostazioni cambiano. Le letture autorizzate del vault mantengono l’audit. Errori incerti non consentono reinvio o liberazione automatica dello slot; il 412 di annullamento è un rifiuto certo e richiede una nuova anteprima. Una prova ricevuta e verificata rimane attestata dopo il suo annullamento; cambi configurazione/autorizzazione o revoche dei soci invalidano l’attestazione. Nessuna garanzia di assenza di conflitti causati da applicazioni esterne a BigAnt OS.
 
 Stato locale aggiornato in Avanzamento senza promuovere integrazioni solo configurate. La preparazione è collaudata con trasporti finti; le voci COL-005/FUN-050 e le autorizzazioni reali restano aperte. Procedura e prove: SOP-GROWTH-CALENDAR e COLLAUDO-GROWTH-RIORDINO.
+
+
+### Profili pubblici — 10 ottobre 2026
+
+Prima della sincronizzazione dei canali serve distinguere il link pubblico dall’autorizzazione dell’account. I soci registrano URL e fonte con conferma manuale dell’attività; questo non vale come verifica indipendente T5. Sei canali aziendali, LinkedIn solo pagine company. Nessuna nuova voce nel menu cliente prima del giro. Nessun indirizzo viene visitato o arricchito automaticamente. Versioni immutabili e conflitti espliciti impediscono sovrascritture involontarie; il dialogo conserva il contesto di apertura.
+
+Lo spazio recensioni vive in GBP ma dichiara i dati non ancora disponibili: FUN-013 resta parziale, FUN-012 non è promosso a completo e COL-002 resta da collegare. La revisione indipendente ha invece verificato sette criteri di riordino già implementati (UI-005, UI-007, FUN-011, FUN-016, FUN-020, FUN-021, DAT-002): aggiornare la mappa conservando il limite locale. Trello resta fonte ufficiale, senza attestarne la lettura. Nessuna dipendenza, account, spesa o dato cliente aggiunto.
