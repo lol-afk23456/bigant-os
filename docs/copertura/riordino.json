@@ -42,7 +42,9 @@
       "modifica": "Per ogni funzione portata a regime: togliere le sue diciture DEMO (interfaccia e testi del server) **nello stesso intervento** che la rende reale, e aggiornare la pagina Avanzamento (FUN-004). Nessuna rimozione in blocco",
       "criterio": "Ogni funzione senza DEMO ha una prova che funziona sul server reale; ogni funzione non ancora configurata riporta ancora DEMO",
       "stato": "da fare",
-      "prove": []
+      "prove": [
+        "Fidelity distingue modalità e programmi DEMO nella carta pubblica; fixture storiche non convertite. La verifica sul server e per tutte le funzioni resta aperta."
+      ]
     },
     {
       "id": "FUN-001",
@@ -661,7 +663,8 @@
       "criterio": "La lista di prove dell'originale passa tutta su BigAnt OS, anche da telefono",
       "stato": "parziale in locale",
       "prove": [
-        "docs/COLLAUDO-FIDELITY-RIORDINO.md: sorgente originale verificata, 27 test dominio e 4 scanner, percorso timbri/riscatto e carta responsive. Server reale, telefono e fornitori ancora da collaudare."
+        "docs/COLLAUDO-FIDELITY-RIORDINO.md: sorgente originale verificata, 27 test dominio e 4 scanner, percorso timbri/riscatto e carta responsive. Server reale, telefono e fornitori ancora da collaudare.",
+        "Google Wallet: motore con firma/OAuth, emissione e aggiornamenti idempotenti, revoca e coda persistente; 16 test con risposte finte e una prova HTTP. Schermate e carta pubblica a 390 px verificate. Flag chiuso; account/dominio Google, Android e Apple/iPhone ancora da collaudare. SOP-GOOGLE-WALLET.md; suite OS 265/265."
       ]
     },
     {
@@ -670,7 +673,9 @@
       "modifica": "**Google Wallet:** emittente e account di servizio Google (variabili già previste nell'originale), poi attivazione e prova su un telefono Android. **Apple Wallet:** serve sbloccare l'account Apple Developer (Pass Type ID e certificati), problema aperto anche nell'originale. Certificati e chiavi solo nelle variabili di Railway, mai nel repository",
       "criterio": "Una carta di prova si aggiunge a Google Wallet e ad Apple Wallet e si aggiorna dopo un accredito",
       "stato": "da fare",
-      "prove": []
+      "prove": [
+        "Google Wallet: motore con firma/OAuth, emissione e aggiornamenti idempotenti, revoca e coda persistente; 16 test con risposte finte e una prova HTTP. Schermate e carta pubblica a 390 px verificate. Flag chiuso; account/dominio Google, Android e Apple/iPhone ancora da collaudare. SOP-GOOGLE-WALLET.md; suite OS 265/265."
+      ]
     },
     {
       "id": "COL-007",
@@ -679,7 +684,8 @@
       "criterio": "La lista di prove dell'originale passa tutta su BigAnt OS",
       "stato": "parziale in locale",
       "prove": [
-        "docs/COLLAUDO-FIDELITY-RIORDINO.md: sorgente originale verificata, 27 test dominio e 4 scanner, percorso timbri/riscatto e carta responsive. Server reale, telefono e fornitori ancora da collaudare."
+        "docs/COLLAUDO-FIDELITY-RIORDINO.md: sorgente originale verificata, 27 test dominio e 4 scanner, percorso timbri/riscatto e carta responsive. Server reale, telefono e fornitori ancora da collaudare.",
+        "Google Wallet: motore con firma/OAuth, emissione e aggiornamenti idempotenti, revoca e coda persistente; 16 test con risposte finte e una prova HTTP. Schermate e carta pubblica a 390 px verificate. Flag chiuso; account/dominio Google, Android e Apple/iPhone ancora da collaudare. SOP-GOOGLE-WALLET.md; suite OS 265/265."
       ]
     },
     {

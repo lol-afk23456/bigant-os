@@ -99,3 +99,24 @@ test('Growth reale via HTTP: scelta rinviata salvabile, nessun collaudo senza ga
  }
  assert.equal(app.store.one('SELECT count(*) n FROM os_costs').n,0);
 });
+
+
+test('Fidelity reale via HTTP: tessera pubblica, Wallet chiuso, POST, CSRF e soli soci',async t=>{
+ const {app,request}=await setupReale(t);
+ let login=await request('/api/login',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`},body:{email:SOCIO_EMAIL,password:SOCIO_PASSWORD}});
+ login=await request('/api/account/password',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`,Cookie:login.headers['set-cookie'][0].split(';')[0],'X-CSRF-Token':login.body.csrf},body:{currentPassword:SOCIO_PASSWORD,newPassword:'personale-fixture-wallet-02',confirmPassword:'personale-fixture-wallet-02'}});
+ const headers={Origin:`https://${ORIGIN_HOST}`,Cookie:login.headers['set-cookie'][0].split(';')[0],'X-CSRF-Token':login.body.csrf};
+ const state=await request('/api/fidelity/state',{headers});assert.equal(state.status,200);assert.equal(state.body.wallet.google.available,false);assert.equal(state.body.demo,false);
+ const p=await request('/api/fidelity/programs',{method:'POST',headers,body:{name:'Programma fixture HTTP',type:'stamps',rewardName:'Premio di prova',rewardThreshold:8}});assert.equal(p.status,201);assert.equal(p.body.demo,false);
+ const m=await request('/api/fidelity/members',{method:'POST',headers,body:{programId:p.body.id,name:'Persona inventata',email:'iscritto@fixture.example'}});assert.equal(m.status,201);
+ const path='/api/fidelity/public/cards/'+m.body.publicToken;assert.equal((await request(path)).body.demo,false);assert.equal((await request(path+'/google')).status,405);
+ assert.equal((await request(path+'/google',{method:'POST',headers:{Origin:'https://non-autorizzato.example'},body:{acknowledged:true}})).status,403);
+ assert.equal((await request(path+'/google',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`},body:{acknowledged:true}})).status,409);
+ assert.equal((await request('/api/fidelity/google-wallet/check',{method:'POST',headers:{...headers,'X-CSRF-Token':''},body:{memberId:m.body.id,version:0,acknowledged:true}})).status,403);
+ const owner=login.body.user.id,client=app.store.one('SELECT id FROM os_clients').id;
+ app.store.run('INSERT INTO os_assignments VALUES(?,?)',owner,client);
+ for(const role of ['client','collaborator']){
+  app.store.run('UPDATE os_users SET role=?,tenant_id=? WHERE id=?',role,role==='client'?client:null,owner);
+  assert.equal((await request('/api/fidelity/google-wallet/activate',{method:'POST',headers,body:{version:0,enabled:true,deviceVerified:true}})).status,403);
+ }
+});

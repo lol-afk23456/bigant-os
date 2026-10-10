@@ -45,6 +45,8 @@ const pluginOnline={name:'bigant-online',setup(b){
  b.onResolve({filter:/^node:/},a=>{if(moduli[a.path])return {path:moduli[a.path]};return {errors:[{text:'Modulo Node non previsto nella versione online: '+a.path}]};});
  b.onResolve({filter:/^(sharp|qrcode|@anthropic-ai\/sdk)$/},a=>({path:a.path,namespace:'sostituto'}));
  b.onLoad({filter:/.*/,namespace:'sostituto'},a=>({contents:`export {${predefiniti[a.path]} as default} from ${JSON.stringify(shim('varie.js'))};`,resolveDir:root}));
+ b.onResolve({filter:/\/fidelity-google-runtime\.js$/},()=>({path:'fidelity-google-runtime',namespace:'sostituto-fidelity-google'}));
+ b.onLoad({filter:/.*/,namespace:'sostituto-fidelity-google'},()=>({contents:'export function createGoogleWalletRuntime(){throw new Error("Wallet reale non disponibile nella DEMO offline.");}',loader:'js'}));
  // safePath serve solo all'avvio da riga di comando (cartella dati su disco).
  b.onResolve({filter:/\/growth-live-providers\.js$/},()=>({path:'growth-live-providers',namespace:'sostituto-growth-live'}));
  b.onLoad({filter:/.*/,namespace:'sostituto-growth-live'},()=>({contents:'export function createGrowthLiveProviders(){throw new Error("Fornitori reali non disponibili nella DEMO offline.");}',loader:'js'}));

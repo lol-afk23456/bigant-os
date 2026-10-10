@@ -153,3 +153,14 @@ Collegati vault, Brave, lettura siti e AI OpenAI/Anthropic al motore reale con a
 La suite ha individuato e permesso di correggere la dipendenza dei backup dalle tabelle del simulatore. **248/248 test**, comprese 13 nuove prove sul motore e una sul percorso HTTP reale; backup/ripristino su archivi temporanei verificati. Browser con fixture locale in memoria: entrambe le AI disponibili, “Scelta rinviata” salvabile (corretto il campo facoltativo), zero fasi attive, ricerca disabilitata, 390 px senza overflow. Le prove non equivalgono a un fornitore reale collegato o a una sessione Browser di produzione.
 
 Il [rapporto Growth](COLLAUDO-GROWTH-RIORDINO.md) riporta procedura, limiti e parti mancanti. Corretto anche il promemoria sull’importazione: D-11 stabilisce **nessuna importazione dagli originali**, non un’importazione ancora da fare. Originali e Railway intatti; nessuna chiave vera, spesa, push o deploy.
+
+
+## 10 ottobre 2026 — Google Wallet predisposto, senza attivazione reale
+
+COL-006: chiavi soltanto nelle variabili protette del server; rimossi i campi Wallet dalla custodia database, con eventuali vecchie righe conservate e inutilizzate. Motore Google con JWT RSA e OAuth a destinazioni fisse, creazione/aggiornamento idempotente di classi e oggetti, link firmato dopo conferma, revoca con rimozione dei dati. Nessun nuovo pacchetto. La DEMO offline esclude il motore reale.
+
+Attivazione per attività: flag server, configurazione valida, collaudo esplicito di una tessera e attestazione Android da parte di un socio. Pausa, variazione delle chiavi, revoca del socio e risposta Google 401/403 impediscono nuove operazioni. Worker con coda persistente, una richiesta per iscritto, backoff fino a cinque minuti, massimo otto tentativi, recupero dopo riavvio e controllo dello stato dopo ogni risposta. Corretto il caso in cui un nuovo movimento saltava il ritardo di un tentativo precedente. Le tessere mai richieste non sono emesse automaticamente. Campagne e Apple restano bloccate.
+
+Interfaccia: Google e Apple separati; collaudo e pausa riservati ai soci, ripresa degli errori ammessi e scelta esplicita dalla carta pubblica. Testi dei nuovi programmi coerenti con la modalità, mentre le vecchie fixture conservano DEMO. **265/265 test**, controllo 5/5, build offline. Browser su modulo reale chiuso e contenitore DEMO: nuovo programma e persona inventati, nessun consenso marketing, carta pubblica e QR a 390 px senza overflow. Screenshot nella cache. La [SOP](SOP-GOOGLE-WALLET.md) e il [rapporto Fidelity](COLLAUDO-FIDELITY-RIORDINO.md) distinguono prove locali e verifiche reali ancora da fare.
+
+Nessuna chiave vera, emissione reale, spesa, push o deploy. Android/Google e Apple/iPhone restano da collaudare; nessuna voce Wallet marcata conclusa. Pausa del collegamento sospende anche le revoche remote; controllare i pendenti prima della dismissione. Gli originali non sono stati modificati né importati.

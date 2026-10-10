@@ -131,11 +131,22 @@ Object.assign(ACTIONS,{
 });
 
 function productJobsPanel(){
- const rows=S.module?.jobs||[];
- return panel('Attività di '+(S.view==='growth'?'Growth':'Fidelity'),table(['Tipo','Stato','Quantità o data','Nota'],rows.map(row=>[
-  e(row.type||'Aggiornamento tessere'),badge(row.status),row.count!==undefined?String(row.count):date(row.created||row.created_at,true),e(row.error||'Nessuna azione esterna eseguita')
+ const rows=S.module?.jobs||[],google=S.view==='fidelity'&&S.module?.wallet?.google;
+ return panel('Attività di '+(S.view==='growth'?'Growth':'Fidelity'),table(['Tipo','Stato','Quantità o data','Nota',''],rows.map(row=>[
+  e(row.type==='wallet_update'?'Aggiornamento tessera':row.type==='wallet_revoke'?'Revoca tessera':row.type||'Aggiornamento tessere'),badge(row.status),row.count!==undefined?String(row.count):date(row.created||row.created_at,true),e(row.error||(row.status==='done'?'Aggiornamento confermato':row.status==='queued'?'Aggiornamento in attesa':'Nessuna azione esterna eseguita')),
+  google?.enabled&&row.googleEligible&&isOwner()&&['blocked','failed'].includes(row.status)&&['wallet_update','wallet_revoke'].includes(row.type)?btn('Riprova','google-wallet-retry',row.id,'small'):''
  ])));
 }
+function fidelityWalletPanel(f){
+ const g=f.wallet.google,canCheck=isOwner()&&!f.demo&&g.available&&g.configured;
+ return panel('Google Wallet',`${badge(g.enabled?'Attivo':g.checked?'Prova tecnica completata':'Da collegare',g.enabled?'green':'orange')}<p>${e(g.note||'Google Wallet non è collegato. Le tessere DEMO restano nel browser.')}</p>${g.lastCheck?`<p>Ultimo collaudo: ${date(g.lastCheck,true)}. Il salvataggio sul telefono va verificato di persona.</p>`:''}<div class="actions">${canCheck?btn('Collauda una tessera','google-wallet-check','','','check'):''}${canCheck&&g.checked&&!g.enabled?btn('Conferma prova Android e attiva','google-wallet-activate','','primary'):''}${g.enabled&&isOwner()?btn('Sospendi Google Wallet','google-wallet-pause','','ghost'):''}</div><p class="muted">Chiavi e certificati si configurano solo nelle variabili protette del server. Le campagne restano senza invio.</p>`)+panel('Apple Wallet',notice('Da collegare: certificati, firma e prova su iPhone da completare. La tessera web è disponibile.'));
+}
+Object.assign(ACTIONS,{
+ 'google-wallet-check':()=>{const g=S.module.wallet.google,members=S.module.members.filter(m=>S.module.programs.some(p=>p.id===m.programId&&!p.demo&&p.active));if(!members.length)return dialog('Collaudo Google Wallet',notice('Crea prima un programma e una tessera di prova fuori dalla DEMO.'));form('Collauda Google Wallet',[selectField('memberId','Tessera da collaudare',members.map(m=>[m.id,m.name+' · '+m.programName+' · saldo '+m.balance])),{name:'acknowledged',label:'Autorizzo l’invio a Google dei dati di questa tessera di prova',type:'checkbox'}],async(b,fd)=>{if(!fd.has('acknowledged'))throw Error('Conferma l’invio dei dati della tessera di prova.');const result=await mutate('/api/fidelity/google-wallet/check',{memberId:b.memberId,version:g.version,acknowledged:true});await load();googleWalletLink(result.url,true);},{submit:'Prepara tessera su Google',intro:'Google riceverà nome, codice tessera, saldo, premi e dati del programma. Usa una persona di prova consapevole del collaudo. Ripetere il collaudo sospende emissioni e aggiornamenti fino alla nuova attivazione.'});},
+ 'google-wallet-activate':()=>{const g=S.module.wallet.google;form('Attiva Google Wallet',[{name:'deviceVerified',label:'Ho salvato la tessera su Android e verificato saldo e aggiornamento',type:'checkbox'}],async(b,fd)=>{if(!fd.has('deviceVerified'))throw Error('Completa prima la prova sul telefono.');await mutate('/api/fidelity/google-wallet/activate',{enabled:true,version:g.version,deviceVerified:true});await saved('Google Wallet attivato per questa attività');},{submit:'Attiva per questa attività',intro:'I titolari potranno preparare la propria tessera Google. Timbri, punti e revoche verranno sincronizzati automaticamente. Le campagne restano senza invio.'});},
+ 'google-wallet-pause':()=>{const g=S.module.wallet.google;form('Sospendi Google Wallet',[],async()=>{await mutate('/api/fidelity/google-wallet/activate',{enabled:false,version:g.version});await saved('Google Wallet sospeso');},{submit:'Sospendi',intro:'Ferma nuove emissioni e aggiornamenti, comprese le revoche remote. I link web già revocati restano inutilizzabili. Le tessere presenti nei telefoni possono mostrare l’ultimo saldo fino alla ripresa.'});},
+ 'google-wallet-retry':async id=>{await mutate('/api/fidelity/google-wallet/retry',{jobId:id});await saved('Aggiornamento rimesso in coda');}
+});
 
 
 function priceListTable(rows){
@@ -174,7 +185,7 @@ function protectedConnectionsView(){
  const d=S.module||{},items=d.items||[];
  return title('I collegamenti, sotto controllo.','Qui colleghi i servizi esterni che BigAnt OS usa. Nessun collegamento si attiva senza l’ok dei soci.')+(!d.vaultReady?notice('Prima di inserire chiavi, configura l’archivio protetto sul server.'):'')+sectionNavigator('connections',items.map(row=>({id:row.id,name:row.name,value:row.status,note:row.purpose,icon:'link'})),id=>{
   const row=items.find(item=>item.id===id);
-  return panel(row.name,`${badge(row.status,row.status==='Errore'?'red':'orange')}<p>${e(row.purpose)}</p><dl class="out-obj"><div><dt>Accessi salvati</dt><dd>${row.configured?'Sì, nell’archivio protetto':'Da inserire'}</dd></div><div><dt>Configurato da</dt><dd>${e(row.configuredBy||'Nessuno')}</dd></div><div><dt>Ultima verifica</dt><dd>${row.lastCheck?date(row.lastCheck,true)+' · controllo locale':'Non ancora eseguita'}</dd></div></dl>${row.checkNote?notice(row.checkNote,row.status==='Errore'):''}<p>${e(row.activationNote)}</p><div class="actions">${row.fields.length&&d.vaultReady?btn(row.configured?'Aggiorna accessi':'Inserisci accessi','connection-save',id,'primary','shield'):''}${row.configured?btn('Controlla configurazione','connection-check',id,'','check'):''}${row.dependsOn?btn('Apri accesso Google','goto','connections:'+row.dependsOn,'','arrow'):''}</div>${!row.fields.length&&!row.dependsOn?notice('Procedura di collegamento da completare e collaudare.') : ''}`);
+  return panel(row.name,`${badge(row.status,row.status==='Errore'?'red':'orange')}<p>${e(row.purpose)}</p><dl class="out-obj"><div><dt>Accessi salvati</dt><dd>${row.id==='wallet'?'Gestiti nelle variabili protette del server':row.configured?'Sì, nell’archivio protetto':'Da inserire'}</dd></div><div><dt>Configurato da</dt><dd>${e(row.configuredBy||'Nessuno')}</dd></div><div><dt>Ultima verifica</dt><dd>${row.lastCheck?date(row.lastCheck,true)+' · controllo locale':'Non ancora eseguita'}</dd></div></dl>${row.checkNote?notice(row.checkNote,row.status==='Errore'):''}<p>${e(row.activationNote)}</p><div class="actions">${row.fields.length&&d.vaultReady?btn(row.configured?'Aggiorna accessi':'Inserisci accessi','connection-save',id,'primary','shield'):''}${row.configured?btn('Controlla configurazione','connection-check',id,'','check'):''}${row.dependsOn?btn('Apri accesso Google','goto','connections:'+row.dependsOn,'','arrow'):''}</div>${row.id==='wallet'?btn('Apri Fidelity e Wallet','goto','fidelity:settings','','card'):!row.fields.length&&!row.dependsOn?notice('Procedura di collegamento da completare e collaudare.'):''}`);
  });
 }
 Object.assign(ACTIONS,{
@@ -198,7 +209,7 @@ function fidelitySectionsView(){
   if(id==='returns')return panel('Ritorno clienti',list(f.automations,row=>`<div class="list-item"><div class="body"><b>${e(row.name)}</b><p>Dopo ${row.inactiveDays} giorni · ${row.active?'Preparazione abilitata':'In pausa'}</p></div><div class="actions">${btn('Prepara','run-fidelity-auto',row.id,'small')}${btn(row.active?'Pausa':'Abilita preparazione','toggle-fidelity-auto',row.id,'small ghost')}</div></div>`),btn('Nuova regola','new-fidelity-auto','','small','plus'))+notice('Queste regole preparano bozze. Non inviano notifiche.');
   if(id==='jobs')return productJobsPanel();
   const c=S.overview.currentClient;
-  return panel('Regolamento e privacy',`<p class="preserve">${e(c.terms_text||'Regolamento da compilare')}</p><p>Informativa: ${e(c.privacy_url||'Da indicare')}</p>`,btn('Modifica documenti','fidelity-policies','','small'))+panel('Apple e Google Wallet',notice('Da collegare. Le tessere web restano consultabili; nessuna carta Wallet è stata emessa.')+(isOwner()?btn('Apri Collegamenti','goto','connections','','link'):''));
+  return panel('Regolamento e privacy',`<p class="preserve">${e(c.terms_text||'Regolamento da compilare')}</p><p>Informativa: ${e(c.privacy_url||'Da indicare')}</p>`,btn('Modifica documenti','fidelity-policies','','small'))+fidelityWalletPanel(f);
  });
 }
 Object.assign(ACTIONS,{

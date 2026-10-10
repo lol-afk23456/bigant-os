@@ -4,6 +4,7 @@ import { AppError, requireClient, requireOwner, now } from './store.js';
 import { buildGooglePayloads, buildAppleDefinition } from './fidelity-wallet.js';
 import { sanitizeLogo } from './fidelity-branding.js';
 import { walletIconPng } from './fidelity-icon.js';
+import { createGoogleWalletRuntime } from './fidelity-google-runtime.js';
 
 const uid = () => randomUUID();
 const token = () => randomBytes(32).toString('base64url');
@@ -26,9 +27,9 @@ function locations(v) {
   return v.map(x => ({ latitude: num(x.latitude, 'Latitudine', -90, 90, false), longitude: num(x.longitude, 'Longitudine', -180, 180, false), relevantText: str(x.relevantText ?? '', 'Descrizione posizione', 0, 100) }));
 }
 const externalError = () => { throw new AppError('Servizio non collegato: operazione esterna disabilitata nella demo.', 409); };
-const walletStatus = () => ({ apple: { configured: false, missing: ['Certificati e attivazione Apple: non collegati'], status: 'disconnected' }, google: { configured: false, missing: ['Issuer e account Google: non collegati'], status: 'disconnected' } });
+const disconnectedWalletStatus = () => ({ apple: { configured: false, missing: ['Certificati e attivazione Apple: non collegati'], status: 'disconnected' }, google: { configured: false, missing: ['Issuer e account Google: non collegati'], status: 'disconnected' } });
 
-export function createFidelityModule({ store: s, origin = 'http://127.0.0.1:4330' }) {
+export function createFidelityModule({ store: s, origin = 'http://127.0.0.1:4330', realMode=false,env={},clock=()=>new Date(),walletProviderOptions={} }) {
   const base = new URL(origin).origin;
   s.db.exec(`
     CREATE TABLE IF NOT EXISTS fi_meta(key TEXT PRIMARY KEY,value INTEGER NOT NULL);
@@ -49,6 +50,9 @@ export function createFidelityModule({ store: s, origin = 'http://127.0.0.1:4330
     CREATE INDEX IF NOT EXISTS fi_transactions_member ON fi_transactions(member_id,created_at);
     CREATE INDEX IF NOT EXISTS fi_jobs_tenant ON fi_jobs(tenant_id,status,available_at);
   `);
+  if(!s.query('PRAGMA table_info(fi_programs)').some(row=>row.name==='simulation'))s.run('ALTER TABLE fi_programs ADD COLUMN simulation INTEGER NOT NULL DEFAULT 1');
+  const googleWallet=realMode?createGoogleWalletRuntime({store:s,env,origin:base,values:walletData,clock,providerOptions:walletProviderOptions}):null;
+  const walletStatus=t=>({...disconnectedWalletStatus(),...(googleWallet?{google:googleWallet.state(t)}:{})});
   const audit = (u, t, a, id, detail = {}) => s.audit(u, t, `fidelity.${a}`, id, detail, 'client');
   const tenant = id => needed(s.one('SELECT * FROM os_clients WHERE id=?', id));
   const program = (id, t) => needed(s.one('SELECT * FROM fi_programs WHERE id=? AND tenant_id=?', id, t));
@@ -63,15 +67,15 @@ export function createFidelityModule({ store: s, origin = 'http://127.0.0.1:4330
   }
   function activeProgram(id, t) { const p = program(id, t); if (!tenant(t).active || !p.active || (p.expires_at && p.expires_at <= now())) throw new AppError('Programma non attivo o scaduto.', 409); return p; }
   function queue(t, m, type = 'wallet_update', payload = {}) {
-    const id = uid(); s.run('INSERT INTO fi_jobs(id,tenant_id,member_id,type,payload_json,error,available_at,created_at) VALUES(?,?,?,?,?,?,?,?)', id, t, m, type, JSON.stringify(payload), 'Provider scollegati: nessuna operazione esterna eseguita.', now(), now()); return id;
+    const id = uid(); s.run('INSERT INTO fi_jobs(id,tenant_id,member_id,type,payload_json,error,available_at,created_at) VALUES(?,?,?,?,?,?,?,?)', id, t, m, type, JSON.stringify(payload), 'Provider scollegati: nessuna operazione esterna eseguita.', now(), now());googleWallet?.enqueue(t,m,id,type);return id;
   }
   function programJson(p) {
     const t = tenant(p.tenant_id);
-    return { id: p.id, tenantId: p.tenant_id, clientId: p.tenant_id, name: p.name, type: p.type, description: p.description, rewardThreshold: p.reward_threshold, rewardName: p.reward_name, color: p.color, pointsPerEuro: p.points_per_euro, active: !!p.active, expiresAt: p.expires_at, locations: JSON.parse(p.locations_json), createdAt: p.created_at, memberCount: s.one("SELECT count(*) n FROM fi_members WHERE program_id=? AND status='active'", p.id).n, joinUrl: `${base}/fidelity/join/${encodeURIComponent(t.slug)}?program=${encodeURIComponent(p.id)}`, logoUrl: s.one('SELECT 1 FROM fi_branding WHERE program_id=?', p.id) ? `${base}/api/fidelity/branding/${encodeURIComponent(p.id)}.png` : null };
+    return { demo:!!p.simulation,id: p.id, tenantId: p.tenant_id, clientId: p.tenant_id, name: p.name, type: p.type, description: p.description, rewardThreshold: p.reward_threshold, rewardName: p.reward_name, color: p.color, pointsPerEuro: p.points_per_euro, active: !!p.active, expiresAt: p.expires_at, locations: JSON.parse(p.locations_json), createdAt: p.created_at, memberCount: s.one("SELECT count(*) n FROM fi_members WHERE program_id=? AND status='active'", p.id).n, joinUrl: `${base}/fidelity/join/${encodeURIComponent(t.slug)}?program=${encodeURIComponent(p.id)}`, logoUrl: s.one('SELECT 1 FROM fi_branding WHERE program_id=?', p.id) ? `${base}/api/fidelity/branding/${encodeURIComponent(p.id)}.png` : null };
   }
   function memberJson(m) {
     const p = program(m.program_id, m.tenant_id);
-    return { id: m.id, tenantId: m.tenant_id, clientId: m.tenant_id, programId: p.id, programName: p.name, programType: p.type, name: m.name, email: m.email, phone: m.phone, marketingConsent: !!m.marketing_consent, balance: m.balance, totalEarned: m.total_earned, rewardCount: m.reward_count, availableRewards: Math.floor(m.balance / p.reward_threshold), status: m.status, createdAt: m.created_at, updatedAt: m.updated_at, lastVisitAt: m.last_visit_at, cardUrl: m.status === 'active' ? `${base}/fidelity/card/${m.public_token}` : '', publicToken: m.status === 'active' ? m.public_token : '' };
+    return { demo:!realMode||!!p.simulation,id: m.id, tenantId: m.tenant_id, clientId: m.tenant_id, programId: p.id, programName: p.name, programType: p.type, name: m.name, email: m.email, phone: m.phone, marketingConsent: !!m.marketing_consent, balance: m.balance, totalEarned: m.total_earned, rewardCount: m.reward_count, availableRewards: Math.floor(m.balance / p.reward_threshold), status: m.status, createdAt: m.created_at, updatedAt: m.updated_at, lastVisitAt: m.last_visit_at, cardUrl: m.status === 'active' ? `${base}/fidelity/card/${m.public_token}` : '', publicToken: m.status === 'active' ? m.public_token : '' };
   }
   function transactionJson(x) {
     const m = member(x.member_id, x.tenant_id, false), p = program(m.program_id, x.tenant_id);
@@ -95,11 +99,12 @@ export function createFidelityModule({ store: s, origin = 'http://127.0.0.1:4330
   function createProgram(t, b, u, forcedId) {
     const p = validateProgram(b), id = forcedId ?? uid(); tenant(t);
     s.run('INSERT INTO fi_programs(id,tenant_id,name,type,description,reward_threshold,reward_name,color,points_per_euro,active,expires_at,locations_json,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)', id, t, p.name, p.type, p.description, p.rewardThreshold, p.rewardName, p.color, p.pointsPerEuro, +p.active, p.expiresAt, JSON.stringify(p.locations), now());
+    if(realMode)s.run('UPDATE fi_programs SET simulation=0 WHERE id=?',id);
     audit(u, t, 'program.created', id); return programJson(program(id, t));
   }
   function updateConsent(m, granted, source) {
     s.run('UPDATE fi_members SET marketing_consent=?,consent_at=? WHERE id=?', +granted, now(), m.id);
-    s.run('INSERT INTO fi_consents VALUES(?,?,?,?,?,?)', uid(), m.id, +granted, source, 'demo-1', now());
+    s.run('INSERT INTO fi_consents VALUES(?,?,?,?,?,?)', uid(), m.id, +granted, source, realMode?'fidelity-1':'demo-1', now());
     if (!granted) s.run("UPDATE fi_deliveries SET status='blocked',error='Consenso revocato' WHERE member_id=? AND sent_at IS NULL", m.id);
   }
   function createMember(t, b, u, source = 'operator', forcedId) {
@@ -108,8 +113,9 @@ export function createFidelityModule({ store: s, origin = 'http://127.0.0.1:4330
     return s.transaction(() => {
       const id = forcedId ?? uid(), time = now(), balance = p.type === 'coupon' ? 1 : 0;
       s.run('INSERT INTO fi_members(id,tenant_id,program_id,name,email,phone,marketing_consent,consent_at,balance,total_earned,public_token,apple_auth_token,created_at,updated_at,update_seq) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)', id, t, p.id, name, address, phone, +consent, time, balance, balance, token(), token(), time, time, seq());
-      s.run('INSERT INTO fi_consents VALUES(?,?,?,?,?,?)', uid(), id, +consent, source, 'demo-1', time);
-      if (balance) s.run('INSERT INTO fi_transactions(id,tenant_id,member_id,type,amount,balance_after,note,actor_id,created_at) VALUES(?,?,?,?,?,?,?,?,?)', uid(), t, id, 'credit', 1, 1, 'Coupon di benvenuto DEMO', u?.id ?? null, time);
+      if(realMode)s.run("UPDATE fi_members SET privacy_version='fidelity-1' WHERE id=?",id);
+      s.run('INSERT INTO fi_consents VALUES(?,?,?,?,?,?)', uid(), id, +consent, source, realMode?'fidelity-1':'demo-1', time);
+      if (balance) s.run('INSERT INTO fi_transactions(id,tenant_id,member_id,type,amount,balance_after,note,actor_id,created_at) VALUES(?,?,?,?,?,?,?,?,?)', uid(), t, id, 'credit', 1, 1, realMode?'Coupon di benvenuto':'Coupon di benvenuto DEMO', u?.id ?? null, time);
       audit(u, t, 'member.created', id); return memberJson(member(id, t));
     });
   }
@@ -241,11 +247,11 @@ export function createFidelityModule({ store: s, origin = 'http://127.0.0.1:4330
       return { date: d, ...x, registrations: s.one('SELECT count(*) n FROM fi_members WHERE tenant_id=? AND substr(created_at,1,10)=?', t, d).n };
     });
     const managerView = ['owner', 'client'].includes(u.role);
-    return { demo: true, source: 'Database locale DEMO · nessuna fonte collegata', metrics: metrics(t), trend, programs: s.query('SELECT * FROM fi_programs WHERE tenant_id=? ORDER BY created_at', t).map(programJson), members: s.query("SELECT * FROM fi_members WHERE tenant_id=? AND status='active' ORDER BY created_at DESC LIMIT 1000", t).map(memberJson), transactions: s.query('SELECT * FROM fi_transactions WHERE tenant_id=? ORDER BY created_at DESC LIMIT 200', t).map(transactionJson), campaigns: managerView ? s.query('SELECT * FROM fi_campaigns WHERE tenant_id=? ORDER BY created_at DESC', t).map(campaignJson) : [], automations: managerView ? s.query('SELECT * FROM fi_automations WHERE tenant_id=?', t).map(automationJson) : [], jobs: managerView ? s.query('SELECT id,type,status,attempts,error,available_at,created_at FROM fi_jobs WHERE tenant_id=? ORDER BY created_at DESC LIMIT 100', t) : [], wallet: walletStatus() };
+    return { demo: !realMode, source: realMode?'Database BigAnt OS':'Database locale DEMO · nessuna fonte collegata', metrics: metrics(t), trend, programs: s.query('SELECT * FROM fi_programs WHERE tenant_id=? ORDER BY created_at', t).map(programJson), members: s.query("SELECT * FROM fi_members WHERE tenant_id=? AND status='active' ORDER BY created_at DESC LIMIT 1000", t).map(memberJson), transactions: s.query('SELECT * FROM fi_transactions WHERE tenant_id=? ORDER BY created_at DESC LIMIT 200', t).map(transactionJson), campaigns: managerView ? s.query('SELECT * FROM fi_campaigns WHERE tenant_id=? ORDER BY created_at DESC', t).map(campaignJson) : [], automations: managerView ? s.query('SELECT * FROM fi_automations WHERE tenant_id=?', t).map(automationJson) : [], jobs: managerView ? s.query("SELECT id,type,status,attempts,error,available_at,created_at,COALESCE(json_extract(payload_json,'$.channel')='google',0) googleEligible FROM fi_jobs WHERE tenant_id=? ORDER BY created_at DESC LIMIT 100", t) : [], wallet: walletStatus(t) };
   }
   function walletData(m) {
     const p = program(m.program_id, m.tenant_id), t = tenant(m.tenant_id);
-    return { member: { id: m.id, publicToken: m.public_token, appleAuthToken: m.apple_auth_token, name: m.name, balance: m.status === 'deleted' ? 0 : m.balance, rewardCount: m.status === 'deleted' ? 0 : m.reward_count, updatedAt: m.updated_at, offer: m.offer || undefined, voided: m.status === 'deleted' || !p.active || !t.active }, program: { id: p.id, name: p.name, type: p.type, rewardThreshold: p.reward_threshold, rewardName: p.reward_name, color: p.color, description: p.description, tenantName: t.name, expiresAt: p.expires_at || undefined, locations: JSON.parse(p.locations_json) } };
+    return { member: { id: m.id, publicToken: m.public_token, appleAuthToken: m.apple_auth_token, name: m.name, balance: m.status === 'deleted' ? 0 : m.balance, rewardCount: m.status === 'deleted' ? 0 : m.reward_count, updatedAt: m.updated_at, offer: m.offer || undefined, voided: m.status === 'deleted' || !p.active || !t.active || !JSON.parse(t.services_json).includes('fidelity') }, program: { id: p.id, name: p.name, type: p.type, rewardThreshold: p.reward_threshold, rewardName: p.reward_name, color: p.color, description: p.description, tenantName: t.name, logoUrl:programJson(p).logoUrl||undefined, expiresAt: p.expires_at || undefined, locations: JSON.parse(p.locations_json) } };
   }
   function publicMember(publicToken) { return needed(s.one("SELECT m.* FROM fi_members m JOIN os_clients t ON t.id=m.tenant_id WHERE m.public_token=? AND m.status='active' AND t.active=1", publicToken), 'Tessera non disponibile.'); }
 
@@ -259,13 +265,14 @@ export function createFidelityModule({ store: s, origin = 'http://127.0.0.1:4330
     if (resource === 'public') {
       if (id === 'join') {
         const c = needed(s.one('SELECT * FROM os_clients WHERE slug=? AND active=1', action));
-        if (method === 'GET') return data({ demo: true, tenant: { name: c.name, slug: c.slug, color: c.color, address: c.address, privacyUrl: c.privacy_url, termsText: c.terms_text }, programs: s.query('SELECT * FROM fi_programs WHERE tenant_id=? AND active=1 AND (expires_at IS NULL OR expires_at>?)', c.id, now()).map(programJson) });
-        if (method === 'POST') { if (body.acceptTerms !== true) throw new AppError('Accetta il regolamento per iscriverti.'); const m = createMember(c.id, body, null, 'public_signup'); return data({ cardUrl: m.cardUrl, token: m.publicToken, demo: true }, 201); }
+        if (method === 'GET') return data({ demo: !realMode, tenant: { name: c.name, slug: c.slug, color: c.color, address: c.address, privacyUrl: c.privacy_url, termsText: c.terms_text }, programs: realMode&&(!c.privacy_url||!c.terms_text||!JSON.parse(c.services_json).includes('fidelity'))?[]:s.query('SELECT * FROM fi_programs WHERE tenant_id=? AND active=1 AND (expires_at IS NULL OR expires_at>?) AND (?=0 OR simulation=0)', c.id, now(),+realMode).map(programJson) });
+        if (method === 'POST') { if (body.acceptTerms !== true) throw new AppError('Accetta il regolamento per iscriverti.'); if(realMode&&(!c.privacy_url||!c.terms_text||!JSON.parse(c.services_json).includes('fidelity')||program(body.programId,c.id).simulation))throw new AppError('Iscrizioni non disponibili: configurazione del programma da completare.',409); const m = createMember(c.id, body, null, 'public_signup'); return data({ cardUrl: m.cardUrl, token: m.publicToken, demo: !realMode }, 201); }
       }
       if (id === 'cards') {
         const m = publicMember(action), p = program(m.program_id, m.tenant_id), c = tenant(m.tenant_id), tail = parts[3];
-        if (!tail && method === 'GET') return data({ demo: true, member: { name: m.name, balance: m.balance, rewardCount: m.reward_count, availableRewards: Math.floor(m.balance / p.reward_threshold), status: m.status, createdAt: m.created_at }, program: programJson(p), tenant: { name: c.name, color: c.color, address: c.address }, wallet: walletStatus(), marketingConsent: !!m.marketing_consent, offer: m.offer });
+        if (!tail && method === 'GET') return data({ demo: !realMode||!!p.simulation, member: { name: m.name, balance: m.balance, rewardCount: m.reward_count, availableRewards: Math.floor(m.balance / p.reward_threshold), status: m.status, createdAt: m.created_at }, program: programJson(p), tenant: { name: c.name, color: c.color, address: c.address }, wallet: walletStatus(m.tenant_id), marketingConsent: !!m.marketing_consent, offer: m.offer });
         if (tail === 'consent' && method === 'PATCH') { const consent = bool(body.marketingConsent, 'Consenso'); s.transaction(() => updateConsent(m, consent, 'card_holder')); return data({ ok: true }); }
+        if(tail==='google'&&googleWallet){if(method!=='POST')throw new AppError('Per preparare la tessera usa il pulsante Google Wallet.',405);if(body.acknowledged!==true)throw new AppError('Conferma l’invio dei dati della tessera a Google.');activeProgram(m.program_id,m.tenant_id);return data(await googleWallet.issue(m));}
         if (['apple', 'google'].includes(tail)) externalError();
       }
       return null;
@@ -278,6 +285,7 @@ export function createFidelityModule({ store: s, origin = 'http://127.0.0.1:4330
     if (resource === 'wallet' && id === 'apple') externalError();
     // A current, active session user and a server-side assignment are required on every private route.
     authorized(u, t);
+    if(resource==='google-wallet'&&googleWallet){requireOwner(u);if(method==='POST'&&id==='check')return data(await googleWallet.check(u,t,body));if(method==='POST'&&id==='activate')return data(googleWallet.activate(u,t,body));if(method==='POST'&&id==='run')return data(await googleWallet.runJobs(t));if(method==='POST'&&id==='retry')return data(googleWallet.retry(u,t,body.jobId));}
     if ((resource === 'state' || resource === 'dashboard' || !resource) && method === 'GET') return data(state(t, u));
     if (['tenants', 'businesses'].includes(resource)) {
       if (method === 'GET') return data({ items: u.role === 'owner' ? s.query('SELECT * FROM os_clients ORDER BY name') : [tenant(t)] });
@@ -315,7 +323,7 @@ export function createFidelityModule({ store: s, origin = 'http://127.0.0.1:4330
         // Fixed fictional issuer/base URL: the payload is a technical preview, never a signed pass.
         const apple = buildAppleDefinition(values.member, values.program, { baseUrl: 'https://demo.bigant.example', passTypeId: 'pass.example.bigant.demo', teamId: 'DEMOONLY00' });
         delete apple.authenticationToken;
-        return data({ demo: true, issued: false, google: buildGooglePayloads(values.member, values.program, '1234567890', 'https://demo.bigant.example'), apple });
+        return data({ demo: !realMode, issued: false, google: buildGooglePayloads(values.member, values.program, '1234567890', 'https://demo.bigant.example'), apple });
       }
       if (id && !action && method === 'GET') { const m = member(id, t); return data({ member: memberJson(m), transactions: s.query('SELECT * FROM fi_transactions WHERE member_id=? AND tenant_id=? ORDER BY created_at DESC', id, t).map(transactionJson) }); }
       if (id && method === 'PATCH') {
@@ -325,7 +333,7 @@ export function createFidelityModule({ store: s, origin = 'http://127.0.0.1:4330
       }
       if (id && method === 'DELETE') {
         manager(u); member(id, t);
-        s.transaction(() => { s.run("UPDATE fi_members SET name='Iscritto anonimizzato DEMO',email=?,phone='',marketing_consent=0,status='deleted',public_token=?,offer=NULL,updated_at=?,update_seq=? WHERE id=?", `deleted-${uid()}@invalid.example`, token(), now(), seq(), id); s.run('DELETE FROM fi_consents WHERE member_id=?', id); s.run("UPDATE fi_transactions SET note='' WHERE member_id=?", id); s.run("UPDATE fi_jobs SET status='blocked',payload_json='{}',error='Iscritto anonimizzato' WHERE member_id=?", id); s.run("UPDATE fi_deliveries SET status='blocked',error='Iscritto anonimizzato' WHERE member_id=?", id); s.run('DELETE FROM fi_idempotency WHERE tenant_id=? AND response_json LIKE ?', t, `%${id}%`); s.run('DELETE FROM fi_automation_runs WHERE member_id=?', id); queue(t, id, 'wallet_revoke'); audit(u, t, 'member.anonymized', id); }); return data({ ok: true, walletRevocation: 'blocked_disconnected' });
+        s.transaction(() => { s.run("UPDATE fi_members SET name=?,email=?,phone='',marketing_consent=0,status='deleted',public_token=?,offer=NULL,updated_at=?,update_seq=? WHERE id=?", realMode?'Iscritto anonimizzato':'Iscritto anonimizzato DEMO', `deleted-${uid()}@invalid.example`, token(), now(), seq(), id); s.run('DELETE FROM fi_consents WHERE member_id=?', id); s.run("UPDATE fi_transactions SET note='' WHERE member_id=?", id); s.run("UPDATE fi_jobs SET status='blocked',payload_json='{}',error='Iscritto anonimizzato' WHERE member_id=?", id); s.run("UPDATE fi_deliveries SET status='blocked',error='Iscritto anonimizzato' WHERE member_id=?", id); s.run('DELETE FROM fi_idempotency WHERE tenant_id=? AND response_json LIKE ?', t, `%${id}%`); s.run('DELETE FROM fi_automation_runs WHERE member_id=?', id); queue(t, id, 'wallet_revoke'); audit(u, t, 'member.anonymized', id); }); return data({ok:true,walletRevocation:googleWallet?.state(t).enabled?'queued':'blocked_disconnected'});
       }
     }
     if (resource === 'scan' && method === 'POST') {
@@ -365,7 +373,7 @@ export function createFidelityModule({ store: s, origin = 'http://127.0.0.1:4330
       if (method === 'POST' && action === 'run') return data(runAutomation(t, id, u));
     }
     if (resource === 'settings') {
-      if (method === 'GET') return data({ tenant: tenant(t), wallet: walletStatus(), jobs: s.query('SELECT status,count(*) count FROM fi_jobs WHERE tenant_id=? GROUP BY status', t), publicBaseUrl: base, demo: true });
+      if (method === 'GET') return data({ tenant: tenant(t), wallet: walletStatus(t), jobs: s.query('SELECT status,count(*) count FROM fi_jobs WHERE tenant_id=? GROUP BY status', t), publicBaseUrl: base, demo: !realMode });
       if (id === 'policies' && method === 'PATCH') { manager(u); const privacyUrl = str(body.privacyUrl, 'URL privacy', 0, 2000), termsText = str(body.termsText, 'Regolamento', 0, 10000); if (privacyUrl) { let valid = false; try { const x = new URL(privacyUrl); valid = x.protocol === 'https:' && !x.username && !x.password; } catch {} if (!valid) throw new AppError('Usa un URL HTTPS pubblico per la privacy.'); } s.run('UPDATE os_clients SET privacy_url=?,terms_text=? WHERE id=?', privacyUrl, termsText, t); audit(u, t, 'policies.updated', t); return data({ ok: true }); }
     }
     if (resource === 'users') { manager(u); if (method === 'GET') return data({ items: s.query("SELECT id,name,email,role,tenant_id,active FROM os_users WHERE tenant_id=? OR (role='collaborator' AND id IN(SELECT user_id FROM os_assignments WHERE client_id=?))", t, t) }); throw new AppError('Gestisci gli accessi dalla sezione Utenti comune di BigAnt OS.', 409); }
@@ -396,5 +404,5 @@ export function createFidelityModule({ store: s, origin = 'http://127.0.0.1:4330
       if (!s.one('SELECT id FROM fi_members WHERE id=?', 'fi-demo-bigant-member')) createMember('demo-bigant', { programId: 'fi-demo-points', name: 'Contatto Relazione DEMO', email: 'relazione@bigant.example', marketingConsent: false }, null, 'fixture_demo', 'fi-demo-bigant-member');
     });
   }
-  return { state, seed, handle, tick };
+  return { state, seed, handle, tick,googleWallet,runWalletJobs:()=>googleWallet?googleWallet.runJobs():Promise.resolve({processed:0}) };
 }
