@@ -8,6 +8,7 @@ import {createGrowthCalendar} from './growth-calendar.js';
 import { createGrowthRuntime } from './growth-runtime.js';
 import { emailHTML, emailPreviewText } from './growth-brand.js';
 import {createCostControl} from './cost-control.js';
+import {createGrowthArchive} from './growth-archive.js';
 
 const EXTERNAL_DISABLED = 'Servizio non collegato: operazione esterna disabilitata nella demo';
 const jobTypes = ['research', 'analyze', 'draft', 'sync', 'reconcile', 'reconcileMeeting'];
@@ -28,6 +29,7 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
   const runtime=realMode?createGrowthRuntime({store,growthStore:s,connections,getActor:()=>actor.getStore(),externalEnabled,providerOptions}):null;
   const mail=realMode?createGrowthMail({store,growthStore:s,runtime,googleAuth,origin,enabled:gmailEnabled,providerOptions,clock}):null;
   const calendar=realMode?createGrowthCalendar({store,growthStore:s,runtime,mail,googleAuth,origin,enabled:calendarEnabled,providerOptions,clock}):null;
+  const demoArchive=realMode?createGrowthArchive({store,clock}):null;
   const p = runtime?runtime.providers:demoProviders(s);
   const engine = createEngine(s, p, { origin: origin + '/api/growth',simulation:!realMode,runtime,...(realMode?{readWebsite:(url,w)=>p.website(w,url),replyContext:(w,m,user)=>mail.conversations.replyReason(user||actor.getStore(),w,m)}:{}) });
   engine.recover();
@@ -42,10 +44,12 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
   }
 
   function state(clientId = 'demo-bigant', user) {
-    owner(user); s.workspace(clientId);
+    owner(user); const migration=demoArchive?.inspect(clientId)||null;
+    if(migration?.required)return {simulation:false,migration};
+    s.workspace(clientId);
     const settings = s.settings(clientId), used = s.costs(clientId),mailState=mail?.state(user,clientId)||null;
-    return {
-      simulation: !realMode, label: realMode?'Growth · attivazione per fasi':'DEMO offline · nessuna ricerca, email o prenotazione esterna', settings, mail:mailState,calendar:calendar?.state(user,clientId)||null,conversations:mail?.conversations.state(user,clientId)||null,runtime:runtime?.state(user,clientId)||null,
+    const result = {
+      simulation: !realMode, migration, label: realMode?'Growth · attivazione per fasi':'DEMO offline · nessuna ricerca, email o prenotazione esterna', settings, mail:mailState,calendar:calendar?.state(user,clientId)||null,conversations:mail?.conversations.state(user,clientId)||null,runtime:runtime?.state(user,clientId)||null,
       sources:store.query('SELECT id,lead_id,kind,url,retrieved_at,provenance_json FROM gr_sources WHERE workspace=? ORDER BY retrieved_at DESC',clientId),
       connections: { openai: false, brave: false, google: mailState?.configured||false, googleConfigured: mailState?.configured||false, demoAvailable: !realMode },
       leads: s.query('SELECT * FROM leads WHERE workspace=? ORDER BY created DESC', clientId),
@@ -57,6 +61,8 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
       budget: { used, total: Number(store.getSetting('budget_cents')), fixed: Number(store.getSetting('fixed_cents')), available: Math.max(0, Math.min(Number(store.getSetting('budget_cents')) - Number(store.getSetting('fixed_cents')) - used,realMode?costControl.snapshot().availableCents:Infinity)), simulatedCostCents: 0, source: 'Budget centrale OS',costControl:costControl.snapshot() },
       auditSource: 'Registro attività centrale OS',
     };
+    result.migration=demoArchive?.inspect(clientId)||null;
+    return result;
   }
   function seed(realMode=false) {
     if (realMode) return;
@@ -86,7 +92,13 @@ export function createGrowthModule({ store, origin = 'http://127.0.0.1:4330', re
   function verifyToken(w, id, kind) { const token = engine.getToken(id, kind); if (token.workspace !== w) throw new AppError('Invito non disponibile per questa attività.', 404); return token; }
 
   async function handle({ method, path, body = {}, user, clientId = 'demo-bigant' }) {
-    owner(user); s.workspace(clientId); const w = clientId;
+    owner(user);
+    if(method==='GET'&&(path==='/state'||path==='/'))return data(state(clientId,user));
+    if(demoArchive&&method==='POST'&&['/demo-archive','/demo-restore'].includes(path)){
+      if(path==='/demo-archive')demoArchive.archive(user,clientId,body);else demoArchive.restore(user,clientId,body);
+      return data(state(clientId,user));
+    }
+    s.workspace(clientId); const w = clientId;
     return actor.run(user, async () => {
     try {
       if (method === 'GET' && (path === '/state' || path === '/')) return data(state(w, user));

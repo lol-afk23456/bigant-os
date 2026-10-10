@@ -36,8 +36,8 @@ Questi tre requisiti restano parziali. Nessuna promozione a completati sulla bas
 
 ## Dipendenze per il seguito
 
-- **Accesso del socio:** verificato ora nel browser, la scheda di produzione mostra ancora “Entra nel tuo spazio”. La richiesta di accesso è già stata inviata. Il titolare inserisce le credenziali direttamente nel browser secondo [PASSAGGIO-CODEX](PASSAGGIO-CODEX.md); non si leggono segreti Railway o password dagli archivi per aggirare il passaggio.
-- **Fase 0, FUN-001, DAT-001 e UI-006:** accessi nominali e cliente di prova, password scelte dai titolari, primo backup applicativo verificato dall’area socio. Il backup Railway e il rilascio sono già provati; non sono una prova del login dei tre ruoli.
+- **Accesso del socio:** risolto; login e cambio password completati. La sessione autenticata ha consentito il [collaudo online](COLLAUDO-ONLINE-2026-10-10.md). Non ripetere la ricerca di credenziali.
+- **Fase 0, FUN-001, DAT-001 e UI-006:** primo backup applicativo confermato nell’area socio il 10 ottobre alle 16:05. Custodia cifrata ora disponibile. Restano accessi nominali e giri dei tre ruoli; le prove socio non li sostituiscono.
 - **Fidelity prima di Growth:** completare le prove sul server e sul telefono; Google Wallet richiede account/chiavi e verifica Android. Apple resta esclusa dalle nuove attivazioni. Confronto/conteggi degli originali ancora aperti, senza copiarne dati o modificarli.
 - **Profili, fonti e report:** prima il collaudo reale GBP autorizzato, poi gli altri canali. Restano ulteriori implementazioni e prove per i canali non collegati; non basta il registro dei link pubblici. Tracker da riconciliare con la fonte ufficiale autorizzata. Nessun dato cliente reale raccolto nell’audit.
 - **Agenti:** chiavi, budget verificato e consenso al trasferimento delle fonti precedono la prima prova reale. Attivazione uno alla volta, a partire dal percorso social già predisposto. I successivi percorsi, automatismi e pubblicazione restano lavoro aperto, non funzionalità operative nascoste.

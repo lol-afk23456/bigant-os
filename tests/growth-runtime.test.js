@@ -70,7 +70,7 @@ test('modalità DEMO e reale non riusano registrazioni di prova presenti',t=>{
  const f=setup(t);const demo=createGrowthModule({store:f.store});demo.seed();
  const lead=demo.state('demo-bigant',f.owner).leads[0];f.store.run("INSERT INTO gr_messages(id,workspace,lead_id,direction,subject,body,status,created) VALUES(?,?,?,?,?,?,?,?)",'demo-sending','demo-bigant',lead.id,'out','Prova','Dati inventati','sending','2026-10-10T12:00:00Z');
  createGrowthModule({store:f.store,realMode:true,connections:f.connections});assert.equal(f.store.one("SELECT status FROM gr_messages WHERE id='demo-sending'").status,'sending');
- assert.throws(()=>f.state(),/non possono essere mescolati/);
+ const state=f.state();assert.equal(state.migration.required,true);assert.equal(state.leads,undefined);assert.equal(state.simulation,false);
 });
 test('server reale costruisce Growth chiuso anche con chiave del vault; nessun fornitore viene chiamato',async t=>{
  const app=createApp({origin:'https://os.example',env:{BIGANT_MODALITA:'reale',BIGANT_SOCIO_EMAIL:'owner@test.example',BIGANT_SOCIO_PASSWORD_INIZIALE:'password-inventata-lunga',BIGANT_SECRET_KEY:Buffer.alloc(32,2).toString('base64')},growthProviderOptions:{fetchImpl:()=>{throw Error('Rete vietata');}}});t.after(()=>app.close());

@@ -496,9 +496,35 @@ Object.assign(ACTIONS,{
  'compensation-pay':id=>{const a=S.module,row=a.billing.compensations.find(item=>item.id===id);form('Registra il pagamento del compenso',[selectField('accountId','Conto della ditta',options(a.accounts.filter(account=>account.entity_id===row.entity_id))),dayField('date','Data del pagamento'),numberField('amountEuros','Importo pagato in euro',row.remaining_cents/100,.01,'.01'),selectField('method','Metodo',[['bank','Bonifico'],['cash','Contanti'],['card','Carta']]),{name:'documentRef',label:'Ricevuta o riferimento'},textField('note','Nota','Pagamento compenso',true)],async(b,fd,key)=>{const {amountEuros,...rest}=b;await financialSave('movements',{...rest,entityId:row.entity_id,counterpartyId:row.counterparty_id,clientId:row.client_id,obligationId:id,direction:'out',kind:'expense',category:'Compensi collaboratori',amountCents:cents(amountEuros),sourceRef:'compenso-'+key},key);},{intro:'Registra un pagamento già avvenuto nei dati di prova. Questa azione non invia denaro.'});}
 });
 
+function growthMigrationPanel(migration){
+ const counts=Object.entries(migration.counts||{}).filter(([,count])=>Number.isSafeInteger(count)&&count>0);
+ return title('Prepariamo Growth per il lavoro reale.','Le prove precedenti rimangono conservate in un archivio separato.')+
+  panel('Dati di prova da separare',notice('Questo spazio contiene ancora registrazioni DEMO. Non verranno trasformate in contatti, email o appuntamenti reali.')+
+   (counts.length?table(['Registrazioni di prova','Quantità'],counts.map(([name,count])=>[e(growthArchiveLabel(name)),count])):'')+
+   `<p>Inizia con uno spazio vuoto, in pausa e con tutti i collegamenti da collaudare. Puoi ripristinare la prova finché il nuovo spazio resta vuoto e non configurato. Lo storico e i costi centrali restano conservati.</p>`+
+   btn('Conserva la prova e prepara Growth','growth-demo-archive','','primary','archive'));
+}
+function growthArchiveLabel(name){const labels={gr_leads:'Aziende',gr_messages:'Messaggi',gr_jobs:'Attività',gr_costs:'Costi',gr_meetings:'Appuntamenti',gr_tokens:'Collegamenti temporanei',gr_suppressions:'Esclusioni',gr_sources:'Fonti',gr_conversions:'Conversioni',gr_approvals:'Decisioni',os_approvals:'Approvazioni centrali',gr_demo_mail:'Posta simulata',gr_demo_calendar:'Calendario simulato'};return labels[name]||'Configurazioni e registrazioni di supporto';}
+function growthArchiveAction(restore=false){
+ const data=S.module,migration=data?.migration;
+ if(S.view!=='growth'||!isOwner()||!migration?.version||(restore?!migration.archive?.canRestore:!migration.required))throw Error('Aggiorna Growth prima di proseguire.');
+ const snapshot=viewSnapshot(),clientId=S.clientId;let busy=false,revision;
+ const current=()=>isCurrentView(snapshot)&&isOwner()&&S.module===data&&$('#dialog').open&&dialogRevision===revision;
+ form(restore?'Ripristina la prova precedente':'Prepara lo spazio Growth',[{name:'confirmed',label:restore?'Confermo il ripristino dello spazio DEMO conservato':'Confermo: conserva tutti i dati di prova e prepara uno spazio reale vuoto',type:'checkbox'}],async(_b,fd)=>{
+  if(!current())throw Error('Pagina, attività o accesso cambiati. Riapri la conferma.');
+  if(!fd.has('confirmed'))throw Error('Conferma il passaggio prima di proseguire.');
+  if(busy)return;busy=true;let updated;
+  try{updated=await api('/api/growth/'+(restore?'demo-restore':'demo-archive')+'?clientId='+encodeURIComponent(clientId),{method:'POST',scoped:false,body:{version:migration.version,confirmed:true}});}catch(error){if(!current())return;throw error;}finally{busy=false;}
+  if(!current())return;$('#dialog').close();S.module=updated;render();toast(restore?'Prova ripristinata. Le attività reali restano bloccate.':'Growth pronto per la configurazione. Nessun servizio attivato.');
+ },{submit:restore?'Ripristina prova':'Conserva e prepara',intro:restore?'Disponibile soltanto se lo spazio reale è ancora vuoto e non configurato. Nessun invio o collegamento viene attivato.':'Le registrazioni precedenti restano nell’archivio protetto dell’app. Non vengono trasformate in dati reali. Nessun fornitore viene attivato.'});
+ revision=dialogRevision;
+}
+ACTIONS['growth-demo-archive']=()=>growthArchiveAction();
+ACTIONS['growth-demo-restore']=()=>growthArchiveAction(true);
 function growthSectionsView(){
+ if(S.module?.migration?.required)return growthMigrationPanel(S.module.migration);
  const g=S.module,leads=g.leads.filter(row=>`${row.company} ${row.email} ${label(row.stage)}`.toLocaleLowerCase('it').includes(S.filter.toLocaleLowerCase('it')));
- return title('Le prossime relazioni di BigAnt.','Dalla ricerca alla chiamata, un passaggio alla volta.')+notice(g.simulation?'Prova con attività inventate. Ricerca, analisi, email e calendario non sono ancora collegati.':g.runtime.note+' '+(g.mail?.enabled?'Gmail disponibile per invii manuali approvati.':'Gmail da autorizzare, collaudare e attivare.')+' '+(g.calendar?.enabled?'Calendar disponibile per gli inviti autorizzati singolarmente.':'Calendar da autorizzare, collaudare e attivare.'))+sectionNavigator('growth',[
+ return title('Le prossime relazioni di BigAnt.','Dalla ricerca alla chiamata, un passaggio alla volta.')+notice(g.simulation?'Prova con attività inventate. Ricerca, analisi, email e calendario non sono ancora collegati.':g.runtime.note+' '+(g.mail?.enabled?'Gmail disponibile per invii manuali approvati.':'Gmail da autorizzare, collaudare e attivare.')+' '+(g.calendar?.enabled?'Calendar disponibile per gli inviti autorizzati singolarmente.':'Calendar da autorizzare, collaudare e attivare.'))+(S.section==='settings'&&g.migration?.archive?panel('Prova precedente conservata',`<p>Le vecchie registrazioni DEMO restano nell’archivio dell’app. Non partecipano alle attività reali.</p>${g.migration.archive.canRestore?btn('Ripristina prova precedente','growth-demo-restore','','small'):notice('Ripristino diretto non disponibile: lo spazio reale contiene dati o configurazioni da conservare.')}`):'')+sectionNavigator('growth',[
   {id:'research',name:'Ricerca aziende',value:g.settings.paused?'In pausa':g.simulation?'Prova abilitata':g.runtime.phases.research.enabled?'Pronta':'Da attivare',icon:'search'},
   {id:'companies',name:'Aziende e trattative',value:g.leads.length,note:`Qualificate: ${g.leads.filter(row=>row.stage==='qualified').length}`,icon:'growth'},
   {id:'messages',name:'Bozze e conversazioni',value:g.messages.filter(row=>row.status==='draft').length,note:'Bozze da rivedere',icon:'mail'},
