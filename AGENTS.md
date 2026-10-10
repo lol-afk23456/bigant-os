@@ -4,9 +4,9 @@
 
 **Estensione autorizzata il 10 ottobre:** leggere anche `docs/TASK-AVANZAMENTO.md`, `docs/STRUMENTI.md` e `docs/COSTI.md`. T0 iniziata come supporto al riordino; T1–T10 dopo le fasi 0–7, ancora incomplete. Il proprietario ha confermato le modifiche nella cartella del progetto; nessun nuovo file sul Mac fuori da questa fino all'archivio T10. Stop alle attività onerose e avviso all'80% del budget totale; costi effettivi ancora da riconciliare. Apple esclusa dai collegamenti reali della nuova tranche. Nessun dato reale dei clienti del nuovo prompt nel repository.
 
-Prima di ogni sessione rileggere `docs/BRIEF-BIGANT.md`, `docs/VERIFICA-COPERTURA-BRIEF.md` e `docs/PASSAGGIO-CONSEGNE.md`. Il brief esteso è conservato integralmente; la matrice storica non ne misura ancora tutto il perimetro. Per proseguire usare il ramo remoto, senza forzare la storia locale.
+Per riprendere leggere prima `docs/STATO-ATTUALE-CODEX.md`. I documenti già letti nella stessa lavorazione non vanno riletti integralmente: consultare solo le sezioni pertinenti. Alla prima ricognizione leggere anche `docs/BRIEF-BIGANT.md`, `docs/VERIFICA-COPERTURA-BRIEF.md` e `docs/PASSAGGIO-CONSEGNE.md`. Il brief esteso è conservato integralmente; la matrice storica non ne misura ancora tutto il perimetro. Per proseguire usare il ramo remoto, senza forzare la storia locale.
 
-Leggere README, docs/BRIEF-BIGANT.md, docs/DECISIONI.md e docs/REPORT-NOTTE.md prima di modificare.
+Prima di modificare verificare le decisioni correnti nel riepilogo e consultare README, brief e report soltanto per il contesto mancante.
 
 - Progetto interno, due ditte individuali sotto un marchio. Non costruire un SaaS commerciale.
 - Lavorare sul branch bigant-os-notte-1; niente main, force push o merge. Push del ramo e rilascio finale autorizzati dal proprietario il 10 ottobre, dopo backup e verifiche.
@@ -27,3 +27,5 @@ La delega è consentita dal brief notturno. Assegnare file disgiunti, verificare
 
 
 Aggiornamento del proprietario — 10 ottobre 2026: ridurre letture, deleghe e controlli ripetuti non necessari; completare il lavoro e pubblicare tutte le modifiche online al termine, senza ulteriore supervisione. Questa autorizzazione successiva consente push del ramo e rilascio su BigAnt OS dopo backup e verifiche; non autorizza spese, attivazione di fornitori, cancellazioni o interventi sulle app originali.
+
+Efficienza richiesta dal proprietario: un solo riepilogo operativo aggiornato; ricerche mirate con output limitato; niente letture integrali ripetute dei registri storici. Eseguire i test pertinenti e una suite completa per blocco di codice concluso; non ripeterla dopo sole modifiche documentali. Delegare solo una verifica indipendente utile o lavoro realmente separabile; evitare duplicazioni del lavoro principale. Non riaprire decisioni già confermate.

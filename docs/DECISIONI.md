@@ -191,3 +191,8 @@ Copertura prudente: report ancora incompleti, Email marketing senza identità au
 
 
 Aggiornamento del proprietario — 10 ottobre 2026: ridurre letture, deleghe e controlli ripetuti non necessari; completare il lavoro e pubblicare tutte le modifiche online al termine, senza ulteriore supervisione. Questa autorizzazione successiva consente push del ramo e rilascio su BigAnt OS dopo backup e verifiche; non autorizza spese, attivazione di fornitori, cancellazioni o interventi sulle app originali.
+
+
+## 10 ottobre 2026 — Pubblicazione autorizzata
+
+Tutte le modifiche applicative collaudate sono online: GitHub `bigant-os-notte-1`, versione `52a4399`; Railway deployment `9f16e529-2049-44d3-94fa-99f2a8f52f9b` SUCCESS. Backup preliminare del volume completato alle 16:01. Health OK, cinque file identici e tre API protette con risposta anonima 401. Browser: login aggiornato senza errori console. Collegamenti esterni disattivati; nessuna variabile modificata, dato cliente copiato o nuova credenziale creata. Prima copia applicativa e collaudo autenticato online ancora da verificare. [Registro di rilascio](RILASCIO-2026-10-10.md). Il rilascio non completa le voci residue né T0–T10.

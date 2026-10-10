@@ -312,3 +312,8 @@ Controllo conclusivo progetto **5/5**: 150 file JavaScript, 86 documenti, 190 li
 ## 10 ottobre 2026 — Risultati dei clienti
 
 Riepilogo comune dei soci e report mensili con obiettivi, lavori, misure e fonti. Bozza privata, anteprima della versione esatta e conferma prima della visibilità al cliente; servizio o autore revocato non ripubblicano automaticamente lo storico al ripristino. Revisione indipendente: chiuso anche l’aggiramento delle versioni tramite INSERT OR REPLACE. Nel Browser corretti aggiunta voce e contesto dell’attività alla ricarica. **14 nuove prove, suite 739/739**, controllo **5/5** (155 JavaScript, 88 documenti, 191 link locali); desktop e 390×844, nessun errore console finale. [Collaudo](COLLAUDO-RISULTATI-CLIENTI.md). Matrice92: **70 locali, 15 parziali, 7 da fare**. Report manuali, fonti automatiche ancora parziali. Nessun account, dato reale, invio, costo applicativo o rilascio. Il rilascio finale è ora autorizzato senza ulteriore conferma.
+
+
+## 10 ottobre 2026 — Pubblicazione autorizzata
+
+Tutte le modifiche applicative collaudate sono online: GitHub `bigant-os-notte-1`, versione `52a4399`; Railway deployment `9f16e529-2049-44d3-94fa-99f2a8f52f9b` SUCCESS. Backup preliminare del volume completato alle 16:01. Health OK, cinque file identici e tre API protette con risposta anonima 401. Browser: login aggiornato senza errori console. Collegamenti esterni disattivati; nessuna variabile modificata, dato cliente copiato o nuova credenziale creata. Prima copia applicativa e collaudo autenticato online ancora da verificare. [Registro di rilascio](RILASCIO-2026-10-10.md). Il rilascio non completa le voci residue né T0–T10.
