@@ -26,8 +26,18 @@ export function navigationFor(user, activeServices = []) {
   ] };
 }
 
-export function createWorkspace({ store, clock = () => new Date(), budget, expiring, agentConfig, connections }) {
+export function createWorkspace({ store, clock = () => new Date(), budget, expiring, agentConfig, connections, businessProfile }) {
   const profileDirectory = createProfileDirectory({ store, clock });
+  function profiles(user, clientId) {
+    const directory = profileDirectory.state(user, clientId);
+    if (!businessProfile) return directory;
+    try { return { ...directory, businessProfile: businessProfile.state(user, clientId) }; }
+    catch (error) {
+      // Public links remain readable when the client's local service is absent.
+      if (error.status === 403 && user.role === 'client') return { ...directory, businessProfile: null };
+      throw error;
+    }
+  }
   function assignedClients(user) {
     return store.query('SELECT * FROM os_clients WHERE active=1 ORDER BY name').filter(client => canAccessClient(store, user, client.id));
   }
@@ -54,5 +64,9 @@ export function createWorkspace({ store, clock = () => new Date(), budget, expir
         usedCents: spending.usedCents, capCents: spending.capCents },
       growth: { connected: false, newLeads: null }, connections: connections.summary() };
   }
-  return { home, profiles: profileDirectory.state, saveProfile: profileDirectory.save, approvals, priorities: user => directorPriorities(store, user) };
+  function saveProfile(user, clientId, channel, body) {
+    profileDirectory.save(user, clientId, channel, body);
+    return profiles(user, clientId);
+  }
+  return { home, profiles, saveProfile, approvals, priorities: user => directorPriorities(store, user) };
 }

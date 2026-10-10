@@ -23,12 +23,12 @@ export const services = [
   ['branding','Brand e direzione creativa','production','Posizionamento, identità, linee guida','Metodo disponibile','Figma, Canva e Adobe'],
   ['growth','Growth e ricerca clienti','sales','Ricerca, CRM, proposte, conversazioni e appuntamenti','Modulo locale','Brave, OpenAI, Gmail e Calendar'],
   ['fidelity','Fidelity','account','Carte, timbri, punti, premi e campagne','Modulo locale','Apple e Google Wallet'],
-  ['local','Google Business Profile','local','Scheda, aggiornamenti, recensioni e report','Metodo disponibile','Google Business Profile'],
+  ['local','Google Business Profile','local','Scheda, aggiornamenti, recensioni e report','Lettura predisposta; consenso, collaudo e attivazione richiesti','Google Business Profile'],
   ['events','Gestione eventi','production','Programma, fornitori, responsabilità e rendiconto','Da attivare','Partner e calendario'],
   ['drone','Riprese con drone','production','Brief, piano riprese, autorizzazioni e montaggio','Da attivare','Operatore e strumenti video'],
   ['video-ai','Video AI','production','SOP master, brand, storyboard e log feedback','Da attivare','Runway e Artlist'],
   ['creative-direction','Direzione creativa','production','Concept, coerenza visiva e revisione dei materiali','Da attivare','Figma, Canva e Adobe']
-].map(([id,name,department,deliverables,status,integration],index)=>({id,name,department,deliverables,status,integration,catalogue:index<19?index+1:null,sop:'docs/PLAYBOOK.md',data:['client_id','source','version','approval','cost'],activation:'SOP validata, responsabile, margine, fonte autorizzata e test sul pilota',implemented:['social','growth','fidelity','booking','audit'].includes(id)}));
+].map(([id,name,department,deliverables,status,integration],index)=>({id,name,department,deliverables,status,integration,catalogue:index<19?index+1:null,sop:id==='local'?'docs/SOP-GOOGLE-BUSINESS.md':'docs/PLAYBOOK.md',data:['client_id','source','version','approval','cost'],activation:'SOP validata, responsabile, margine, fonte autorizzata e test sul pilota',implemented:['social','growth','fidelity','booking','audit'].includes(id)}));
 export const departments=[
   {id:'direction',name:'Direzione e crescita',agents:['director'],trigger:'Venerdì · massimo tre priorità',visibility:'aggregates'},
   {id:'marketing',name:'Marketing BigAnt',agents:['marketing'],trigger:'Lunedì e obiettivo aggiornato',visibility:'internal'},

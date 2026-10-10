@@ -101,6 +101,17 @@ test('Avanzamento: identità riletta, soci attivi soltanto e password provvisori
   }
 });
 
+test('Avanzamento: GBP attivo descrive solo Google e non promuove gli altri canali', t => {
+  const f = fixture(t, { realMode: true });
+  let metadata = { available: true, configuredCount: 2, checkedCount: 2, enabledCount: 1, dailyCount: 1, cachedCount: 1, lastSync: readAt };
+  t.mock.method(f.businessProfile, 'progress', () => metadata);
+  let profiles = row(f.snapshot(), 'profiles');
+  assert.equal(profiles.status, 'Prova'); assert.match(profiles.summary, /1 attività abilitate.*1 con dati temporanei/);
+  assert.match(profiles.missing.join(' '), /altri canali.*non hanno/); assert.equal(profiles.evidenceAt, readAt);
+  metadata = { ...metadata, checkedCount: 0, enabledCount: 0, cachedCount: 0 };
+  profiles = row(f.snapshot(), 'profiles'); assert.equal(profiles.status, 'Da collegare');
+});
+
 test('Avanzamento HTTP: sessione e ruolo richiesti, stato globale indipendente dal cliente selezionato', async t => {
   const f = fixture(t), handler = f.server.listeners('request')[0], origin = 'http://127.0.0.1:4330';
   async function request(method, path, body, cookie) {

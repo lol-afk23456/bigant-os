@@ -12,7 +12,7 @@ function fixture(t, real = false) {
   const handler = app.server.listeners('request')[0];
   const ownerId = real ? app.store.one('SELECT id FROM os_users WHERE email=?', env.BIGANT_SOCIO_EMAIL).id : 'demo-owner';
   const ids = [ownerId, ...(!real ? ['demo-client','demo-client-other','demo-collaborator'] : [])];
-  for (const id of ids) app.store.run('INSERT INTO os_sessions VALUES(?,?,?,?)', createHash('sha256').update('profiles-'+id).digest('hex'), id, 'profiles-csrf', Date.now()+3600000);
+  for (const id of ids) app.store.run('INSERT INTO os_sessions VALUES(?,?,?,?)', createHash('sha256').update('profiles-'+id).digest('hex'), id, 'profiles-csrf', Math.max(Date.now(),Date.parse('2026-10-10T12:00:00Z'))+3600000);
   async function request(method, path, body, {user = ownerId, csrf = 'profiles-csrf', requestOrigin = origin} = {}) {
     const req = {method, url:path, headers:{host:new URL(origin).host, origin:requestOrigin, 'content-type':'application/json', ...(user ? {cookie:'bigant_os=profiles-'+user, 'x-csrf-token':csrf} : {})}, socket:{remoteAddress:'127.0.0.1'}, async *[Symbol.asyncIterator](){if(body!==undefined) yield Buffer.from(JSON.stringify(body));}};
     const res = {status:200, headers:{}, headersSent:false, setHeader(k,v){this.headers[k.toLowerCase()]=v;}, writeHead(status,headers){this.status=status;this.headersSent=true;for(const [k,v] of Object.entries(headers||{}))this.setHeader(k,v);}, end(body){this.body=body?JSON.parse(String(body)):null;}};
