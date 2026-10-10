@@ -137,3 +137,5 @@ div.office-row{cursor:default}
 
 /* Agent actions remain reachable on narrow cards and mobile. */
 .agent-card{min-width:0}.agent-card footer{flex-wrap:wrap;justify-content:flex-start;gap:6px}
+
+.fidelity-source-table table{table-layout:fixed}.fidelity-source-table th{white-space:normal}.fidelity-source-table td,.fidelity-source-table th{padding:10px 8px;overflow-wrap:anywhere}.fidelity-source-table th:first-child{width:40%}

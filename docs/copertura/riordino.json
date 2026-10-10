@@ -655,7 +655,8 @@
       "stato": "parziale in locale",
       "prove": [
         "Fonte/data sui dati disponibili, link Google e rimozione immediata dei dati scaduti anche senza rete. Fidelity dichiara archivio e data di lettura ma manca link alla fonte originale; altre fonti da collegare.",
-        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente.",
+        "Fonte Fidelity apribile dall’area cliente: conteggi per programma riconciliati col totale, criterio e data, senza contatti. API GET isolata per attività; 818/818 test e collaudo cliente DEMO desktop/390 px. COLLAUDO-VISTA-CLIENTE.md. Fonti esterne ancora da collegare."
       ]
     },
     {
@@ -783,7 +784,9 @@
       "modifica": "**Nessuna importazione necessaria.** Prima di spegnere le originali, controllo veloce che non contengano dati da tenere (solo conteggi, senza copiarli)",
       "criterio": "Conteggi verificati prima dello spegnimento",
       "stato": "da fare",
-      "prove": []
+      "prove": [
+        "10 ottobre: originali consultate in sola lettura, entrambe mostrano login separato. Conteggi non disponibili e non assunti a zero; nessuna modifica. COLLAUDO-ONLINE-2026-10-10.md."
+      ]
     },
     {
       "id": "FUN-052",

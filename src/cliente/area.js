@@ -26,6 +26,16 @@ export function createClientArea({store:s,records,businessProfile=null,clock=()=
    ...(clientId!=='demo-bigant'&&clientResults?.published(user,clientId).reports.length?[{id:'results',nome:'I tuoi risultati'}]:[])
   ]};
  }
+ function fidelitySource(user,clientId){
+  const c=scope(user,clientId);
+  if(!c.visible.some(row=>row.id==='fidelity'))throw new AppError('Servizio non disponibile per questa attività.',403);
+  const programs=s.query(`SELECT p.name,p.active,COUNT(m.id) inscriptions,COALESCE(SUM(m.marketing_consent),0) marketing
+   FROM fi_programs p LEFT JOIN fi_members m ON m.program_id=p.id AND m.tenant_id=p.tenant_id AND m.status='active'
+   WHERE p.tenant_id=? GROUP BY p.id ORDER BY p.name,p.id`,clientId).map(row=>({...row,active:!!row.active}));
+  return {clientId,clientName:c.client.name,source:'Archivio Fidelity della tua attività',readAt:clock().toISOString(),
+   totals:programs.reduce((sum,row)=>({inscriptions:sum.inscriptions+row.inscriptions,marketing:sum.marketing+row.marketing}),{inscriptions:0,marketing:0}),programs,
+   definition:'Si contano le tessere attive, incluse quelle di programmi sospesi. Una persona iscritta a due programmi conta due volte. Le iscrizioni eliminate sono escluse; il consenso marketing non prova un invio né un aggiornamento Wallet.'};
+ }
  function service(user,clientId,id){
   const c=scope(user,clientId),selected=c.visible.find(row=>row.id===id);
   if(!selected)throw new AppError('Servizio non disponibile per questa attività.',403);
@@ -33,8 +43,8 @@ export function createClientArea({store:s,records,businessProfile=null,clock=()=
   if(id==='email-marketing')reports.splice(0,reports.length,{id:'email-campaigns',nome:'Risultati delle campagne',metriche:['Email inviate','Aperture','Clic'].map(nome=>({nome,valore:null,fonte:'Fornitore Email marketing da collegare',aggiornato:null,url:null,stato:'Da collegare'}))});
   // Fidelity is a separate purchased product, never a synonym for email or Growth.
   if(id==='fidelity'){
-   const counts=s.one("SELECT COUNT(*) n,COALESCE(SUM(marketing_consent),0) opted FROM fi_members WHERE tenant_id=? AND status='active'",clientId);
-   reports.push({id:'fidelity',nome:'Iscritti Fidelity',metriche:[['Iscritti attivi',counts.n],['Con consenso marketing',counts.opted]].map(([nome,valore])=>({nome,valore,fonte:'Archivio Fidelity della tua attività',aggiornato:clock().toISOString(),url:null,stato:c.demo?'DEMO':'Registrato',nota:'Conteggio corrente alla data di lettura, non un dato del Wallet.'}))});
+   const source=fidelitySource(user,clientId),counts=source.totals;
+   reports.push({id:'fidelity',nome:'Iscritti Fidelity',metriche:[['Iscrizioni attive',counts.inscriptions],['Con consenso marketing',counts.marketing]].map(([nome,valore])=>({nome,valore,fonte:'Archivio Fidelity della tua attività',aggiornato:source.readAt,url:null,sourceAction:'fidelity',stato:c.demo?'DEMO':'Registrato',nota:'Conteggio delle tessere attive alla data di lettura, non delle persone uniche né del Wallet.'}))});
   }
   let google=null;
   if(['local','presence','multisite'].includes(id)&&businessProfile){
@@ -61,9 +71,10 @@ export function createClientArea({store:s,records,businessProfile=null,clock=()=
   if(path==='/profiles')return {data:profiles(user,clientId)};
   if(path==='/dashboard')return {data:dashboard(user,clientId)};
   if(path==='/results'&&clientResults){scope(user,clientId);return {data:clientResults.published(user,clientId)};}
+  if(path==='/services/fidelity/source')return {data:fidelitySource(user,clientId)};
   const match=path.match(/^\/services\/([a-z-]+)$/);
   if(match)return {data:service(user,clientId,match[1])};
   return null;
  }
- return {dashboard,service,profiles,handle};
+ return {dashboard,service,profiles,fidelitySource,handle};
 }

@@ -1,4 +1,5 @@
 import test from 'node:test';
+import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {createApp} from '../server.js';
 import {createClientArea} from '../src/cliente/area.js';
@@ -104,7 +105,7 @@ test('vista cliente: Fidelity espone conteggi attivi con fonte/data, mai anagraf
   const read=()=>area.service(client,'demo-bottega','fidelity'),r=read();
   assert.equal(r.reports.length,1);
   const metrics=r.reports[0].metriche;
-  assert.deepEqual(metrics.map(row=>[row.nome,row.valore]),[['Iscritti attivi',1],['Con consenso marketing',1]]);
+  assert.deepEqual(metrics.map(row=>[row.nome,row.valore]),[['Iscrizioni attive',1],['Con consenso marketing',1]]);
   assert.ok(metrics.every(row=>row.fonte==='Archivio Fidelity della tua attività'&&row.aggiornato===clock().toISOString()&&row.stato==='DEMO'));
   assert.deepEqual(area.service(owner,'demo-bottega','fidelity'),r);
   for(const text of ['FIDELITY_PRIVATE_NAME','private-fixture@test.example','PRIVATE_PHONE_MARKER','public_token','apple_auth_token','fi-demo-bigant-member'])assert.ok(!JSON.stringify(r).includes(text),text);
@@ -146,4 +147,27 @@ test('vista cliente: consultazione senza scritture o provider e nessun metodo di
   // The actual server factory's injected GBP implementation only reads cached state.
   assert.equal(app.cliente.service(client,'demo-bottega','local').google,null);
   assert.equal(s.one('SELECT total_changes() n').n,before);
+});
+
+test('fonte Fidelity: totale riconciliabile per programma, sospesi inclusi ed eliminati esclusi',t=>{
+ const {s,area,client,owner}=fixture(t),cid='demo-bottega';
+ const p=s.one('SELECT * FROM fi_programs WHERE tenant_id=? LIMIT 1',cid),m=s.one('SELECT * FROM fi_members WHERE tenant_id=? LIMIT 1',cid);
+ const insert=(table,row)=>s.run(`INSERT INTO ${table} (${Object.keys(row).join(',')}) VALUES(${Object.keys(row).map(()=>'?').join(',')})`,...Object.values(row));
+ insert('fi_programs',{...p,id:'source-second',name:'Altro programma inventato',active:0});
+ insert('fi_members',{...m,id:'source-second-card',program_id:'source-second',name:'SECRET_NAME',email:m.email,phone:'SECRET_PHONE',public_token:'SECRET_PUBLIC_TOKEN',apple_auth_token:'SECRET_APPLE',marketing_consent:0});
+ const source=area.fidelitySource(client,cid);assert.deepEqual(source,area.fidelitySource(owner,cid));assert.deepEqual(source.totals,{inscriptions:2,marketing:1});assert.equal(source.programs.find(row=>row.name==='Altro programma inventato').active,false);assert.equal(source.programs.reduce((n,p)=>n+p.inscriptions,0),source.totals.inscriptions);assert.match(source.definition,/due programmi conta due volte/);assert.doesNotMatch(JSON.stringify(source),/SECRET_|fi-demo-bigant|public_token|program_id|email|phone/);
+ assert.deepEqual(area.service(client,cid,'fidelity').reports[0].metriche.map(row=>row.valore),[2,1]);assert.ok(area.service(client,cid,'fidelity').reports[0].metriche.every(row=>row.sourceAction==='fidelity'));
+ s.run("UPDATE fi_members SET status='deleted' WHERE id='source-second-card'");assert.equal(area.fidelitySource(client,cid).totals.inscriptions,1);
+ s.run('DELETE FROM os_sessions');assert.throws(()=>area.fidelitySource({...client,session_id:'revoked'},cid),e=>e.status===401);
+ s.run("UPDATE os_clients SET services_json='[]' WHERE id=?",cid);fails(()=>area.fidelitySource(client,cid),403);
+});
+
+test('fonte Fidelity HTTP: solo cliente proprietario e socio; nessuna scrittura o contatto esterno',async t=>{
+ const {app,s,client,owner,team,other}=fixture(t),cid='demo-bottega',handler=app.server.listeners('request')[0];
+ for(const user of [client,owner,team,other])s.run('INSERT INTO os_sessions VALUES(?,?,?,?)',createHash('sha256').update(user.id).digest('hex'),user.id,'csrf',Date.now()+3600000);
+ async function request(user,method='GET',query=cid){const req={method,url:'/api/cliente/services/fidelity/source?clientId='+query,headers:{host:'127.0.0.1:4330',origin:'http://127.0.0.1:4330','x-csrf-token':'csrf',cookie:user?'bigant_os='+user.id:''},socket:{remoteAddress:'127.0.0.1'},async *[Symbol.asyncIterator](){}};const res={setHeader(){},writeHead(n){this.status=n;},end(x){this.data=JSON.parse(String(x));}};await handler(req,res);return res;}
+ const before=s.one('SELECT total_changes() n').n;
+ for(const user of [client,owner]){const r=await request(user);assert.equal(r.status,200);assert.equal(r.data.clientId,cid);for(const method of ['POST','PATCH','DELETE'])assert.equal((await request(user,method)).status,405);}
+ assert.equal((await request(null)).status,401);for(const user of [team,other])assert.equal((await request(user)).status,403);assert.equal((await request(client,'GET','demo-bigant')).status,403);assert.equal(s.one('SELECT total_changes() n').n,before);
+ s.run("UPDATE os_users SET active=0 WHERE id='demo-client'");assert.equal((await request(client)).status,401);
 });

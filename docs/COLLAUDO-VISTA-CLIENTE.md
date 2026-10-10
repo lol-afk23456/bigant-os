@@ -40,3 +40,13 @@ Matrice aggiornata a **68 implementate in locale, 16 parziali, 8 da fare**. Ques
 FUN-036 resta parziale: contenitore corretto, report di tutte le fonti ancora incompleti. FUN-040 resta parziale: Email marketing autonomo e gestione contatti assenti. FUN-044 resta parziale: Fidelity mostra archivio e data ma non un collegamento alla fonte originale. FUN-035 resta in attesa del completamento della vista amministrativa dei risultati. Servizi Ads non ancora distinti in prodotti autonomi Google/Meta, dati e collegamenti reali ancora da verificare.
 
 Nessuna nuova dipendenza, spesa applicativa, lettura di clienti reali, collegamento di account, push o deploy. T1–T10 non avviate. Il lavoro successivo continua dalle voci aperte della matrice.
+
+## 10 ottobre — Fonte dei conteggi Fidelity (FUN-044)
+
+Il report Fidelity consente ora di aprire la sua fonte interna. La lettura mostra conteggi per programma e totale, data della consultazione e criterio del calcolo; usa la medesima proiezione sia per il cliente sia nell’anteprima del socio. «Iscrizioni attive» conta tessere, non persone uniche: due programmi della stessa attività possono avere la stessa persona. Programmi sospesi inclusi, tessere eliminate escluse; nessun contatto, token o dato di altre attività esposto.
+
+La nuova API di sola lettura `/api/cliente/services/fidelity/source` rilegge ruolo, sessione, attività e acquisto Fidelity. Cliente altrui, collaboratore, sessione revocata e servizio rimosso sono respinti. Il dettaglio non chiama fornitori e non scrive dati. In interfaccia le risposte tardive non riaprono finestre né cambiano cliente. Quattro prove aggiunte per riconciliazione, riservatezza, HTTP e interfaccia.
+
+Browser con login cliente DEMO: I tuoi servizi → Fidelity → Apri la fonte, totale riconciliato con i programmi. Desktop e 390 px, documento 390 px e finestra 356 px, zero errori console. Immagini nella cache `riordino-browser/fonte-fidelity-desktop.png` e `fonte-fidelity-mobile.png`. È una consultazione dell’archivio OS; non un collegamento alla vecchia app Fidelity né una prova del Wallet. Le fonti esterne mancanti lasciano FUN-044 parziale.
+
+Verifica del blocco: **818/818** test, zero saltati; controllo progetto **5/5**. Dopo la sola correzione della tabella mobile: 11/11 prove UI pertinenti e browser confermano larghezza visibile/contenuto 314/314 px. Log `.cache/fidelity-source-full-suite.log`, `fidelity-source-ui-final.log` e `fidelity-source-check.log`.

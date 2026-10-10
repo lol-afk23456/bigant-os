@@ -50,7 +50,7 @@ function clientServicesView(){
 }
 function clientSource(row){
  let url=null;try{const u=new URL(row.url);if(u.protocol==='https:'&&!u.username&&!u.password)url=u.href;}catch{}
- return `<small>Fonte: ${e(row.fonte)} · ${row.aggiornato?`Aggiornato ${e(date(row.aggiornato,!row.dateOnly))}`:'Aggiornamento non disponibile'}${url?` · <a href="${e(url)}" target="_blank" rel="noopener noreferrer">Apri la fonte</a>`:''}</small>`;
+ return `<small>Fonte: ${e(row.fonte)} · ${row.aggiornato?`Aggiornato ${e(date(row.aggiornato,!row.dateOnly))}`:'Aggiornamento non disponibile'}${row.sourceAction==='fidelity'&&S.module?.service?.id==='fidelity'&&S.module.clientId===S.clientId?` · ${btn('Apri la fonte','client-fidelity-source','','small ghost')}`:url?` · <a href="${e(url)}" target="_blank" rel="noopener noreferrer">Apri la fonte</a>`:''}</small>`;
 }
 function clientMetricRows(rows){return `<div class="kpi-list">${rows.map(row=>`<div class="kpi-row"><div><b>${e(row.nome)}</b>${clientSource(row)}${row.nota?`<small>${e(row.nota)}</small>`:''}</div><div class="kpi-val">${row.valore===null||row.valore===undefined?'<span class="muted">—</span>':e(row.valore)}${badge(row.stato)}</div></div>`).join('')}</div>`;}
 let clientReportExpiryTimer=null;
@@ -101,3 +101,14 @@ function clienteDashboardView(){
   ...(d.sezioni?.some(row=>row.id==='results')?[{name:'I tuoi risultati',value:'Apri',note:'Obiettivi e lavoro svolto',route:'client:results',icon:'chart'}]:[])
  ]);
 }
+
+
+ACTIONS['client-fidelity-source']=async()=>{
+ if(!['owner','client'].includes(role())||!S.clientId||S.module?.clientId!==S.clientId||S.module?.service?.id!=='fidelity')throw Error('Apri il servizio Fidelity della tua attività.');
+ const snapshot=viewSnapshot(),data=S.module,clientId=S.clientId,token=crypto.randomUUID();
+ dialog('Origine dei conteggi Fidelity',`<p data-fidelity-source="${token}">Leggo i conteggi dell’attività…</p>`);
+ const current=()=>isCurrentView(snapshot)&&S.module===data&&$('#dialog').open&&$('#dialog-content').innerHTML.includes(`data-fidelity-source="${token}"`);
+ try{const source=await api('/api/cliente/services/fidelity/source?clientId='+encodeURIComponent(clientId),{scoped:false});if(!current())return;if(source.clientId!==clientId)throw Error('La fonte non corrisponde all’attività selezionata.');
+  dialog('Origine dei conteggi Fidelity',`<p><strong>${e(source.clientName)}</strong> · ${e(source.source)}</p><p>Letto il ${e(date(source.readAt,true))}. I conteggi vengono riletti all’apertura e possono essere più recenti del report.</p>`+notice(source.definition)+'<div class="fidelity-source-table">'+table(['Programma','Iscrizioni attive','Con consenso marketing'],[...source.programs.map(row=>[e(row.name)+(row.active?'':' · Sospeso'),e(row.inscriptions),e(row.marketing)]),['<strong>Totale</strong>',e(source.totals.inscriptions),e(source.totals.marketing)]])+`</div><p class="muted">Questa vista mostra solo conteggi. Non include nominativi, contatti o dati di altre attività.</p>`);
+ }catch(error){if(current())dialog('Origine dei conteggi Fidelity',notice(error.message,true));}
+};

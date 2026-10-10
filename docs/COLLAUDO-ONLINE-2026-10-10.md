@@ -57,3 +57,7 @@ Verifiche: **791/791 test**, zero saltati, controllo progetto **5/5**. Le 19 pro
 - Vista Growth a 390 px: larghezza documento 390 px. Immagine `riordino-browser/bigant-growth-online-390.png` nella cache ignorata.
 
 Restano da autorizzare e collaudare fornitori AI, ricerca, Gmail e Calendar. Il budget disponibile mostrato da Growth è **0 €**: va verificato nel controllo costi prima di qualsiasi prova a pagamento. Questo rilascio non attiva alcun fornitore e non certifica il percorso esterno di acquisizione clienti.
+
+## 19:37 — Originali: prerequisito per DAT-003
+
+Consultati in sola lettura gli indirizzi già documentati delle due app originali. Fidelity reindirizza alla pagina `/login`; BigAnt Growth mostra «GROWTH · ACCESSO TITOLARI». Nella sessione del browser non sono disponibili accessi autenticati separati. Nessun conteggio è stato ricavato o assunto pari a zero; nessuna password tentata, nessun dato copiato e nessuna modifica alle originali. DAT-003 resta aperto fino alla consultazione autorizzata dei conteggi. La sessione socio BigAnt OS non equivale all’accesso a queste due app.

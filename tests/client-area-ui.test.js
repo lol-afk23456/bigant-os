@@ -5,7 +5,7 @@ import {readFileSync} from 'node:fs';
 import {randomUUID} from 'node:crypto';
 
 async function fixture(){
- const nodes=new Map(),timers=[];const node=selector=>{if(!nodes.has(selector))nodes.set(selector,{innerHTML:'',open:false,addEventListener(){},focus(){},close(){this.open=false;}});return nodes.get(selector);};
+ const nodes=new Map(),timers=[];const node=selector=>{if(!nodes.has(selector))nodes.set(selector,{innerHTML:'',open:false,addEventListener(){},focus(){},showModal(){this.open=true;},close(){this.open=false;}});return nodes.get(selector);};
  const context=vm.createContext({URL,Date,Intl,crypto:{randomUUID},setInterval:()=>0,setTimeout:(fn,ms)=>{timers.push({fn,ms});return timers.length;},clearTimeout(){},window:{},history:{replaceState(){}},location:{origin:'http://127.0.0.1:4330',pathname:'/',hash:'',search:''},document:{querySelector:node,addEventListener(){},hidden:false},fetch:async()=>({ok:true,headers:{get:()=> 'application/json'},json:async()=>({user:null,demo:true,profiles:[]})})});
  for(const file of ['app.js','ufficio.js','cliente.js','workspace.js'])vm.runInContext(readFileSync(new URL('../public/'+file,import.meta.url),'utf8'),context,{filename:file});await new Promise(setImmediate);
  const run=code=>vm.runInContext(code,context),S=run('S');S.session={user:{id:'client-fixture',role:'client',name:'Cliente DEMO'},demo:true,csrf:'fixture'};S.view='client';S.section='';S.clientId='demo-bottega';S.loading=1;S.navigation=1;
@@ -73,4 +73,13 @@ test('UI profili cliente: menu e anteprima caricano la medesima API senza config
  const f=await fixture(),seen=[];f.S.overview.navigation.items.push(['profiles','I tuoi profili']);f.context.fakeApi=async path=>{seen.push(path);return path==='/api/overview'?f.S.overview:{clientId:f.S.clientId,items:[]};};
  f.run('api=fakeApi;render=()=>{};');f.S.view='profiles';await f.run('load()');assert.ok(seen.includes('/api/cliente/profiles'));assert.ok(!seen.includes('/api/workspace/profiles'));
  seen.length=0;f.S.session.user.role='owner';f.S.view='client';f.S.section='profiles/website';await f.run('load()');assert.ok(seen.includes('/api/cliente/profiles'));assert.ok(!seen.includes('/api/workspace/profiles'));
+});
+
+test('UI fonte Fidelity: dettaglio leggibile e limitato al servizio, HTML non eseguibile',async()=>{
+ const f=await fixture();f.S.section='service/fidelity';f.S.module={clientId:f.S.clientId,service:{id:'fidelity',nome:'Fidelity'},reports:[{nome:'Iscrizioni Fidelity',metriche:[{nome:'Iscrizioni attive',valore:1,fonte:'Fidelity',sourceAction:'fidelity'}]}]};assert.match(f.run('clientServiceReportView()'),/data-action="client-fidelity-source"/);
+ f.context.sourceApi=async(path,options)=>{assert.equal(path,'/api/cliente/services/fidelity/source?clientId=demo-bottega');assert.equal(options.scoped,false);return {clientId:f.S.clientId,clientName:'Attività <test>',source:'Archivio Fidelity',readAt:'2026-10-10T10:00:00Z',definition:'Tessere attive',totals:{inscriptions:1,marketing:0},programs:[{name:'Carta <script>',active:false,inscriptions:1,marketing:0}]};};f.run('api=sourceApi');await f.run("ACTIONS['client-fidelity-source']()");const html=f.node('#dialog-content').innerHTML;assert.match(html,/Carta &lt;script&gt; · Sospeso/);assert.match(html,/Totale/);assert.match(html,/Letto il/);assert.doesNotMatch(html,/<script>|undefined|NaN/);
+ f.S.module.service.id='social';assert.doesNotMatch(f.run('clientServiceReportView()'),/data-action="client-fidelity-source"/);await assert.rejects(f.run("ACTIONS['client-fidelity-source']()"),/Apri il servizio/);
+});
+test('UI fonte Fidelity: risposte obsolete non riaprono il dettaglio né cambiano cliente',async()=>{
+ for(const change of ['client','session','dialog','module']){const f=await fixture();f.S.module={clientId:f.S.clientId,service:{id:'fidelity'}};let finish;f.context.pendingApi=()=>new Promise(resolve=>finish=resolve);f.run('api=pendingApi');const task=f.run("ACTIONS['client-fidelity-source']()");if(change==='client')f.S.clientId='demo-studio';if(change==='session')f.S.session={...f.S.session};if(change==='dialog')f.node('#dialog').close();if(change==='module')f.S.module={...f.S.module};f.node('#dialog-content').innerHTML='Vista nuova';finish({clientId:'demo-bottega'});await task;assert.equal(f.node('#dialog-content').innerHTML,'Vista nuova');}
 });
