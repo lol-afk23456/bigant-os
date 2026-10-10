@@ -993,7 +993,7 @@
   ],
   "rilascio": {
     "data": "2026-10-10",
-    "commit": "699bfdc",
+    "commit": "737876c",
     "stato": "Railway SUCCESS; verifica pubblica online superata",
     "prove": "docs/RILASCIO-2026-10-10.md",
     "limite": "Gli stati delle voci misurano ancora il collaudo locale; collaudo autenticato online e integrazioni restano distinti."

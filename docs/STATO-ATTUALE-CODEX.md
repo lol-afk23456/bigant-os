@@ -3,18 +3,19 @@
 Aggiornato il 10 ottobre 2026. Questo file riassume lo stato; non sostituisce le decisioni del proprietario o la mappatura principale.
 
 - Repository: `~/Documents/BigAnt-OS-Codex`, ramo `bigant-os-notte-1`.
-- **Codice online:** `699bfdc`, Railway BigAnt OS / bigant-os-server / production; deployment `59abf388-93d6-4905-8be1-5a3923ea2644` SUCCESS. Documentazione successiva sullo stesso ramo.
-- Backup Railway prima del rilascio: 10 ottobre, 16:28, 800 MB referenziati, confermato dall’API ufficiale. Copia giornaliera applicativa inclusa; prima esecuzione da verificare. Nessuna pianificazione aggiuntiva Railway impostata.
-- Ultime prove del codice: **755 prove verificate** (754/755 nella suite, aspettativa del catalogo corretta e relativo file 4/4), controllo progetto **5/5**. Health online OK, cinque file corrispondenti, tre API anonime 401; login aggiornato e console senza errori. Non rifare queste prove se il codice non cambia.
-- Ultimo sviluppo: Email marketing autonomo, contatti con prova del consenso, revoca e nuovo consenso, storico immutabile e servizio acquistato; invii da collegare. Prima tranche: Risultati dei clienti e report mensili.
+- **Codice online:** `737876c`, Railway BigAnt OS / bigant-os-server / production; deployment `30750f9e-5ce0-4974-93b4-6709a299c0c4` SUCCESS. Documentazione successiva sullo stesso ramo.
+- Backup Railway prima del rilascio: 10 ottobre, 16:44, 799 MB referenziati, confermato dall’API ufficiale. Copia giornaliera applicativa inclusa; prima esecuzione da verificare. Nessuna pianificazione aggiuntiva Railway impostata.
+- Ultime prove del codice: **759 prove verificate** (757/759 nella suite; due fixture aggiornate per il nuovo percorso, file interessati 34/34), controllo progetto **5/5**. Health online OK, tre file aggiornati corrispondenti e due API Profili anonime 401. Browser locale per ruolo, dodici voci socio e quattro cliente a 390 px senza overflow; nuovo percorso senza errori console. Non rifare queste prove se il codice non cambia.
+- Ultimo sviluppo: Profili cliente raggiungibili, proiezione comune alla sua anteprima senza modifiche, risultati nei servizi; titolo Accessi. FUN-054 ha ora un ordine scritto dal brief. Restano online Email marketing e Risultati dei clienti.
 - Matrice92: **72 implementate localmente, 14 parziali, 6 da fare**. Rilascio del codice e collaudo funzionale autenticato sono distinti. L’intero obiettivo resta aperto.
 
 ## Prossimo lavoro utile
 
 1. FUN-040 completata, verificata e online. Vedi COLLAUDO-EMAIL-MARKETING.md. Nessun invio collegato. Non ripetere il collaudo già concluso.
-2. FUN-054 completata: ORDINE-CONFIGURAZIONE-AGENTI.md. Sequenza scritta dal brief, nessuna attivazione e T4 ancora aperta. Nuovo percorso Profili cliente verificato, rilascio in preparazione.
-3. Completare il giro dei ruoli e delle pagine; fonti automatiche mancanti, collaudi Fidelity/Growth e account reali restano distinti. I contatti esterni richiedono i prerequisiti già concordati.
-4. T0 in corso; T1–T10 seguono il riordino, con stato in [TASK-AVANZAMENTO](TASK-AVANZAMENTO.md). Non dichiararle completate per il solo numero di test.
+2. FUN-054 completata: ORDINE-CONFIGURAZIONE-AGENTI.md. Sequenza scritta dal brief, nessuna attivazione e T4 ancora aperta. Nuovo percorso Profili cliente verificato e online.
+3. Prossimo controllo mirato: FUN-007, destinazione dei dieci moduli (tabella in MAPPATURA-MIGLIORIE §2), e sottopagine residue PRINC-01. Le schermate principali per ruolo sono già verificate: COLLAUDO-NAVIGAZIONE-RUOLI.md. Non rifare il giro delle dodici voci o il registro Profili.
+4. I collaudi autenticati sul server richiedono la sessione del socio e gli accessi nominali ancora da predisporre con password scelte dai titolari. Non leggere variabili/credenziali. Fonti reali, Fidelity/Growth e telefoni Wallet restano distinti; Apple esclusa.
+5. T0 in corso; T1–T10 seguono il riordino, con stato in [TASK-AVANZAMENTO](TASK-AVANZAMENTO.md). Non dichiararle completate per il solo numero di test.
 
 ## Autorizzazioni e accessi
 

@@ -2,6 +2,8 @@
 
 ## Stato corrente — riordino Codex, 10 ottobre 2026
 
+**Ultimo rilascio `737876c`:** Profili cliente raggiungibili da menu/home, anteprima in sola lettura, fonte/data e report nei servizi. Ordine degli agenti scritto (FUN-054). Backup 16:44, Railway SUCCESS e verifica pubblica 16:46. Matrice **72 locali, 14 parziali, 6 da fare**. [Prove](COLLAUDO-NAVIGAZIONE-RUOLI.md).
+
 Email marketing (FUN-040) pubblicato su Railway, codice `699bfdc`, deployment SUCCESS e verifica pubblica alle 16:31 dopo il backup delle 16:28: contatti e consensi nel proprio servizio, 16 prove specifiche e browser. Matrice corrente **71 locali, 14 parziali, 7 da fare**. [Collaudo](COLLAUDO-EMAIL-MARKETING.md).
 
 **Aggiornamento online:** il codice verificato `52a4399` è stato pubblicato su GitHub e sul servizio Railway BigAnt OS. Backup preliminare completato alle 16:01; rilascio SUCCESS, health e cinque file verificati online alle 16:06. **739/739 test** prima del rilascio. Collegamenti esterni ancora disattivati; collaudo autenticato online e prima copia applicativa da verificare. [Prove e limiti del rilascio](RILASCIO-2026-10-10.md). Le indicazioni «nessun rilascio» nei cicli sotto sono storiche.

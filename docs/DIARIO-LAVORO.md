@@ -324,4 +324,4 @@ Registro contatti/consensi dentro il servizio acquistato, isolamento server, sto
 
 ## 10 ottobre — Ordine agenti e navigazione per ruolo
 
-Completato il criterio scritto FUN-054. Nel giro browser individuato e corretto il percorso mancante I tuoi profili del cliente: proiezione pubblica comune all’anteprima, nessuna modifica, report nei servizi. Aggiunta testata Accessi. [Prove e limiti](COLLAUDO-NAVIGAZIONE-RUOLI.md); matrice 72 locali, 14 parziali, 6 da fare. Nessuna attivazione o dato reale. Rilascio in preparazione.
+Completato il criterio scritto FUN-054. Nel giro browser individuato e corretto il percorso mancante I tuoi profili del cliente: proiezione pubblica comune all’anteprima, nessuna modifica, report nei servizi. Aggiunta testata Accessi. [Prove e limiti](COLLAUDO-NAVIGAZIONE-RUOLI.md); matrice 72 locali, 14 parziali, 6 da fare. Nessuna attivazione o dato reale. Pubblicato `737876c` dopo backup 16:44; Railway SUCCESS e verifica pubblica 16:46.
