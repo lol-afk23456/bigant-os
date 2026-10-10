@@ -650,7 +650,8 @@
       "criterio": "Una bozza di un agente si approva da Sciame → Da approvare; il collaboratore vede quella scheda e nient'altro dello sciame (verifica sul server)",
       "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare."
+        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare.",
+        "COLLAUDO-AGENTE-SOCIAL: primo percorso S01 manuale, autorizzazione distinta, anteprima/consenso, bozze con provenienza e approvazione umana; 703/703 test, controllo 5/5 e Browser desktop/mobile con fornitore simulato. Pianificazioni, altri percorsi e attivazioni reali ancora aperti."
       ]
     },
     {
@@ -762,7 +763,8 @@
       "stato": "parziale in locale",
       "prove": [
         "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo.",
-        "10 ottobre: prova tecnica individuale Anthropic/OpenAI, consenso esplicito, schema, storico immutabile, invalidazione per istruzioni/chiavi/revoca, budget condiviso; 18 nuove prove, suite 687/687. Browser desktop/mobile. SOP-COLLAUDO-AGENTE e COLLAUDO-AGENTI-AI. Nessuna attivazione reale: stato ancora parziale."
+        "10 ottobre: prova tecnica individuale Anthropic/OpenAI, consenso esplicito, schema, storico immutabile, invalidazione per istruzioni/chiavi/revoca, budget condiviso; 18 nuove prove, suite 687/687. Browser desktop/mobile. SOP-COLLAUDO-AGENTE e COLLAUDO-AGENTI-AI. Nessuna attivazione reale: stato ancora parziale.",
+        "COLLAUDO-AGENTE-SOCIAL: primo percorso S01 manuale, autorizzazione distinta, anteprima/consenso, bozze con provenienza e approvazione umana; 703/703 test, controllo 5/5 e Browser desktop/mobile con fornitore simulato. Pianificazioni, altri percorsi e attivazioni reali ancora aperti."
       ]
     },
     {
@@ -790,7 +792,8 @@
       "criterio": "Nessun pannello di automatismi; nessun agente parte da solo se non è Attivo e autorizzato",
       "stato": "parziale in locale",
       "prove": [
-        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo."
+        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo.",
+        "COLLAUDO-AGENTE-SOCIAL: primo percorso S01 manuale, autorizzazione distinta, anteprima/consenso, bozze con provenienza e approvazione umana; 703/703 test, controllo 5/5 e Browser desktop/mobile con fornitore simulato. Pianificazioni, altri percorsi e attivazioni reali ancora aperti."
       ]
     },
     {

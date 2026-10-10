@@ -18,14 +18,14 @@ function diretta(d){
  return `<span class="desk-live" aria-live="polite"><small><b class="live-dot"></b>${e(FASI[d.fase]||d.fase)} · da ${e(durata(d.inizio))}${d.cliente?' · '+e(clientName(d.cliente)):''}</small>${t?`<span class="desk-stream">${e(t.slice(-260))}<i class="caret" aria-hidden="true"></i></span>`:''}</span>`;
 }
 function scrivania(a){
- const u=a.ultimoOutput,apri=a.diretta?.passoId||u?.passoId||'';
- return `<button class="desk desk-${e(a.stato)}" data-action="ufficio-postazione" data-id="${e(apri)}" aria-label="${e(a.nome)}: ${e(STATI_UFFICIO[a.stato])}" ${apri?'':'data-vuota="1"'}>
+ const u=a.ultimoOutput,apri=a.diretta?.passoId||u?.passoId||u?.jobId||'';
+ return `<button class="desk desk-${e(a.stato)}" data-action="${u?.jobId?'agent-work-office':'ufficio-postazione'}" data-id="${e(apri)}" aria-label="${e(a.nome)}: ${e(STATI_UFFICIO[a.stato])}" ${apri?'':'data-vuota="1"'}>
   <span class="desk-top"><span class="desk-avatar" aria-hidden="true">${e(iniziali(a.nome))}</span><span class="desk-name"><b>${e(a.nome)}</b><small>${a.sciame?'Motore AI':'Procedura locale'}</small></span></span>
   <span class="desk-state"><i aria-hidden="true"></i>${e(STATI_UFFICIO[a.stato]||a.stato)}</span>
   <span class="desk-task">${a.compito?e(a.compito):'<span class="muted">Nessun compito in corso</span>'}</span>
   ${a.diretta?diretta(a.diretta):''}
   <span class="desk-last">${u?`<b>Ultimo output</b> · ${e(fa(u.quando))}<br>${e(u.sintesi||u.titolo||'')}`:'<span class="muted">Ancora nessuna esecuzione registrata</span>'}</span>
-  <span class="desk-foot"><span>${u?e(u.motoreEtichetta):'—'}</span><span>${e(usd(a.costoMeseUsdMicro))} nel mese</span></span>
+  <span class="desk-foot"><span>${u?e(u.motoreEtichetta):'—'}</span><span>${a.costoMeseCents!==undefined?e(money(a.costoMeseCents))+(a.costoMeseUsdMicro?' + '+e(usd(a.costoMeseUsdMicro)):''):e(usd(a.costoMeseUsdMicro))} nel mese</span></span>
  </button>`;
 }
 function rigaFeed(f){
