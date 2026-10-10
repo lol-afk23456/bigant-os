@@ -13,7 +13,7 @@ Aggiornamento: 10 ottobre 2026. Valuta dei limiti: euro. Non contiene fatture, d
 
 | Voce | Importo noto | Evidenza | Trattamento |
 |---|---:|---|---|
-| Railway, piano esistente | 20,00 € dichiarati | Conferma del proprietario nel prompt; fatturazione non consultata | Impegno prudenziale di pianificazione, non ricevuta verificata e non intero consumo account misurato |
+| Railway, piano esistente | 20,00 € dichiarati; consumo periodo corrente 0,16214 USD | CLI ufficiale, 10 ottobre 2026: periodo 6 ottobre–6 novembre, stima 0,32616 USD, limite rigido 20 USD e avviso 15 USD già impostati | Valute distinte; dato del workspace, non costo complessivo di Codex/AI né ricevuta del piano. Nessun limite modificato |
 | Nuovi acquisti/API esterne attivati nei cicli T0 e conversazioni Gmail | 0,00 € | Nessun acquisto, attivazione o chiamata applicativa reale; prove con dati inventati | Zero nuove spese disposte da questi cicli |
 | Altri consumi AI/servizi già avvenuti nel mese | **Non verificati** | Nessuna fattura o contatore economico account consultato | Non assumere zero |
 | Uso Codex e subagenti nella sessione | **Costo monetario non disponibile** | Strumenti della sessione; nessun contatore in euro attribuibile al progetto | Non confondere assenza di nuove sottoscrizioni con consumo gratuito o illimitato |

@@ -10,7 +10,7 @@ L'istruzione finale «parti con T0» consente ora la selezione degli strumenti e
 
 - Il proprietario ha chiarito: **si può continuare a modificare la cartella del progetto già esistente**. Niente nuove cartelle o documenti sul Mac fuori dal progetto fino a T10; eventuali temporanei vanno rimossi dopo l'uso.
 - Autonomia su codice, documentazione, ricerche e prove locali. Subagenti autorizzati per ricerche e controlli indipendenti; i subagenti di Codex non sono gli agenti applicativi di BigAnt OS.
-- OK scritto prima di spese, rilascio sul server, inserimento di dati reali sul server, collegamento di account reali o cancellazioni. Nessun merge su main o force push.
+- OK scritto prima di spese, inserimento di dati reali sul server, collegamento di account reali o cancellazioni. Il rilascio finale è autorizzato dal messaggio del proprietario del 10 ottobre. Nessun merge su main o force push.
 - Budget complessivo 50 €/mese; stop e avviso all'80%, cioè 40 €. Railway entro il piano da 20 € già pagato, senza extra. Consumi effettivi da riconciliare: vedere [COSTI](COSTI.md).
 - Nessuna password in chat, documenti o log. Nessun dato reale di cliente nel repository, incluse cache e fixture. Accessi, password e archivi contabili esclusi dalla lettura salvo la sola T10, che comunque non autorizza la ricopia delle credenziali.
 - Dopo ogni intervento: prove pertinenti, suite e controllo progetto, diario e piccolo commit italiano. Distinguere sempre funzionamento locale, DEMO e collegamento reale.
