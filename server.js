@@ -13,6 +13,7 @@ import {createAgentWork} from './src/agent-work.js';
 import {createAgentTrials} from './src/agent-trials.js';
 import {createAgentConfig} from './src/agent-config.js';
 import {createClientRecords} from './src/client-records.js';
+import {createEmailMarketing} from './src/email-marketing.js';
 import {createClientResults} from './src/client-results.js';
 import {createWorkspace,navigationFor} from './src/workspace.js';
 import {createPlatformProgress} from './src/platform-progress.js';
@@ -73,7 +74,8 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   if(importaProveSciame)sciame.importaProve(resolve(root,'docs/demo-sciame'));
   const records=createClientRecords({store,production,env,clock});
   const clientResults=createClientResults({store,clock});
-  const cliente=createClientDashboard({store,records,businessProfile,clock,clientResults});
+  const emailMarketing=createEmailMarketing({store,clock});
+  const cliente=createClientDashboard({store,records,businessProfile,clock,clientResults,emailMarketing});
   const workspace=createWorkspace({store,clock,budget:()=>orchestrator.budget(),expiring:records.expiring,agentConfig,connections,businessProfile});
   const servicePlan=createServicePlan({store,agentConfig});
   const billing=createBilling({store,administration});
@@ -229,10 +231,10 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
           if(a.kind==='fidelity_campaign')return reply(res,await fidelity.handle({method:'POST',path:'/campaigns/'+a.entity_id+'/decision',body:{...b,version:a.version},user:u,clientId}));
           const decision=await production.handle({method:'POST',path:'/approvals/'+a.id,body:b,user:u,clientId});if(b.decision==='approved')orchestrator.event('content.approved',clientId,a.entity_id,a.version);return reply(res,decision);
         }
-        for(const [name,module]of Object.entries({growth,fidelity,administration,agents:orchestrator,production,agency,sciame,cliente,'client-record':records}))if(path.startsWith('/api/'+name+'/')){
+        for(const [name,module]of Object.entries({growth,fidelity,administration,agents:orchestrator,production,agency,sciame,cliente,'email-marketing':emailMarketing,'client-record':records}))if(path.startsWith('/api/'+name+'/')){
           if(['growth','administration','agents','sciame'].includes(name)||(['fidelity','agency','cliente'].includes(name)&&u.role==='collaborator'))requireOwner(u);
           if(name==='fidelity'&&u.role!=='owner'&&!JSON.parse(store.one('SELECT services_json FROM os_clients WHERE id=?',clientId).services_json).includes('fidelity'))throw new AppError('Servizio Fidelity non attivo.',403);
-          const relative=path.slice(('/api/'+name).length)+(name==='fidelity'?url.search:'');
+          const relative=path.slice(('/api/'+name).length)+(['fidelity','email-marketing'].includes(name)?url.search:'');
           if(name==='fidelity'&&method==='GET'&&/^\/programs\/[^/]+\/qr$/.test(relative.split('?')[0])){const programId=relative.split('/')[2];const program=store.one('SELECT id FROM fi_programs WHERE id=? AND tenant_id=? AND active=1',programId,clientId);if(!program)throw new AppError('Programma non disponibile.',404);const slug=store.one('SELECT slug FROM os_clients WHERE id=?',clientId).slug;return reply(res,{data:await QRCode.toBuffer(runtimeOrigin+'/fidelity/join/'+encodeURIComponent(slug)+'?program='+encodeURIComponent(programId),{type:'png',width:280,margin:2,errorCorrectionLevel:'M'}),contentType:'image/png'});}
           const result=await module.handle({method,path:relative,body:b,user:u,clientId});
           if(result&&method==='POST'&&name==='growth'&&relative==='/leads')orchestrator.event('lead.created',clientId,result.data.id);
@@ -262,7 +264,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const backups=realMode&&worker&&database!==':memory:'?createBackupScheduler({store,sourcePath:database,env,clock}):null;
   let workerError=null,workerRun=null;
   const timer=worker?setInterval(()=>{if(workerRun)return;workerRun=orchestrator.tick().then(()=>fidelity.runWalletJobs()).then(()=>businessProfile.tick()).then(()=>{workerError=null;}).catch(()=>{workerError='Controllo delle automazioni da verificare.';}).finally(()=>{workerRun=null;});},2000):null;timer?.unref();
-  return {server,store,clientResults,costControl,googleAuth,businessProfileAuth,businessProfile,billing,connections,servicePlan,agentConfig,agentTrials,agentWork,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(workerRun)await workerRun;await backups?.close();if(server.listening)await new Promise(r=>server.close(r));await businessProfile.close();await agentTrials.close();await agentWork.close();store.close();}};
+  return {server,store,clientResults,emailMarketing,costControl,googleAuth,businessProfileAuth,businessProfile,billing,connections,servicePlan,agentConfig,agentTrials,agentWork,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(workerRun)await workerRun;await backups?.close();if(server.listening)await new Promise(r=>server.close(r));await businessProfile.close();await agentTrials.close();await agentWork.close();store.close();}};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const modalitaReale=process.env.BIGANT_MODALITA==='reale';

@@ -2,6 +2,8 @@
 
 ## Stato corrente — riordino Codex, 10 ottobre 2026
 
+Email marketing (FUN-040) completato in locale e in preparazione per il rilascio: contatti e consensi nel proprio servizio, 16 prove specifiche e browser. Matrice corrente **71 locali, 14 parziali, 7 da fare**. [Collaudo](COLLAUDO-EMAIL-MARKETING.md).
+
 **Aggiornamento online:** il codice verificato `52a4399` è stato pubblicato su GitHub e sul servizio Railway BigAnt OS. Backup preliminare completato alle 16:01; rilascio SUCCESS, health e cinque file verificati online alle 16:06. **739/739 test** prima del rilascio. Collegamenti esterni ancora disattivati; collaudo autenticato online e prima copia applicativa da verificare. [Prove e limiti del rilascio](RILASCIO-2026-10-10.md). Le indicazioni «nessun rilascio» nei cicli sotto sono storiche.
 
 Nuovo incarico T0–T10 registrato in [TASK-AVANZAMENTO](TASK-AVANZAMENTO.md): T0 iniziata con selezione [strumenti](STRUMENTI.md), registro [costi](COSTI.md) e primo riordino del controllo date condiviso fra contratti e piano servizi. Nessuna dipendenza aggiunta; revisione indipendente, **284/284 test e check 5/5**. Le task successive seguono le fasi 0–7. Il proprietario ha confermato il lavoro nella cartella tecnica esistente; nessun elenco reale dei clienti trasferito qui. Totale mensile effettivo non verificato, stop richiesto a 40 euro. **Apple esclusa dai collegamenti reali di questa tranche**, per la nuova istruzione T6. Nessun account, spesa, push, deploy o inserimento reale.

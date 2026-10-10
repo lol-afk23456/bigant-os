@@ -27,8 +27,9 @@ export const services = [
   ['events','Gestione eventi','production','Programma, fornitori, responsabilità e rendiconto','Da attivare','Partner e calendario'],
   ['drone','Riprese con drone','production','Brief, piano riprese, autorizzazioni e montaggio','Da attivare','Operatore e strumenti video'],
   ['video-ai','Video AI','production','SOP master, brand, storyboard e log feedback','Da attivare','Runway e Artlist'],
+  ['email-marketing','Email marketing','account','Contatti, consensi e report; invii da collegare','Registro contatti disponibile','Fornitore email da scegliere'],
   ['creative-direction','Direzione creativa','production','Concept, coerenza visiva e revisione dei materiali','Da attivare','Figma, Canva e Adobe']
-].map(([id,name,department,deliverables,status,integration],index)=>({id,name,department,deliverables,status,integration,catalogue:index<19?index+1:null,sop:id==='local'?'docs/SOP-GOOGLE-BUSINESS.md':'docs/PLAYBOOK.md',data:['client_id','source','version','approval','cost'],activation:'SOP validata, responsabile, margine, fonte autorizzata e test sul pilota',implemented:['social','growth','fidelity','booking','audit'].includes(id)}));
+].map(([id,name,department,deliverables,status,integration],index)=>({id,name,department,deliverables,status,integration,catalogue:index<19?index+1:null,sop:id==='email-marketing'?'docs/SOP-EMAIL-MARKETING.md':id==='local'?'docs/SOP-GOOGLE-BUSINESS.md':'docs/PLAYBOOK.md',data:['client_id','source','version','approval','cost'],activation:'SOP validata, responsabile, margine, fonte autorizzata e test sul pilota',implemented:['social','growth','fidelity','booking','audit'].includes(id)}));
 export const departments=[
   {id:'direction',name:'Direzione e crescita',agents:['director'],trigger:'Venerdì · massimo tre priorità',visibility:'aggregates'},
   {id:'marketing',name:'Marketing BigAnt',agents:['marketing'],trigger:'Lunedì e obiettivo aggiornato',visibility:'internal'},

@@ -4,7 +4,7 @@ import {catalogoServizi} from '../servizi/catalogo.js';
 
 // The customer and owner preview share this explicit, read-only projection.
 // Internal task/content/agent work is never used to build a customer report.
-export function createClientArea({store:s,records,businessProfile=null,clock=()=>new Date(),clientResults=null}){
+export function createClientArea({store:s,records,businessProfile=null,clock=()=>new Date(),clientResults=null,emailMarketing=null}){
  function scope(user,clientId){
   const current=user?.id?s.one('SELECT * FROM os_users WHERE id=?',user.id):null;
   if(!current?.active||current.must_change_password||!['owner','client'].includes(current.role)||current.id==='os-orchestrator')throw new AppError('Area riservata al cliente e all’anteprima dei soci.',403);
@@ -29,7 +29,8 @@ export function createClientArea({store:s,records,businessProfile=null,clock=()=
  function service(user,clientId,id){
   const c=scope(user,clientId),selected=c.visible.find(row=>row.id===id);
   if(!selected)throw new AppError('Servizio non disponibile per questa attività.',403);
-  const reports=catalogoServizi.filter(row=>row.registro.includes(id)&&!['S14','S17'].includes(row.codice)).map(row=>({id:row.codice,nome:row.nome,metriche:row.kpi.map(nome=>({nome,valore:null,fonte:'Fonte del servizio da collegare',aggiornato:null,url:null,stato:'Da collegare'}))}));
+  const reports=catalogoServizi.filter(row=>row.registro.includes(id)&&row.codice!=='S17').map(row=>({id:row.codice,nome:row.nome,metriche:row.kpi.map(nome=>({nome,valore:null,fonte:'Fonte del servizio da collegare',aggiornato:null,url:null,stato:'Da collegare'}))}));
+  if(id==='email-marketing')reports.splice(0,reports.length,{id:'email-campaigns',nome:'Risultati delle campagne',metriche:['Email inviate','Aperture','Clic'].map(nome=>({nome,valore:null,fonte:'Fornitore Email marketing da collegare',aggiornato:null,url:null,stato:'Da collegare'}))});
   // Fidelity is a separate purchased product, never a synonym for email or Growth.
   if(id==='fidelity'){
    const counts=s.one("SELECT COUNT(*) n,COALESCE(SUM(marketing_consent),0) opted FROM fi_members WHERE tenant_id=? AND status='active'",clientId);
@@ -43,7 +44,7 @@ export function createClientArea({store:s,records,businessProfile=null,clock=()=
   }
   if(!reports.length)reports.push({id,nome:selected.name,metriche:[]});
   const publishedReports=clientId!=='demo-bigant'&&clientResults?clientResults.published(user,clientId).reports.map(row=>({...row,summary:'Voci verificate per questo servizio.',nextSteps:'',entries:row.entries.filter(entry=>entry.serviceId===id)})).filter(row=>row.entries.length):[];
-  return {demo:c.demo,clientId,clientName:c.client.name,service:serviceCard(selected),reports,google,publishedReports,
+  return {demo:c.demo,clientId,clientName:c.client.name,service:serviceCard(selected),reports,google,publishedReports,...(id==='email-marketing'&&emailMarketing?{emailMarketing:emailMarketing.state(user,clientId)}:{}),
    note:id==='fidelity'?'Gli iscritti appartengono soltanto a questa attività. Gli invii dipendono dalle autorizzazioni del prodotto.':'I valori mancanti restano da collegare. Bozze e calendario editoriale sono gestiti separatamente.'};
  }
  async function handle({method,path,user,clientId}){

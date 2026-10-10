@@ -73,7 +73,7 @@ function clientServiceReportView(){
  const google=d.google&&Date.parse(d.google.expiresAt)>Date.now()?d.google:null;
  if(google){const snapshot=viewSnapshot();clientReportExpiryTimer=setTimeout(()=>{if(isCurrentView(snapshot)&&S.module===d){render();load();}},Math.max(1,Date.parse(google.expiresAt)-Date.now()+1));}
  const reports=d.reports||[];
- return clientAreaHeader()+back+`<h2>${e(d.service.nome)}</h2>`+notice(d.note)+(d.publishedReports||[]).map(row=>`<details class="section"><summary>${e(row.period)} · Report verificato</summary>${resultsBody(row,false)}</details>`).join('')+(google?clientGoogleReport(google):'')+reports.map(row=>panel(row.nome,row.metriche.length?clientMetricRows(row.metriche):empty('Report non ancora disponibile','Le misure verranno mostrate qui con fonte e data.'))).join('');
+ return clientAreaHeader()+back+`<h2>${e(d.service.nome)}</h2>`+notice(d.note)+(d.publishedReports||[]).map(row=>`<details class="section"><summary>${e(row.period)} · Report verificato</summary>${resultsBody(row,false)}</details>`).join('')+(google?clientGoogleReport(google):'')+(d.emailMarketing?emailContactsPanel(d.emailMarketing):'')+reports.map(row=>panel(row.nome,row.metriche.length?clientMetricRows(row.metriche):empty('Report non ancora disponibile','Le misure verranno mostrate qui con fonte e data.'))).join('');
 }
 function clienteDashboardView(){
  const d=S.module||{};

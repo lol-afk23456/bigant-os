@@ -317,3 +317,7 @@ Riepilogo comune dei soci e report mensili con obiettivi, lavori, misure e fonti
 ## 10 ottobre 2026 — Pubblicazione autorizzata
 
 Tutte le modifiche applicative collaudate sono online: GitHub `bigant-os-notte-1`, versione `52a4399`; Railway deployment `9f16e529-2049-44d3-94fa-99f2a8f52f9b` SUCCESS. Backup preliminare del volume completato alle 16:01. Health OK, cinque file identici e tre API protette con risposta anonima 401. Browser: login aggiornato senza errori console. Collegamenti esterni disattivati; nessuna variabile modificata, dato cliente copiato o nuova credenziale creata. Prima copia applicativa e collaudo autenticato online ancora da verificare. [Registro di rilascio](RILASCIO-2026-10-10.md). Il rilascio non completa le voci residue né T0–T10.
+
+## 10 ottobre — Email marketing autonomo (FUN-040)
+
+Registro contatti/consensi dentro il servizio acquistato, isolamento server, storico immutabile e anteprima in sola lettura. 16 nuove prove e giro browser mirato; dettaglio in [COLLAUDO-EMAIL-MARKETING](COLLAUDO-EMAIL-MARKETING.md). Matrice: 71 locali, 14 parziali, 7 da fare. Nessun provider, invio, dato cliente o dipendenza aggiunta. Pubblicazione autorizzata in preparazione dopo backup manuale.

@@ -19,7 +19,8 @@ test('R-011: il catalogo S01–S19 nasce dalle schede del playbook con flusso, a
   for(const id of s.registro)assert.ok(services.some(x=>x.id===id),`${s.codice}: servizio ${id} non nel registro`);
   for(const id of s.agenti)assert.ok(agentDefinitions.some(x=>x.id===id),`${s.codice}: agente ${id}`);
   for(const id of s.sciame)assert.ok(agentiSciame[id],`${s.codice}: agente sciame ${id}`);
-  assert.ok(s.approvazioni.length&&s.approvazioni.every(k=>kinds.includes(k)),s.codice);
+  if(s.codice==='S14')assert.deepEqual(s.approvazioni,[], 'Il registro manuale non crea campagne o approvazioni di invio');
+  else assert.ok(s.approvazioni.length&&s.approvazioni.every(k=>kinds.includes(k)),s.codice);
   for(const id of s.integrazioni)assert.ok(integrations.some(x=>x.id===id),`${s.codice}: integrazione ${id}`);
  }
  assert.equal(catalogoServizi.find(s=>s.codice==='S04').statoPlaybook,'ATTIVO (Meta) · DA ATTIVARE (LinkedIn, TikTok)');

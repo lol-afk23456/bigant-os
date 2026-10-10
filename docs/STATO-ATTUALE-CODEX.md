@@ -7,11 +7,11 @@ Aggiornato il 10 ottobre 2026. Questo file riassume lo stato; non sostituisce le
 - Backup Railway prima del rilascio: 10 ottobre, 16:01, 796 MB, confermato dal pannello. Copia giornaliera applicativa inclusa; prima esecuzione da verificare. Nessuna pianificazione aggiuntiva Railway impostata.
 - Ultime prove del codice: **739/739**, controllo progetto **5/5**. Health online OK, cinque file corrispondenti, tre API anonime 401; login aggiornato e console senza errori. Non rifare queste prove se il codice non cambia.
 - Ultimo sviluppo: Risultati dei clienti, report mensili versionati, obiettivi/lavori/misure con fonte, verifica prima della visibilità al cliente e revoche persistenti. Commit applicativo `f0f6bfc`.
-- Matrice92: **70 implementate localmente, 15 parziali, 7 da fare**. Rilascio del codice e collaudo funzionale autenticato sono distinti. L’intero obiettivo resta aperto.
+- Matrice92: **71 implementate localmente, 14 parziali, 7 da fare**. Rilascio del codice e collaudo funzionale autenticato sono distinti. L’intero obiettivo resta aperto.
 
 ## Prossimo lavoro utile
 
-1. Completare FUN-040: Email marketing autonomo e contatti con consenso dentro il servizio acquistato. Non riusare Growth o gli iscritti Fidelity come CRM generico. Leggere soltanto area cliente, registro servizi e le righe pertinenti della mappatura.
+1. FUN-040 completata e verificata in locale; rilascio in preparazione. Vedi COLLAUDO-EMAIL-MARKETING.md. Nessun invio collegato.
 2. FUN-054: ordine di configurazione degli agenti legato ai servizi; configurarne uno alla volta. S01 social manuale già predisposto e verificato con fornitore finto. Non costruire altri percorsi reali senza esigenza confermata.
 3. Completare il giro dei ruoli e delle pagine; fonti automatiche mancanti, collaudi Fidelity/Growth e account reali restano distinti. I contatti esterni richiedono i prerequisiti già concordati.
 4. T0 in corso; T1–T10 seguono il riordino, con stato in [TASK-AVANZAMENTO](TASK-AVANZAMENTO.md). Non dichiararle completate per il solo numero di test.

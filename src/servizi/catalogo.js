@@ -33,7 +33,7 @@ export const corrispondenze={
  S11:{registro:['ecommerce','social-commerce'],agenti:['ecommerce','social-commerce'],sciame:[],approvazioni:['agent_output'],integrazioni:['meta']},
  S12:{registro:['booking'],agenti:['booking'],sciame:[],approvazioni:['agent_output'],integrazioni:['calendar','gbp']},
  S13:{registro:['reception'],agenti:['reception'],sciame:[],approvazioni:['agent_output'],integrazioni:[]},
- S14:{registro:['growth','fidelity'],agenti:['commercial','fidelity'],sciame:[],approvazioni:['growth_message','fidelity_campaign'],integrazioni:['gmail','wallet']},
+ S14:{registro:['email-marketing'],agenti:['account'],sciame:[],approvazioni:[],integrazioni:[]},
  S15:{registro:['branding','creative-direction'],agenti:['branding','creative-direction'],sciame:[],approvazioni:['agent_output'],integrazioni:[]},
  S16:{registro:['merch'],agenti:['merch'],sciame:[],approvazioni:['agent_output'],integrazioni:[]},
  S17:{registro:['audit','growth'],agenti:['research','analyst','commercial'],sciame:['ricerca-clienti','analisi-gratuita','proposta-commerciale','qualita'],approvazioni:['sciame_output','growth_message'],integrazioni:['brave']},
@@ -46,7 +46,7 @@ export function caricaCatalogo(dir=DIR){
   const md=readFileSync(resolve(dir,file),'utf8'),sez=sezioni(md),codice=file.slice(0,3);
   const testa=md.match(/^### SCHEDA SERVIZIO — (.+)$/m)?.[1]?.trim(),stato=md.match(/\*\*Stato:\*\* (.+?) · \*\*Ultimo/)?.[1]?.trim();
   return {codice,nome:testa,statoPlaybook:stato,scheda:`docs/playbook/${file}`,problema:sez[1],include:voci(sez[2]),richieste:voci(sez[4]),flusso:passi(sez[5]),
-   kpi:voci(sez[7]),strumenti:voci(sez[8]),rischi:voci(sez[9]),upsell:voci(sez[10]),pacchetti:tabella(sez[13]),prezzi:String(sez[14]||'').split('\n')[0],...corrispondenze[codice]};
+   kpi:voci(sez[7]),strumenti:voci(sez[8]),rischi:voci(sez[9]),upsell:voci(sez[10]),pacchetti:tabella(sez[13]),prezzi:String(sez[14]||'').split('\n')[0],...corrispondenze[codice],...(codice==='S14'?{nome:'Email marketing',scheda:'docs/SOP-EMAIL-MARKETING.md',include:['Contatti dell’attività','Registro dei consensi','Report del servizio'],richieste:['Fonte, data e informativa del consenso'],flusso:['Registra la prova del consenso','Controlla il contatto','Registra eventuali revoche'],kpi:['Contatti registrati','Consensi registrati','Consensi revocati'],strumenti:['Registro interno; fornitore email da scegliere'],approvazioni:[],pacchetti:[],prezzi:'Da definire nel Listino'}:{})};
  });
 }
 export const catalogoServizi=caricaCatalogo();

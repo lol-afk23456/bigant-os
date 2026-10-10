@@ -2,6 +2,7 @@ import {services} from '../registry.js';
 
 // Ogni riga è un posto specifico nel catalogo; non attiva un esecutore o un connettore.
 const specs={
+ 'email-marketing':{agents:['account'],areas:['Contatti e consensi','Report'],inputs:['Email e nome','Prova, data e informativa del consenso'],integrations:[],model:'Registro manuale del servizio; fornitore e invii da collegare'},
  presence:{agents:['local','reputation'],areas:['Anagrafica e directory','Recensioni e risposte','Chat e richieste','Piano presenza','Misure'],inputs:['Sedi e contatti autorizzati','Fonti directory','Recensioni con data'],integrations:['gbp','meta'],model:'Strumenti ufficiali e team; directory proprietarie escluse'},
  multisite:{agents:['multisite','reputation'],areas:['Sedi','Coerenza anagrafiche','Anomalie per sede','Recensioni','Report rete'],inputs:['Anagrafica di ogni sede','Autorizzazioni del titolare','Fonti aggiornate'],integrations:['gbp'],model:'Team local; partner quando numero sedi supera la capacità'},
  reception:{agents:['reception'],areas:['Scenari chiamate e chat','Informative e consensi','FAQ approvate','Contatti raccolti','Passaggio a una persona'],inputs:['Orari e reperibilità','FAQ confermate','Informative','Regole di escalation'],integrations:[],model:'Partner telefonia/AI da valutare e collaudare'},

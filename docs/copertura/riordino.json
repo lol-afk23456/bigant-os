@@ -597,10 +597,10 @@
       "area": "\"Contatti e clienti\"",
       "modifica": "Spostare nel servizio Email marketing, visibile solo a chi lo ha attivo",
       "criterio": "La sezione compare solo dentro Email marketing",
-      "stato": "parziale in locale",
+      "stato": "implementata in locale; rilascio in preparazione",
       "prove": [
-        "Vecchio CRM generico e associazione impropria Email/Growth/Fidelity rimossi dalla vista cliente. Servizio Email marketing autonomo e gestione contatti da implementare.",
-        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+        "Registro autonomo email-marketing, attivazione per servizio acquistato, soci/titolare modificano e collaboratore assegnato consulta. Consensi con prova, revoca e nuovo consenso, storico immutabile, isolamento, pagine e ricerca. Nessun invio o collegamento Growth/Fidelity.",
+        "COLLAUDO-EMAIL-MARKETING.md: 16 prove specifiche, browser cliente/socio/anteprima e 390 px, revisione indipendente."
       ]
     },
     {
