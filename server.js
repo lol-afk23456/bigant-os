@@ -9,6 +9,7 @@ import {createBusinessProfile} from './src/business-profile.js';
 import {createConnections} from './src/connections.js';
 import {createServicePlan} from './src/service-plan.js';
 import {createCostControl} from './src/cost-control.js';
+import {createAgentTrials} from './src/agent-trials.js';
 import {createAgentConfig} from './src/agent-config.js';
 import {createClientRecords} from './src/client-records.js';
 import {createWorkspace,navigationFor} from './src/workspace.js';
@@ -45,7 +46,7 @@ const digest=value=>createHash('sha256').update(String(value)).digest('hex');
 const safeEqual=(a,b)=>{const x=Buffer.from(String(a||'')),y=Buffer.from(String(b||''));return x.length===y.length&&timingSafeEqual(x,y);};
 const profiles=['demo-owner','demo-collaborator','demo-client','demo-client-other'];
 const publicUser={id:'os-public',role:'owner',name:'Visitatore DEMO',active:1};
-export function createApp({database=':memory:',origin='http://127.0.0.1:4330',worker=false,clock=()=>new Date(),motore=null,importaProveSciame=false,env=process.env,growthProviderOptions={},walletProviderOptions={},businessProfileProviderOptions={}}={}) {
+export function createApp({database=':memory:',origin='http://127.0.0.1:4330',worker=false,clock=()=>new Date(),motore=null,importaProveSciame=false,env=process.env,growthProviderOptions={},walletProviderOptions={},businessProfileProviderOptions={},agentTrialProviderOptions={}}={}) {
   const realMode=env.BIGANT_MODALITA==='reale';
   const base=new URL(origin);
   if(realMode){if(base.protocol!=='https:')throw new Error('Modalità reale: BIGANT_ORIGINE deve essere un indirizzo https.');}
@@ -60,8 +61,10 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const businessProfile=createBusinessProfile({store,auth:businessProfileAuth,enabled:businessProfileEnabled,clock,providerOptions:businessProfileProviderOptions});
   const production=createProduction({store}),growth=createGrowthModule({store,origin,realMode,costControl,connections,googleAuth,gmailEnabled,calendarEnabled,clock,externalEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true',providerOptions:growthProviderOptions}),fidelity=createFidelityModule({store,origin,realMode,env,clock,walletProviderOptions}),administration=createAdministrationModule({store,clock});
   growth.seed(realMode);fidelity.seed(realMode);administration.seed(realMode);
-  const agentConfig=createAgentConfig({store,root,env,clock});
+  let agentTrials;
+  const agentConfig=createAgentConfig({store,root,env,clock,connections,trialState:(id,c)=>agentTrials?.stateForAgent(id,c)||null});
   const orchestrator=createOrchestrator({store,production,administration,growth,fidelity,clock,realMode,costControl,guard:realMode?(id,options)=>agentConfig.requireRun(id,options):null});
+  agentTrials=createAgentTrials({store,connections,costControl,reserve:orchestrator.reserve,configFor:id=>agentConfig.entry(id).config,enabled:()=>realMode&&env.BIGANT_SCIAME_AI_TRIALS_ENABLED==='true',clock,providerOptions:agentTrialProviderOptions});
   const agency=createAgencyModule({store});
   const sciame=createSciame({store,production,administration,growth,orchestrator,root,env,clock,motore:motore?(typeof motore==='string'?createMotore({nome:motore,root,env}):motore):null});
   if(importaProveSciame)sciame.importaProve(resolve(root,'docs/demo-sciame'));
@@ -174,6 +177,10 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
         if(path==='/api/service-plan/prices'&&method==='POST')return json(res,servicePlan.addPrice(u,b),201);
         const planMatch=path.match(/^\/api\/service-plan\/([^/]+)$/);if(planMatch&&method==='PATCH')return json(res,servicePlan.save(u,planMatch[1],b));
         if(path==='/api/agent-config/state'&&method==='GET')return json(res,agentConfig.state(u));
+        const trialMatch=path.match(/^\/api\/agent-config\/([^/]+)\/(check|trials)$/);
+        if(trialMatch&&method==='POST'&&trialMatch[2]==='check')return json(res,await agentTrials.check(u,trialMatch[1],b));
+        if(trialMatch&&method==='GET'&&trialMatch[2]==='trials')return json(res,agentTrials.history(u,trialMatch[1]));
+        const trialResult=path.match(/^\/api\/agent-trials\/([^/]+)$/);if(trialResult&&method==='GET')return json(res,agentTrials.result(u,trialResult[1]));
         const agentMatch=path.match(/^\/api\/agent-config\/([^/]+)$/);if(agentMatch&&method==='PATCH')return json(res,agentConfig.save(u,agentMatch[1],b));
         if(path==='/api/workspace/approvals'&&method==='GET')return json(res,{items:workspace.approvals(u)});
         if(path==='/api/workspace/contracts'&&method==='GET')return json(res,{items:records.expiring(u)});
@@ -237,7 +244,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   const backups=realMode&&worker&&database!==':memory:'?createBackupScheduler({store,sourcePath:database,env,clock}):null;
   let workerError=null,workerRun=null;
   const timer=worker?setInterval(()=>{if(workerRun)return;workerRun=orchestrator.tick().then(()=>fidelity.runWalletJobs()).then(()=>businessProfile.tick()).then(()=>{workerError=null;}).catch(()=>{workerError='Controllo delle automazioni da verificare.';}).finally(()=>{workerRun=null;});},2000):null;timer?.unref();
-  return {server,store,costControl,googleAuth,businessProfileAuth,businessProfile,billing,connections,servicePlan,agentConfig,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(workerRun)await workerRun;await backups?.close();if(server.listening)await new Promise(r=>server.close(r));await businessProfile.close();store.close();}};
+  return {server,store,costControl,googleAuth,businessProfileAuth,businessProfile,billing,connections,servicePlan,agentConfig,agentTrials,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(workerRun)await workerRun;await backups?.close();if(server.listening)await new Promise(r=>server.close(r));await businessProfile.close();await agentTrials.close();store.close();}};
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
   const modalitaReale=process.env.BIGANT_MODALITA==='reale';
