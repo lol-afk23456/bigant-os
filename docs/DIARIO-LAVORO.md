@@ -144,3 +144,12 @@ Destinazioni API fisse, redirect vietati, risposte limitate, errori privi di chi
 Lettura siti: solo HTTP/S pubblico, controllo di tutti gli indirizzi DNS e vincolo del socket all’indirizzo verificato; rete privata, IPv4 mappato, multicast e indirizzi riservati esclusi. Massimo tre redirect, un megabyte e 12 secondi complessivi; nessun cookie o header di autenticazione; testo con URL e data di acquisizione. Prove con trasporti finti, nessuna lettura di aziende reali.
 
 Suite **234/234**, controllo **5/5**, DEMO offline costruita. Undici nuove prove sui fornitori, su entrambe le AI, su budget, errori, gate chiusi, MIME, OAuth, disponibilità/risposte Calendar, IP/DNS/redirect e limiti delle pagine. Dettagli e parti ancora mancanti in [COLLAUDO-GROWTH-RIORDINO](COLLAUDO-GROWTH-RIORDINO.md). Nessun push, deploy, chiave reale, invio o spesa.
+
+
+## 10 ottobre 2026 — Growth: prime tre fasi nel motore, tutte chiuse
+
+Collegati vault, Brave, lettura siti e AI OpenAI/Anthropic al motore reale con attivazioni distinte ricerca → analisi → bozze. Configurazione rinviabile e nessun fornitore scelto implicitamente. Flag server, prove, autorizzazione del socio, pausa, budget e versione sono verificati; cambiare chiavi, ripetere una prova o revocare il socio invalida le operazioni interessate. Il worker non esegue attività reali. Fonti persistenti, stati separati dalla DEMO, nessun link di prenotazione simulato nelle bozze reali. Gmail e Calendar restano bloccati.
+
+La suite ha individuato e permesso di correggere la dipendenza dei backup dalle tabelle del simulatore. **248/248 test**, comprese 13 nuove prove sul motore e una sul percorso HTTP reale; backup/ripristino su archivi temporanei verificati. Browser con fixture locale in memoria: entrambe le AI disponibili, “Scelta rinviata” salvabile (corretto il campo facoltativo), zero fasi attive, ricerca disabilitata, 390 px senza overflow. Le prove non equivalgono a un fornitore reale collegato o a una sessione Browser di produzione.
+
+Il [rapporto Growth](COLLAUDO-GROWTH-RIORDINO.md) riporta procedura, limiti e parti mancanti. Corretto anche il promemoria sull’importazione: D-11 stabilisce **nessuna importazione dagli originali**, non un’importazione ancora da fare. Originali e Railway intatti; nessuna chiave vera, spesa, push o deploy.

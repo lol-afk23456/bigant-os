@@ -639,7 +639,8 @@
       "criterio": "Fase 1: una ricerca su \"ristoranti Caserta\" restituisce attività vere con fonte e data; nessun invio parte senza un'approvazione registrata",
       "stato": "parziale in locale",
       "prove": [
-        "COLLAUDO-GROWTH-RIORDINO: sei famiglie di adattatori predisposte, OpenAI e Anthropic con schema comune, 11 nuove prove offline; integrazione con motore/vault e collaudo reale da fare."
+        "COLLAUDO-GROWTH-RIORDINO: sei famiglie di adattatori predisposte, OpenAI e Anthropic con schema comune, 11 nuove prove offline; integrazione con motore/vault e collaudo reale da fare.",
+        "Motore/vault integrati per ricerca, analisi e bozze, disabilitati di default. 13 test runtime + HTTP, suite 248/248; Browser su fixture con scelta AI rinviata e ricerca chiusa. Gmail/OAuth/Calendar e collaudo fornitori/server ancora da fare. Vedi aggiornamento COLLAUDO-GROWTH-RIORDINO."
       ]
     },
     {
@@ -649,7 +650,8 @@
       "criterio": "Ogni riga dell'inventario Growth risulta provata nell'interfaccia, con esito scritto",
       "stato": "parziale in locale",
       "prove": [
-        "COLLAUDO-GROWTH-RIORDINO: sei famiglie di adattatori predisposte, OpenAI e Anthropic con schema comune, 11 nuove prove offline; integrazione con motore/vault e collaudo reale da fare."
+        "COLLAUDO-GROWTH-RIORDINO: sei famiglie di adattatori predisposte, OpenAI e Anthropic con schema comune, 11 nuove prove offline; integrazione con motore/vault e collaudo reale da fare.",
+        "Motore/vault integrati per ricerca, analisi e bozze, disabilitati di default. 13 test runtime + HTTP, suite 248/248; Browser su fixture con scelta AI rinviata e ricerca chiusa. Gmail/OAuth/Calendar e collaudo fornitori/server ancora da fare. Vedi aggiornamento COLLAUDO-GROWTH-RIORDINO."
       ]
     },
     {

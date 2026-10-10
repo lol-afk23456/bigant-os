@@ -22,6 +22,8 @@ async function fixture(t) {
 
 test('Fase 0: volume reale esterno, backup coerente, rotazione e ripristino in archivio nuovo', async t => {
   const f = await fixture(t);
+  assert.equal(f.app.store.one("SELECT name FROM sqlite_schema WHERE type='table' AND name='gr_demo_mail'"),undefined);
+  assert.ok(f.app.store.one("SELECT name FROM sqlite_schema WHERE type='table' AND name='gr_runtime'"));
   f.app.store.setSetting('fixture_value', 'prima');
   const snapshots = [];
   for (let i = 0; i < 3; i++) snapshots.push(await createBackup({ env: f.env }));

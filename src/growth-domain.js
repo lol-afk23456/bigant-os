@@ -9,6 +9,7 @@ export function createLead(s,w,input){
  const url=website(string(input.website,1000)),domain=url?new URL(url).hostname.toLowerCase().replace(/^www\./,''):'';
  const mail=email(input.email); const id=uid();
  try{s.run('INSERT INTO leads(id,workspace,company,website,domain,email,contact,sector,city,source,notes,created,updated) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)',id,w,company,url,domain,mail,string(input.contact,120),string(input.sector,120),string(input.city,120),string(input.source,1000),string(input.notes,6000),now(),now());}catch(e){if(String(e).includes('UNIQUE'))throw new AppError('Questa azienda o email è già presente.',409);throw e;}
+ if(s.simulation===false)s.run('UPDATE leads SET owner=? WHERE id=?','Soci BigAnt',id);
  if(mail&&s.one('SELECT 1 FROM suppressions WHERE workspace=? AND email=?',w,mail))s.run('UPDATE leads SET suppressed=1 WHERE id=?',id);
  s.log(w,'Archivio','Azienda aggiunta',company,id);return s.lead(w,id);
 }

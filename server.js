@@ -40,14 +40,15 @@ const digest=value=>createHash('sha256').update(String(value)).digest('hex');
 const safeEqual=(a,b)=>{const x=Buffer.from(String(a||'')),y=Buffer.from(String(b||''));return x.length===y.length&&timingSafeEqual(x,y);};
 const profiles=['demo-owner','demo-collaborator','demo-client','demo-client-other'];
 const publicUser={id:'os-public',role:'owner',name:'Visitatore DEMO',active:1};
-export function createApp({database=':memory:',origin='http://127.0.0.1:4330',worker=false,clock=()=>new Date(),motore=null,importaProveSciame=false,env=process.env}={}) {
+export function createApp({database=':memory:',origin='http://127.0.0.1:4330',worker=false,clock=()=>new Date(),motore=null,importaProveSciame=false,env=process.env,growthProviderOptions={}}={}) {
   const realMode=env.BIGANT_MODALITA==='reale';
   const base=new URL(origin);
   if(realMode){if(base.protocol!=='https:')throw new Error('Modalità reale: BIGANT_ORIGINE deve essere un indirizzo https.');}
   else if(base.protocol!=='http:'||!['localhost','127.0.0.1'].includes(base.hostname))throw new Error('Prototipo DEMO: è consentito soltanto un indirizzo HTTP locale.');
   const store=openStore(database);
   if(realMode)seedRealCore(store,{socioEmail:env.BIGANT_SOCIO_EMAIL,socioPassword:env.BIGANT_SOCIO_PASSWORD_INIZIALE});else seedCore(store);
-  const production=createProduction({store}),growth=createGrowthModule({store,origin}),fidelity=createFidelityModule({store,origin}),administration=createAdministrationModule({store,clock});
+  const connections=createConnections({store,env});
+  const production=createProduction({store}),growth=createGrowthModule({store,origin,realMode,connections,externalEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true',providerOptions:growthProviderOptions}),fidelity=createFidelityModule({store,origin}),administration=createAdministrationModule({store,clock});
   growth.seed(realMode);fidelity.seed(realMode);administration.seed(realMode);
   const agentConfig=createAgentConfig({store,root,env,clock});
   const orchestrator=createOrchestrator({store,production,administration,growth,fidelity,clock,guard:realMode?(id,options)=>agentConfig.requireRun(id,options):null});
@@ -56,7 +57,6 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
   if(importaProveSciame)sciame.importaProve(resolve(root,'docs/demo-sciame'));
   const records=createClientRecords({store,production,env,clock});
   const cliente=createClientDashboard({store,records});
-  const connections=createConnections({store,env});
   const workspace=createWorkspace({store,clock,budget:()=>orchestrator.budget(),expiring:records.expiring,agentConfig,connections});
   const servicePlan=createServicePlan({store,agentConfig});
   const billing=createBilling({store,administration});
@@ -101,7 +101,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
       else if(!['127.0.0.1','::1','::ffff:127.0.0.1'].includes(req.socket.remoteAddress)||req.headers.host!==expectedHost)throw new AppError('Il prototipo è disponibile solo in locale.',403);
       const url=new URL(req.url,runtimeOrigin),path=url.pathname,method=req.method;
       if(!['GET','HEAD','POST','PATCH','DELETE'].includes(method))throw new AppError('Metodo non consentito.',405);
-      if(method==='GET'&&path==='/health')return json(res,{status:'ok',app:'BigAnt OS',demo:!realMode,externalActions:false});
+      if(method==='GET'&&path==='/health')return json(res,{status:'ok',app:'BigAnt OS',demo:!realMode,externalActions:false,externalReadsEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true'});
       const u=session(req);
       if(method==='GET'&&path==='/api/session')return json(res,{user:safeUser(u),csrf:u?.csrf||null,demo:!realMode,profiles:realMode?[]:profiles.map(id=>store.one('SELECT id,name,role FROM os_users WHERE id=? AND active=1',id)).filter(Boolean)});
       if(!['GET','HEAD'].includes(method)&&req.headers.origin!==runtimeOrigin)throw new AppError('Origine della richiesta non autorizzata.',403);

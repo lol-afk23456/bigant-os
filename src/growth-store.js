@@ -14,7 +14,7 @@ export const defaultSettings = {
 
 
 const mapSql=sql=>sql.replace(/\b(workspaces|leads|messages|meetings|tokens|jobs|costs|suppressions)\b/g,name=>'gr_'+name).replace(/\b(leads_domain|leads_email|messages_provider|meeting_provider)\b/g,name=>'gr_'+name);
-export function growthStore(root,getActor=()=>null){
+export function growthStore(root,getActor=()=>null,{realMode=false}={}){
  root.db.exec(mapSql(`  CREATE TABLE IF NOT EXISTS workspaces(id TEXT PRIMARY KEY REFERENCES os_clients(id), name TEXT NOT NULL, settings TEXT NOT NULL);
   CREATE TABLE IF NOT EXISTS leads(id TEXT PRIMARY KEY, workspace TEXT NOT NULL REFERENCES workspaces(id), company TEXT NOT NULL, website TEXT NOT NULL DEFAULT '', domain TEXT NOT NULL DEFAULT '', email TEXT NOT NULL DEFAULT '', contact TEXT NOT NULL DEFAULT '', sector TEXT NOT NULL DEFAULT '', city TEXT NOT NULL DEFAULT '', stage TEXT NOT NULL DEFAULT 'new', score INTEGER NOT NULL DEFAULT 0, source TEXT NOT NULL DEFAULT '', notes TEXT NOT NULL DEFAULT '', analysis TEXT NOT NULL DEFAULT '', consent TEXT NOT NULL DEFAULT 'none', consent_proof TEXT NOT NULL DEFAULT '', consent_at TEXT, suppressed INTEGER NOT NULL DEFAULT 0, value INTEGER NOT NULL DEFAULT 0, owner TEXT NOT NULL DEFAULT 'Socio DEMO', created TEXT NOT NULL, updated TEXT NOT NULL,client_id TEXT REFERENCES os_clients(id));
   CREATE UNIQUE INDEX IF NOT EXISTS leads_domain ON leads(workspace,domain) WHERE domain<>'';
@@ -30,12 +30,26 @@ export function growthStore(root,getActor=()=>null){
 `));
  root.db.exec(`CREATE TABLE IF NOT EXISTS gr_conversions(lead_id TEXT PRIMARY KEY REFERENCES gr_leads(id),client_id TEXT NOT NULL UNIQUE REFERENCES os_clients(id),provenance TEXT NOT NULL,created TEXT NOT NULL);
  CREATE TABLE IF NOT EXISTS gr_approvals(message_id TEXT PRIMARY KEY REFERENCES gr_messages(id),user_id TEXT NOT NULL,decided_at TEXT NOT NULL,decision TEXT NOT NULL,reason TEXT NOT NULL);`);
+ if(!root.query('PRAGMA table_info(gr_workspaces)').some(row=>row.name==='simulation'))root.run('ALTER TABLE gr_workspaces ADD COLUMN simulation INTEGER NOT NULL DEFAULT 1');
+ root.db.exec(`CREATE TABLE IF NOT EXISTS gr_sources(id TEXT PRIMARY KEY,workspace TEXT NOT NULL REFERENCES gr_workspaces(id),lead_id TEXT NOT NULL REFERENCES gr_leads(id),kind TEXT NOT NULL,url TEXT NOT NULL,retrieved_at TEXT NOT NULL,content TEXT NOT NULL,provenance_json TEXT NOT NULL);
+ CREATE TRIGGER IF NOT EXISTS gr_sources_immutable BEFORE UPDATE ON gr_sources BEGIN SELECT RAISE(ABORT,'Fonte immutabile'); END;`);
  const query=(sql,...args)=>root.query(mapSql(sql),...args),one=(sql,...args)=>root.one(mapSql(sql),...args),run=(sql,...args)=>root.run(mapSql(sql),...args);
  const transaction=fn=>root.transaction(fn);
- function workspace(id='demo-bigant'){if(!one('SELECT id FROM workspaces WHERE id=?',id)){const c=root.one('SELECT name FROM os_clients WHERE id=?',id);if(!c)throw Object.assign(new Error('Cliente OS non trovato.'),{status:404});run('INSERT INTO workspaces VALUES(?,?,?)',id,c.name,JSON.stringify({...defaultSettings,agency:'BigAnt Agency · DEMO',signature:'Team BigAnt · DEMO',senderEmail:'team@bigant.example',description:defaultSettings.description}));}return id;}
+ function workspace(id='demo-bigant') {
+  const current=one('SELECT * FROM workspaces WHERE id=?',id);
+  const initial={...defaultSettings,...(realMode?{senderEmail:'',agency:'BigAnt Agency',signature:'Il team BigAnt Agency'}:{agency:'BigAnt Agency · DEMO',signature:'Team BigAnt · DEMO',senderEmail:'team@bigant.example'})};
+  if(!current){const c=root.one('SELECT name FROM os_clients WHERE id=?',id);if(!c)throw Object.assign(new Error('Cliente OS non trovato.'),{status:404});run('INSERT INTO workspaces(id,name,settings,simulation) VALUES(?,?,?,?)',id,c.name,JSON.stringify(initial),realMode?0:1);}
+  else if(!!current.simulation===realMode){
+   const occupied=['leads','messages','jobs','costs','meetings'].some(table=>one(`SELECT 1 FROM ${table} WHERE workspace=? LIMIT 1`,id));
+   if(occupied)throw Object.assign(new Error('Archivio Growth di prova e modalità reale non possono essere mescolati. Serve un archivio separato.'),{status:409});
+   run('UPDATE workspaces SET settings=?,simulation=? WHERE id=?',JSON.stringify(initial),realMode?0:1,id);
+  }
+  return id;
+ }
+
  const settings=w=>({...defaultSettings,...JSON.parse(one('SELECT settings FROM workspaces WHERE id=?',w)?.settings||'{}')});
  const saveSettings=(w,p)=>run('UPDATE workspaces SET settings=? WHERE id=?',JSON.stringify({...settings(w),...p}),w);
- const log=(w,agent,action,detail='',lead=null)=>root.audit(getActor()||{id:'growth-demo',name:'Agente Growth DEMO',role:'agent'},w,action,lead,{module:'growth',agent,detail,simulation:true,costCents:0},'internal');
+ const log=(w,agent,action,detail='',lead=null)=>root.audit(getActor()||{id:realMode?'growth-runtime':'growth-demo',name:realMode?'Agente Growth':'Agente Growth DEMO',role:'agent'},w,action,lead,{module:'growth',agent,detail,simulation:!realMode},'internal');
  const lead=(w,id)=>one('SELECT * FROM leads WHERE workspace=? AND id=?',w,id);
  const active=w=>!!root.one('SELECT 1 FROM os_clients WHERE id=? AND active=1',w);
  const budgetMonth=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Rome',year:'numeric',month:'2-digit'}).format(new Date());
@@ -58,6 +72,7 @@ export function growthStore(root,getActor=()=>null){
  const enqueue=(w,type,input={},dedupe=null)=>{const id=uid();run('INSERT OR IGNORE INTO jobs VALUES(?,?,?,?,?,?,?,?,?,?)',id,w,type,JSON.stringify(input),'queued',null,now(),null,null,dedupe);return one('SELECT * FROM jobs WHERE workspace=? AND id=?',w,id)||one('SELECT * FROM jobs WHERE workspace=? AND dedupe=?',w,dedupe);};
  // Presenza provider solo simulata: niente chiavi o credenziali nel modulo.
  const hasApproval=(w,id)=>!!root.one("SELECT 1 FROM os_approvals a JOIN gr_messages m ON m.id=a.entity_id JOIN os_users u ON u.id=a.decision_by WHERE a.kind='growth_message' AND a.status='approved' AND a.version=(SELECT MAX(version) FROM os_approvals WHERE kind='growth_message' AND entity_id=a.entity_id) AND m.workspace=? AND m.id=? AND u.role='owner' AND u.active=1",w,id);
- const getSecret=(_w,name)=>['brave','openai'].includes(name)?'DEMO_PROVIDER': '';
- return {active,db:root.db,query,one,run,transaction,workspace,settings,saveSettings,log,lead,costs,reserve,settle,enqueue,getSecret,requestApproval,hasApproval};
+ const getSecret=(_w,name)=>!realMode&&['brave','openai'].includes(name)?'DEMO_PROVIDER': '';
+ const source=(w,leadId,kind,value)=>{const lead=one('SELECT id FROM leads WHERE workspace=? AND id=?',w,leadId);if(!lead)throw new Error('Azienda non trovata per la fonte.');let url;try{url=new URL(value.url);}catch{throw new Error('URL della fonte non valido.');}if(!['http:','https:'].includes(url.protocol)||url.username||url.password||!['search','website'].includes(kind)||typeof value.retrievedAt!=='string'||!Number.isFinite(Date.parse(value.retrievedAt)))throw new Error('Fonte incompleta o non valida.');run('INSERT INTO gr_sources VALUES(?,?,?,?,?,?,?,?)',uid(),w,leadId,kind,url.href,value.retrievedAt,String(value.text||value.description||'').slice(0,14000),JSON.stringify({provider:value.source||'Sito pubblico',simulation:!realMode}));};
+ return {simulation:!realMode,source,active,db:root.db,query,one,run,transaction,workspace,settings,saveSettings,log,lead,costs,reserve,settle,enqueue,getSecret,requestApproval,hasApproval};
 }

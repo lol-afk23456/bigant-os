@@ -86,7 +86,7 @@ const requiredSchema = {
   os_fin_movements: ['id', 'entity_id', 'account_id', 'direction', 'amount_cents', 'source_ref'],
 };
 const requiredTables = `os_audit os_tasks os_contents os_schedules os_costs
-  gr_workspaces gr_tokens gr_jobs gr_costs gr_suppressions gr_conversions gr_approvals gr_demo_mail gr_demo_calendar
+  gr_workspaces gr_tokens gr_jobs gr_costs gr_suppressions gr_conversions gr_approvals
   fi_meta fi_programs fi_idempotency fi_campaigns fi_deliveries fi_jobs fi_automations fi_automation_runs fi_branding
   os_fin_entities os_fin_counterparties os_fin_contracts os_fin_invoices os_fin_obligations os_fin_subscriptions
   os_fin_reconciliations os_fin_anomalies os_fin_requests os_fin_reversals os_fin_hourly_rates os_fin_work_allocations`.trim().split(/\s+/);
@@ -98,8 +98,16 @@ export function validateDatabase(db) {
   if (integrity.length !== 1 || integrity[0].integrity_check !== 'ok') throw new Error('Verifica di integrità SQLite non superata.');
   if (db.prepare('PRAGMA foreign_key_check').all().length) throw new Error('Relazioni del database non valide.');
   const tables = new Set(db.prepare("SELECT name FROM sqlite_schema WHERE type='table'").all().map(row => row.name));
+  // Historical/demo archives use mail/calendar simulators. The real runtime
+  // replaces these tables with its own configuration and source evidence.
+  const growthSchema=tables.has('gr_runtime')?{
+    gr_runtime:['workspace','provider','version','checks_json','enabled_json'],
+    gr_sources:['workspace','lead_id','url','retrieved_at','content','provenance_json'],
+    gr_workspaces:['id','settings','simulation'],
+    os_connections:['id','sealed','version']
+  }:{gr_demo_mail:['id'],gr_demo_calendar:['id']};
   for (const table of requiredTables) if (!tables.has(table)) throw new Error(`Schema BigAnt OS incompleto: manca ${table}.`);
-  for (const [table, expected] of Object.entries(requiredSchema)) {
+  for (const [table, expected] of Object.entries({...requiredSchema,...growthSchema})) {
     if (!tables.has(table)) throw new Error(`Schema BigAnt OS incompleto: manca ${table}.`);
     const columns = new Set(db.prepare(`PRAGMA table_info("${table}")`).all().map(row => row.name));
     if (expected.some(column => !columns.has(column))) throw new Error(`Schema BigAnt OS incompatibile: ${table}.`);

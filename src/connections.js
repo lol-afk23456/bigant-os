@@ -75,5 +75,12 @@ export function createConnections({ store: s, env = {} }) {
   function summary() {
     return { total: definitions.length, connected: 0, errors: s.one("SELECT COUNT(*) n FROM os_connections WHERE check_status='Errore'").n };
   }
-  return { state, save, check, summary };
+  // Internal-only capability. No HTTP route returns decrypted configuration.
+  function readForRuntime(user,id,version) {
+    requireOwner(user);const row=stored(id);definition(id);
+    if(!row||row.version!==version)throw new AppError('Accessi cambiati: ripeti il collaudo del collegamento.',409);
+    const values=vault.open(row.sealed,'connection:'+id);
+    s.audit(user,null,'Collegamento usato dal motore',id,{version},'admin');return values;
+  }
+  return { state, save, check, summary, runtimeMetadata:metadata, readForRuntime };
 }

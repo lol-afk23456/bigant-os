@@ -107,3 +107,8 @@ Applicata la conferma FUN-060: Piano e Listino in Servizi. Gli stati iniziali pr
 ### Riordino Fidelity — 10 ottobre
 
 Confermata la priorità D-12: Fidelity prima di Growth. Riutilizzata la famiglia di lettore QR dell’originale (ZXing), servita localmente. Nessuna riattivazione implicita di Wallet o campagne; la prova responsive non sostituisce quella del telefono.
+
+
+### Growth: configurazione senza scelta del fornitore — 10 ottobre
+
+Conferme del proprietario conservate: entrambe le AI predisposte, scelta rinviata. Il salvataggio senza fornitore è previsto sia nell’API sia nell’interfaccia; le stime iniziali sono zero. La preparazione del motore non costituisce autorizzazione a impostare il flag delle operazioni esterne, inserire chiavi vere o sostenere costi. Il socio deve collaudare e attivare ogni fase; Gmail e Calendar non sono ancora attivabili.

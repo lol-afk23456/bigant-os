@@ -17,9 +17,9 @@ L’interfaccia è suddivisa in sette sezioni con ritorno alla griglia. Ricerca,
 
 Test dedicati: `tests/growth-live-providers.test.js` e `tests/public-website.test.js`, **11/11**. Suite OS completa: **234/234**; controlli progetto **5/5**; costruzione della DEMO offline riuscita. Nessuno di questi test usa credenziali o servizi veri.
 
-## Parti ancora da completare prima dell’attivazione
+## Stato precedente: parti mancanti al commit d48f2ad
 
-Gli adattatori **non sono importati dal server o dal motore Growth attivo**. Questo resta sui simulatori. La predisposizione non soddisfa ancora il criterio “ricerca reale con risultati veri”.
+Al commit d48f2ad gli adattatori **non erano importati dal server o dal motore Growth attivo**. Il successivo avanzamento è riportato sotto. La predisposizione non soddisfa ancora il criterio “ricerca reale con risultati veri”.
 
 1. Collegare il vault centralizzato agli adattatori, senza introdurre nuove API che restituiscano segreti. Distinguere configurazione, collaudo e attivazione per fase e cliente.
 2. Portare il motore oltre le assunzioni DEMO: fonte e data persistenti, esiti reali distinti, nessun avvio automatico degli invii. Registrare stima/costi nell’archivio comune; le stime non sono un limite garantito della fattura del fornitore.
@@ -28,7 +28,7 @@ Gli adattatori **non sono importati dal server o dal motore Growth attivo**. Que
 5. Gestire nel motore gli esiti incerti e la riconciliazione senza reinvio; distinguere pausa, revoca e lavori già accodati.
 6. Solo dopo chiavi, budget e autorizzazione: collaudo progressivo ricerca → AI → bozze → Gmail manuale → Calendar. Nessuna attivazione richiesta o eseguita durante questo blocco.
 
-Anche l’importazione dei dati originali, i confronti tra applicazioni e lo spegnimento dei siti separati restano da fare. Nessun dato di produzione letto o copiato.
+D-11 esclude l’importazione dei dati originali, dichiarati inutilizzati dal proprietario. Restano da verificare i conteggi autorizzati, il confronto funzionale e la successiva dismissione dei siti separati, dopo il collaudo. Nessun dato di produzione letto o copiato.
 
 ## Riferimenti dei protocolli
 
@@ -40,3 +40,34 @@ Anche l’importazione dei dati originali, i confronti tra applicazioni e lo spe
 - [Calendar: disponibilità](https://developers.google.com/workspace/calendar/api/v3/reference/freebusy/query) e [inserimento evento](https://developers.google.com/workspace/calendar/api/v3/reference/events/insert).
 
 Documentazione consultata per il contratto delle richieste; non prova che gli account BigAnt abbiano i permessi o che un dato modello sia già stato scelto e collaudato.
+
+
+## 10 ottobre — motore reale predisposto per ricerca, analisi e bozze
+
+Le prime tre fasi sono ora collegate al vault e al motore OS. **Restano chiuse per impostazione predefinita.** Il server in modalità reale usa il nuovo percorso; la DEMO mantiene il simulatore. Nessuna configurazione di produzione è stata cambiata.
+
+### Procedura di attivazione predisposta, non eseguita
+
+1. Un socio prepara gli accessi in Collegamenti e sceglie stime prudenziali in Growth. La scelta AI può restare rinviata; sono previsti OpenAI e Anthropic, senza modello predefinito.
+2. L’amministratore del server abilita esplicitamente `BIGANT_GROWTH_EXTERNAL_ENABLED=true` solo dopo l’autorizzazione alla fase reale. Il flag da solo non attiva fasi o lavori.
+3. Un socio collauda in ordine ricerca/lettura, analisi, bozze. Ogni prova impegna la stima nel budget centrale; dopo l’avvio anche un timeout conserva il costo prudenziale. Non è una garanzia sull’importo fatturato dal fornitore.
+4. Dopo aver esaminato l’esito, il socio attiva la singola fase. Un lavoro richiede anche Growth non in pausa e un’esecuzione manuale. Il worker non avvia attività reali.
+5. Una modifica della configurazione o delle chiavi invalida i collaudi. Ripetere un collaudo sospende subito la fase e quelle successive: un errore non conserva la vecchia attestazione. Le attività accodate restano legate alla prova e alla versione degli accessi.
+
+Invio, ricezione Gmail, moduli pubblici, prenotazioni e Calendar restano rifiutati dal motore reale, anche chiamando direttamente i gestori. Nessuna bozza equivale a un invio. I link di prenotazione DEMO non vengono inseriti nelle bozze reali.
+
+### Dati e controlli
+
+- Fonti di ricerca e siti salvate con URL, data, provenienza e testo; modifiche alle fonti esistenti rifiutate. Le schede mostrano le fonti consultate.
+- Archivi occupati DEMO e reali non vengono mescolati. Per il rilascio va verificato lo stato dell’archivio: il sistema rifiuta la conversione implicita di dati inventati.
+- Ruolo socio ricontrollato nel database, fase/cliente/versione verificati prima e dopo la chiamata. Risultati superati scartati; costi già sostenuti conservati. Schede o impostazioni cambiate durante l’AI non vengono sovrascritte.
+- Le chiavi restano cifrate e sono lette soltanto dal motore autorizzato; nessuna nuova API restituisce segreti. Audit senza contenuto delle chiavi.
+- Backup e ripristino riconoscono sia lo schema storico DEMO sia il nuovo schema reale; non richiedono tabelle del simulatore nell’archivio reale.
+
+### Prove e limiti attuali
+
+**248/248 test**. Tredici prove specifiche in `tests/growth-runtime.test.js`, più una prova HTTP reale su scelta rinviata, CSRF e ruoli. Ricerca → fonte → analisi → bozza verificata con trasporti e siti finti per entrambi i fornitori. Verificati pausa, revoca del socio, chiavi ruotate, risposte in ritardo, collaudi concorrenti/falliti, budget esaurito e separazione degli archivi. Backup/ripristino reali collaudati su volumi temporanei con dati inventati.
+
+Browser: schermata e salvataggio di “Scelta rinviata”, entrambe le AI presenti nell’elenco, nessuna fase attiva e ricerca disabilitata; 390 px senza overflow. Per questa prova la cornice DEMO usa il modulo Growth reale chiuso attraverso una fixture locale in memoria, senza password o fornitori. Non è una prova dell’autenticazione reale in Browser né un collaudo di servizi esterni.
+
+**COL-005 e FUN-050 restano parziali.** Mancano il collaudo con risultati veri autorizzato dai soci, il ciclo OAuth completo, Gmail manuale con approvazione della versione/consenso/idempotenza e riconciliazione, Calendar e il confronto integrale dell’inventario sul server. Nessun push, deploy, collegamento, invio o spesa eseguito.

@@ -46,6 +46,8 @@ const pluginOnline={name:'bigant-online',setup(b){
  b.onResolve({filter:/^(sharp|qrcode|@anthropic-ai\/sdk)$/},a=>({path:a.path,namespace:'sostituto'}));
  b.onLoad({filter:/.*/,namespace:'sostituto'},a=>({contents:`export {${predefiniti[a.path]} as default} from ${JSON.stringify(shim('varie.js'))};`,resolveDir:root}));
  // safePath serve solo all'avvio da riga di comando (cartella dati su disco).
+ b.onResolve({filter:/\/growth-live-providers\.js$/},()=>({path:'growth-live-providers',namespace:'sostituto-growth-live'}));
+ b.onLoad({filter:/.*/,namespace:'sostituto-growth-live'},()=>({contents:'export function createGrowthLiveProviders(){throw new Error("Fornitori reali non disponibili nella DEMO offline.");}',loader:'js'}));
  b.onResolve({filter:/\/vault\.js$/},()=>({path:'vault',namespace:'sostituto-vault'}));
  b.onLoad({filter:/.*/,namespace:'sostituto-vault'},()=>({contents:'export function createVault(){const blocked=()=>{throw Object.assign(new Error("Archivio protetto disponibile solo sul server configurato."),{status:409})};return {ready:false,seal:blocked,open:blocked}}',loader:'js'}));
  b.onResolve({filter:/scripts\/backup\.js$/},()=>({path:'backup',namespace:'sostituto-backup'}));

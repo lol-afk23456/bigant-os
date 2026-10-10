@@ -80,3 +80,22 @@ test('modalità reale: non crea aziende o utenti DEMO',async t=>{
   assert.equal(overview.body.clients.length,1);
   assert.equal(overview.body.clients[0].name,'BigAnt');
 });
+
+test('Growth reale via HTTP: scelta rinviata salvabile, nessun collaudo senza gate, CSRF e ruoli applicati',async t=>{
+ const {app,request}=await setupReale(t);
+ let login=await request('/api/login',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`},body:{email:SOCIO_EMAIL,password:SOCIO_PASSWORD}});
+ login=await request('/api/account/password',{method:'POST',headers:{Origin:`https://${ORIGIN_HOST}`,Cookie:login.headers['set-cookie'][0].split(';')[0],'X-CSRF-Token':login.body.csrf},body:{currentPassword:SOCIO_PASSWORD,newPassword:'personale-fixture-growth-02',confirmPassword:'personale-fixture-growth-02'}});
+ const headers={Origin:`https://${ORIGIN_HOST}`,Cookie:login.headers['set-cookie'][0].split(';')[0],'X-CSRF-Token':login.body.csrf};
+ const initial=await request('/api/growth/state',{headers});assert.equal(initial.status,200);assert.equal(initial.body.runtime.available,false);assert.equal(initial.body.simulation,false);
+ let result=await request('/api/growth/runtime/config',{method:'POST',headers,body:{version:0,provider:'',searchCents:0,aiCents:0}});assert.equal(result.status,200);assert.equal(result.body.provider,null);assert.equal(result.body.version,1);
+ result=await request('/api/growth/runtime/config',{method:'POST',headers:{...headers,'X-CSRF-Token':''},body:{version:1,provider:'openai',searchCents:5,aiCents:25}});assert.equal(result.status,403);
+ result=await request('/api/growth/runtime/check',{method:'POST',headers,body:{version:1,phase:'research',query:'Dati di prova'}});assert.equal(result.status,409);
+ const owner={id:login.body.user.id},client=app.store.one('SELECT id FROM os_clients');
+ app.store.run('INSERT INTO os_assignments VALUES(?,?)',owner.id,client.id);
+ for(const role of ['collaborator','client']){
+  app.store.run('UPDATE os_users SET role=?,tenant_id=? WHERE id=?',role,role==='client'?client.id:null,owner.id);
+  assert.equal((await request('/api/growth/state',{headers})).status,403);
+  assert.equal((await request('/api/growth/runtime/activate',{method:'POST',headers,body:{version:1,phase:'research',enabled:true}})).status,403);
+ }
+ assert.equal(app.store.one('SELECT count(*) n FROM os_costs').n,0);
+});
