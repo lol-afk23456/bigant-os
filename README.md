@@ -1,5 +1,7 @@
 # BigAnt OS
 
+**Lavoro attuale — 10 ottobre 2026:** riordino delle 92 voci ancora in corso sul ramo `bigant-os-notte-1`. Il nuovo incarico T0–T10 e i suoi limiti sono in [TASK-AVANZAMENTO](docs/TASK-AVANZAMENTO.md), con [strumenti scelti](docs/STRUMENTI.md) e [registro costi](docs/COSTI.md). I resoconti delle precedenti consegne qui sotto sono storici; non sostituiscono lo stato e le autorizzazioni correnti.
+
 Il laboratorio interno di BigAnt per riunire lavoro, clienti, agenti e amministrazione. Prototipo con dati inventati marcati **DEMO**. Nessuna email, pubblicazione, pagamento, chiamata a servizi esterni o modifica alle app online.
 
 Inizia da [Report della notte](docs/REPORT-NOTTE.md), [analisi](docs/ANALISI-INIZIALE.md), [architettura](docs/ARCHITETTURA.md) e [playbook operativo](docs/PLAYBOOK.md).
@@ -21,7 +23,7 @@ Stato al passaggio: **32 procedure DEMO eseguibili**, non modelli AI collegati; 
 
 ## Avvio locale
 
-Occorre Node **24.19.0** (serie24). Le sole dipendenze applicative sono sharp 0.34.5 per i loghi e qrcode 1.5.4 per le tessere, fissate nel lockfile. Non occorrono chiavi API o abbonamenti aggiuntivi.
+Occorre Node **24.19.0** (serie24). Dipendenze applicative fissate nel lockfile: `sharp` 0.35.5 per i loghi, `qrcode` 1.5.4 per le tessere, `@zxing/browser` 0.2.1 per lo scanner e `@anthropic-ai/sdk` 0.127.0 per il motore AI predisposto. Per avvio e test DEMO non occorrono chiavi API o abbonamenti aggiuntivi.
 
 ```sh
 npm ci --ignore-scripts

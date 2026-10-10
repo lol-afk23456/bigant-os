@@ -112,3 +112,15 @@ Confermata la priorità D-12: Fidelity prima di Growth. Riutilizzata la famiglia
 ### Growth: configurazione senza scelta del fornitore — 10 ottobre
 
 Conferme del proprietario conservate: entrambe le AI predisposte, scelta rinviata. Il salvataggio senza fornitore è previsto sia nell’API sia nell’interfaccia; le stime iniziali sono zero. La preparazione del motore non costituisce autorizzazione a impostare il flag delle operazioni esterne, inserire chiavi vere o sostenere costi. Il socio deve collaudare e attivare ogni fase; Gmail e Calendar non sono ancora attivabili.
+
+### Nuovo incarico T0–T10 — 10 ottobre 2026
+
+Il prompt completo inviato dal proprietario estende il lavoro dopo le fasi 0–7; la sua istruzione finale avvia subito T0 come supporto al riordino. Requisiti e avanzamento sono in [TASK-AVANZAMENTO](TASK-AVANZAMENTO.md). Le 92 voci restano aperte dove mancano codice o collaudi: il nuovo elenco non le sostituisce. L'elenco reale dei clienti contenuto nel prompt non viene copiato nel repository.
+
+Chiarimento esplicito in chat: è autorizzato continuare a modificare la cartella esistente del progetto; nessun'altra nuova cartella o documento sul Mac fino all'archivio T10. L'archivio sarà una copia degli originali, con esclusione delle credenziali che devono rimanere nei file originali.
+
+Budget totale 50 €/mese, stop e avviso a 40 €; mantenuta l'interpretazione prudente con Railway incluso, senza extra oltre il piano da 20 € dichiarato pagato. Consuntivi non verificati, quindi nessun residuo spendibile presunto. Non si attivano servizi o account reali perché soltanto gratuiti: resta il consenso per connessioni e dati esterni. Dettagli in [COSTI](COSTI.md).
+
+T6 esclude Apple reale per mancanza dell'account Developer; non eliminare le strutture esistenti. T7 è un collaudo futuro su server di prova separato, circa un mese dopo a lavori finiti; non autorizza prove offensive sul server reale o un nuovo servizio a pagamento. La visione SaaS della presentazione T9 non autorizza una conversione del codice in piattaforma per altre agenzie.
+
+T0: usare le skill e i test già disponibili, due verifiche delegate circoscritte e fonti ufficiali per i servizi. Nessuna nuova dipendenza necessaria. Estrarre solo il predicato puro `isISODate` ripetuto fra contratti e piano servizi, conservando i wrapper e tutti i messaggi. Ampliato il test contratti esistente per verificare che date impossibili non scrivano record e che il giorno bisestile valido sia accettato. Nessun comportamento applicativo cambiato; pulizia dei moduli maggiori da proseguire in piccoli passi motivati. Selezione e alternative in [STRUMENTI](STRUMENTI.md).

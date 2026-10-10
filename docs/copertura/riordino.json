@@ -149,7 +149,8 @@
       "criterio": "La sezione \"Gestionale\" non esiste più come elenco astratto; ogni modulo tenuto vive nella sua pagina",
       "stato": "parziale in locale",
       "prove": [
-        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre"
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "T0, 10 ottobre: controllo date condiviso senza cambi di comportamento; date impossibili rifiutate senza scritture e bisestile valido verificato nei contratti. 284/284 test e check 5/5; stati e limiti del riordino invariati."
       ]
     },
     {
@@ -805,7 +806,8 @@
       "criterio": "Un solo posto spiega quali servizi offre BigAnt e a che punto è ciascuno",
       "stato": "implementata in locale, rilascio e collaudo sul server da fare",
       "prove": [
-        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare."
+        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare.",
+        "T0, 10 ottobre: controllo date condiviso senza cambi di comportamento; date impossibili rifiutate senza scritture e bisestile valido verificato nei contratti. 284/284 test e check 5/5; stati e limiti del riordino invariati."
       ]
     },
     {

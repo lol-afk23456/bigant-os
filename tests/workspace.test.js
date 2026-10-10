@@ -91,6 +91,14 @@ test('contratti: avviso a 30 giorni inclusi, PDF del proprio cliente e nessun do
   assert.ok(!('contracts' in (await f.request('/api/client-record/state?clientId=demo-bottega', f.team)).body));
   const docs = (await f.request('/api/cliente/dashboard?clientId=demo-bottega', f.client)).body.sezioni.find(section => section.id === 'documenti');
   assert.equal(docs.contratti.length, 4); assert.deepEqual(docs.fatture, []); assert.ok(!JSON.stringify(docs).includes('amount_cents'));
+  const contract = { title: 'Contratto bisestile di prova', startDate: '2028-02-29', endDate: '2028-03-01', renewal: 'Da concordare', pdfBase64: pdf };
+  const countBefore = f.store.one('SELECT count(*) n FROM os_client_contract_docs').n;
+  for (const startDate of ['2027-02-29', '2028-02-30', '2028-13-01']) {
+    const refused = await f.request('/api/client-record/contracts?clientId=demo-bottega', f.owner, 'POST', { ...contract, startDate });
+    assert.equal(refused.status, 400);
+  }
+  assert.equal(f.store.one('SELECT count(*) n FROM os_client_contract_docs').n, countBefore);
+  assert.equal((await f.request('/api/client-record/contracts?clientId=demo-bottega', f.owner, 'POST', contract)).status, 201);
 });
 
 test('credenziali cifrate e aperte solo dal team assegnato, audit senza segreti e contesto autenticato', async t => {

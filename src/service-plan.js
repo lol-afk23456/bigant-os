@@ -2,9 +2,9 @@ import { AppError, requireOwner, text, now } from './store.js';
 import { services, agentDefinitions } from './registry.js';
 import { agentServices } from './agents/catalog.js';
 import { catalogoServizi } from './servizi/catalogo.js';
+import { isISODate as validDate } from './date-validation.js';
 
 const states = ['Attivo', 'In preparazione', 'Futuro'];
-const validDate = value => typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && Number.isFinite(Date.parse(value)) && new Date(value).toISOString().slice(0, 10) === value;
 // The playbook is the commercial catalog. Unmapped specialties remain available too.
 const definitions = [...catalogoServizi.map(item => ({ id: item.codice, name: item.nome, source: item.scheda, sourceStatus: item.statoPlaybook,
   description: item.problema, inputs: item.richieste, outputs: item.include, steps: item.flusso, agents: item.agenti, registryIds: item.registro,

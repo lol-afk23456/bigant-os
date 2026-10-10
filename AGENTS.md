@@ -2,6 +2,8 @@
 
 **Punto di partenza (9 ottobre 2026): `docs/PASSAGGIO-CODEX.md`** — accessi, server reale su Railway, stato, priorità e regole. **Documento unico per Codex: `docs/MAPPATURA-FINALE-CODEX.md`**; ordine di esecuzione in `docs/PIANO-RIORDINO-CODEX.md`; dettaglio in `docs/MAPPATURA-MIGLIORIE.md`.
 
+**Estensione autorizzata il 10 ottobre:** leggere anche `docs/TASK-AVANZAMENTO.md`, `docs/STRUMENTI.md` e `docs/COSTI.md`. T0 iniziata come supporto al riordino; T1–T10 dopo le fasi 0–7, ancora incomplete. Il proprietario ha confermato le modifiche nella cartella del progetto; nessun nuovo file sul Mac fuori da questa fino all'archivio T10. Stop alle attività onerose e avviso all'80% del budget totale; costi effettivi ancora da riconciliare. Apple esclusa dai collegamenti reali della nuova tranche. Nessun dato reale dei clienti del nuovo prompt nel repository.
+
 Prima di ogni sessione rileggere `docs/BRIEF-BIGANT.md`, `docs/VERIFICA-COPERTURA-BRIEF.md` e `docs/PASSAGGIO-CONSEGNE.md`. Il brief esteso è conservato integralmente; la matrice storica non ne misura ancora tutto il perimetro. Per proseguire usare il ramo remoto, senza forzare la storia locale.
 
 Leggere README, docs/BRIEF-BIGANT.md, docs/DECISIONI.md e docs/REPORT-NOTTE.md prima di modificare.

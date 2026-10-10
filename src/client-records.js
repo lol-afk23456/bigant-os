@@ -1,5 +1,6 @@
 import { AppError, requireClient, requireOwner, uid, now, text } from './store.js';
 import { createVault } from './vault.js';
+import { isISODate } from './date-validation.js';
 
 export function createClientRecords({ store: s, production, env = {}, clock = () => new Date() }) {
   const vault = createVault(env);
@@ -50,7 +51,7 @@ export function createClientRecords({ store: s, production, env = {}, clock = ()
     };
   }
   function validDate(value) {
-    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value) || !Number.isFinite(Date.parse(value)) || new Date(value).toISOString().slice(0, 10) !== value) throw new AppError('Data non valida.');
+    if (!isISODate(value)) throw new AppError('Data non valida.');
     return value;
   }
   function checkedText(value, name, max = 500) {
