@@ -48,3 +48,13 @@ Permessi: il server conserva `/api/agency/*` riservato ai soci. Accesso diretto 
 Backup Railway delle 20:05, 801 MB, riconfermato via metadati prima del rilascio. Modifica solo interfaccia: nessuna migrazione o scrittura automatica ai dati.
 
 Rilascio concluso: codice `4c04e8a`, deployment `c92ec2b8-0faf-486f-a7f8-376239048b74` SUCCESS. Health ok, `app.js` identico al codice verificato e API servizio anonima rifiutata con 401. Browser online con sessione socio: indice Social del solo BigAnt (cliente di prova), elenco e dettaglio del contenuto di collaudo già presente, versione 2, fonte inventata e nessuna data pianificata. Ricarica conserva attività e dettaglio; Indietro torna all’elenco. Schermo 390 px senza overflow, zero errori/avvisi console. Screenshot `.cache/riordino-browser/service-online.png` e `service-online-mobile.png`. Nessun nuovo contenuto o account creato; schede degli account nominali conservate per il titolare.
+
+## Attività conservata dopo la ricarica — correzione del 10 ottobre
+
+Difetto riprodotto online: aprendo BigAnt (cliente di prova) → scheda, la ricarica di `#clients:sections` riportava all’agenzia BigAnt. Nessun salvataggio eseguito sulla scheda errata. La conservazione del contesto introdotta per la pagina servizio non copriva ancora scheda e anteprima.
+
+Ora tutti i percorsi con attività (Clienti, Vista cliente, Profili, Fidelity, Growth, Sciame, Servizi) conservano l’identificativo nel collegamento. Restano validi gli indirizzi precedenti dei report; un collegamento con due clienti discordanti o parametri malformati viene rifiutato. Il cambio dal selettore chiude i moduli e il dettaglio precedenti, invalida le operazioni pendenti e apre l’indice per la nuova attività. Un rifiuto del server non ripiega su un altro cliente. Nessuna modifica ai permessi o alle API.
+
+Cinque nuove prove di navigazione verificano ricarica, chiamate effettive con attività corretta, report nuovi/precedenti, parametri invalidi, chiusura dei moduli e rifiuto senza ripiego. **51/51 mirate, 899/899 nella suite completa**, zero saltate; controllo progetto **5/5**, 183 JavaScript, 103 documenti e 254 collegamenti.
+
+Browser locale: nota Bottega Aurora salvata come versione 2, ricarica conserva nota e attività; Guarda come il cliente conserva la stessa attività anche dopo ricarica; cambio a Studio Orizzonte e nuova ricarica mantengono Studio Orizzonte. Zero errori/avvisi console. Copia Railway delle 20:05, 801 MB, riconfermata prima del rilascio; nessuna migrazione o scrittura automatica ai dati.
