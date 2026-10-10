@@ -1,7 +1,8 @@
 import { agentDefinitions } from './registry.js';
 import { agentiSciame } from './sciame/agenti.js';
-import { canAccessClient, requireOwner, AppError } from './store.js';
+import { canAccessClient, AppError } from './store.js';
 import { directorPriorities } from './swarm-priorities.js';
+import { createProfileDirectory } from './profile-directory.js';
 
 export const ownerNavigation = [
   ['home', 'Home', 'grid', 'Lavoro'], ['clients', 'Clienti', 'users', 'Lavoro'],
@@ -26,6 +27,7 @@ export function navigationFor(user, activeServices = []) {
 }
 
 export function createWorkspace({ store, clock = () => new Date(), budget, expiring, agentConfig, connections }) {
+  const profileDirectory = createProfileDirectory({ store, clock });
   function assignedClients(user) {
     return store.query('SELECT * FROM os_clients WHERE active=1 ORDER BY name').filter(client => canAccessClient(store, user, client.id));
   }
@@ -52,12 +54,5 @@ export function createWorkspace({ store, clock = () => new Date(), budget, expir
         usedCents: spending.usedCents, capCents: spending.capCents },
       growth: { connected: false, newLeads: null }, connections: connections.summary() };
   }
-  function profiles(user, clientId) {
-    if (!canAccessClient(store, user, clientId)) throw new AppError('Attività non accessibile.', 403);
-    if (user.role === 'collaborator') requireOwner(user);
-    return { clientId, items: [
-      ['instagram', 'Instagram'], ['facebook', 'Facebook'], ['linkedin', 'LinkedIn aziendale'], ['tiktok', 'TikTok'], ['google-business', 'Google Business Profile'], ['website', 'Sito web']
-    ].map(([id, name]) => ({ id, name, status: 'Da collegare', lastSync: null, metrics: null })) };
-  }
-  return { home, profiles, approvals, priorities: user => directorPriorities(store, user) };
+  return { home, profiles: profileDirectory.state, saveProfile: profileDirectory.save, approvals, priorities: user => directorPriorities(store, user) };
 }

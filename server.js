@@ -159,6 +159,7 @@ export function createApp({database=':memory:',origin='http://127.0.0.1:4330',wo
         if(path==='/api/workspace/progress'&&method==='GET')return json(res,platformProgress(u));
         if(path==='/api/workspace/home'&&method==='GET')return json(res,workspace.home(u));
         if(path==='/api/workspace/profiles'&&method==='GET')return json(res,workspace.profiles(u,clientId));
+        const profileMatch=path.match(/^\/api\/workspace\/profiles\/([^/]+)$/);if(profileMatch&&method==='PATCH')return json(res,workspace.saveProfile(u,clientId,profileMatch[1],b));
         if(path==='/api/workspace/priorities'&&method==='GET')return json(res,workspace.priorities(u));
         if(path==='/api/overview'&&method==='GET')return json(res,overview(u,clientId));
         if(path==='/api/clients'&&method==='GET')return json(res,{items:allClients(u)});
