@@ -1,0 +1,317 @@
+import {createMetaOAuth} from './src/meta-oauth.js';
+import {createMetaProfiles} from './src/meta-profiles.js';
+import http from 'node:http';
+import QRCode from 'qrcode';
+import {safePath} from './scripts/backup.js';
+import {createBackupScheduler} from './src/backups.js';
+import {createBilling} from './src/billing.js';
+import {createGoogleOAuth} from './src/google-oauth.js';
+import {createBusinessProfileOAuth} from './src/business-profile-oauth.js';
+import {createBusinessProfile} from './src/business-profile.js';
+import {createConnections} from './src/connections.js';
+import {createServicePlan} from './src/service-plan.js';
+import {createCostControl} from './src/cost-control.js';
+import {createAgentSchedules} from './src/agent-schedules.js';
+import {createAgentWork} from './src/agent-work.js';
+import {createAgentTrials} from './src/agent-trials.js';
+import {createAgentConfig} from './src/agent-config.js';
+import {createClientRecords} from './src/client-records.js';
+import {createEmailMarketing} from './src/email-marketing.js';
+import {createClientResults} from './src/client-results.js';
+import {createWorkspace,navigationFor} from './src/workspace.js';
+import {createPlatformProgress} from './src/platform-progress.js';
+import {readFileSync,mkdirSync,statSync,existsSync} from 'node:fs';
+import {resolve,dirname,extname} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {randomBytes,createHash,timingSafeEqual} from 'node:crypto';
+import {openStore,seedCore,seedRealCore,AppError,requireOwner,requireClient,canAccessClient,passwordHash,verifyPassword,uid,now,text} from './src/store.js';
+import {services,departments,agentDefinitions,integrations,managementModules} from './src/registry.js';
+import {createProduction} from './src/production.js';
+import {createGrowthModule} from './src/growth.js';
+import {createFidelityModule} from './src/fidelity.js';
+import {createAdministrationModule} from './src/administration.js';
+import {createOrchestrator} from './src/orchestrator.js';
+import {createAgencyModule} from './src/agency/index.js';
+import {createSciame} from './src/sciame/index.js';
+import {createMotore} from './src/motori/index.js';
+import {createClientDashboard} from './src/cliente/dashboard.js';
+import {catalogoServizi,pacchetti} from './src/servizi/catalogo.js';
+const root=dirname(fileURLToPath(import.meta.url));
+const brandAssets=Object.freeze({
+  '/brand/logo.png':{file:'logo.png.base64',sha256:'664e4ae8d8170427554fe36c2739562b71f24b8ed533f6068aa012b97ec2864c'},
+  '/brand/icon.png':{file:'icon.png.base64',sha256:'be66a098b2a5ffa99187279e7c606d24129fc13d34b865a17dcf530506ca0009'}
+});
+export function decodeBrandAsset(encoded,expectedSha256){
+  if(typeof encoded!=='string'||encoded.length>1000000||/[^A-Za-z0-9+/=\r\n]/.test(encoded))throw new Error('Codifica base64 del brand non valida.');
+  const compact=encoded.replace(/[\r\n]/g,''),bytes=Buffer.from(compact,'base64');
+  if(!compact||compact.length%4!==0||bytes.toString('base64')!==compact)throw new Error('Codifica base64 del brand non valida.');
+  if(!/^[a-f0-9]{64}$/.test(expectedSha256)||createHash('sha256').update(bytes).digest('hex')!==expectedSha256)throw new Error('Integrità SHA-256 del brand non valida.');
+  return bytes;
+}
+const digest=value=>createHash('sha256').update(String(value)).digest('hex');
+const safeEqual=(a,b)=>{const x=Buffer.from(String(a||'')),y=Buffer.from(String(b||''));return x.length===y.length&&timingSafeEqual(x,y);};
+const profiles=['demo-owner','demo-collaborator','demo-client','demo-client-other'];
+const publicUser={id:'os-public',role:'owner',name:'Visitatore DEMO',active:1};
+export function createApp({database=':memory:',origin='http://127.0.0.1:4330',worker=false,clock=()=>new Date(),motore=null,importaProveSciame=false,env=process.env,growthProviderOptions={},walletProviderOptions={},businessProfileProviderOptions={},metaProfileProviderOptions={},agentTrialProviderOptions={},agentWorkProviderOptions={}}={}) {
+  const realMode=env.BIGANT_MODALITA==='reale';
+  const base=new URL(origin);
+  if(realMode){if(base.protocol!=='https:')throw new Error('Modalità reale: BIGANT_ORIGINE deve essere un indirizzo https.');}
+  else if(base.protocol!=='http:'||!['localhost','127.0.0.1'].includes(base.hostname))throw new Error('Prototipo DEMO: è consentito soltanto un indirizzo HTTP locale.');
+  const store=openStore(database);
+  if(realMode)seedRealCore(store,{socioEmail:env.BIGANT_SOCIO_EMAIL,socioPassword:env.BIGANT_SOCIO_PASSWORD_INIZIALE});else seedCore(store);
+  const costControl=createCostControl({store,clock});
+  const connections=createConnections({store,env});
+  const gmailEnabled=realMode&&env.BIGANT_GROWTH_GMAIL_ENABLED==='true',calendarEnabled=()=>realMode&&env.BIGANT_GROWTH_CALENDAR_ENABLED==='true',googleAuth=realMode?createGoogleOAuth({store,connections,env,origin,enabled:gmailEnabled,calendarEnabled,clock,providerOptions:growthProviderOptions}):null;
+  const businessProfileEnabled=()=>realMode&&env.BIGANT_GBP_ENABLED==='true';
+  const businessProfileAuth=createBusinessProfileOAuth({store,connections,env,origin,enabled:businessProfileEnabled,clock,providerOptions:businessProfileProviderOptions});
+  const metaProfilesEnabled=()=>realMode&&env.BIGANT_META_PROFILES_ENABLED==='true';
+  const metaAuth=createMetaOAuth({store,connections,env,origin,enabled:metaProfilesEnabled,clock,providerOptions:metaProfileProviderOptions});
+  const metaProfiles=createMetaProfiles({store,connections,enabled:metaProfilesEnabled,clock,providerOptions:metaProfileProviderOptions});
+  const businessProfile=createBusinessProfile({store,auth:businessProfileAuth,enabled:businessProfileEnabled,clock,providerOptions:businessProfileProviderOptions});
+  const production=createProduction({store,realMode}),growth=createGrowthModule({store,origin,realMode,costControl,connections,googleAuth,gmailEnabled,calendarEnabled,clock,externalEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true',providerOptions:growthProviderOptions}),fidelity=createFidelityModule({store,origin,realMode,env,clock,walletProviderOptions}),administration=createAdministrationModule({store,clock});
+  growth.seed(realMode);fidelity.seed(realMode);administration.seed(realMode);
+  let agentTrials,agentWork;
+  const agentConfig=createAgentConfig({store,root,env,clock,connections,trialState:(id,c)=>agentTrials?.stateForAgent(id,c)||null,operationalState:(id,c)=>agentWork?.state(id,c)||null});
+  const orchestrator=createOrchestrator({store,production,administration,growth,fidelity,clock,realMode,costControl,guard:realMode?(id,options)=>agentConfig.requireRun(id,options):null});
+  agentTrials=createAgentTrials({store,connections,costControl,reserve:orchestrator.reserve,configFor:id=>agentConfig.entry(id).config,enabled:()=>realMode&&env.BIGANT_SCIAME_AI_TRIALS_ENABLED==='true',clock,providerOptions:agentTrialProviderOptions});
+  agentWork=createAgentWork({store,connections,trials:agentTrials,configFor:id=>agentConfig.entry(id).config,orchestrator,production,clock,enabled:()=>realMode&&env.BIGANT_SCIAME_AI_ENABLED==='true',providerOptions:agentWorkProviderOptions});
+  const agentSchedules=createAgentSchedules({store,work:agentWork,clock,enabled:()=>realMode&&env.BIGANT_SCIAME_SCHEDULES_ENABLED==='true'});
+  const agency=createAgencyModule({store});
+  const sciame=createSciame({store,production,administration,growth,orchestrator,root,env,clock,manualState:()=>({active:['social','quality'].some(id=>agentWork.state(id,agentConfig.entry(id).config).active)}),motore:motore?(typeof motore==='string'?createMotore({nome:motore,root,env}):motore):null});
+  if(importaProveSciame)sciame.importaProve(resolve(root,'docs/demo-sciame'));
+  const records=createClientRecords({store,production,env,clock});
+  const clientResults=createClientResults({store,clock});
+  const emailMarketing=createEmailMarketing({store,clock});
+  const workspace=createWorkspace({store,clock,budget:()=>orchestrator.budget(),expiring:records.expiring,agentConfig,connections,businessProfile,metaProfiles});
+  const cliente=createClientDashboard({store,records,businessProfile,metaProfiles,clock,clientResults,emailMarketing,publicProfiles:workspace.publicProfiles});
+  const servicePlan=createServicePlan({store,agentConfig});
+  const billing=createBilling({store,administration});
+  const platformProgress=createPlatformProgress({store,realMode,connections,agentConfig,growth,fidelity,businessProfile,metaProfiles,backup:()=>backups?.status()||{enabled:false},clock});
+  const limits=new Map();
+  function rate(key,max=120,window=60000) {let l=limits.get(key);if(!l||l.until<Date.now()){l={count:0,until:Date.now()+window};limits.set(key,l);}if(++l.count>max)throw new AppError('Troppe richieste: riprova tra poco.',429);if(limits.size>10000)for(const[k,v]of limits)if(v.until<Date.now())limits.delete(k);}
+  function session(req) {const token=(req.headers.cookie||'').split(';').map(x=>x.trim()).find(x=>x.startsWith('bigant_os='))?.slice(10);if(!token)return null;return store.one('SELECT u.id,u.name,u.email,u.role,u.tenant_id,u.active,u.must_change_password,s.csrf,s.id session_id FROM os_sessions s JOIN os_users u ON u.id=s.user_id WHERE s.id=? AND s.expires_at>? AND u.active=1',digest(token),Date.now());}
+  function safeUser(u){return u?{id:u.id,name:u.name,email:u.email,role:u.role,tenant_id:u.tenant_id,active:u.active,mustChangePassword:!!u.must_change_password}:null;}
+  function login(res,u) {const token=randomBytes(32).toString('base64url'),csrf=randomBytes(32).toString('base64url');store.run('INSERT INTO os_sessions VALUES(?,?,?,?)',digest(token),u.id,csrf,Date.now()+8*3600000);res.setHeader('Set-Cookie',`bigant_os=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=28800${realMode?'; Secure':''}`);store.audit(u,u.tenant_id,'Accesso effettuato',u.id);return {user:safeUser(u),csrf,demo:!realMode};}
+  async function body(req) {let length=0;const chunks=[];for await(const chunk of req){length+=chunk.length;if(length>800000)throw new AppError('Richiesta troppo grande.',413);chunks.push(chunk);}if(!length)return{};if(!req.headers['content-type']?.includes('application/json'))throw new AppError('Formato della richiesta non supportato.',415);try{return JSON.parse(Buffer.concat(chunks).toString('utf8'));}catch{throw new AppError('Dati non validi.');}}
+  const json=(res,data,status=200)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
+  function reply(res,result){if(!result)throw new AppError('Funzione non trovata.',404);if(result.contentType&&!result.contentType.startsWith('application/json')){res.writeHead(result.status||200,{'Content-Type':result.contentType,'Cache-Control':'no-store',...result.headers});return res.end(result.data);}return json(res,result.data,result.status||200);}
+  function allClients(user){return store.query('SELECT * FROM os_clients WHERE active=1').filter(c=>canAccessClient(store,user,c.id)).map(c=>user.role==='client'?{id:c.id,name:c.name,services_json:JSON.stringify(JSON.parse(c.services_json).filter(id=>id!=='growth'&&services.some(service=>service.id===id&&service.status!=='Escluso')))}:c);}
+  function clientFrom(url,user,{optional=false}={}) {const id=url.searchParams.get('clientId')||user.tenant_id||(user.role==='owner'?'demo-bigant':allClients(user)[0]?.id);if(!id){if(optional)return null;throw new AppError('Nessuna attività assegnata.',403);}requireClient(store,user,id);return id;}
+  function overview(user,clientId){
+    const clients=allClients(user),currentClient=clients.find(c=>c.id===clientId)||null,ownedServices=JSON.parse(currentClient?.services_json||'[]');
+    // L'area cliente usa le proprie viste: il contenitore comune non consegna
+    // bozze, memoria o decisioni interne, neppure per un servizio acquistato.
+    if(user.role==='client')return {user:safeUser(user),demo:!realMode,navigation:navigationFor(user,ownedServices),clients,currentClient,currentClientServices:ownedServices,
+      tasks:[],contents:[],approvals:[],activity:[],memory:[],agency:null,admin:null,
+      summary:{tasksOpen:0,late:0,approvalsPending:0,clientsActive:clients.length},
+      registry:{services:services.filter(service=>ownedServices.includes(service.id)).map(({id,name})=>({id,name})),departments:[],agents:[],integrations:[],managementModules:[]}};
+    const tasks=store.query('SELECT * FROM os_tasks WHERE client_id=? ORDER BY due',clientId).filter(t=>user.role!=='client'||ownedServices.includes(t.service)||t.service==='account');
+    const contents=store.query('SELECT * FROM os_contents WHERE client_id=? ORDER BY updated_at DESC',clientId).filter(c=>user.role!=='client'||ownedServices.includes(c.service));
+    const approvals=store.query('SELECT * FROM os_approvals WHERE client_id=? ORDER BY created_at DESC',clientId).filter(a=>user.role==='owner'||(user.role==='collaborator'?(a.kind==='content'&&contents.some(c=>c.id===a.entity_id&&c.service==='social')):(a.kind==='content'&&contents.some(c=>c.id===a.entity_id))||(a.kind==='fidelity_campaign'&&ownedServices.includes('fidelity'))||(a.kind==='agent_output'&&!!store.one("SELECT 1 FROM os_agent_outputs WHERE id=? AND client_id=? AND visibility='client'",a.entity_id,clientId)&&ownedServices.includes(store.one('SELECT service FROM os_agent_outputs WHERE id=?',a.entity_id).service))));
+    const activity=store.query(`SELECT * FROM os_audit WHERE client_id=? ${user.role==='owner'?'':user.role==='client'?"AND visibility='client'":"AND visibility!='admin'"} ORDER BY created_at DESC LIMIT 100`,clientId).map(a=>({...a,detail:JSON.parse(a.detail)}));
+    const memory=store.query(`SELECT * FROM os_memory WHERE client_id=? AND ${user.role==='client'?"visibility='client'":"visibility!='admin'"}`,clientId);
+    const agency=user.role==='owner'?{
+      tasksOpen:store.one("SELECT count(*) n FROM os_tasks WHERE status!='done'").n,
+      late:store.one("SELECT count(*) n FROM os_tasks WHERE status!='done' AND due<?",now()).n,
+      approvalsPending:store.one("SELECT count(*) n FROM os_approvals WHERE status='pending'").n,
+      servicesPerClient:clients.map(c=>({clientId:c.id,count:JSON.parse(c.services_json).length})),
+      approvals:store.query('SELECT * FROM os_approvals ORDER BY created_at DESC LIMIT 300'),
+      activity:store.query('SELECT a.*,u.name actor_name FROM os_audit a LEFT JOIN os_users u ON u.id=a.user_id ORDER BY a.created_at DESC LIMIT 150').map(a=>({...a,detail:JSON.parse(a.detail)})),
+      priorities:store.query("SELECT * FROM os_jobs WHERE agent='director' AND status='done' ORDER BY finished_at DESC LIMIT 1").flatMap(j=>JSON.parse(j.result).priorities||[])
+    }:null;
+    return {user:safeUser(user),demo:!realMode,navigation:navigationFor(user,ownedServices),workerError,backup:user.role==='owner'?(backups?.status()||{enabled:false}):undefined,agency,clients,currentClient,currentClientServices:ownedServices,tasks,contents,approvals,activity,memory,
+      summary:{tasksOpen:tasks.filter(t=>t.status!=='done').length,late:tasks.filter(t=>t.status!=='done'&&t.due&&t.due<now()).length,approvalsPending:approvals.filter(a=>a.status==='pending').length,clientsActive:clients.length},
+      registry:{services:user.role==='client'?services.filter(x=>ownedServices.includes(x.id)):services,departments:user.role==='owner'?departments:[],agents:user.role==='owner'?agentDefinitions:[],integrations,managementModules:user.role==='owner'?managementModules:[]},
+      admin:user.role==='owner'?administration.state(clientId,user):null};
+  }
+  async function handler(req,res){
+    res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Referrer-Policy','no-referrer');res.setHeader('X-Frame-Options','DENY');res.setHeader('Permissions-Policy','camera=(self), microphone=(), geolocation=()');
+    res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; form-action 'self'");
+    try{
+      const bound=server.address();const runtimeOrigin=realMode?origin:`http://${base.hostname}:${typeof bound==='object'&&bound?bound.port:base.port||4330}`;
+      const expectedHost=realMode?base.host:new URL(runtimeOrigin).host;
+      if(realMode){if(req.headers.host!==expectedHost)throw new AppError('Richiesta con host non autorizzato.',403);}
+      else if(!['127.0.0.1','::1','::ffff:127.0.0.1'].includes(req.socket.remoteAddress)||req.headers.host!==expectedHost)throw new AppError('Il prototipo è disponibile solo in locale.',403);
+      const url=new URL(req.url,runtimeOrigin),path=url.pathname,method=req.method;
+      if(!['GET','HEAD','POST','PATCH','DELETE'].includes(method))throw new AppError('Metodo non consentito.',405);
+      if(method==='GET'&&path==='/health')return json(res,{status:'ok',app:'BigAnt OS',demo:!realMode,externalActions:realMode&&(env.BIGANT_GOOGLE_WALLET_ENABLED==='true'||gmailEnabled||calendarEnabled()),externalReadsEnabled:realMode&&env.BIGANT_GROWTH_EXTERNAL_ENABLED==='true'||businessProfileEnabled()||metaProfilesEnabled()});
+      const u=session(req);
+      if(method==='GET'&&path==='/api/session')return json(res,{user:safeUser(u),csrf:u?.csrf||null,demo:!realMode,profiles:realMode?[]:profiles.map(id=>store.one('SELECT id,name,role FROM os_users WHERE id=? AND active=1',id)).filter(Boolean)});
+      if(!['GET','HEAD'].includes(method)&&req.headers.origin!==runtimeOrigin)throw new AppError('Origine della richiesta non autorizzata.',403);
+      if(!realMode&&method==='POST'&&path==='/api/demo/login'){rate('login:'+req.socket.remoteAddress,30,60000);const b=await body(req);if(!profiles.includes(b.profile))throw new AppError('Profilo dimostrativo non valido.');const profile=store.one('SELECT * FROM os_users WHERE id=? AND active=1',b.profile);if(!profile)throw new AppError('Profilo disattivato.',403);return json(res,login(res,profile));}
+      if(method==='POST'&&path==='/api/login'){rate('password:'+req.socket.remoteAddress,8,900000);const b=await body(req);const user=store.one('SELECT * FROM os_users WHERE email=? AND active=1',text(b.email,254).toLowerCase());if(!user||user.id==='os-orchestrator'||!user.password_hash||!verifyPassword(typeof b.password==='string'&&b.password.length<=256?b.password:'',user.password_hash))throw new AppError('Email o password non corretta.',401);return json(res,login(res,user));}
+      if(method==='GET'&&/^\/api\/fidelity\/public\/cards\/[^/]+\/qr$/.test(path)){rate('public:'+req.socket.remoteAddress,80);const token=path.split('/')[5];await fidelity.handle({method:'GET',path:'/public/cards/'+token,user:null});return reply(res,{data:await QRCode.toBuffer(runtimeOrigin+'/fidelity/card/'+token,{type:'png',width:280,margin:2,errorCorrectionLevel:'M'}),contentType:'image/png'});}
+      if(path.startsWith('/api/fidelity/public/')||((/^\/api\/fidelity\/branding\/[^/]+\.png$/.test(path)||path==='/api/fidelity/wallet/icon.png')&&method==='GET')) {rate('public:'+req.socket.remoteAddress,80);return reply(res,await fidelity.handle({method,path:path.slice('/api/fidelity'.length)+url.search,body:['GET','HEAD'].includes(method)?{}:await body(req),user:null,clientId:null}));}
+      let publicGrowth=path.match(/^\/api\/growth\/(public\/book|unsubscribe)\/([^/]+)$/);
+      if(publicGrowth||path==='/api/growth/public/inquiry'){
+        rate('public:'+req.socket.remoteAddress,80);let clientId='demo-bigant';
+        if(realMode&&publicGrowth?.[1]==='public/book'){
+          const token=publicGrowth[2];
+          if(method==='GET')return json(res,await growth.calendar.publicSlots(token));
+          if(method==='POST')return json(res,await growth.calendar.publicBook(token,await body(req)));
+          throw new AppError('Metodo non consentito.',405);
+        }
+        if(publicGrowth){const kind=publicGrowth[1]==='unsubscribe'?'unsubscribe':'booking';const t=store.one('SELECT workspace FROM gr_tokens WHERE id=? AND kind=? AND expires>?',publicGrowth[2],kind,Date.now());if(!t)throw new AppError('Collegamento scaduto o non valido.',410);clientId=t.workspace;}
+        if(publicGrowth?.[1]!=='unsubscribe'&&!store.one('SELECT 1 FROM os_clients WHERE id=? AND active=1',clientId))throw new AppError('Attività non disponibile.',404);
+        return reply(res,await growth.handle({method,path:path.slice('/api/growth'.length),body:['GET','HEAD'].includes(method)?{}:await body(req),user:publicUser,clientId}));
+      }
+      if(path.startsWith('/api/')){
+        if(!u)throw new AppError('Accedi per continuare.',401);rate('api:'+u.id,300);
+        if(!['GET','HEAD'].includes(method)&&!safeEqual(req.headers['x-csrf-token'],u.csrf))throw new AppError('Sessione scaduta: ricarica la pagina.',403);
+        if(path==='/api/logout'&&method==='POST'){store.run('DELETE FROM os_sessions WHERE id=?',u.session_id);res.setHeader('Set-Cookie',`bigant_os=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${realMode?'; Secure':''}`);return json(res,{ok:true});}
+        if(path==='/api/account/password'&&method==='POST'){
+          rate('change-password:'+u.id,8,900000);
+          const b=await body(req),account=store.one('SELECT * FROM os_users WHERE id=?',u.id);
+          if(typeof b.currentPassword!=='string'||b.currentPassword.length>256||!verifyPassword(b.currentPassword,account.password_hash))throw new AppError('La password attuale non è corretta.',400);
+          if(typeof b.newPassword!=='string'||b.newPassword.length<14||b.newPassword.length>256)throw new AppError('Scegli una password di almeno 14 caratteri e al massimo 256.');
+          if(b.newPassword!==b.confirmPassword)throw new AppError('Le nuove password non coincidono.');
+          if(verifyPassword(b.newPassword,account.password_hash))throw new AppError('La nuova password deve essere diversa da quella provvisoria.');
+          store.transaction(()=>{store.run('UPDATE os_users SET password_hash=?,must_change_password=0 WHERE id=?',passwordHash(b.newPassword),u.id);store.run('DELETE FROM os_sessions WHERE user_id=?',u.id);store.audit(u,null,'Password personale aggiornata',u.id,{},'admin');});
+          return json(res,login(res,store.one('SELECT * FROM os_users WHERE id=?',u.id)));
+        }
+        if(u.must_change_password)throw new AppError('Cambia la password provvisoria prima di continuare.',403);
+        const clientId=clientFrom(url,u,{optional:method==='GET'&&['/api/overview','/api/clients','/api/workspace/home','/api/workspace/approvals','/api/workspace/contracts','/api/workspace/priorities','/api/workspace/progress','/api/client-results/index'].includes(path)});
+        const b=['GET','HEAD'].includes(method)?{}:await body(req);
+        if(path==='/api/client-results/index'&&method==='GET')return json(res,clientResults.index(u));
+        if(path==='/api/client-results'&&method==='GET')return json(res,clientResults.state(u,clientId,url.searchParams.get('period')));
+        const reportAction=path.match(/^\/api\/client-results\/(save|publish|hide)$/);
+        if(reportAction&&method==='POST')return json(res,clientResults[reportAction[1]](u,clientId,b));
+        if(path==='/api/billing/state'&&method==='GET')return json(res,billing.state(u));
+        const billingMatch=path.match(/^\/api\/billing\/tracker\/([^/]+)$/);if(billingMatch&&method==='PATCH')return json(res,billing.label(u,billingMatch[1],b));
+        const googleMatch=path.match(/^\/api\/connections\/google\/oauth\/(state|start|finish)$/);
+        if(googleMatch){requireOwner(u);if(!googleAuth)throw new AppError('Google non disponibile in modalità DEMO.',409);if(method==='GET'&&googleMatch[1]==='state')return json(res,googleAuth.state(u));if(method==='POST'&&googleMatch[1]==='start')return json(res,googleAuth.start(u,b));if(method==='POST'&&googleMatch[1]==='finish')return json(res,await googleAuth.finish(u,b));}
+        const metaAuthMatch=path.match(/^\/api\/connections\/meta\/oauth\/(state|configure|start|finish|disconnect)$/);
+        if(metaAuthMatch){
+          requireOwner(u);const action=metaAuthMatch[1];
+          if(method==='GET'&&action==='state')return json(res,metaAuth.state(u));
+          if(method==='POST'&&action!=='state')return json(res,await metaAuth[action](u,b));
+          throw new AppError('Metodo non consentito.',405);
+        }
+        const businessAuthMatch=path.match(/^\/api\/connections\/gbp\/oauth\/(state|start|finish|disconnect)$/);
+        if(businessAuthMatch){
+          requireOwner(u);const action=businessAuthMatch[1];
+          if(method==='GET'&&action==='state')return json(res,businessProfileAuth.state(u));
+          if(method==='POST'&&action!=='state')return json(res,await businessProfileAuth[action](u,b));
+          throw new AppError('Metodo non consentito.',405);
+        }
+        const businessMatch=path.match(/^\/api\/business-profile\/(state|accounts|locations|configure|check|activate|refresh)$/);
+        if(businessMatch){
+          const action=businessMatch[1];
+          if(method==='GET'&&action==='state')return json(res,businessProfile.state(u,clientId));
+          if(method==='POST'&&action!=='state'){requireOwner(u);return json(res,await businessProfile[action](u,clientId,b));}
+          throw new AppError('Metodo non consentito.',405);
+        }
+        const metaMatch=path.match(/^\/api\/meta-profiles\/(state|pages|configure|check|activate|refresh|disconnect)$/);
+        if(metaMatch){
+          const action=metaMatch[1];
+          if(method==='GET'&&action==='state')return json(res,metaProfiles.state(u,clientId));
+          if(method==='POST'&&action!=='state'){requireOwner(u);return json(res,await metaProfiles[action](u,clientId,b));}
+          throw new AppError('Metodo non consentito.',405);
+        }
+        if(path==='/api/connections'&&method==='GET')return json(res,connections.state(u));
+        const connectionMatch=path.match(/^\/api\/connections\/([^/]+)(\/check)?$/);
+        if(connectionMatch&&method==='POST'){
+          const current=session(req);
+          if(!current||current.session_id!==u.session_id||current.must_change_password||current.role!==u.role||!safeEqual(current.csrf,u.csrf))throw new AppError('Sessione cambiata: accedi di nuovo.',403);
+          return json(res,connectionMatch[2]?connections.check(current,connectionMatch[1]):connections.save(current,connectionMatch[1],b));
+        }
+        if(path==='/api/service-plan'&&method==='GET')return json(res,servicePlan.state(u));
+        if(path==='/api/service-plan/prices'&&method==='POST')return json(res,servicePlan.addPrice(u,b),201);
+        const planMatch=path.match(/^\/api\/service-plan\/([^/]+)$/);if(planMatch&&method==='PATCH')return json(res,servicePlan.save(u,planMatch[1],b));
+        if(path==='/api/agent-config/state'&&method==='GET')return json(res,agentConfig.state(u));
+        const scheduleMatch=path.match(/^\/api\/agent-work\/([^/]+)\/schedule(\/preview)?$/);
+        if(scheduleMatch){const id=scheduleMatch[1];if(method==='POST')return json(res,scheduleMatch[2]?agentSchedules.preview(u,clientId,id,b):agentSchedules.save(u,clientId,id,b));if(method==='GET'&&!scheduleMatch[2])return json(res,agentSchedules.state(u,clientId,id));throw new AppError('Metodo non consentito.',405);}
+        const workMatch=path.match(/^\/api\/agent-work\/([^/]+)\/(authorize|preview|run)$/);
+        if(workMatch&&method==='POST'){const id=workMatch[1],action=workMatch[2];return json(res,action==='authorize'?agentWork.authorize(u,id,b):action==='preview'?agentWork.preview(u,clientId,id,b.brief,b):await agentWork.run(u,clientId,id,b));}
+        if(path==='/api/agent-work/quality/review'&&method==='GET')return json(res,agentWork.review(u,clientId,url.searchParams.get('contentId')));
+        const workResult=path.match(/^\/api\/agent-work\/results\/([^/]+)$/);if(workResult&&method==='GET')return json(res,agentWork.result(u,clientId,workResult[1]));
+        const trialMatch=path.match(/^\/api\/agent-config\/([^/]+)\/(check|trials)$/);
+        if(trialMatch&&method==='POST'&&trialMatch[2]==='check')return json(res,await agentTrials.check(u,trialMatch[1],b));
+        if(trialMatch&&method==='GET'&&trialMatch[2]==='trials')return json(res,agentTrials.history(u,trialMatch[1]));
+        const trialResult=path.match(/^\/api\/agent-trials\/([^/]+)$/);if(trialResult&&method==='GET')return json(res,agentTrials.result(u,trialResult[1]));
+        const agentMatch=path.match(/^\/api\/agent-config\/([^/]+)$/);if(agentMatch&&method==='PATCH')return json(res,agentConfig.save(u,agentMatch[1],b));
+        if(path==='/api/workspace/approvals'&&method==='GET')return json(res,{items:workspace.approvals(u)});
+        if(path==='/api/workspace/contracts'&&method==='GET')return json(res,{items:records.expiring(u)});
+        if(path==='/api/workspace/progress'&&method==='GET')return json(res,platformProgress(u));
+        if(path==='/api/workspace/home'&&method==='GET')return json(res,workspace.home(u));
+        if(path==='/api/workspace/profiles'&&method==='GET')return json(res,workspace.profiles(u,clientId));
+        const profileMatch=path.match(/^\/api\/workspace\/profiles\/([^/]+)$/);if(profileMatch&&method==='PATCH')return json(res,workspace.saveProfile(u,clientId,profileMatch[1],b));
+        if(path==='/api/workspace/priorities'&&method==='GET')return json(res,workspace.priorities(u));
+        if(path==='/api/overview'&&method==='GET')return json(res,overview(u,clientId));
+        if(path==='/api/clients'&&method==='GET')return json(res,{items:allClients(u)});
+        if(path==='/api/catalogo'&&method==='GET'){requireOwner(u);return json(res,{servizi:catalogoServizi,pacchetti});}
+        if(path==='/api/clients'&&method==='POST') {requireOwner(u);const name=text(b.name,140);let slug=text(b.slug,100);if(!slug){const base=(name.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,80)||'attivita').padEnd(3,'-');slug=base;let suffix=2;while(store.one('SELECT id FROM os_clients WHERE slug=?',slug))slug=base+'-'+suffix++;}if(!name||!/^[a-z0-9-]{3,100}$/.test(slug))throw new AppError('Nome e identificativo attività non validi.');if(!Array.isArray(b.services)||b.services.some(x=>!services.some(y=>y.id===x)))throw new AppError('Seleziona servizi validi.');const id=uid();const storedName=realMode?name:(name.includes('DEMO')?name:name+' · DEMO');try{store.run('INSERT INTO os_clients(id,name,slug,industry,services_json,created_at) VALUES(?,?,?,?,?,?)',id,storedName,slug,text(b.industry,100),JSON.stringify([...new Set(b.services)]),now());}catch(e){if(String(e).includes('UNIQUE'))throw new AppError('Identificativo già utilizzato.',409);throw e;}store.audit(u,id,'Attività creata',id);orchestrator.event('client.created',id,id);return json(res,{id},201);}
+        let m=path.match(/^\/api\/clients\/([^/]+)$/);if(m&&method==='PATCH'){requireOwner(u);const c=store.one('SELECT * FROM os_clients WHERE id=?',m[1]);if(!c)throw new AppError('Attività non trovata.',404);const selected=b.services??JSON.parse(c.services_json);if(!Array.isArray(selected)||selected.some(x=>!services.some(y=>y.id===x)))throw new AppError('Servizi non validi.');const risk=b.risk??c.risk;if(!['normal','watch','risk'].includes(risk))throw new AppError('Stato di rischio non valido.');store.run('UPDATE os_clients SET services_json=?,risk=? WHERE id=?',JSON.stringify(selected),risk,c.id);store.audit(u,c.id,'Servizi e rischio aggiornati',c.id);return json(res,{ok:true});}
+        if(path==='/api/users'&&method==='GET'){requireOwner(u);return json(res,{items:store.query('SELECT id,name,email,role,tenant_id,active,must_change_password FROM os_users WHERE id!=?' , 'os-orchestrator'),assignments:store.query('SELECT * FROM os_assignments')});}
+        if(path==='/api/users'&&method==='POST'){requireOwner(u);const emailOk=realMode?/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(text(b.email,254)):/^([^\s@]+)@[^\s@]+\.example$/.test(text(b.email,254));if(!['owner','collaborator','client'].includes(b.role)||!text(b.name,100)||!emailOk||typeof b.password!=='string'||b.password.length<14||b.password.length>256)throw new AppError(realMode?'Nome, email valida, ruolo e password di almeno 14 caratteri sono obbligatori.':'Nome, email .example, ruolo e password di almeno 14 caratteri sono obbligatori.');const tenant=b.role==='client'?b.clientId:null;if(tenant)requireClient(store,u,tenant);else if(b.role==='client')throw new AppError('Assegna il cliente.');const assignments=b.role==='collaborator'?(b.clientIds||[]):[];if(!Array.isArray(assignments))throw new AppError('Assegnazioni non valide.');assignments.forEach(id=>requireClient(store,u,id));const id=uid();store.transaction(()=>{store.run('INSERT INTO os_users(id,tenant_id,name,email,password_hash,role,created_at) VALUES(?,?,?,?,?,?,?)',id,tenant,text(b.name,100),text(b.email,254).toLowerCase(),passwordHash(b.password),b.role,now());for(const c of new Set(assignments))store.run('INSERT INTO os_assignments VALUES(?,?)',id,c);store.run('UPDATE os_users SET must_change_password=? WHERE id=?',realMode?1:0,id);store.audit(u,null,realMode?'Accesso creato':'Accesso DEMO creato',id,{role:b.role},'admin');});return json(res,{id},201);}
+        m=path.match(/^\/api\/users\/([^/]+)$/);if(m&&method==='PATCH'){requireOwner(u);const target=store.one('SELECT * FROM os_users WHERE id=?',m[1]);if(!target)throw new AppError('Utente non trovato.',404);if(target.id==='os-orchestrator')throw new AppError('Identità tecnica senza accesso interattivo.',403);if(b.active===false&&target.id===u.id)throw new AppError('Non puoi disattivare il tuo accesso.',409);if(b.active!==undefined&&typeof b.active!=='boolean')throw new AppError('Stato non valido.');if(b.password!==undefined&&(typeof b.password!=='string'||b.password.length<14||b.password.length>256))throw new AppError('Password di almeno 14 caratteri.');store.transaction(()=>{if(b.active!==undefined)store.run('UPDATE os_users SET active=? WHERE id=?',b.active?1:0,target.id);if(b.password!==undefined)store.run('UPDATE os_users SET password_hash=?,must_change_password=? WHERE id=?',passwordHash(b.password),realMode?1:0,target.id);store.run('DELETE FROM os_sessions WHERE user_id=?',target.id);store.audit(u,null,realMode?'Accesso aggiornato':'Accesso DEMO aggiornato',target.id,{},'admin');});return json(res,{ok:true});}
+        m=path.match(/^\/api\/approvals\/([^/]+)$/);if(m&&method==='POST'){
+          if(u.role==='client')throw new AppError('Le approvazioni sono riservate al team BigAnt.',403);
+          const a=store.one('SELECT * FROM os_approvals WHERE id=?',m[1]);if(!a)throw new AppError('Richiesta non trovata.',404);requireClient(store,u,a.client_id);
+          if(a.client_id!==clientId)throw new AppError('Seleziona l’attività della richiesta.',403);
+          if(u.role!=='owner'&&a.kind!=='content')requireOwner(u);
+          if(a.status!=='pending')throw new AppError('Richiesta già decisa o superata.',409);
+          if(!['approved','rejected','changes'].includes(b.decision))throw new AppError('Decisione non valida.');
+          if(b.decision!=='approved'&&!text(b.reason))throw new AppError('Indica il motivo della richiesta.');
+          if(a.kind==='agent_output')return json(res,orchestrator.outputs.decide(u,a,b));
+          if(a.kind==='sciame_output')return json(res,sciame.decide(u,a,b));
+          if(a.kind==='growth_message'){requireOwner(u);const current=store.one("SELECT MAX(version) version FROM os_approvals WHERE kind='growth_message' AND entity_id=?",a.entity_id);if(current.version!==a.version)throw new AppError('Versione superata.',409);return reply(res,await growth.handle({method:'PATCH',path:'/messages/'+a.entity_id,body:{version:a.version,status:b.decision==='approved'?'approved':b.decision==='changes'?'draft':'cancelled',reason:b.reason},user:u,clientId}));}
+          if(a.kind==='fidelity_campaign'&&u.role!=='owner'&&!JSON.parse(store.one('SELECT services_json FROM os_clients WHERE id=?',clientId).services_json).includes('fidelity'))throw new AppError('Servizio Fidelity non attivo.',403);
+          if(a.kind==='fidelity_campaign')return reply(res,await fidelity.handle({method:'POST',path:'/campaigns/'+a.entity_id+'/decision',body:{...b,version:a.version},user:u,clientId}));
+          const decision=await production.handle({method:'POST',path:'/approvals/'+a.id,body:b,user:u,clientId});if(b.decision==='approved')orchestrator.event('content.approved',clientId,a.entity_id,a.version);return reply(res,decision);
+        }
+        for(const [name,module]of Object.entries({growth,fidelity,administration,agents:orchestrator,production,agency,sciame,cliente,'email-marketing':emailMarketing,'client-record':records}))if(path.startsWith('/api/'+name+'/')){
+          if(['growth','administration','agents','sciame'].includes(name)||(['fidelity','agency','cliente'].includes(name)&&u.role==='collaborator'))requireOwner(u);
+          if(name==='fidelity'&&u.role!=='owner'&&!JSON.parse(store.one('SELECT services_json FROM os_clients WHERE id=?',clientId).services_json).includes('fidelity'))throw new AppError('Servizio Fidelity non attivo.',403);
+          const relative=path.slice(('/api/'+name).length)+(['fidelity','email-marketing'].includes(name)?url.search:'');
+          if(name==='fidelity'&&method==='GET'&&/^\/programs\/[^/]+\/qr$/.test(relative.split('?')[0])){const programId=relative.split('/')[2];const program=store.one('SELECT id FROM fi_programs WHERE id=? AND tenant_id=? AND active=1',programId,clientId);if(!program)throw new AppError('Programma non disponibile.',404);const slug=store.one('SELECT slug FROM os_clients WHERE id=?',clientId).slug;return reply(res,{data:await QRCode.toBuffer(runtimeOrigin+'/fidelity/join/'+encodeURIComponent(slug)+'?program='+encodeURIComponent(programId),{type:'png',width:280,margin:2,errorCorrectionLevel:'M'}),contentType:'image/png'});}
+          const result=await module.handle({method,path:relative,body:b,user:u,clientId});
+          if(result&&method==='POST'&&name==='growth'&&relative==='/leads')orchestrator.event('lead.created',clientId,result.data.id);
+          if(result&&method==='POST'&&name==='administration'&&relative==='/contracts')orchestrator.event('contract.signed',result.data.client_id,result.data.id);
+          if(result&&method==='POST'&&name==='growth'&&/\/leads\/[^/]+\/convert$/.test(relative))orchestrator.event('client.created',result.data.client.id,result.data.client.id);
+          if(result&&method==='PATCH'&&name==='production'&&b.state==='DA APPROVARE')orchestrator.event('content.ready',clientId,result.data.id,result.data.version);
+          return reply(res,result);
+        }
+        throw new AppError('Funzione non trovata.',404);
+      }
+      if(method==='GET'||method==='HEAD'){
+        if(path==='/vendor/zxing-browser.min.js'){const bytes=readFileSync(resolve(root,'node_modules/@zxing/browser/umd/zxing-browser.min.js'));res.writeHead(200,{'Content-Type':'text/javascript; charset=utf-8','Cache-Control':'no-cache'});return res.end(method==='HEAD'?undefined:bytes);}
+        if(Object.hasOwn(brandAssets,path)){
+          const asset=brandAssets[path],bytes=decodeBrandAsset(readFileSync(resolve(root,'public/brand',asset.file),'utf8'),asset.sha256);
+          res.writeHead(200,{'Content-Type':'image/png','Content-Length':bytes.length,'Cache-Control':'no-store'});return res.end(method==='HEAD'?undefined:bytes);
+        }
+        const appPage=path==='/auth/meta/callback'||path==='/'||path==='/auth/google/callback'||path==='/auth/google-business/callback'||path.startsWith('/fidelity/')||path.startsWith('/growth/');
+        const file=appPage?resolve(root,'public/index.html'):resolve(root,'public','.'+decodeURIComponent(path));const publicRoot=resolve(root,'public')+'/';
+        if(!file.startsWith(publicRoot)||!existsSync(file)||!statSync(file).isFile())throw new AppError('Pagina non trovata.',404);
+        const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.png':'image/png','.svg':'image/svg+xml','.ttf':'font/ttf'};
+        res.writeHead(200,{'Content-Type':mime[extname(file)]||'application/octet-stream','Cache-Control':'no-store'});return res.end(method==='HEAD'?undefined:readFileSync(file));
+      }
+      throw new AppError('Pagina non trovata.',404);
+    }catch(e){if(!res.headersSent)json(res,{error:e.status?e.message:'Operazione non riuscita. Controlla i dati e riprova.'},e.status||500);else res.end();}
+  }
+  const server=http.createServer(handler);server.requestTimeout=30000;server.headersTimeout=15000;
+  const backups=realMode&&worker&&database!==':memory:'?createBackupScheduler({store,sourcePath:database,env,clock}):null;
+  let workerError=null,workerRun=null;
+  const timer=worker?setInterval(()=>{if(workerRun)return;workerRun=orchestrator.tick().then(()=>fidelity.runWalletJobs()).then(()=>businessProfile.tick()).then(()=>metaProfiles.tick()).then(()=>agentSchedules.tick()).then(()=>{workerError=null;}).catch(()=>{workerError='Controllo delle automazioni da verificare.';}).finally(()=>{workerRun=null;});},2000):null;timer?.unref();
+  return {server,store,clientResults,emailMarketing,costControl,googleAuth,businessProfileAuth,businessProfile,metaAuth,metaProfiles,billing,connections,servicePlan,agentConfig,agentTrials,agentWork,agentSchedules,production,growth,fidelity,administration,orchestrator,agency,sciame,cliente,get workerError(){return workerError;},close:async()=>{if(timer)clearInterval(timer);if(workerRun)await workerRun;await backups?.close();if(server.listening)await new Promise(r=>server.close(r));await metaAuth.close();await businessProfile.close();await metaProfiles.close();await agentTrials.close();await agentSchedules.close();await agentWork.close();store.close();}};
+}
+if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
+  const modalitaReale=process.env.BIGANT_MODALITA==='reale';
+  if(process.env.NODE_ENV==='production'&&!modalitaReale)throw new Error('Questa versione è un prototipo DEMO locale. Il rilascio richiede una fase autorizzata separata.');
+  const port=Number(process.env.PORT||4330);if(!Number.isInteger(port)||port<1024||port>65535)throw new Error('Porta non valida.');
+  let data;
+  if(modalitaReale){
+    data=resolve(process.env.DATA_DIR||'/data');if(!data.startsWith('/'))throw new Error('DATA_DIR deve essere un percorso assoluto in modalità reale.');
+    mkdirSync(data,{recursive:true,mode:0o700});
+  } else {
+    data=resolve(process.env.DATA_DIR||resolve(root,'.data'));if(!data.startsWith(root+'/'))throw new Error('I dati devono restare nella cartella tecnica del repository.');await safePath(data,root);
+    const databasePath=resolve(data,'bigant-os.sqlite');for(const suffix of ['', '-wal', '-shm', '-journal'])await safePath(databasePath+suffix,root,{file:existsSync(databasePath+suffix)});
+    mkdirSync(data,{recursive:true,mode:0o700});
+  }
+  const origin=modalitaReale?process.env.BIGANT_ORIGINE:`http://127.0.0.1:${port}`;
+  if(modalitaReale&&!origin)throw new Error('BIGANT_ORIGINE è obbligatoria in modalità reale.');
+  const app=createApp({database:resolve(data,'bigant-os.sqlite'),origin,worker:true,importaProveSciame:!modalitaReale,motore:modalitaReale?(process.env.BIGANT_MOTORE||null):null});
+  const listenHost=modalitaReale?'0.0.0.0':'127.0.0.1';
+  app.server.listen(port,listenHost,()=>console.info(modalitaReale?`BigAnt OS · reale · porta ${port}`:`BigAnt OS · DEMO locale · http://127.0.0.1:${port}`));
+  for(const signal of ['SIGTERM','SIGINT'])process.on(signal,()=>app.close().then(()=>process.exit(0)));
+}

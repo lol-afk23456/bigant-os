@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>BigAnt OS · Piano di verifica in 7 giorni</title>
+<style>
+:root{--ink:#141413;--orange:#F26B21;--muted:#6b6862;--line:#e4e1da;--soft:#f6f4ef}
+@page{size:A4;margin:16mm 16mm 18mm}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Helvetica Neue","Liberation Sans",Arial,sans-serif;color:var(--ink);font-size:10.5pt;line-height:1.5}
+h1{font-size:30pt;line-height:1.05;margin:0 0 10px;letter-spacing:-.02em}
+h2{font-size:16pt;margin:0 0 10px;letter-spacing:-.01em;break-after:avoid}
+h3{font-size:11.5pt;margin:14px 0 6px;break-after:avoid}
+p{margin:0 0 8px}
+.eyebrow{font-size:8pt;letter-spacing:.14em;text-transform:uppercase;color:var(--orange);font-weight:700;margin-bottom:10px}
+.cover{height:255mm;display:flex;flex-direction:column;justify-content:space-between;border-left:6px solid var(--orange);padding:6mm 0 0 10mm}
+.cover .lead{font-size:13pt;color:var(--muted);max-width:135mm}
+.box{background:var(--soft);border-radius:8px;padding:10px 12px;margin:10px 0}
+.box b{color:var(--ink)}
+.dark{background:var(--ink);color:#f7f6f2;border-radius:8px;padding:12px 14px}
+.dark a,.dark b{color:#fff}
+.page{break-before:page}
+table{width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:9.5pt}
+th{text-align:left;font-size:7.5pt;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);border-bottom:1.5px solid var(--ink);padding:5px 6px}
+td{border-bottom:1px solid var(--line);padding:6px;vertical-align:top}
+tr{break-inside:avoid}
+.num{font-variant-numeric:tabular-nums;font-weight:700}
+.pill{display:inline-block;font-size:7.5pt;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:99px;padding:1px 7px;white-space:nowrap}
+.alta{background:#fbe1d3;color:#9a3a0b}.media{background:#f4ead0;color:#7a5a07}.bassa{background:#e6e9e3;color:#3e4a37}
+.who{font-weight:700;color:var(--orange)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.check{list-style:none;padding:0;margin:4px 0 10px}
+.check li{padding-left:20px;position:relative;margin:3px 0}
+.check li:before{content:"";position:absolute;left:0;top:3px;width:10px;height:10px;border:1.5px solid var(--ink);border-radius:2px}
+.form td{height:24px}
+.small{font-size:8.5pt;color:var(--muted)}
+.foot{margin-top:14px;font-size:8pt;color:var(--muted);border-top:1px solid var(--line);padding-top:6px}
+</style>
+</head>
+<body>
+
+<section class="cover">
+ <div>
+  <div class="eyebrow">BigAnt Agency · documento per i soci</div>
+  <h1>BigAnt OS<br>Piano di verifica<br>in 7 giorni</h1>
+  <p class="lead">Per Raffaele e Alfonso: cosa funziona davvero, dove sono i punti critici, chi controlla cosa, come segnalare le correzioni e quali decisioni spettano solo a voi.</p>
+ </div>
+ <div>
+  <div class="dark">
+   <b>Sito di prova:</b> https://lol-afk23456.github.io/bigant-os-prova/<br>
+   <b>Come si entra:</b> «Socio DEMO» per l'area dei soci, «Cliente Aurora DEMO» per l'area cliente.<br>
+   <b>Da sapere:</b> ognuno ha la sua copia con dati inventati, salvata nel proprio browser. «Riparti da zero» si trova in fondo al menu.
+  </div>
+  <p class="small" style="margin-top:10px">8 ottobre 2026 · Ramo di lavoro <b>bigant-os-notte-1</b> · Analisi completa nel repository: docs/ANALISI-APP.md</p>
+ </div>
+</section>
+
+<section class="page">
+ <div class="eyebrow">1 · Dove siamo</div>
+ <h2>Una struttura ampia, con il motore acceso solo dentro casa</h2>
+ <p>BigAnt OS ha già tutti i reparti, le schermate e le regole. Funzionano davvero le parti interne: accessi, lavori, approvazioni, amministrazione, CRM, Fidelity e sciame di agenti. Tutto ciò che deve parlare con il mondo esterno, invece, non è ancora collegato.</p>
+ <table>
+  <tr><th>Cosa</th><th>Totale</th><th>Funziona davvero</th><th>Da collegare o solo struttura</th></tr>
+  <tr><td>Collegamenti esterni (Google, Meta, scheda Google, email, WhatsApp, fatture elettroniche)</td><td class="num">17</td><td class="num">0</td><td><b>17 non collegati</b></td></tr>
+  <tr><td>Numeri mostrati ai clienti (KPI delle schede S01–S19)</td><td class="num">80</td><td class="num">5</td><td>56 aspettano un collegamento, 19 senza misura</td></tr>
+  <tr><td>Agenti</td><td class="num">32</td><td class="num">11 con AI</td><td>21 lavorano a regole fisse</td></tr>
+  <tr><td>Requisiti del brief verificati</td><td class="num">377</td><td>126 valutati: 36 operativi, 39 DEMO</td><td>43 solo struttura; 251 ancora da valutare</td></tr>
+  <tr><td>Test automatici</td><td class="num">183</td><td class="num">183 verdi</td><td>—</td></tr>
+ </table>
+ <h3>Cosa funziona già, su dati inventati</h3>
+ <ul>
+  <li><b>Accessi e permessi:</b> soci, collaboratori e clienti vedono solo ciò che spetta loro; l'economia è visibile solo ai soci.</li>
+  <li><b>Lavori e approvazioni:</b> idea → produzione → da approvare → approvato → programmato, con versioni e storico. Il cliente approva dalla sua area.</li>
+  <li><b>Amministrazione delle due ditte:</b> prima nota non modificabile, fatture, incassi, scadenze, canoni attesi e avvisi su «cosa non torna».</li>
+  <li><b>Sciame di agenti:</b> sul computer lavora con l'AI vera (giro reale dell'8 ottobre: circa 1,8–2,8 dollari a giro). Nel sito di prova usa un motore a regole, dichiarato su ogni postazione, e parte da solo una volta al giorno.</li>
+  <li><b>Ufficio virtuale:</b> mostra gli agenti al lavoro e il testo in diretta. <b>Area cliente:</b> 9 sezioni, telefono compreso.</li>
+ </ul>
+</section>
+
+<section class="page">
+ <div class="eyebrow">2 · Punti critici</div>
+ <h2>I 10 punti da risolvere, dal più importante</h2>
+ <table>
+  <tr><th>#</th><th>Punto critico</th><th>Perché conta</th><th>Gravità</th></tr>
+  <tr><td class="num">1</td><td><b>Non è ancora un SaaS condiviso</b></td><td>Il sito di prova gira nel browser di ognuno: voi due non vedete gli stessi dati. Serve un server vero, per esempio su Railway, con accessi personali e un database salvato.</td><td><span class="pill alta">Alta</span></td></tr>
+  <tr><td class="num">2</td><td><b>Solo dati inventati, per regola</b></td><td>Finché la regola «solo DEMO» resta, l'app non lavora sui clienti veri. Per i dati reali servono una decisione vostra e le verifiche sulla privacy [DA VERIFICARE con il consulente].</td><td><span class="pill alta">Alta</span></td></tr>
+  <tr><td class="num">3</td><td><b>Nessun collegamento esterno</b></td><td>Senza Google, Meta e scheda Google i risultati per il cliente restano vuoti. Pubblicazioni e invii sono bloccati.</td><td><span class="pill alta">Alta</span></td></tr>
+  <tr><td class="num">4</td><td><b>Sito di prova aperto a tutti come «Socio»</b></td><td>Chiunque abbia il link vede metodo, catalogo, pacchetti e prezzi proposti. Decidete cosa può vedere un visitatore.</td><td><span class="pill alta">Alta</span></td></tr>
+  <tr><td class="num">5</td><td><b>21 agenti su 32 senza AI</b></td><td>Video, drone, ADS, SEO, sito ed e-commerce per ora seguono regole fisse.</td><td><span class="pill media">Media</span></td></tr>
+  <tr><td class="num">6</td><td><b>Prezzi dei pacchetti da validare</b></td><td>I 5 pacchetti del catalogo (Presenza, Crescita Locale, Sanità, Ristorazione, Brand) hanno prezzi proposti, non decisi.</td><td><span class="pill media">Media</span></td></tr>
+  <tr><td class="num">7</td><td><b>Brief verificato solo in parte</b></td><td>251 requisiti su 377 non sono ancora stati controllati uno per uno.</td><td><span class="pill media">Media</span></td></tr>
+  <tr><td class="num">8</td><td><b>Costi dell'AI da governare</b></td><td>Un giro completo con l'AI vera costa pochi dollari. Servono un tetto mensile deciso da voi e una chiave dedicata.</td><td><span class="pill media">Media</span></td></tr>
+  <tr><td class="num">9</td><td><b>Funzioni che online non vanno</b></td><td>QR delle carte Fidelity, logo personalizzato e download di file funzionano solo sulla versione installata.</td><td><span class="pill bassa">Bassa</span></td></tr>
+  <tr><td class="num">10</td><td><b>Manutenzione tecnica</b></td><td>Il lavoro in revisione è molto grande (164 file) e nessuno lo ha ancora riletto. Non ci sono controlli automatici su GitHub. Una libreria delle immagini (sharp) va aggiornata.</td><td><span class="pill bassa">Bassa</span></td></tr>
+ </table>
+</section>
+
+<section class="page">
+ <div class="eyebrow">3 · Chi controlla cosa</div>
+ <h2>Divisione per competenza</h2>
+ <div class="cols">
+  <div class="box"><span class="who">Raffaele</span> · video, ADS, performance
+   <ul class="check">
+    <li>Direzione: priorità e KPI della settimana</li>
+    <li>Amministrazione: prima nota, scadenze, contratti, fatture da emettere</li>
+    <li>Growth: ricerca dei clienti, analisi gratuita, proposta</li>
+    <li>Ufficio virtuale: qualità dei testi prodotti dagli agenti</li>
+    <li>Schede ADS (S03, S04), video e drone (S02)</li>
+   </ul></div>
+  <div class="box"><span class="who">Alfonso</span> · brand, design, direzione visiva
+   <ul class="check">
+    <li>Area cliente: tutte le 9 sezioni, anche da telefono</li>
+    <li>Lavori e contenuti: ciclo completo con l'approvazione del cliente</li>
+    <li>Social (S01), brand (S15) e materiali (S16)</li>
+    <li>Fidelity: programmi, carte, iscritti</li>
+    <li>Aspetto grafico, testi e tono di voce di tutta l'app</li>
+   </ul></div>
+ </div>
+ <div class="box"><b>Insieme:</b> mappa dell'agenzia e reparti, catalogo S01–S19, pacchetti e prezzi, numeri promessi ai clienti, le decisioni della sezione 6.</div>
+
+ <div class="eyebrow" style="margin-top:16px">4 · Il programma</div>
+ <h2>Sette giorni, 30–45 minuti al giorno ciascuno</h2>
+ <table>
+  <tr><th>Giorno</th><th>Raffaele</th><th>Alfonso</th></tr>
+  <tr><td class="num">1</td><td colspan="2">Entrate entrambi come Socio e come Cliente. Girate ogni voce del menu e annotate la prima impressione: cosa è chiaro, cosa non lo è, cosa manca.</td></tr>
+  <tr><td class="num">2</td><td>Amministrazione: registra un incasso, una spesa, un contratto e controlla «cosa non torna».</td><td>Area cliente: leggi ogni sezione come se fossi il titolare di Bottega Aurora.</td></tr>
+  <tr><td class="num">3</td><td>Growth: segui un'azienda dalla ricerca alla proposta. I testi convincerebbero un cliente vero?</td><td>Lavori e contenuti: crea un contenuto, mandalo in approvazione, approvalo da cliente.</td></tr>
+  <tr><td class="num">4</td><td>Ufficio virtuale: leggi i testi del giro automatico e giudica ogni agente.</td><td>Fidelity e catalogo: programma fedeltà, schede S01–S19, descrizioni dei servizi.</td></tr>
+  <tr><td class="num">5</td><td colspan="2">Insieme: pacchetti, prezzi e numeri da promettere ai clienti. Segnate cosa cambiare.</td></tr>
+  <tr><td class="num">6</td><td colspan="2">Tutto da telefono. Fate provare il link a 1 o 2 persone di fiducia e raccogliete i loro commenti.</td></tr>
+  <tr><td class="num">7</td><td colspan="2">Compilate le decisioni della sezione 6 e mandate l'elenco unico delle correzioni.</td></tr>
+ </table>
+</section>
+
+<section class="page">
+ <div class="eyebrow">5 · Come segnalare</div>
+ <h2>Una correzione per riga, con uno screenshot</h2>
+ <p>Scrivete con parole vostre. Distinguete un <b>errore</b> (qualcosa che non funziona) da un'<b>idea</b> (qualcosa di nuovo). Alla fine della settimana riunite tutto in un unico documento, per esempio un Foglio Google, e incollatelo nella prossima sessione con Claude.</p>
+ <table class="form">
+  <tr><th style="width:4%">#</th><th style="width:13%">Pagina</th><th style="width:9%">Profilo</th><th style="width:20%">Cosa ho fatto</th><th style="width:19%">Cosa mi aspettavo</th><th style="width:19%">Cosa è successo</th><th style="width:9%">Tipo</th><th style="width:7%">Gravità</th></tr>
+  <tr><td>1</td><td>Area cliente</td><td>Cliente</td><td>Ho aperto «I tuoi risultati»</td><td>Vedere le chiamate del mese</td><td>«Collegamento mancante»</td><td>Idea</td><td>Media</td></tr>
+  <tr><td>2</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><td>3</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><td>4</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><td>5</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+  <tr><td>6</td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+ </table>
+ <p class="small"><b>Tipo:</b> Errore / Idea / Testo da cambiare. <b>Gravità:</b> Alta = blocca il lavoro · Media = importante · Bassa = ritocco.</p>
+
+ <div class="eyebrow" style="margin-top:16px">6 · Decisioni che spettano a voi</div>
+ <h2>Senza queste risposte l'app resta una dimostrazione</h2>
+ <ul class="check">
+  <li><b>Dati reali:</b> si parte da BigAnt stessa come «cliente zero», con i suoi dati pubblici? Da quando?</li>
+  <li><b>Server condiviso:</b> usiamo l'abbonamento Railway che avete già, con accessi personali per voi due e per Vincenzo?</li>
+  <li><b>AI vera:</b> quale tetto di spesa al mese per gli agenti (per esempio 20 o 50 €)? Chiave API Anthropic dedicata oppure abbonamento Claude?</li>
+  <li><b>Primo collegamento:</b> scheda Google dei clienti (lavoro di Vincenzo), Meta o Google Ads?</li>
+  <li><b>Sito di prova:</b> resta aperto a tutti con il profilo Socio, oppure lo limitiamo all'area cliente?</li>
+  <li><b>Prezzi:</b> confermate o correggete i 5 pacchetti del catalogo.</li>
+  <li><b>Approvazioni:</b> cosa approva solo un socio e cosa può approvare il cliente da solo.</li>
+ </ul>
+
+ <h3>Cosa succede dopo</h3>
+ <p>Con le vostre correzioni e decisioni, la prossima sessione segue quest'ordine:</p>
+ <ol>
+  <li>correggere gli errori segnalati;</li>
+  <li>mettere online il server condiviso;</li>
+  <li>accendere l'AI vera con il tetto di spesa;</li>
+  <li>partire con BigAnt come primo cliente reale;</li>
+  <li>collegare la prima piattaforma.</li>
+ </ol>
+ <div class="foot">Stati usati nell'app: <b>OPERATIVO</b> = funziona davvero · <b>DEMO</b> = funziona, ma su dati inventati · <b>COLLEGAMENTO MANCANTE</b> = serve un accesso esterno · <b>SOLO STRUTTURA</b> = schermata pronta, motore assente. Nessun numero è inventato: quello che manca è indicato come [DA VERIFICARE].</div>
+</section>
+</body>
+</html>

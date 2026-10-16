@@ -1,0 +1,1045 @@
+{
+  "riferimento": "docs/MAPPATURA-FINALE-CODEX.md",
+  "data": "2026-10-10",
+  "voci": [
+    {
+      "id": "PRINC-01",
+      "area": "Tutta l'app",
+      "modifica": "Una sezione alla volta: griglia di card, il clic apre solo quella sezione, \"Indietro\" chiaro. Componente unico riusato ovunque",
+      "criterio": "Nessuna pagina mostra più di una sezione completa alla volta",
+      "stato": "parziale in locale",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Aggiunti Servizi, dettaglio servizio, Listino e Collegamenti; restano Fatturazione e prodotti.",
+        "Fidelity riordinata in sette sezioni con Indietro; vecchio codice conservato.",
+        "Fatturazione riordinata in quattro card e Costi in tre sottosezioni. Growth resta da riordinare.",
+        "Growth ora a sette sezioni, coda unica, ricerca e analisi DEMO verificate nel Browser; 390 px senza overflow.",
+        "Area cliente ora a card e sezioni separate, verificata su desktop e 390 px. Restano giro completo dei ruoli e altre pagine da verificare.",
+        "COLLAUDO-NAVIGAZIONE-RUOLI.md: menu e card Profili cliente, proiezione uguale all’anteprima, fonte/data e report nel servizio; giro delle schermate principali per ruolo e telefono. Collegamenti reali e giro completo restano aperti.",
+        "10 ottobre: COLLAUDO-NAVIGAZIONE-RUOLI.md, sottopagine. Note cliente, regolamento/Wallet e anagrafiche/incassi separati; ritorni e ruoli verificati, suite 772/772 e browser a 390 px. Audit complessivo e collaudo autenticato online ancora aperti.",
+        "Report nei servizi riordinati a card con un solo dettaglio aperto: fonti Meta separate, risultati/recensioni Google, report verificati, indicatori e contatti Email marketing. Navigazione e API vincolate a cliente/servizio; scadenze e percorsi obsoleti senza ripiego su altri dati. Cinque nuove prove e browser desktop/mobile: docs/COLLAUDO-VISTA-CLIENTE.md. Non certifica tutte le pagine/ruoli reali né attiva fonti esterne.",
+        "Giro online del 10 ottobre: il percorso diretto service:social usa ancora serviceWorkspaceView in app.js con pannelli completi affiancati. Riordino di questa pagina residua da fare; non riaprire la verifica degli indici Servizi gia completata.",
+        "Pagina operativa service:<id> residua riordinata: indice, sezione e singolo dettaglio separati, ritorni e attività persistente nella ricarica. Browser socio desktop/390 px e rifiuto server del collaboratore verificati; suite finale 894/894, mirate 30/30 e cambio attività con ricarica verificato nel browser. Dettagli in COLLAUDO-NAVIGAZIONE-RUOLI.md. Giro completo e account nominali restano aperti. Codice 4c04e8a online: socio sul cliente di prova, indice/dettaglio/ritorno/ricarica e mobile 390 px verificati, zero errori console.",
+        "624dcc0 online: contesto cliente conservato anche in scheda/anteprima; note, contratto e report verificati. 899/899 prove; COLLAUDO-ONLINE-2026-10-10.md. Giro completo dei ruoli ancora aperto."
+      ]
+    },
+    {
+      "id": "UI-001",
+      "area": "Accesso",
+      "modifica": "Login definitivo: logo BigAnt, campi email e password subito visibili, pulsante unico \"Accedi\", messaggio d'errore chiaro, \"Password dimenticata?\" (vedi FUN-003). Colori BigAnt #F26B21 e #141413",
+      "criterio": "Da telefono e da PC: si accede con email e password in un solo passaggio, senza diciture DEMO",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Verifica browser locale; nessuna promozione a operativo sul server"
+      ]
+    },
+    {
+      "id": "UI-002",
+      "area": "Accesso",
+      "modifica": "Il login è una funzione reale: per la regola UI-006 i testi da prototipo vanno tolti **subito** in modalità reale (insieme a UI-001)",
+      "criterio": "Sul server reale la finestra di accesso non contiene «DEMO», «.example» né «prototipo»",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Verifica browser locale; nessuna promozione a operativo sul server"
+      ]
+    },
+    {
+      "id": "UI-006",
+      "area": "Tutta l'app",
+      "modifica": "Per ogni funzione portata a regime: togliere le sue diciture DEMO (interfaccia e testi del server) **nello stesso intervento** che la rende reale, e aggiornare la pagina Avanzamento (FUN-004). Nessuna rimozione in blocco",
+      "criterio": "Ogni funzione senza DEMO ha una prova che funziona sul server reale; ogni funzione non ancora configurata riporta ancora DEMO",
+      "stato": "parziale; produzione verificata sul server reale",
+      "prove": [
+        "Fidelity distingue modalità e programmi DEMO nella carta pubblica; fixture storiche non convertite. La verifica sul server e per tutte le funzioni resta aperta.",
+        "10 ottobre, 21:00: corretti i testi della produzione per modalita reale/DEMO. API autenticate sul solo cliente di prova: bozza, approvazione, calendario, revisione con invalidazione e pubblicazione rifiutata; browser socio, fonte e nessuna data residua, 390 px senza overflow. Suite 890/890. COLLAUDO-ONLINE-2026-10-10.md. Non certifica ogni funzione o i ruoli nominali ancora da completare."
+      ]
+    },
+    {
+      "id": "FUN-001",
+      "area": "Accessi",
+      "modifica": "Creare da *Accessi*: utente collaboratore (Vincenzo) e utente cliente collegato al cliente di prova \"BigAnt\" (vedi DAT-001). Account nominali, password scelte dai titolari, mai scritte in chat o nei documenti",
+      "criterio": "Tre accessi distinti entrano e ciascuno vede solo il proprio spazio",
+      "stato": "parziale; collaboratore presente, cliente da creare e login da verificare",
+      "prove": [
+        "10 ottobre, COLLAUDO-ONLINE-2026-10-10.md: indirizzi ricevuti e due moduli preparati, non salvati; cliente sulla sola attività di prova e collaboratore assegnato alla stessa. Password e salvataggio richiesti al titolare nel browser. I tre login separati restano da verificare.",
+        "Verifica successiva nella pagina Accessi reale: Vincenzo attivo come Collaboratore sul solo BigAnt (cliente di prova); account cliente non presente. Nessun account creato in questa ricognizione, nessuna password aperta o cambiata. Primo accesso e collaudo autenticato dei ruoli ancora aperti. COLLAUDO-ONLINE-2026-10-10.md."
+      ]
+    },
+    {
+      "id": "DAT-001",
+      "area": "Clienti / Accessi",
+      "modifica": "Creare un cliente separato, per esempio \"BigAnt (cliente di prova)\", con servizi attivi propri, e collegarci l'utente cliente",
+      "criterio": "Il cliente di prova ha una scheda propria; la vista cliente non mostra dati interni dell'agenzia",
+      "stato": "parziale; scheda creata sul server, accesso cliente da completare",
+      "prove": [
+        "10 ottobre, COLLAUDO-ONLINE-2026-10-10.md: creata BigAnt (cliente di prova), con Social media e Fidelity. Anteprima limitata ai due servizi; zero iscritti Fidelity rispetto all’unico iscritto inventato dell’agenzia. Associazione account e collaudo autenticato cliente ancora aperti."
+      ]
+    },
+    {
+      "id": "FUN-002",
+      "area": "Dopo il login",
+      "modifica": "**Una home diversa per ogni ruolo**, come prima pagina dopo il login, scegliendo solo ciò che conta davvero a primo impatto. **Estetica [R]:** amministrazione e collaboratore soprattutto **funzionali**; cliente **bella esteticamente e allo stesso tempo funzionale**. Tutte \"almeno un minimo belle\", nello stile della cabina di regia (contenuti in §13.3 e §13.4)",
+      "criterio": "Ogni ruolo entra sulla propria home, la Mappa agenzia non è più la pagina d'ingresso",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
+    },
+    {
+      "id": "FUN-003",
+      "area": "Accesso",
+      "modifica": "Cambio password **obbligatorio al primo accesso** e dopo ogni \"Nuova password\" impostata da un socio. Il recupero resta gestito da un socio (nessuna email automatica finché le email sono spente)",
+      "criterio": "Un nuovo utente deve cambiare la password al primo accesso; un socio può reimpostare quella di un altro",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/accessi.test.js",
+        "tests/modalita-reale.test.js"
+      ]
+    },
+    {
+      "id": "FUN-004",
+      "area": "Mappa agenzia",
+      "modifica": "Trasformarla in **\"Avanzamento BigAnt OS\"**: una pagina che mostra lo stato di costruzione della piattaforma (cosa è operativo, demo o da collegare). Spostarla in un'area **Avanzate / Sistema**, fuori dal menu principale",
+      "criterio": "La voce non è più nel menu principale; in Avanzate una pagina mostra l'avanzamento con i tre stati",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "API owner-only di sola lettura: 17 capacità, dati correnti di runtime/custodia/backup, fonte ed evidenza separate dalla lettura; stati mai attivati da chiavi salvate. Test e Browser locale; SOP-AVANZAMENTO."
+      ]
+    },
+    {
+      "id": "UI-003",
+      "area": "Mappa agenzia",
+      "modifica": "Una pagina per ogni argomento, oppure schede che mostrano un argomento alla volta. In gran parte però queste parti si spostano altrove (FUN-005…FUN-008)",
+      "criterio": "Nessuna pagina del socio richiede di scorrere quattro argomenti diversi",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Avanzamento a due ingressi e schede separate; Struttura già nello Sciame, Servizi nel Piano/Listino, gestione nelle destinazioni correnti. Browser desktop/390 px e test navigazione/Indietro."
+      ]
+    },
+    {
+      "id": "UI-004",
+      "area": "Mappa agenzia",
+      "modifica": "Togliere dalle pagine di lavoro. Gli stati di avanzamento compaiono solo nella pagina \"Avanzamento BigAnt OS\" (FUN-004), con tre etichette semplici: Funziona · Prova · Da collegare",
+      "criterio": "Nessun avviso tecnico nelle pagine operative",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Tre stati semplici in Avanzamento. Badge tecnici rimossi da catalogo/dettaglio servizio e KPI/Report cliente; tutti i contratti servizio e dashboard testati, DEMO/null/zero conservati. Vecchi renderer nascosti mantenuti secondo D-05."
+      ]
+    },
+    {
+      "id": "UI-005",
+      "area": "Mappa agenzia",
+      "modifica": "Togliere. L'accesso allo sciame resta dalla sua voce di menu",
+      "criterio": "Nessun pulsante \"DEMO\" in modalità reale",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Revisione indipendente del riordino: docs/COLLAUDO-PROFILI.md. Navigazione, alias, home, contratti e fonte ufficiale confrontati con il criterio; suite completa e limiti locali nel collaudo."
+      ]
+    },
+    {
+      "id": "FUN-005",
+      "area": "Mappa agenzia → Reparti e specialisti",
+      "modifica": "Spostare in **Sciame di agenti** come \"Struttura dello sciame\" (reparti, specialisti, procedure)",
+      "criterio": "La struttura per reparto si trova solo dentro Sciame di agenti",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Struttura → reparto → specialisti e metodo → Configura; sei sezioni preservate. tests/swarm-workspace-ui.test.js, Browser desktop/390 px e COLLAUDO-SCIAME-UI del 10 ottobre 2026."
+      ]
+    },
+    {
+      "id": "FUN-006",
+      "area": "Mappa agenzia → \"Un workspace per ogni servizio\"",
+      "modifica": "Confluisce nel **Piano di attivazione dei servizi** (FUN-014). Gli agenti di ciascun servizio restano in *Sciame di agenti*",
+      "criterio": "Un solo posto per lo stato di attivazione dei servizi",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare."
+      ]
+    },
+    {
+      "id": "FUN-007",
+      "area": "Mappa agenzia → I 10 moduli del gestionale",
+      "modifica": "Ripartizione decisa dal proprietario: tabella \"Dove finiscono i 10 moduli\" qui sotto",
+      "criterio": "La sezione \"Gestionale\" non esiste più come elenco astratto; ogni modulo tenuto vive nella sua pagina",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "T0, 10 ottobre: controllo date condiviso senza cambi di comportamento; date impossibili rifiutate senza scritture e bisestile valido verificato nei contratti. 284/284 test e check 5/5; stati e limiti del riordino invariati.",
+        "Audit 10 ottobre: AUDIT-RESIDUI-RIORDINO.md. Destinazioni confrontate con menu, instradamento e decisioni aggiornate; moduli mantenuti nelle proprie pagine. Trello, fonti reali e collaudo autenticato restano separati e aperti."
+      ]
+    },
+    {
+      "id": "FUN-008",
+      "area": "Mappa agenzia → Fondamenta da completare",
+      "modifica": "Spostare l'intera sezione in Avanzamento (FUN-004)",
+      "criterio": "Le Fondamenta si trovano solo in Avanzamento",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Tutte le nove Fondamenta in Avanzamento, con dettaglio singolo e capacità/mancanze aggiornate; nessun dato inventato o area cancellata. Browser desktop/390 px e prove API/UI."
+      ]
+    },
+    {
+      "id": "FUN-009",
+      "area": "Nuova voce di menu: **Fatturazione**",
+      "modifica": "Una sola sezione **Fatturazione**, visibile **solo all'accesso amministrazione**, **ultima voce del menu**, in secondo piano. Raccoglie cassa, prima nota, fatture, incassi, saldo per cliente, costi e abbonamenti. Prima schermata: saldo per cliente e abbonamenti in scadenza",
+      "criterio": "Collaboratore e cliente non vedono la voce né i dati (verifica sul server, non solo nel menu); l'amministrazione la trova in fondo al menu",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
+    },
+    {
+      "id": "COL-001",
+      "area": "Task e consegne",
+      "modifica": "Valutare un collegamento a Trello in sola lettura: lavori e scadenze dei clienti visibili in BigAnt OS, mentre si continua a lavorare su Trello. Da progettare e autorizzare come ogni collegamento",
+      "criterio": "Decisione dei soci (D-03); se approvato, i lavori Trello di un cliente compaiono nella sua scheda senza essere riscritti",
+      "stato": "da fare",
+      "prove": []
+    },
+    {
+      "id": "FUN-010",
+      "area": "Clienti → scheda cliente → Accessi",
+      "modifica": "Requisiti minimi raccomandati fin dalla prima versione, perché costano poco e riducono molto il danno di un furto del database: (1) credenziali **cifrate** nel database; (2) password **nascosta** di default, si mostra con un clic; (3) ogni visualizzazione registrata nel **Registro** delle persone (Sistema → Accessi → Registro, FUN-059, FUN-066); (4) controllo del ruolo **sul server**, non solo nel menu; (5) mai nei log, negli export o nei backup in chiaro",
+      "criterio": "Un utente cliente non ottiene le credenziali nemmeno chiamando l'API direttamente; nel database non compaiono in chiaro; ogni visualizzazione lascia una riga nel Registro",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow",
+        "10 ottobre: COLLAUDO-SCHEDE-CLIENTI.md. Moduli vincolati a cliente/sessione, risposte Accessi obsolete scartate e uscita immediata; dieci regressioni UI, suite 769/769 e browser con dati inventati. Collaudo autenticato online ancora aperto."
+      ]
+    },
+    {
+      "id": "FUN-011",
+      "area": "Marketing BigAnt",
+      "modifica": "**Eliminare la voce \"Marketing BigAnt\"** e sostituirla con la nuova sezione **Profili** (FUN-012). Il resto si sposta o si toglie come indicato sotto",
+      "criterio": "La voce \"Marketing BigAnt\" non c'è più nel menu",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Revisione indipendente del riordino: docs/COLLAUDO-PROFILI.md. Navigazione, alias, home, contratti e fonte ufficiale confrontati con il criterio; suite completa e limiti locali nel collaudo."
+      ]
+    },
+    {
+      "id": "FUN-012",
+      "area": "Nuova sezione **Profili** (\"Profili\"; per il cliente \"I tuoi profili\", D-06)",
+      "modifica": "Una sezione per **l'agenzia e per ogni cliente** (il cliente vede solo i propri). Per ogni profilo: stato del collegamento, ultimi dati, crescita dei follower e insight. Profili: Instagram, Facebook, LinkedIn aziendale, TikTok, **Google Business Profile** (con dentro le recensioni, FUN-013), **Sito**",
+      "criterio": "Ogni profilo collegato mostra dati veri con la data dell'ultimo aggiornamento; il cliente vede solo i propri profili (verifica sul server)",
+      "stato": "parziale in locale",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Registro di link pubblici con fonte, conferma manuale del socio, versioni immutabili e isolamento: src/profile-directory.js; tests/profile-directory.test.js, tests/profiles-http.test.js, tests/profiles-ui.test.js; docs/COLLAUDO-PROFILI.md. Prima tranche: soli link pubblici; successivamente aggiunto il percorso GBP descritto nella prova seguente. Nessuna modifica al menu cliente definitivo.",
+        "GBP predisposto: consenso OAuth separato, scelta vincolata della scheda, lettura di prova, attivazione esplicita e aggiornamento giornaliero/manuale; cache RAM 24h con fonte e data. 71 nuove prove, suite 652/652 e Browser desktop/mobile con Google simulato: docs/COLLAUDO-GOOGLE-BUSINESS.md. Nessun account reale o rilascio; altri canali e giro cliente ancora da completare.",
+        "COLLAUDO-NAVIGAZIONE-RUOLI.md: menu e card Profili cliente, proiezione uguale all’anteprima, fonte/data e report nel servizio; giro delle schermate principali per ruolo e telefono. Collegamenti reali e giro completo restano aperti.",
+        "Lettura Meta predisposta per Facebook e Instagram professionali: scelta canali, prova privata, attivazione esplicita, aggiornamento giornaliero facoltativo, dati nel servizio Social e cache RAM 24h; identità Page e Instagram esclusive fra clienti. Prove e limiti in docs/COLLAUDO-PROFILI-META.md. Nessun account reale attivato; OAuth completo, confronto reale, crescita Instagram e altri canali ancora aperti.",
+        "Accesso Meta guidato predisposto: ID/chiave cifrati, consenso per canale, stato monouso vincolato a sessione e versione, identità/app/permessi/scadenze verificati, disconnessione locale, scadenza report limitata dal consenso. Collaudo offline e browser in docs/COLLAUDO-PROFILI-META.md; attivazione e prova con Meta reale ancora aperte.",
+        "Crescita follower Instagram predisposta con metrica dedicata, stesso periodo, nuovi/persi/netta separati e soglia 100; dati mancanti/non classificati non diventano zero. Otto nuove prove in docs/COLLAUDO-PROFILI-META.md. Confronto e attivazione reali ancora aperti."
+      ]
+    },
+    {
+      "id": "UI-007",
+      "area": "Profili",
+      "modifica": "Togliere i canali dei soci; restano solo i canali dell'agenzia",
+      "criterio": "Nessun profilo personale nella sezione",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Revisione indipendente del riordino: docs/COLLAUDO-PROFILI.md. Navigazione, alias, home, contratti e fonte ufficiale confrontati con il criterio; suite completa e limiti locali nel collaudo.",
+        "Salvataggio LinkedIn limitato a pagine /company/. Nessun canale personale nel catalogo; la corrispondenza aziendale resta dichiarazione manuale del socio, non verifica indipendente T5."
+      ]
+    },
+    {
+      "id": "FUN-013",
+      "area": "Profili → Google Business Profile",
+      "modifica": "Le recensioni stanno **dentro Google Business Profile**",
+      "criterio": "Nessuna voce \"Recensioni\" separata; le recensioni si leggono nella scheda GBP",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Registro di link pubblici con fonte, conferma manuale del socio, versioni immutabili e isolamento: src/profile-directory.js; tests/profile-directory.test.js, tests/profiles-http.test.js, tests/profiles-ui.test.js; docs/COLLAUDO-PROFILI.md. Prima tranche: soli link pubblici; successivamente aggiunto il percorso GBP descritto nella prova seguente. Nessuna modifica al menu cliente definitivo.",
+        "GBP predisposto: consenso OAuth separato, scelta vincolata della scheda, lettura di prova, attivazione esplicita e aggiornamento giornaliero/manuale; cache RAM 24h con fonte e data. 71 nuove prove, suite 652/652 e Browser desktop/mobile con Google simulato: docs/COLLAUDO-GOOGLE-BUSINESS.md. Nessun account reale o rilascio; altri canali e giro cliente ancora da completare."
+      ]
+    },
+    {
+      "id": "COL-002",
+      "area": "Profili",
+      "modifica": "Nota del consulente: le API di Meta, Google Business Profile, LinkedIn e TikTok richiedono app approvate e verifiche aziendali (`docs/DA-FARE-RAFFAELE.md`). Il \"tempo reale\" vero non è realistico né necessario: proposta **aggiornamento automatico una volta al giorno** più il pulsante \"Aggiorna ora\". Ordine consigliato: GBP, poi Instagram/Facebook, poi gli altri",
+      "criterio": "Decisione D-07; poi, per ogni canale collegato, dati confrontati con quelli della piattaforma originale",
+      "stato": "parziale in locale",
+      "prove": [
+        "GBP predisposto: consenso OAuth separato, scelta vincolata della scheda, lettura di prova, attivazione esplicita e aggiornamento giornaliero/manuale; cache RAM 24h con fonte e data. 71 nuove prove, suite 652/652 e Browser desktop/mobile con Google simulato: docs/COLLAUDO-GOOGLE-BUSINESS.md. Nessun account reale o rilascio; altri canali e giro cliente ancora da completare.",
+        "Lettura Meta predisposta per Facebook e Instagram professionali: scelta canali, prova privata, attivazione esplicita, aggiornamento giornaliero facoltativo, dati nel servizio Social e cache RAM 24h; identità Page e Instagram esclusive fra clienti. Prove e limiti in docs/COLLAUDO-PROFILI-META.md. Nessun account reale attivato; OAuth completo, confronto reale, crescita Instagram e altri canali ancora aperti.",
+        "Accesso Meta guidato predisposto: ID/chiave cifrati, consenso per canale, stato monouso vincolato a sessione e versione, identità/app/permessi/scadenze verificati, disconnessione locale, scadenza report limitata dal consenso. Collaudo offline e browser in docs/COLLAUDO-PROFILI-META.md; attivazione e prova con Meta reale ancora aperte."
+      ]
+    },
+    {
+      "id": "FUN-014",
+      "area": "Marketing BigAnt → Le aree del marketing BigAnt",
+      "modifica": "**Eliminare le \"aree\".** Al loro posto un unico **Piano di attivazione dei servizi**: per ogni servizio lo stato (Attivo · In preparazione · Futuro), cosa manca per attivarlo e la data obiettivo. Si costruisce dal catalogo esistente (`src/servizi/catalogo.js`)",
+      "criterio": "Un solo posto mostra quali servizi BigAnt offre oggi, quali sono in preparazione e cosa manca per ciascuno",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare."
+      ]
+    },
+    {
+      "id": "FUN-015",
+      "area": "Marketing BigAnt → Obiettivi e risultati",
+      "modifica": "Obiettivi e risultati vanno **nella vista cliente**, insieme ai **report**: un report generale di tutto quello che è stato fatto per il cliente. Nessun riquadro \"obiettivo di fatturato\" per l'agenzia (D-08)",
+      "criterio": "Il cliente vede obiettivi, risultati e report nella sua area; l'agenzia non ha più questa sezione",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Report periodici con obiettivi, lavori e misure manuali, fonti/date, versioni immutabili e visibilità esplicita dopo verifica dei soci. Revoca persistente su servizi/ruoli; UI desktop/mobile e 14 prove dedicate. COLLAUDO-RISULTATI-CLIENTI.md."
+      ]
+    },
+    {
+      "id": "FUN-016",
+      "area": "Marketing BigAnt → Lavori registrati, Contenuti registrati",
+      "modifica": "Togliere",
+      "criterio": "La pagina non esiste più (FUN-011)",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Revisione indipendente del riordino: docs/COLLAUDO-PROFILI.md. Navigazione, alias, home, contratti e fonte ufficiale confrontati con il criterio; suite completa e limiti locali nel collaudo."
+      ]
+    },
+    {
+      "id": "FUN-017",
+      "area": "Marketing BigAnt → Memoria del cliente zero",
+      "modifica": "Nella **scheda cliente** di *Clienti* ci sono: anagrafica, contratto, quanto paga, accessi (FUN-010) e la **scheda informativa del cliente** (memoria: brief, tono di voce, note)",
+      "criterio": "Tutte le informazioni di un cliente sono in un'unica scheda",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow",
+        "10 ottobre: COLLAUDO-SCHEDE-CLIENTI.md. Moduli vincolati a cliente/sessione, risposte Accessi obsolete scartate e uscita immediata; dieci regressioni UI, suite 769/769 e browser con dati inventati. Collaudo autenticato online ancora aperto.",
+        "Online: nota inventata del solo cliente di prova salvata, ricaricata e aggiornata alla versione 2. Nessun cambio involontario attività dopo ricarica."
+      ]
+    },
+    {
+      "id": "FUN-018",
+      "area": "Direzione",
+      "modifica": "**Eliminare la voce \"Direzione\"**. I contenuti si ridistribuiscono come nella tabella sotto",
+      "criterio": "La voce non c'è più; nessun contenuto utile è andato perso",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
+    },
+    {
+      "id": "UI-008",
+      "area": "Direzione → \"La tua cabina di regia\"",
+      "modifica": "**Conservare lo stile** di questo riquadro come riferimento grafico: in testa a *Sciame di agenti* e come modello per la testata delle home (FUN-002)",
+      "criterio": "Il riquadro esiste in Sciame di agenti, con lo stesso aspetto",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Cabina di regia conservata nello Sciame e nella home; nuove azioni nello stesso componente e stile. Browser desktop e 390 px, schermate nella cache tecnica."
+      ]
+    },
+    {
+      "id": "FUN-019",
+      "area": "Direzione → cabina di regia, \"Esplora lo sciame\", priorità del Direttore",
+      "modifica": "Spostare in **Sciame di agenti**",
+      "criterio": "Questi blocchi si trovano solo in Sciame di agenti",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Cabina, Esplora e priorità nel percorso Sciame. GET riservato ai soci: fonte, versione corrente, stato DEMO, revisione manuale e rifiuto di output incoerenti senza fallback obsoleto. 6 test backend/HTTP e prove UI/Browser."
+      ]
+    },
+    {
+      "id": "FUN-020",
+      "area": "Direzione → quattro numeri (attività nel sistema, lavori in corso, decisioni in attesa, cassa registrata)",
+      "modifica": "Togliere. \"Decisioni in attesa\" sopravvive come contatore **Da approvare** nella home dell'amministrazione, con il collegamento a Sciame → Da approvare (FUN-061)",
+      "criterio": "Nessuna fila di numeri senza azione",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Revisione indipendente del riordino: docs/COLLAUDO-PROFILI.md. Navigazione, alias, home, contratti e fonte ufficiale confrontati con il criterio; suite completa e limiti locali nel collaudo."
+      ]
+    },
+    {
+      "id": "FUN-021",
+      "area": "Direzione → \"Le sei domande della settimana\"",
+      "modifica": "**Decisione [R]:** cassa e incassi → **Fatturazione** (secondo piano, FUN-009); clienti e consegne a rischio → **Trello** (non in BigAnt OS, D-03); **contratti in scadenza → pagina iniziale di *Clienti*** come avviso in evidenza (FUN-023); decisioni da prendere → **Trello**, come task; \"chi è sovraccarico\" → **tolta**",
+      "criterio": "Nessuna delle sei domande resta in una pagina a sé; i contratti in scadenza compaiono come avviso aprendo *Clienti*",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Revisione indipendente del riordino: docs/COLLAUDO-PROFILI.md. Navigazione, alias, home, contratti e fonte ufficiale confrontati con il criterio; suite completa e limiti locali nel collaudo."
+      ]
+    },
+    {
+      "id": "FUN-023",
+      "area": "Clienti → pagina iniziale",
+      "modifica": "In cima alla pagina *Clienti*, un **avviso** con i contratti che scadono nei prossimi 30 giorni (cliente, data, collegamento alla scheda). Richiede che il contratto in scheda cliente abbia data di inizio, durata e scadenza (FUN-007)",
+      "criterio": "Con un contratto che scade entro 30 giorni, aprendo *Clienti* compare l'avviso con il nome del cliente e la data",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow",
+        "Online: scadenza antecedente rifiutata; contratto inventato fino al 25 ottobre compare nell’avviso entro 30 giorni con cliente corretto. PDF scaricato identico alla fixture."
+      ]
+    },
+    {
+      "id": "FUN-022",
+      "area": "Sciame di agenti: chi lo vede",
+      "modifica": "Oggi il collaboratore ha *Approvazioni* ma non *Sciame di agenti* né *Ufficio virtuale* [C: `allowedNav()`]. Con il riordino (FUN-048, FUN-061) il collaboratore vede **solo la scheda Da approvare** dello Sciame. Le altre rotte dello sciame devono rifiutarlo **sul server**",
+      "criterio": "Un collaboratore che chiama le rotte dello sciame (tranne Da approvare) riceve un rifiuto",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
+    },
+    {
+      "id": "FUN-024",
+      "area": "Amministrazione",
+      "modifica": "La voce **Amministrazione diventa Fatturazione**: una sola voce, solo amministrazione, ultima del menu",
+      "criterio": "Esiste una sola voce per soldi e costi",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
+    },
+    {
+      "id": "FUN-025",
+      "area": "Amministrazione → Incassi del mese, Arretrati",
+      "modifica": "**Tenere** come numeri principali in testa alla Fatturazione",
+      "criterio": "I due numeri sono la prima cosa visibile in Fatturazione",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
+    },
+    {
+      "id": "UI-009",
+      "area": "Amministrazione → \"Bozze da emettere\"",
+      "modifica": "Rinominare **\"Da fatturare\"**: lavori e canoni conclusi senza fattura emessa. Le fatture vere restano su Aruba (COL-003)",
+      "criterio": "Il nome descrive cosa contiene senza bisogno di spiegazioni",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
+    },
+    {
+      "id": "FUN-026",
+      "area": "Amministrazione → \"Cosa non torna\", \"Conti e quadrature\", \"Storico delle quadrature\", \"Ore attribuite\", \"Ore e margini gestionali\"",
+      "modifica": "Togliere dalla vista",
+      "criterio": "I pannelli non compaiono",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
+    },
+    {
+      "id": "FUN-027",
+      "area": "Amministrazione → Prima nota, Cassa a 30/60/90 giorni",
+      "modifica": "**Prima nota** con, in testa, la previsione di cassa a 30, 60 e 90 giorni",
+      "criterio": "Un solo pannello mostra movimenti e previsione",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
+    },
+    {
+      "id": "FUN-028",
+      "area": "Amministrazione → \"Documenti e incassi\", \"Contributo di cassa per cliente\"",
+      "modifica": "**Tracker incassi** con le stesse categorie della bacheca Trello: canoni ricorrenti (fatturati e non), hosting e canoni annuali, siti, foto e video, promozionale, gestione social a pacchetto, forniture con saldo residuo e prelievi. Per ogni voce: cliente, importo, metodo, scadenza, pagato sì/no, ditta che fattura. Per ogni cliente il totale incassato (ex \"contributo di cassa\")",
+      "criterio": "Ogni categoria della bacheca Trello ha il suo corrispettivo e il saldo per cliente torna con quello della bacheca",
+      "stato": "parziale in locale",
+      "prove": [
+        "Categorie, residui, metodi, ditte e totale per cliente verificati su dati inventati. Collegamento e confronto con Trello da fare."
+      ]
+    },
+    {
+      "id": "FUN-029",
+      "area": "Amministrazione → \"Scadenze e compensi\"",
+      "modifica": "Pannello **Compensi collaboratori**: persona, mese, lavoro, importo, pagato sì/no. Sta nella stessa area di **Costi e abbonamenti**",
+      "criterio": "Si registra il compenso del mese di un collaboratore e risulta nel totale dei costi del mese",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
+    },
+    {
+      "id": "FUN-030",
+      "area": "Amministrazione → Abbonamenti",
+      "modifica": "**Un solo pannello \"Costi e abbonamenti\"** in Fatturazione, insieme ai compensi (FUN-029)",
+      "criterio": "Un solo elenco degli abbonamenti in tutta l'app",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
+    },
+    {
+      "id": "FUN-031",
+      "area": "Amministrazione → \"Tariffe confermate\"",
+      "modifica": "Trasformare in **Listino**: prodotto o servizio, prezzo, unità (mese, pezzo, pacchetto), note e data. Si aggiungono voci in un attimo. Valutare il collegamento con il Catalogo servizi",
+      "criterio": "Si aggiunge una voce di listino in meno di un minuto e la si ritrova cercandola",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare."
+      ]
+    },
+    {
+      "id": "FUN-032",
+      "area": "Amministrazione → \"Contratti e rinnovi\"",
+      "modifica": "Spostare nella scheda cliente (FUN-007) e nell'avviso dei contratti in scadenza (FUN-023)",
+      "criterio": "I contratti si trovano solo in Clienti",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
+    },
+    {
+      "id": "COL-003",
+      "area": "Fatturazione → fatture",
+      "modifica": "BigAnt OS **non emette fatture**: segna \"da fatturare\" e \"fatturato\". Un collegamento ad Aruba si valuta in futuro",
+      "criterio": "Nessuna funzione di BigAnt OS promette l'emissione di fatture elettroniche",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Fatturazione, tracker e compensi; 223 test, controllo 5/5, Browser con compenso inventato di 123,45 euro. Trello resta fonte ufficiale."
+      ]
+    },
+    {
+      "id": "DAT-002",
+      "area": "Fatturazione",
+      "modifica": "Decidere la fonte ufficiale (D-09). Se diventa BigAnt OS: importazione una tantum dalla bacheca, poi la bacheca resta in sola lettura. Se resta Trello: BigAnt OS la legge e la mostra (COL-001)",
+      "criterio": "Esiste un solo registro ufficiale dichiarato",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Revisione indipendente del riordino: docs/COLLAUDO-PROFILI.md. Navigazione, alias, home, contratti e fonte ufficiale confrontati con il criterio; suite completa e limiti locali nel collaudo."
+      ]
+    },
+    {
+      "id": "FUN-033",
+      "area": "Clienti → elenco e \"Nuova attività\"",
+      "modifica": "**Tenere** l'elenco a card e il modulo. Il nome per il link si genera da solo dal nome dell'attività. Dopo la creazione si completa la scheda (FUN-034)",
+      "criterio": "Una nuova attività si crea con nome, settore e servizi; il link si genera senza intervento",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
+    },
+    {
+      "id": "FUN-034",
+      "area": "Clienti → \"Apri attività\"",
+      "modifica": "**Scheda cliente dell'amministrazione**, separata dalla vista cliente, organizzata a card (PRINC-01): **Anagrafica** · **Contratto** (FUN-007, FUN-023) · **Accessi** (FUN-010) · **Scheda informativa**, cioè brief, tono di voce e note (FUN-017) · **Servizi attivi con i loro report** (FUN-036) · **Documenti**, cioè contratto, fatture e pagamenti (FUN-039) · **Avvio cliente** (FUN-008) · **Risultati** (FUN-035)",
+      "criterio": "\"Apri attività\" apre la scheda dell'agenzia; nessun elemento della vista cliente compare al suo posto",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow",
+        "10 ottobre: COLLAUDO-SCHEDE-CLIENTI.md. Moduli vincolati a cliente/sessione, risposte Accessi obsolete scartate e uscita immediata; dieci regressioni UI, suite 769/769 e browser con dati inventati. Collaudo autenticato online ancora aperto."
+      ]
+    },
+    {
+      "id": "UI-010",
+      "area": "Vista cliente",
+      "modifica": "Applicare PRINC-01: home del cliente a card, ogni sezione si apre da sola",
+      "criterio": "Nessuna pagina del cliente mostra più di una sezione completa alla volta",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Home cliente a due card; servizi, singolo report e documenti separati con Indietro. Browser desktop e 390 px, tests/client-area-ui.test.js.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente.",
+        "Report nei servizi riordinati a card con un solo dettaglio aperto: fonti Meta separate, risultati/recensioni Google, report verificati, indicatori e contatti Email marketing. Navigazione e API vincolate a cliente/servizio; scadenze e percorsi obsoleti senza ripiego su altri dati. Cinque nuove prove e browser desktop/mobile: docs/COLLAUDO-VISTA-CLIENTE.md. Non certifica tutte le pagine/ruoli reali né attiva fonti esterne."
+      ]
+    },
+    {
+      "id": "FUN-035",
+      "area": "\"I tuoi risultati\"",
+      "modifica": "Due livelli. **Amministrazione:** una vista **\"Risultati dei clienti\"** con i risultati di ogni cliente in un unico posto. **Cliente:** \"I tuoi risultati\", solo i propri. **Ordine di rilascio deciso [R]:** prima solo nella dashboard dell'amministrazione; quando è configurata bene, anche nella dashboard del cliente",
+      "criterio": "L'amministrazione vede i risultati di tutti i clienti in una pagina; il cliente, quando abilitato, vede solo i suoi",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Report periodici con obiettivi, lavori e misure manuali, fonti/date, versioni immutabili e visibilità esplicita dopo verifica dei soci. Revoca persistente su servizi/ruoli; UI desktop/mobile e 14 prove dedicate. COLLAUDO-RISULTATI-CLIENTI.md.",
+        "Online: report inventato ottobre, anteprima versione corrente, conferma, visibilità in Social e nuova revisione che lo rende privato verificati. Report finale nascosto."
+      ]
+    },
+    {
+      "id": "FUN-036",
+      "area": "Report (presenza, scheda Google, clic al sito, report mensili…)",
+      "modifica": "**I report stanno dentro il servizio attivo a cui si riferiscono**, sia nella scheda cliente dell'amministrazione sia in \"I tuoi servizi\" del cliente. Esempi [R]: Sito e SEO → report; **Reputazione e recensioni** → report più elenco delle recensioni; **Email marketing** → report più gestione delle email; **Meta Ads** → report; **Google Ads** → report (**molto importante**). Si toglie \"Report mensili\" come sezione separata. Le sezioni della versione cliente **Sito e SEO, Pubblicità, Social e contenuti** si tengono, ma con **molta pulizia** [R]: dentro i rispettivi servizi, solo dati utili e comprensibili",
+      "criterio": "Ogni report si raggiunge solo dal servizio corrispondente; nessuna sezione \"report\" generica",
+      "stato": "parziale in locale",
+      "prove": [
+        "Report raggiungibili nei servizi, stessi dati per socio in anteprima e cliente; report mensile separato rimosso. GBP attivo e conteggi Fidelity disponibili; altre fonti, report Ads completi e Email marketing restano aperti.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente.",
+        "Report manuali verificati ora anche nel servizio pertinente; riepilogo trasversale separato richiesto da FUN-035. Restano integrazioni automatiche, Ads e Email marketing.",
+        "Lettura Meta predisposta per Facebook e Instagram professionali: scelta canali, prova privata, attivazione esplicita, aggiornamento giornaliero facoltativo, dati nel servizio Social e cache RAM 24h; identità Page e Instagram esclusive fra clienti. Prove e limiti in docs/COLLAUDO-PROFILI-META.md. Nessun account reale attivato; OAuth completo, confronto reale, crescita Instagram e altri canali ancora aperti.",
+        "Report nei servizi riordinati a card con un solo dettaglio aperto: fonti Meta separate, risultati/recensioni Google, report verificati, indicatori e contatti Email marketing. Navigazione e API vincolate a cliente/servizio; scadenze e percorsi obsoleti senza ripiego su altri dati. Cinque nuove prove e browser desktop/mobile: docs/COLLAUDO-VISTA-CLIENTE.md. Non certifica tutte le pagine/ruoli reali né attiva fonti esterne.",
+        "Accesso Meta guidato predisposto: ID/chiave cifrati, consenso per canale, stato monouso vincolato a sessione e versione, identità/app/permessi/scadenze verificati, disconnessione locale, scadenza report limitata dal consenso. Collaudo offline e browser in docs/COLLAUDO-PROFILI-META.md; attivazione e prova con Meta reale ancora aperte.",
+        "Crescita follower Instagram predisposta con metrica dedicata, stesso periodo, nuovi/persi/netta separati e soglia 100; dati mancanti/non classificati non diventano zero. Otto nuove prove in docs/COLLAUDO-PROFILI-META.md. Confronto e attivazione reali ancora aperti.",
+        "Online: report manuale verificato nel servizio Social; fonte/data visibili, nuova revisione nasconde il report. Non sostituisce le fonti esterne e le altre prove ancora aperte."
+      ]
+    },
+    {
+      "id": "COL-004",
+      "area": "Approvazioni e calendario, Storico delle decisioni",
+      "modifica": "**Mettere da parte** queste sezioni. In futuro **collegare il PED** (prima in sola lettura) per mostrare piano e approvazioni in BigAnt OS. Il PED originale non si tocca senza autorizzazione",
+      "criterio": "Decisione futura; nel frattempo le sezioni non compaiono",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Approvazioni, calendario e storico cliente nascosti; produzione e decisioni negate anche via API precedenti. PED originale intatto; collegamento futuro ancora assente.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+      ]
+    },
+    {
+      "id": "FUN-037",
+      "area": "\"I tuoi servizi\"",
+      "modifica": "**Tenere** su entrambi i lati, come contenitore dei report (FUN-036)",
+      "criterio": "Lo stesso elenco di servizi attivi compare nei due lati",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Stessi ID di servizi acquistati in scheda, home e anteprima cliente. Growth escluso dalla vista cliente per la decisione già confermata T3; non equivale a Email marketing.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+      ]
+    },
+    {
+      "id": "FUN-038",
+      "area": "\"Servizi consigliati per te\"",
+      "modifica": "Togliere",
+      "criterio": "La sezione non compare",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Servizi consigliati nascosti anche dalla risposta overview; proposta upsell conservata per il team. Scenario a 13 passi aggiornato e verificato.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+      ]
+    },
+    {
+      "id": "FUN-039",
+      "area": "\"Documenti e amministrazione\"",
+      "modifica": "Card **Documenti** su entrambi i lati, ciascuno limitato al proprio cliente. **Dipendenza:** finché il registro ufficiale dei pagamenti è Trello (D-09), in BigAnt OS i pagamenti non ci sono; vedi D-10",
+      "criterio": "Il cliente vede solo i propri documenti, verificato sul server",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Documenti propri e anteprima equivalente, PDF isolato e nessun importo/fattura. Corretta deduplicazione impropria per sola scadenza, anche negli avvisi.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente.",
+        "Online: PDF inventato del cliente di prova presente in scheda e anteprima, scaricato identico. Gli accessi cliente nominali restano da collaudare."
+      ]
+    },
+    {
+      "id": "FUN-040",
+      "area": "\"Contatti e clienti\"",
+      "modifica": "Spostare nel servizio Email marketing, visibile solo a chi lo ha attivo",
+      "criterio": "La sezione compare solo dentro Email marketing",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Registro autonomo email-marketing, attivazione per servizio acquistato, soci/titolare modificano e collaboratore assegnato consulta. Consensi con prova, revoca e nuovo consenso, storico immutabile, isolamento, pagine e ricerca. Nessun invio o collegamento Growth/Fidelity.",
+        "COLLAUDO-EMAIL-MARKETING.md: 16 prove specifiche, browser cliente/socio/anteprima e 390 px, revisione indipendente."
+      ]
+    },
+    {
+      "id": "FUN-041",
+      "area": "\"Iscritti Fidelity\" e moduli futuri",
+      "modifica": "Regola generale: **ogni sezione legata a un servizio compare solo se il servizio è attivo** per quel cliente. Nel menu del cliente la regola esiste già per Fidelity [C: `allowedNav()`]; nella dashboard cliente è [DV]",
+      "criterio": "Un cliente senza Fidelity non vede la sezione né riceve i dati dal server",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Fidelity richiede acquisto corrente; senza servizio niente voce, conteggi o API. Growth non abilita Fidelity. Revoche e tenant provati sul server locale.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+      ]
+    },
+    {
+      "id": "FUN-042",
+      "area": "\"Chiedi all'agenzia\"",
+      "modifica": "Togliere",
+      "criterio": "La sezione non compare",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Chiedi all’agenzia nascosto; vecchio POST ask negato al cliente senza creare task.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+      ]
+    },
+    {
+      "id": "FUN-043",
+      "area": "\"Il tuo profilo / La tua attività\"",
+      "modifica": "Togliere",
+      "criterio": "La sezione non compare",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Sezione profilo personale rimossa; vecchio indirizzo non la riapre. Il titolo della home La tua attività resta il nome del contenitore, non la vecchia scheda profilo.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente."
+      ]
+    },
+    {
+      "id": "FUN-044",
+      "area": "\"Collegamento alla fonte dei dati\"",
+      "modifica": "**Tenere solo nella vista cliente**, accanto a ogni report: fonte, data dell'ultimo aggiornamento e collegamento all'originale. Non serve nel lato amministrazione",
+      "criterio": "Ogni dato mostrato al cliente ha la sua fonte e la data",
+      "stato": "parziale in locale",
+      "prove": [
+        "Fonte/data sui dati disponibili, link Google e rimozione immediata dei dati scaduti anche senza rete. Fidelity dichiara archivio e data di lettura ma manca link alla fonte originale; altre fonti da collegare.",
+        "COLLAUDO-VISTA-CLIENTE.md: 22 nuove prove, suite 725/725; revisione indipendente.",
+        "Fonte Fidelity apribile dall’area cliente: conteggi per programma riconciliati col totale, criterio e data, senza contatti. API GET isolata per attività; 818/818 test e collaudo cliente DEMO desktop/390 px. COLLAUDO-VISTA-CLIENTE.md. Fonti esterne ancora da collegare.",
+        "Lettura Meta predisposta per Facebook e Instagram professionali: scelta canali, prova privata, attivazione esplicita, aggiornamento giornaliero facoltativo, dati nel servizio Social e cache RAM 24h; identità Page e Instagram esclusive fra clienti. Prove e limiti in docs/COLLAUDO-PROFILI-META.md. Nessun account reale attivato; OAuth completo, confronto reale, crescita Instagram e altri canali ancora aperti.",
+        "Report nei servizi riordinati a card con un solo dettaglio aperto: fonti Meta separate, risultati/recensioni Google, report verificati, indicatori e contatti Email marketing. Navigazione e API vincolate a cliente/servizio; scadenze e percorsi obsoleti senza ripiego su altri dati. Cinque nuove prove e browser desktop/mobile: docs/COLLAUDO-VISTA-CLIENTE.md. Non certifica tutte le pagine/ruoli reali né attiva fonti esterne.",
+        "Accesso Meta guidato predisposto: ID/chiave cifrati, consenso per canale, stato monouso vincolato a sessione e versione, identità/app/permessi/scadenze verificati, disconnessione locale, scadenza report limitata dal consenso. Collaudo offline e browser in docs/COLLAUDO-PROFILI-META.md; attivazione e prova con Meta reale ancora aperte.",
+        "Crescita follower Instagram predisposta con metrica dedicata, stesso periodo, nuovi/persi/netta separati e soglia 100; dati mancanti/non classificati non diventano zero. Otto nuove prove in docs/COLLAUDO-PROFILI-META.md. Confronto e attivazione reali ancora aperti."
+      ]
+    },
+    {
+      "id": "FUN-045",
+      "area": "Vista cliente dal pannello dell'amministrazione",
+      "modifica": "Tenere \"Vista cliente\" nel gruppo **Sistema**, con la scelta del cliente; in più un pulsante **\"Guarda come il cliente\"** nella scheda cliente",
+      "criterio": "Dall'amministrazione si vede la piattaforma esattamente come la vede un cliente scelto, senza poter modificare nulla per suo conto",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
+    },
+    {
+      "id": "FUN-046",
+      "area": "Lavori e contenuti",
+      "modifica": "**Togliere la voce** dai menu di amministrazione, collaboratore e cliente. Il codice resta (D-05) perché ci si appoggiano lo sciame e le approvazioni",
+      "criterio": "La voce non compare in nessun menu; sciame e approvazioni funzionano ancora (test verdi)",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Lavori assente nei menu socio, collaboratore e cliente, verificati nel Browser. Elaborato social → bozza specifica nella coda; test UI e suite 407/407. Codice precedente conservato secondo D-05."
+      ]
+    },
+    {
+      "id": "FUN-047",
+      "area": "Collaboratore → pagina d'ingresso",
+      "modifica": "La **home del collaboratore** (FUN-002) va ripensata senza task e senza piano editoriale: per esempio clienti assegnati, accessi e scheda informativa dei clienti, approvazioni. Da decidere a fine giro, insieme al menu del collaboratore",
+      "criterio": "Il collaboratore entra su una home utile senza passare da *Lavori e contenuti*",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
+    },
+    {
+      "id": "FUN-048",
+      "area": "Bozze dello sciame",
+      "modifica": "Dentro *Sciame di agenti*, una scheda **\"Da approvare\"** con le bozze prodotte dagli agenti (testo, agente, cliente, esito del controllo qualità, approva o rimanda con nota). Il **collaboratore** vede solo questa scheda dello sciame (coerente con FUN-022). Cosa fare della voce *Approvazioni* si decide quando la analizziamo",
+      "criterio": "Una bozza di un agente si approva da Sciame → Da approvare; il collaboratore vede quella scheda e nient'altro dello sciame (verifica sul server)",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare.",
+        "COLLAUDO-AGENTE-SOCIAL: primo percorso S01 manuale, autorizzazione distinta, anteprima/consenso, bozze con provenienza e approvazione umana; 703/703 test, controllo 5/5 e Browser desktop/mobile con fornitore simulato. Pianificazioni, altri percorsi e attivazioni reali ancora aperti.",
+        "10 ottobre, COLLAUDO-AGENTE-QUALITA: secondo percorso manuale predisposto, bozza e fonti vincolate, parere superato dopo modifiche e visibile al team assegnato; nessuna approvazione automatica. 804/804 prove, browser desktop e 390 px, fornitori simulati e revisione indipendente. Prima attivazione reale, altri percorsi e pianificazioni ancora aperti."
+      ]
+    },
+    {
+      "id": "FUN-049",
+      "area": "Menu → Growth, Fidelity, Menu digitale",
+      "modifica": "Gruppo di menu **\"Prodotti\"**, in evidenza: Growth, Fidelity, in futuro Menu digitale. Ogni prodotto si attiva per cliente come un servizio (FUN-041)",
+      "criterio": "I prodotti sono raggruppati e riconoscibili nel menu",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
+    },
+    {
+      "id": "COL-005",
+      "area": "Growth → ricerca attività locali",
+      "modifica": "**Attivazione a fasi**, ciascuna con chiavi, tetto di spesa, test e ok dei soci: **(1)** ricerca reale delle attività (Brave Search o fonte equivalente) e lettura dei siti, solo lettura; **(2)** analisi e punteggio con l'AI (`BIGANT_ANTHROPIC_API_KEY` con tetto); **(3)** bozze dei messaggi, sempre approvate da un socio; **(4)** invio da Gmail **solo manuale**, dopo l'approvazione, con consenso e disiscrizione già gestiti dal codice; **(5)** Google Calendar per gli appuntamenti. Il codice dei fornitori reali si recupera dall'originale `bigant-growth` (in sola lettura) e si ricollauda",
+      "criterio": "Fase 1: una ricerca su \"ristoranti Caserta\" restituisce attività vere con fonte e data; nessun invio parte senza un'approvazione registrata",
+      "stato": "parziale in locale",
+      "prove": [
+        "COLLAUDO-GROWTH-RIORDINO: sei famiglie di adattatori predisposte, OpenAI e Anthropic con schema comune, 11 nuove prove offline; integrazione con motore/vault e collaudo reale da fare.",
+        "Motore/vault integrati per ricerca, analisi e bozze, disabilitati di default. 13 test runtime + HTTP, suite 248/248; Browser su fixture con scelta AI rinviata e ricerca chiusa. Gmail/OAuth/Calendar e collaudo fornitori/server ancora da fare. Vedi aggiornamento COLLAUDO-GROWTH-RIORDINO.",
+        "10 ottobre: OAuth e invio Gmail manuale integrati, chiusi per default; test offline su versioni, consenso, concorrenza, quota, esito incerto, riavvio e HTTP. Browser con fornitori finti, anteprima 390 px e riconciliazione. SOP-GROWTH-GMAIL.md e COLLAUDO-GROWTH-RIORDINO.md. Account/consegna reali, sincronizzazione conversazioni e Calendar ancora mancanti.",
+        "10 ottobre: lettura manuale conversazioni Gmail integrata, solo invii OS confermati; rifiuti, deduplica, MIME, revoche e concorrenza verificati con 78 prove dedicate, HTTP e Browser desktop/390 px. SOP-GROWTH-CONVERSAZIONI.md. Nessuna casella reale letta; Calendar e collaudo fornitori/server ancora aperti.",
+        "10 ottobre: Calendar integrato nel server con consenso OAuth facoltativo, prova/ricevuta esplicita, inviti monouso, concorrenza, riconciliazione e annullamento verificato. 94 nuove prove con fornitori finti, suite 543/543; Browser socio e pubblico, 390 px. SOP-GROWTH-CALENDAR.md e COLLAUDO-GROWTH-RIORDINO.md. Account, ricezione Google e collaudo server restano da autorizzare e verificare; nessuna promozione a completato."
+      ]
+    },
+    {
+      "id": "FUN-050",
+      "area": "Growth → verifica del trasferimento",
+      "modifica": "**Collaudo completo sul server reale**, percorso per percorso: lead → analisi → bozza → approvazione → (invio simulato) → appuntamento → conversione in cliente. Confronto voce per voce con l'inventario e con l'app originale",
+      "criterio": "Ogni riga dell'inventario Growth risulta provata nell'interfaccia, con esito scritto",
+      "stato": "parziale in locale",
+      "prove": [
+        "COLLAUDO-GROWTH-RIORDINO: sei famiglie di adattatori predisposte, OpenAI e Anthropic con schema comune, 11 nuove prove offline; integrazione con motore/vault e collaudo reale da fare.",
+        "Motore/vault integrati per ricerca, analisi e bozze, disabilitati di default. 13 test runtime + HTTP, suite 248/248; Browser su fixture con scelta AI rinviata e ricerca chiusa. Gmail/OAuth/Calendar e collaudo fornitori/server ancora da fare. Vedi aggiornamento COLLAUDO-GROWTH-RIORDINO.",
+        "10 ottobre: OAuth e invio Gmail manuale integrati, chiusi per default; test offline su versioni, consenso, concorrenza, quota, esito incerto, riavvio e HTTP. Browser con fornitori finti, anteprima 390 px e riconciliazione. SOP-GROWTH-GMAIL.md e COLLAUDO-GROWTH-RIORDINO.md. Account/consegna reali, sincronizzazione conversazioni e Calendar ancora mancanti.",
+        "10 ottobre: lettura manuale conversazioni Gmail integrata, solo invii OS confermati; rifiuti, deduplica, MIME, revoche e concorrenza verificati con 78 prove dedicate, HTTP e Browser desktop/390 px. SOP-GROWTH-CONVERSAZIONI.md. Nessuna casella reale letta; Calendar e collaudo fornitori/server ancora aperti.",
+        "10 ottobre: Calendar integrato nel server con consenso OAuth facoltativo, prova/ricevuta esplicita, inviti monouso, concorrenza, riconciliazione e annullamento verificato. 94 nuove prove con fornitori finti, suite 543/543; Browser socio e pubblico, 390 px. SOP-GROWTH-CALENDAR.md e COLLAUDO-GROWTH-RIORDINO.md. Account, ricezione Google e collaudo server restano da autorizzare e verificare; nessuna promozione a completato.",
+        "4d99498 online: risolto archivio DEMO occupato con conservazione privata e ripristino protetto. Growth reale vuoto e in pausa verificato. Ricerca/AI/Gmail/Calendar reali restano da collaudare."
+      ]
+    },
+    {
+      "id": "FUN-051",
+      "area": "Fidelity → verifica del trasferimento",
+      "modifica": "**Collaudo completo sul server reale**, lato amministrazione e lato iscritto: creare il programma, iscriversi dalla carta pubblica, accreditare con lo scanner (fotocamera, da telefono), riscattare, stornare, esportare. Stessa lista di prove usata in passato sull'originale",
+      "criterio": "La lista di prove dell'originale passa tutta su BigAnt OS, anche da telefono",
+      "stato": "parziale in locale",
+      "prove": [
+        "docs/COLLAUDO-FIDELITY-RIORDINO.md: sorgente originale verificata, 27 test dominio e 4 scanner, percorso timbri/riscatto e carta responsive. Server reale, telefono e fornitori ancora da collaudare.",
+        "Google Wallet: motore con firma/OAuth, emissione e aggiornamenti idempotenti, revoca e coda persistente; 16 test con risposte finte e una prova HTTP. Schermate e carta pubblica a 390 px verificate. Flag chiuso; account/dominio Google, Android e Apple/iPhone ancora da collaudare. SOP-GOOGLE-WALLET.md; suite OS 265/265.",
+        "10 ottobre, collaudo autenticato sul server: programma/tessera inventati, accredito, riscatto, rifiuto saldo insufficiente, storno, ricerca per link ed export. Restano telefono fisico, Wallet e altri ruoli. Vedi COLLAUDO-ONLINE-2026-10-10.md."
+      ]
+    },
+    {
+      "id": "COL-006",
+      "area": "Fidelity → Apple Wallet e Google Wallet",
+      "modifica": "**Google Wallet:** emittente e account di servizio Google (variabili già previste nell'originale), poi attivazione e prova su un telefono Android. **Apple Wallet:** serve sbloccare l'account Apple Developer (Pass Type ID e certificati), problema aperto anche nell'originale. Certificati e chiavi solo nelle variabili di Railway, mai nel repository",
+      "criterio": "Una carta di prova si aggiunge a Google Wallet e ad Apple Wallet e si aggiorna dopo un accredito",
+      "stato": "da fare",
+      "prove": [
+        "Google Wallet: motore con firma/OAuth, emissione e aggiornamenti idempotenti, revoca e coda persistente; 16 test con risposte finte e una prova HTTP. Schermate e carta pubblica a 390 px verificate. Flag chiuso; account/dominio Google, Android e Apple/iPhone ancora da collaudare. SOP-GOOGLE-WALLET.md; suite OS 265/265."
+      ]
+    },
+    {
+      "id": "COL-007",
+      "area": "Fidelity → lavoro completo",
+      "modifica": "Confronto con l'originale `lol-afk23456/Fidelity` (sola lettura), riporto delle parti mancanti, collaudo completo (FUN-051), Wallet (COL-006), nessuna importazione (D-11), spegnimento dell'originale. Prima di Growth (D-12)",
+      "criterio": "La lista di prove dell'originale passa tutta su BigAnt OS",
+      "stato": "parziale in locale",
+      "prove": [
+        "docs/COLLAUDO-FIDELITY-RIORDINO.md: sorgente originale verificata, 27 test dominio e 4 scanner, percorso timbri/riscatto e carta responsive. Server reale, telefono e fornitori ancora da collaudare.",
+        "Google Wallet: motore con firma/OAuth, emissione e aggiornamenti idempotenti, revoca e coda persistente; 16 test con risposte finte e una prova HTTP. Schermate e carta pubblica a 390 px verificate. Flag chiuso; account/dominio Google, Android e Apple/iPhone ancora da collaudare. SOP-GOOGLE-WALLET.md; suite OS 265/265.",
+        "Tessera pubblica online verificata a 390 px senza overflow; scanner tramite link riuscito. Fotocamera fisica ancora da provare."
+      ]
+    },
+    {
+      "id": "DAT-003",
+      "area": "Growth e Fidelity → dati esistenti",
+      "modifica": "**Nessuna importazione necessaria.** Prima di spegnere le originali, controllo veloce che non contengano dati da tenere (solo conteggi, senza copiarli)",
+      "criterio": "Conteggi verificati prima dello spegnimento",
+      "stato": "da fare",
+      "prove": [
+        "10 ottobre: originali consultate in sola lettura, entrambe mostrano login separato. Conteggi non disponibili e non assunti a zero; nessuna modifica. COLLAUDO-ONLINE-2026-10-10.md."
+      ]
+    },
+    {
+      "id": "FUN-052",
+      "area": "Ufficio virtuale + Sciame di agenti",
+      "modifica": "**Una sola voce \"Sciame di agenti\"** con schede (PRINC-01): **Ufficio** (dal vivo, la prima scheda) · **Agenti** (elenco e configurazione) · **Da approvare** (FUN-048) · **Storico** · **Budget**. In testa il riquadro \"cabina di regia\" (UI-008)",
+      "criterio": "Una sola voce nel menu; l'Ufficio si apre per primo",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
+    },
+    {
+      "id": "UI-011",
+      "area": "Ufficio virtuale",
+      "modifica": "**Conservare** l'aspetto e la diretta così come sono",
+      "criterio": "Nessuna regressione dell'Ufficio dopo il riordino",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Componente card applicato a Clienti, Sciame, Profili, Accessi e Avanzamento; dettaglio e limiti nel DIARIO-LAVORO del 10 ottobre",
+        "Stanze, feed e dettagli conservati; nuovo giro DEMO visibile nel Browser. Risposte tardive scartate dopo cambio pagina/sessione; test positivo della diretta fino al risultato finale. Nessuna AI reale o prova su telefono fisico."
+      ]
+    },
+    {
+      "id": "FUN-053",
+      "area": "Sciame → Agenti",
+      "modifica": "Per ogni agente uno **stato chiaro**: **Da configurare** → **Base** (procedura senza AI) → **AI pronta** (istruzioni, fonti, prova superata) → **Attivo** (usato nel lavoro vero). Una **scheda di configurazione** per agente: compito, servizio a cui serve, istruzioni, fonti di dati, controllo qualità, costo stimato, \"quando lavora\". Si usano solo gli agenti **Attivi**",
+      "criterio": "L'elenco mostra lo stato di ciascun agente; un agente non Attivo non parte nel lavoro vero",
+      "stato": "parziale in locale",
+      "prove": [
+        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo.",
+        "10 ottobre: prova tecnica individuale Anthropic/OpenAI, consenso esplicito, schema, storico immutabile, invalidazione per istruzioni/chiavi/revoca, budget condiviso; 18 nuove prove, suite 687/687. Browser desktop/mobile. SOP-COLLAUDO-AGENTE e COLLAUDO-AGENTI-AI. Nessuna attivazione reale: stato ancora parziale.",
+        "COLLAUDO-AGENTE-SOCIAL: primo percorso S01 manuale, autorizzazione distinta, anteprima/consenso, bozze con provenienza e approvazione umana; 703/703 test, controllo 5/5 e Browser desktop/mobile con fornitore simulato. Pianificazioni, altri percorsi e attivazioni reali ancora aperti."
+      ]
+    },
+    {
+      "id": "FUN-054",
+      "area": "Sciame → ordine dei lavori",
+      "modifica": "Raccomandazione: **prima la struttura** (menu, schede, scheda cliente, stati degli agenti), **poi si configurano gli agenti uno alla volta**, partendo da quelli che servono ai **servizi già attivi** (Piano di attivazione, FUN-014) e alla ricerca clienti di Growth (COL-005). Ogni agente si analizza quando arriva il suo turno",
+      "criterio": "Esiste un ordine di configurazione scritto, legato ai servizi",
+      "stato": "implementata in locale; ordine scritto, attivazioni reali escluse",
+      "prove": [
+        "ORDINE-CONFIGURAZIONE-AGENTI.md: sequenza per servizi attivi dichiarati nel brief, prerequisiti e avanzamento uno alla volta; Growth separato e T4 ancora da avviare."
+      ]
+    },
+    {
+      "id": "UI-012",
+      "area": "Sciame → \"Giri dell'attività\"",
+      "modifica": "Rinominare **\"Storico\"**: cosa ha fatto ogni agente, quando, con quale esito, con il collegamento al risultato",
+      "criterio": "Il nome si capisce senza spiegazioni",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo."
+      ]
+    },
+    {
+      "id": "FUN-055",
+      "area": "Sciame → \"Automatismi pianificati\"",
+      "modifica": "Togliere il pannello. La regola \"quando lavora\" diventa un campo della **configurazione del singolo agente** (FUN-053), disattivato finché l'agente non è **Attivo** e i soci non lo autorizzano",
+      "criterio": "Nessun pannello di automatismi; nessun agente parte da solo se non è Attivo e autorizzato",
+      "stato": "parziale in locale",
+      "prove": [
+        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo.",
+        "COLLAUDO-AGENTE-SOCIAL: primo percorso S01 manuale, autorizzazione distinta, anteprima/consenso, bozze con provenienza e approvazione umana; 703/703 test, controllo 5/5 e Browser desktop/mobile con fornitore simulato. Pianificazioni, altri percorsi e attivazioni reali ancora aperti.",
+        "COLLAUDO-PIANIFICAZIONE-AGENTI: Social ricorrente predisposto con consenso per attività e scadenza, guard prima/dopo, budget, sospensione e nessun retry. 814/814 test, controllo 5/5, browser desktop/390 px. Interruttore spento, prima attivazione e altri agenti ancora aperti."
+      ]
+    },
+    {
+      "id": "FUN-056",
+      "area": "Sciame → \"Budget del pilota\"",
+      "modifica": "**Tenere** come scheda **Budget**: tetto mensile, speso, costo per agente",
+      "criterio": "Il budget mostra speso e tetto aggiornati",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo.",
+        "Controllo complessivo dei costi: dichiarazione mensile immutabile dei soci, stop prima del 40 € su 50 €, impegni condivisi Growth/Sciame e verifica prima del trasporto; 17 nuove prove, suite 669/669, Browser desktop/mobile. docs/COLLAUDO-CONTROLLO-COSTI.md. Importi inventati: consumi reali ancora da verificare, nessuna attivazione."
+      ]
+    },
+    {
+      "id": "FUN-057",
+      "area": "Sciame → \"Attività dei moduli collegati\"",
+      "modifica": "Spostare in **Growth** e in **Fidelity**, ciascuno con la propria coda (FUN-049)",
+      "criterio": "La coda di Growth si vede in Growth, quella di Fidelity in Fidelity",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo."
+      ]
+    },
+    {
+      "id": "FUN-058",
+      "area": "Registro attività → parte agenti",
+      "modifica": "Nella scheda di ogni agente (FUN-053) e nello **Storico** dello Sciame (UI-012): cosa ha fatto, quando, con quale esito",
+      "criterio": "Aprendo un agente si vede il suo registro",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Configurazione, storico, costi e code: DIARIO-LAVORO 10 ottobre; 209 test verdi e 6 prove agent-config. Nessun percorso reale attivabile finché manca il collaudo."
+      ]
+    },
+    {
+      "id": "FUN-059",
+      "area": "Registro attività → voce di menu",
+      "modifica": "Togliere la voce dal menu di tutti i ruoli. Il **registro delle persone** (accessi, credenziali viste, utenti, approvazioni) resta, **solo per l'amministrazione**, nella voce **Accessi** come scheda **Registro** (gruppo **Sistema**, FUN-066). Non si cancella nessuna riga",
+      "criterio": "La voce non è nel menu; dall'area Avanzate l'amministrazione ritrova \"chi ha visto le credenziali di X\"",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
+    },
+    {
+      "id": "FUN-060",
+      "area": "Servizi",
+      "modifica": "**Una sola voce \"Servizi\"** per l'amministrazione, che è il **Piano di attivazione dei servizi** (FUN-014): elenco dei servizi BigAnt con stato (**Attivo · In preparazione · Futuro**), cosa manca per attivarlo, data obiettivo, agenti che lo seguono (stato da FUN-053) e voce di **Listino** (FUN-031). La pagina di dettaglio resta, a card (PRINC-01). Lato cliente, \"Servizi\" è \"I tuoi servizi\" con i report (FUN-036, FUN-037)",
+      "criterio": "Un solo posto spiega quali servizi offre BigAnt e a che punto è ciascuno",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare.",
+        "T0, 10 ottobre: controllo date condiviso senza cambi di comportamento; date impossibili rifiutate senza scritture e bisestile valido verificato nei contratti. 284/284 test e check 5/5; stati e limiti del riordino invariati."
+      ]
+    },
+    {
+      "id": "UI-013",
+      "area": "Servizi",
+      "modifica": "Sostituire con i tre stati semplici del Piano di attivazione (UI-004)",
+      "criterio": "Nessun avviso tecnico nella pagina",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Piano servizi e dettaglio a card, avviso tecnico tolto dalla pagina dei soci; verifica browser locale.",
+        "Pulizia estesa al catalogo cliente e ai dettagli servizio: nessuna etichetta tecnica, limiti e DEMO conservati; 7 test operativi e verifica Browser."
+      ]
+    },
+    {
+      "id": "FUN-061",
+      "area": "Approvazioni → voce di menu",
+      "modifica": "Togliere la voce \"Approvazioni\": tutto confluisce nella scheda **Da approvare** dello Sciame (FUN-048), con un filtro per tipo (post, messaggi Growth, campagne Fidelity) e il contatore nella home dell'amministrazione",
+      "criterio": "Una sola coda \"Da approvare\", dentro lo Sciame",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
+    },
+    {
+      "id": "FUN-062",
+      "area": "Regola di pubblicazione",
+      "modifica": "Regola **applicata dal server**, non solo dall'interfaccia: una pubblicazione parte solo se esiste un'approvazione di una persona, sulla **stessa versione** del testo (il codice già annulla le approvazioni dei testi modificati [C]). La pubblicazione automatica richiede il collegamento al canale (Meta, PED, o un programmatore di post: COL-002, COL-004) ed è **spenta finché non viene collaudata e autorizzata**",
+      "criterio": "Un tentativo di pubblicare senza approvazione, o con un'approvazione su una versione precedente, viene rifiutato dal server (test automatico)",
+      "stato": "parziale in locale",
+      "prove": [
+        "src/production.js e tests/production-approval.test.js: decisione umana, identità/permessi riletti, stesso cliente/contenuto/versione/titolo/testo, approvatore ancora autorizzato e servizio attivo prima della pianificazione; pubblicazione sempre rifiutata anche con prova valida",
+        "src/sciame/index.js e tests/sciame.test.js: bozze DA APPROVARE anche in DEMO, nessuna auto-approvazione dei contenuti; i soli passaggi interni sciame_output restano simulati",
+        "Browser locale: otto post Sciame pendenti, decisione del collaboratore registrata e coda aggiornata; finestra a 390 px senza overflow. Suite completa 382/382; SOP-PUBBLICAZIONE-CONTENUTI.md",
+        "Mancano collegamento, esecuzione automatica, ricevute del canale e collaudo autorizzato sul server: nessuna pubblicazione esterna predisposta come operativa"
+      ]
+    },
+    {
+      "id": "FUN-063",
+      "area": "Chi approva cosa",
+      "modifica": "Proposta: **post social** → socio **o** collaboratore; **messaggi commerciali Growth** e **campagne Fidelity** → **solo soci** (oggi il codice di Growth richiede già un socio [C]). Da confermare (D-15)",
+      "criterio": "Un collaboratore può approvare un post ma non un messaggio commerciale (verifica sul server)",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
+    },
+    {
+      "id": "FUN-064",
+      "area": "Collegamenti",
+      "modifica": "Tenere nel gruppo **Sistema**. Per ogni collegamento: **a cosa serve** (servizio o prodotto), stato (**Da collegare · Collegato · Errore**), data dell'ultima verifica, chi l'ha collegato. È il posto dove si **inseriscono le chiavi** (Brave, AI, Google, Meta…), salvate cifrate come nell'originale Growth (COL-005). Qui confluisce la fondamenta \"Custodia dei collegamenti\"",
+      "criterio": "Ogni collegamento dichiara a cosa serve e il suo stato; nessuna chiave compare in chiaro dopo il salvataggio",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare.",
+        "10 ottobre: OAuth e invio Gmail manuale integrati, chiusi per default; test offline su versioni, consenso, concorrenza, quota, esito incerto, riavvio e HTTP. Browser con fornitori finti, anteprima 390 px e riconciliazione. SOP-GROWTH-GMAIL.md e COLLAUDO-GROWTH-RIORDINO.md. Account/consegna reali, sincronizzazione conversazioni e Calendar ancora mancanti.",
+        "Custodia cifrata configurata sul server e disponibilità verificata nell’area socio. Nessun fornitore attivato e nessuna chiave nel repository."
+      ]
+    },
+    {
+      "id": "UI-015",
+      "area": "Collegamenti → avviso",
+      "modifica": "Riscrivere: «Qui colleghi i servizi esterni che BigAnt OS usa. Nessun collegamento si attiva senza l'ok dei soci»",
+      "criterio": "Nessun riferimento a \"sessione\" o \"prototipo\" sul server reale",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "DIARIO-LAVORO 10 ottobre: Piano, Listino, chiavi cifrate e approvazioni; 216 test, controllo 5/5 e verifica browser. Collegamenti esterni ancora da collaudare e autorizzare."
+      ]
+    },
+    {
+      "id": "FUN-066",
+      "area": "Accessi",
+      "modifica": "Tenere nel gruppo **Sistema**, con due schede: **Persone** (soci, collaboratori, clienti, assegnazione dei clienti ai collaboratori, \"Nuova password\", disattiva) e **Registro** (chi è entrato, chi ha visto le credenziali di un cliente, chi ha creato o disattivato utenti: FUN-059)",
+      "criterio": "Dalla stessa voce si gestiscono gli utenti e si consulta il registro",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow"
+      ]
+    },
+    {
+      "id": "UI-014",
+      "area": "Accessi → \"Nuovo accesso DEMO\", avviso «appartengono soltanto al prototipo locale», modulo «Nuovo utente DEMO» con «Nome di esempio», «Email .example», «Password dedicata al prototipo»",
+      "modifica": "Per la regola UI-006 la funzione è già reale, quindi **togliere ora** \"DEMO\" e l'avviso in modalità reale. Pulsante \"Nuovo accesso\"",
+      "criterio": "Sul server reale la pagina Accessi non contiene \"DEMO\" né \"prototipo\"",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "Verifica browser locale; nessuna promozione a operativo sul server"
+      ]
+    },
+    {
+      "id": "FUN-067",
+      "area": "Vista cliente",
+      "modifica": "Nel gruppo **Sistema**: si sceglie il cliente e si vede la sua dashboard **in sola lettura**. Riflette sempre la nuova dashboard cliente (UI-010, FUN-036…044). Pulsante \"Guarda come il cliente\" anche nella scheda cliente",
+      "criterio": "Scelto un cliente, la vista coincide con quella che il cliente vede entrando con le sue credenziali",
+      "stato": "implementata in locale; codice rilasciato, collaudo completo sul server da fare",
+      "prove": [
+        "tests/workspace.test.js: ruoli, home, approvazioni, scheda cliente, contratto, cifratura e versioni",
+        "Browser locale: navigazione socio e collaboratore, otto sezioni cliente, ritorno dallo Sciame; mobile 390 px senza overflow",
+        "Anteprima e cliente usano la stessa proiezione; esclusi dati di collaudo GBP non attivi. Prove in COLLAUDO-VISTA-CLIENTE.md.",
+        "Report nei servizi riordinati a card con un solo dettaglio aperto: fonti Meta separate, risultati/recensioni Google, report verificati, indicatori e contatti Email marketing. Navigazione e API vincolate a cliente/servizio; scadenze e percorsi obsoleti senza ripiego su altri dati. Cinque nuove prove e browser desktop/mobile: docs/COLLAUDO-VISTA-CLIENTE.md. Non certifica tutte le pagine/ruoli reali né attiva fonti esterne."
+      ]
+    }
+  ],
+  "rilascio": {
+    "data": "2026-10-10",
+    "commit": "71aeb3d",
+    "stato": "Railway SUCCESS; file pubblici e navigazione dei report verificati online, letture esterne spente",
+    "prove": "docs/RILASCIO-2026-10-10.md",
+    "limite": "Gli stati delle voci misurano ancora il collaudo locale; collaudo autenticato online e integrazioni restano distinti."
+  }
+}

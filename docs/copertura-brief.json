@@ -1,0 +1,4094 @@
+{
+  "baselineCommit": "8750e80",
+  "date": "2026-10-08",
+  "phase": "Passaggio a Claude Code: prove delle 32 procedure DEMO aggiunte; ultima copertura misurata riferita esclusivamente al brief originale di 567 righe",
+  "requirements": [
+    {
+      "id": "AG-MET-01",
+      "section": "Metodo",
+      "briefLines": "134;183-189;517-523",
+      "requirement": "Playbook iniziale completo: ciclo cliente, schede dei servizi, approvazioni, ritmo e KPI/template, con servizi da attivare distinti.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:docs/PLAYBOOK.md §§1-13: controllo manuale delle sezioni e 19 schede numerate; docs/ARCHITETTURA.md §7: corrispondenza con registro"
+      ],
+      "missing": "Nessun gap documentale per il playbook iniziale; la sua efficacia operativa non è ancora validata sul pilota.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "AG-MET-02",
+      "section": "Metodo",
+      "briefLines": "177-181;492",
+      "requirement": "Acquisire e integrare i metodi originali Ads, Video AI e DNA esistenti, con gerarchia SOP/brand/feedback.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:docs/PLAYBOOK.md §4 dichiara di non avere letto integralmente gli originali; docs/DOMANDE-PER-RAFFAELE.md domanda 4"
+      ],
+      "missing": "Originali, confronto puntuale, versione SOP eseguibile e verifiche dei comandi Ads mancanti; il testo del brief è solo la base.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-MET-03",
+      "section": "Metodo",
+      "briefLines": "27-30;91-104;525",
+      "requirement": "Analisi organizzativa e confronto di alternative di architettura/costi motivati, inclusa scelta conservativa sul PED.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:docs/ANALISI-INIZIALE.md §§1-8 e docs/CONFRONTO-MERCATO.md: verifica manuale delle opzioni, costi separati e fonti; docs/ARCHITETTURA.md"
+      ],
+      "missing": "Documento consegnato e controllato; sorgente/backend PED non disponibili, limite esplicitamente dichiarato.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "AG-MET-04",
+      "section": "Metodo",
+      "briefLines": "248;272-277;523",
+      "requirement": "Attivare ogni servizio solo dopo SOP testata, responsabile, competenza/partner, margine e pilota validati.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.activation e status; docs/PLAYBOOK.md §§1,9,12"
+      ],
+      "missing": "Le condizioni sono stringhe/documenti: manca una verifica persistente di readiness che blocchi abilitazione/vendita priva di requisiti.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-MET-06",
+      "section": "Metodo",
+      "briefLines": "188;431;521;527;562-567",
+      "requirement": "Ritmo settimanale/mensile con consegne, checklist di accettazione, decisioni e avanzamento per fase.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:docs/PLAYBOOK.md §§6,12-13; docs/ROADMAP.md; src/orchestrator.js calendario"
+      ],
+      "missing": "Ritmo documentato ma nessun registro operativo di cicli, retrospettive, accettazioni o decisioni di avanzamento. Le tappe del cliente zero non sono state accettate su dati reali.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-MET-07",
+      "section": "Metodo",
+      "briefLines": "189;260;512;522",
+      "requirement": "Misurare KPI agenzia/servizio e confronto mensile fra ore risparmiate e qualità.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:docs/PLAYBOOK.md §8 formule; src/store.js os_tasks e os_costs; server.js overview.agency"
+      ],
+      "missing": "Mancano serie storiche KPI/target, baseline ore senza agente, qualità/rilavorazioni misurate e confronto mensile.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-MET-08",
+      "section": "Metodo",
+      "briefLines": "237-242;511",
+      "requirement": "Soluzione interna semplice, senza complessità SaaS, con strumenti scelti e costi/documentazione comprensibili.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:package.json Node/SQLite e due dipendenze; docs/ANALISI-INIZIALE.md confronto; docs/COME-AGGIUNGERE-UN-MODULO.md; docs/COLLAUDO-INTERFACCIA.md prove R/F/B"
+      ],
+      "missing": "Requisito di impostazione interna soddisfatto; non equivale a funzionamento autonomo cloud.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-DAT-01",
+      "section": "Dati e principi",
+      "briefLines": "19;25;313;448-450",
+      "requirement": "Un modello dati operativo comune per agenti, produzione, dashboard e amministrazione.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:src/store.js openStore; server.js createApp passa lo stesso store ai moduli; tests/core.test.js persistenza e scheduler unico; tests/administration.test.js anagrafiche condivise"
+      ],
+      "missing": "Il requisito architetturale locale è coperto; archivi reali non sono migrati.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-DAT-02",
+      "section": "Dati e principi",
+      "briefLines": "166-175;246;494",
+      "requirement": "Memoria completa per cliente: master, DNA, direttive, strategia, calendario, cruscotto, decisioni, feedback, brand e storico contratto.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/store.js os_memory/os_memory_versions; src/production.js ammette master,dna,strategy,feedback,report; tests/core.test.js storico immutabile",
+        "src/agents/outputs.js: source_snapshot e os_agent_output_versions; tests/swarm.test.js: versioni e feedback"
+      ],
+      "missing": "Versionamento ed export funzionano; output degli agenti conservano fotografia degli input e feedback specifico. Mancano modelli completi per direttive, asset, decisioni e raccordo contratti/cruscotto/calendario.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-DAT-03",
+      "section": "Dashboard cliente",
+      "briefLines": "187;437;465;500",
+      "requirement": "Contenuti da approvare: coda unica cliente/soci con approva/rifiuta/modifica, autore/data/motivo, feedback e invalidazione della versione modificata.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:src/production.js handle /approvals e /contents; tests/core.test.js approvazione/feedback/versione obsoleta; docs/COLLAUDO-INTERFACCIA.md prova browser social",
+        "src/agents/outputs.js: revise/decide; tests/swarm.test.js: revisioni immutabili e approvazioni obsolete"
+      ],
+      "missing": "Coda locale estesa agli elaborati dello sciame; versione e motivo conservati, revisioni obsolete bloccate. Non equivale a eseguire azioni esterne.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-DAT-04",
+      "section": "Dati e principi",
+      "briefLines": "187;501",
+      "requirement": "Flusso completo IDEA → produzione → revisione → approvato → programmato → pubblicato → riutilizzabile.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/production.js states e transitions; tests/core.test.js PROGRAMMATO locale e PUBBLICATO rifiutato"
+      ],
+      "missing": "Pubblicazione verificata con ricevuta e riutilizzo di un contenuto pubblicato non sono eseguibili; PROGRAMMATO è soltanto pianificazione interna.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-DAT-05",
+      "section": "Dati e principi",
+      "briefLines": "277;403;495-500",
+      "requirement": "Cancello umano versionato per ogni uscita: pubblicazione, spesa, account, messaggi, fatture e solleciti.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/store.js os_approvals; server.js dispatch kind content/growth_message/fidelity_campaign; src/administration.js blocco /send,/pay,/sdi",
+        "src/agents/outputs.js; src/agents/modules.js; tests/swarm.test.js; tests/module-agents.test.js"
+      ],
+      "missing": "Approvazioni comuni disponibili anche per elaborati dei 32 agenti, messaggi Growth e campagne Fidelity; mancano ancora cicli completi di spesa, modifica account, fattura e sollecito verso fornitori reali. Bloccare le uscite non realizza quei cicli.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-DAT-06",
+      "section": "Dati e principi",
+      "briefLines": "444;502",
+      "requirement": "Ogni output riconducibile alle proprie fonti, dati e versioni del metodo, senza risultati inventati.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/orchestrator.js base.sources e context; src/production.js source testuale; docs/PLAYBOOK.md richiede source_refs/SOP/versione",
+        "src/agents/outputs.js: source_snapshot e storico immutabile; src/agents/core.js; src/agents/modules.js; src/agents/specialists.js; tests/swarm.test.js"
+      ],
+      "missing": "Fonti, input e versioni del metodo sono ora registrati per i 32 executor DEMO. Restano verifica delle evidenze reali e provenienza completa di tutti i deliverable dell’agenzia, non soltanto output di questo motore.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-DAT-07",
+      "section": "Dati e principi",
+      "briefLines": "405-408;472;505",
+      "requirement": "Separazione server tra soci, collaboratori assegnati e singolo cliente; dati amministrativi riservati ai soci.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:src/store.js requireClient/requireOwner; src/administration.js owner; tests/core.test.js isolamento indipendente dalla UI; tests/administration.test.js permessi diretti"
+      ],
+      "missing": "Soddisfatto nel perimetro applicativo locale; non certifica permessi di provider esterni.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-DAT-08",
+      "section": "Dati e principi",
+      "briefLines": "261;408;505-506",
+      "requirement": "Permessi minimi per reparto e passaggio al Direttore dei soli KPI economici aggregati necessari.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/orchestrator.js context esclude visibility admin, robot è owner; director non chiama un aggregatore economico; tests/core.test.js contesto senza contabilità",
+        "src/agents/catalog.js: eligibleAgent; src/orchestrator.js: contesto e aggregati; tests/swarm.test.js: riservatezza, feedback amministrativo e revoca"
+      ],
+      "missing": "Eligibility per agente/servizio e contesto separato funzionano localmente; il Direttore riceve aggregati DEMO senza prima nota grezza. La matrice di capacità dell’intera agenzia e i permessi dei provider reali restano incompleti.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-DAT-09",
+      "section": "Dati e principi",
+      "briefLines": "483;502",
+      "requirement": "Stati DEMO e fonti non collegate espliciti, senza presentare metriche inventate come reali.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:public/app.js clientView/connectionsView/notice; docs/COLLAUDO-INTERFACCIA.md R/B; tests/core.test.js provider offline e zero rete"
+      ],
+      "missing": "Soddisfatto nella demo; non implica disponibilità di metriche reali.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SWA-01",
+      "section": "Sciame",
+      "briefLines": "14-15;251-270;493",
+      "requirement": "Organigramma completo con responsabilità e specialisti per tutti i reparti, effettivamente eseguibili.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js departments/agentDefinitions; src/orchestrator.js resultFor",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni",
+        "src/agents/catalog.js; src/agents/core.js; src/agents/modules.js; src/registry.js"
+      ],
+      "missing": "Tutte le 32 definizioni hanno ora una procedura deterministica eseguibile: sette centrali, quattro adapter dei moduli e 21 specialisti. È operatività di preparazione/controllo DEMO, non l’intero lavoro richiesto ai reparti; restano validazione del pilota e capacità professionali/materiali. Stato conservativo del precedente perimetro mantenuto in questo passaggio documentale.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SWA-02",
+      "section": "Sciame",
+      "briefLines": "108-111;425;493",
+      "requirement": "Orchestratore locale con coda persistente, deduplica, retry, stato, pausa, output e raccordo moduli.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:src/orchestrator.js tick/enqueue/tickModules; tests/core.test.js lease/retry/deduplica/persistenza/worker unico; docs/COLLAUDO-INTERFACCIA.md prove sciame"
+      ],
+      "missing": "Coperto come motore locale di esempio esplicitamente ammesso; esecuzione cloud separata.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SWA-03",
+      "section": "Sciame",
+      "briefLines": "428",
+      "requirement": "Calendari persistenti giornalieri, lunedì, venerdì e primo del mese, con fuso orario corretto.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:src/orchestrator.js nextRun/schedule; tests/core.test.js cambio ora Europe/Rome e calendari; docs/COLLAUDO-INTERFACCIA.md schede pianificazioni",
+        "tests/swarm.test.js: calendario/input/revoca; src/orchestrator.js: os_schedule_inputs"
+      ],
+      "missing": "Calendari locali disponibili per i 32 executor con input persistenti; il servizio revocato sospende la regola. L’esecuzione si ferma con il processo locale; nessun calendario cloud o provider reale attivato.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SWA-04",
+      "section": "Sciame",
+      "briefLines": "429",
+      "requirement": "Inneschi su nuovo lead, nuova recensione, contenuto approvato e nuovo cliente firmato.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/orchestrator.js whitelist content.ready,lead.created,client.created; server.js produce eventi su create e DA APPROVARE",
+        "src/agents/catalog.js: eventDefinitions; src/orchestrator.js: eventi/versioni/deduplica; tests/swarm.test.js: propagazione input, isolamento ed eventi social/lead",
+        "Verifica di consegna: 160/161 test; tests/agency.test.js:31-34 fallisce per aspettativa obsoleta"
+      ],
+      "missing": "Otto tipi di evento sono ora registrati e accodabili localmente, inclusi recensione, contenuto approvato e contratto registrato DEMO. Non sono webhook di provider reali né prova di firma verificata. Il test agency con vecchia aspettativa false è ancora da riallineare.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SWA-05",
+      "section": "Sciame",
+      "briefLines": "431-433",
+      "requirement": "Agenti attivi su server/cloud senza dipendere dal Mac acceso, con costi dell’infrastruttura.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:server.js avvio loopback e rifiuto NODE_ENV=production; docs/ARCHITETTURA.md cloud proposto e costi"
+      ],
+      "missing": "Esiste soltanto worker locale; nessun runtime cloud. La proposta documentale non soddisfa l’operatività richiesta.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SWA-06",
+      "section": "Sciame",
+      "briefLines": "255-257;440",
+      "requirement": "Direttore: analisi settimanale di clienti, servizi, risultati, mercato e concorrenti con massimo tre priorità motivate.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/orchestrator.js case director produce tre frasi perlopiù fisse e conteggio clienti",
+        "src/agents/core.js: director; src/orchestrator.js: aggregati autorizzati; tests/swarm.test.js: giro completo"
+      ],
+      "missing": "Il Direttore elabora tre priorità e aggregati DEMO; restano ricerca mercato/concorrenti, confronto obiettivi e business case con fonti reali che giustifichino le scelte.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SWA-07",
+      "section": "Sciame",
+      "briefLines": "258",
+      "requirement": "Direttore: roadmap viva di attivazione servizi, competenze, partner, costi e momento conveniente.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:docs/ROADMAP.md; src/registry.js activation; src/orchestrator.js director"
+      ],
+      "missing": "Nessun modello operativo di roadmap, iniziative, soglie/capacità o aggiornamento automatico del Direttore.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SWA-08",
+      "section": "Sciame",
+      "briefLines": "259",
+      "requirement": "Direttore: pacchetti/listini, opportunità upsell e partnership collegati a costo e margine.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js verticals è scheda; src/store.js assenza tabelle offerte/pacchetti/partner; src/orchestrator.js director",
+        "Dopo audit: src/agency/foundations.js packages; src/agency/services.js verticals; tests/agency.test.js",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "Verticals prepara matrice bisogni/servizi/capacità; il Direttore propone priorità. Mancano registri operativi di pacchetti/listini/partner, prezzi validati, calcolo integrale dei margini e workflow commerciale del pacchetto.",
+      "baselineStatus": "ASSENTE",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SWA-09",
+      "section": "Sciame",
+      "briefLines": "260;440",
+      "requirement": "Direttore: numero clienti, servizi/cliente, ricavo medio, clienti persi, tempo risparmiato e crescita canali.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:server.js overview.agency servicesPerClient e conteggi; docs/PLAYBOOK.md KPI"
+      ],
+      "missing": "Solo alcuni contatori istantanei; mancano ricavo medio corretto, churn storico, ore risparmiate, metriche canali e confronti periodici.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SWA-10",
+      "section": "Sciame",
+      "briefLines": "262",
+      "requirement": "Marketing BigAnt: lavoro coordinato su Instagram, Facebook, LinkedIn agenzia/soci, TikTok, GBP, sito e reputazione.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/orchestrator.js case marketing restituisce suggerimento fisso portfolio; src/registry.js marketing",
+        "src/agents/core.js: marketing; docs/SOP-REGIA-DEMO.md; tests/swarm.test.js: esecuzione comune"
+      ],
+      "missing": "Marketing produce dodici proposte datate su otto canali e un piano trimestrale DEMO. Mancano piano validato completo, obiettivi/profili reali, asset, gestione reputazione e misure dei canali.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SWA-11",
+      "section": "Sciame",
+      "briefLines": "263-266",
+      "requirement": "Commerciale: acquisizione locale, audit verificato e proposte/preventivi fino alla chiusura.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js agenti research/analyst/commercial delegati Growth; docs/API-GROWTH.md perimetro fixture",
+        "src/agents/modules.js; tests/module-agents.test.js; tests/swarm.test.js: prerequisiti, zero consensi inventati"
+      ],
+      "missing": "Ricerca, analisi e bozza commerciale passano ora dalla coda comune ai dati Growth; prerequisiti/consensi assenti impediscono la bozza. Ricerca reale, preventivo completo e provider rimangono da completare.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SWA-12",
+      "section": "Sciame",
+      "briefLines": "185;267;292;518",
+      "requirement": "Account/customer success: ciclo cliente eseguibile con onboarding, salute, rinnovo/upsell, rischio, portfolio e chiusura.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/orchestrator.js case account conteggia task/contenuti; src/store.js os_clients.risk manuale",
+        "src/agents/core.js: account; docs/SOP-REGIA-DEMO.md; tests/swarm.test.js"
+      ],
+      "missing": "Account prepara checklist di memoria/onboarding e segnala consegne in ritardo. Restano registri strutturati onboarding/portfolio, rinnovi, retention, chiusura e passaggi verificabili fra tutte le fasi.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SWA-13",
+      "section": "Sciame",
+      "briefLines": "269;508",
+      "requirement": "Qualità/compliance: controlli su brand, veridicità, GDPR e pubblicità sanitaria prima delle uscite.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/orchestrator.js case quality controlla source/stato; docs/PLAYBOOK.md gate e rischi",
+        "src/agents/core.js: quality; src/agents/specialists.js: accessibility; tests/specialists.test.js"
+      ],
+      "missing": "Qualità rileva fonti mancanti e alcune promesse assolute nei testi; accessibilità controlla gli elementi forniti. Mancano valutazione creativa, diritti, consensi e verifica qualificata GDPR/sanità; nessuna conformità è certificata.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SWA-14",
+      "section": "Sciame",
+      "briefLines": "395-400;458;493",
+      "requirement": "Reporter: report periodico per cliente con risultati, confronti, limiti e prossimi passi approvabili.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/orchestrator.js case reporter conta task/contenuti e scrive memoria internal",
+        "src/agents/core.js: reporter; src/agents/outputs.js; tests/swarm.test.js"
+      ],
+      "missing": "Reporter genera riepilogo operativo dai task/contenuti, con fonti e output approvabile. Restano metriche marketing reali, serie/confronti periodici, obiettivi ed esportazione/consegna cliente completa.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SWA-15",
+      "section": "Sciame",
+      "briefLines": "445",
+      "requirement": "Ogni reparto dotato di test e checklist di accettazione eseguiti prima del rilascio.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:tests/core.test.js e tests/administration.test.js; docs/PLAYBOOK.md §12 checklist generale",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni",
+        "docs/SOP-REGIA-DEMO.md; docs/SOP-AGENTI-MODULI.md; tests/module-agents.test.js; tests/agency.test.js:31-34"
+      ],
+      "missing": "Le procedure dei 32 agenti hanno SOP e test DEMO specifici/integrati, ma qualità dei servizi, accettazione umana del pilota e prove reali sono incomplete. Ultima suite 160/161: un test agency obsoleto rimane da riallineare; nessun rilascio eseguito.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SWA-16",
+      "section": "Sciame",
+      "briefLines": "512",
+      "requirement": "Ogni giro dello sciame produce un log consultabile con agente, cliente, esito e costo.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:src/orchestrator.js audit completato/errore; tests/core.test.js coda e budget; public/app.js activityView/agentsView",
+        "src/orchestrator.js; src/agents/outputs.js; tests/swarm.test.js: giro di tutti gli agenti"
+      ],
+      "missing": "Registro esteso ai 32 executor offline con output e costo API zero; i consumi dei provider reali non sono misurati.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SRV-01",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "203",
+      "requirement": "Servizio 1: Presenza online/reputazione e risposte AI, directory autorizzate, chatbot e messaggistica.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.presence; docs/PLAYBOOK.md scheda 1; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "Local confronta NAP/orari; Reputation prepara risposte; Reception usa FAQ fornite. Mancano archivi e sincronizzazioni reali di directory, recensioni, chatbot e messaggi.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SRV-02",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "204",
+      "requirement": "Servizio 2: Presenza multisede con coerenza dati e problemi per sede.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.multisite; docs/PLAYBOOK.md scheda 2; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "Multisite confronta schede DEMO per sede e rileva duplicati/fonti orfane. Mancano gestione persistente completa delle sedi, directory reali e workflow di correzione/verifica.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SRV-03",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "205",
+      "requirement": "Servizio 3: Centralino AI chiamate/chat, raccolta contatti ed escalation.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.reception; docs/PLAYBOOK.md scheda 3; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "Reception instrada scenari DEMO e risponde soltanto a FAQ marcate approvate. Telefonia, conversazioni reali, partner, consensi e raccolta contatti restano scollegati.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SRV-04",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "206",
+      "requirement": "Servizio 4: Siti web con brief, pagine, asset, sviluppo, collaudo e manutenzione.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.website; docs/PLAYBOOK.md scheda 4; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "Website produce sitemap, wireframe, testi iniziali e casi di collaudo form. Non costruisce un sito o un ambiente di prova: sviluppo, asset, QA reale e manutenzione restano mancanti.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SRV-05",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "207",
+      "requirement": "Servizio 5: Audit e adeguamento accessibilità con verifiche manuali e correzioni.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.accessibility; docs/PLAYBOOK.md scheda 5; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "Accessibility rileva problemi dagli elementi/test forniti e prepara una prova manuale. Non esegue audit live, correzioni, verifica legale dell’obbligo o dichiarazione di conformità.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SRV-06",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "208",
+      "requirement": "Servizio 6: SEO sito/e-commerce/blog, audit, contenuti e monitoraggio.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.seo; docs/PLAYBOOK.md scheda 6; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "SEO analizza pagine fixture per title/meta/H1/status/noindex e propone intenti. Mancano crawl, keyword research reale, contenuti completi, rilascio e misure Search Console.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SRV-07",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "209",
+      "requirement": "Servizio 7: Progetti e-commerce con catalogo, ordini, resi e collaudo.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.ecommerce; docs/PLAYBOOK.md scheda 7; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "Ecommerce controlla SKU/prezzo/scorte e calcola un carrello DEMO al centesimo. Mancano negozio, pagamenti, ordini/resi persistenti, logistica e collaudo del provider.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SRV-08",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "210",
+      "requirement": "Servizio 8: Feed/catalo­go social e percorso di acquisto.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.social-commerce; docs/PLAYBOOK.md scheda 8; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "Social commerce confronta feed e catalogo forniti, segnala prezzi/scorte/link e prepara copy. Mancano caricamento, diagnostica provider e percorso di acquisto reale.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SRV-09",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "211",
+      "requirement": "Servizio 9: Prenotazioni per servizi/ristoranti con disponibilità e agenda.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.booking; docs/PLAYBOOK.md scheda 9; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "Booking verifica intervalli con fuso e conflitti per risorsa, senza creare appuntamenti. Restano gestione completa agenda/risorse, disponibilità reale, conferme e collegamenti ufficiali.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SRV-10",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "212",
+      "requirement": "Servizio 10: ADV multicanale da analisi a creatività, campagna e report.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.ads; docs/PLAYBOOK.md scheda 10; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "ADS produce undici leve, cluster, tre angoli creativi e CTR/CPL da fixture. Mancano setup e gestione account, tracking verificato, creatività complete, attivazione e report reali.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SRV-11",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "213",
+      "requirement": "Servizio 11: Alternativa tramite partner al network proprietario: display/programmatic.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.display; docs/PLAYBOOK.md scheda 11; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "Display esclude categorie e ripartisce il budget DEMO esattamente; non è un preventivo partner. Mancano partner confermato, acquisto, erogazione e consuntivo verificato.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SRV-12",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "214",
+      "requirement": "Servizio 12: Piani social con post/stories/video, sponsorizzate e report.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.social; docs/PLAYBOOK.md scheda 12; docs/ARCHITETTURA.md §7",
+        "src/agents/core.js; src/agents/modules.js; tests/swarm.test.js; tests/module-agents.test.js"
+      ],
+      "missing": "Social prepara una bozza e Marketing dodici proposte datate. Restano piano contrattuale, asset/post/stories/video completi, pubblicazione, community e report reali.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SRV-13",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "215",
+      "requirement": "Servizio 13: Produzione foto/video/drone: brief, storyboard, asset, diritti, versioni e consegna.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.video; docs/PLAYBOOK.md scheda 13; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "Video genera storyboard di sei scene, tempi e piano riprese/montaggio. Non produce riprese/master/adattamenti né prova diritti o consegna; servono materiali e controllo tecnico umano.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SRV-14",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "216;252",
+      "requirement": "Servizio 14: Voce marketplace servizi casa con esclusione esplicita della replica proprietaria.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.marketplace; docs/PLAYBOOK.md scheda 14; docs/ARCHITETTURA.md §7"
+      ],
+      "missing": "Escluso dal brief: non va costruito. Presente soltanto come scheda informativa; non conta come capacità implementata.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "esclusione prevista"
+    },
+    {
+      "id": "AG-SRV-15",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "217",
+      "requirement": "Servizio 15: TV/cinema/DOOH tramite partner: creatività, diritti e piano uscite.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.tv; docs/PLAYBOOK.md scheda 15; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "TV confronta preventivi DEMO e specifiche dello spot, segnala difformità. Non realizza lo spot né acquista o verifica passaggi TV/cinema/DOOH.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SRV-16",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "218",
+      "requirement": "Servizio 16: Abbigliamento e gadget su richiesta: quantità, costo fornitore e margine.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.merch; docs/PLAYBOOK.md scheda 16; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "Merch genera distinta e costi/margine parziale da dati completi forniti. Restano preventivo reale, accordi, campione, ordine umano e verifica consegna. Acquisizione automatica esclusa.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SRV-17",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "219;252",
+      "requirement": "Servizio 17: Voce noleggio Apple marcata non pertinente e fuori sviluppo commerciale.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.apple-leasing; docs/PLAYBOOK.md scheda 17; docs/ARCHITETTURA.md §7"
+      ],
+      "missing": "Escluso dal brief: non va costruito. Scheda informativa, non capacità operativa realizzata.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "esclusione prevista"
+    },
+    {
+      "id": "AG-SRV-18",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "220",
+      "requirement": "Servizio 18: Pacchetti verticali, candidato sanità, composti da servizi e vincoli verificati.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.verticals; docs/PLAYBOOK.md scheda 18; docs/ARCHITETTURA.md §7",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "Verticals compone una proposta da bisogni, servizi e capacità dichiarati. Mancano registro/listino versionato, costo completo, validazione sanitaria e pilotaggio dei componenti.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SRV-19",
+      "section": "Catalogo 19 servizi",
+      "briefLines": "221",
+      "requirement": "Servizio 19: Analisi gratuita presenza online/sito con evidenze e proposta commerciale.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js services.audit; docs/PLAYBOOK.md scheda 19; docs/ARCHITETTURA.md §7",
+        "src/agents/core.js; src/agents/modules.js; tests/swarm.test.js; tests/module-agents.test.js"
+      ],
+      "missing": "Gli adapter Growth eseguono analisi fixture; SEO/Local aggiungono controlli sui dati forniti. Manca raccolta/verifica di evidenze reali e report commerciale completo.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SPE-01",
+      "section": "Specialità BigAnt",
+      "briefLines": "151;231",
+      "requirement": "Branding e direzione creativa con brief, concept, sistema visivo, asset e manuale.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js branding; docs/PLAYBOOK.md Servizi distintivi trasversali",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "Branding produce tre direzioni verbali; Creative Direction confronta concept/criteri forniti. Mancano identità visiva effettiva, asset, design review visiva e manuale completo.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SPE-02",
+      "section": "Specialità BigAnt",
+      "briefLines": "153;156;179;231",
+      "requirement": "Video AI e drone: gerarchia SOP-brand-feedback, protocollo pre-task, standard formati e controllo dei diritti.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:docs/PLAYBOOK.md scheda 13; src/registry.js video; src/orchestrator.js video planned",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "Video AI prepara prompt/pre-task; Drone shot list e fascicolo di dati mancanti. Non genera video, non decide sicurezza/fattibilità del volo e non verifica gli originali completi della SOP.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-SPE-03",
+      "section": "Specialità BigAnt",
+      "briefLines": "154",
+      "requirement": "Gestione eventi collegata a clienti, produzione, tempi e responsabilità.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js non contiene servizio eventi; src/store.js solo task generici",
+        "Dopo audit: src/agency/services.js events; src/agency/swarm.js events; tests/agency.test.js",
+        "src/agents/specialists.js; docs/SOP-SPECIALISTI-DEMO.md; tests/specialists.test.js: 25 verifiche specifiche, incluso cambio input",
+        "tests/swarm.test.js: giro isolato di 32 agenti, output/fonti/approvazioni e zero effetti esterni"
+      ],
+      "missing": "Events genera cronoprogramma relativo alla data e segnala fornitori/responsabili/scadenze scoperti. Restano registri operativi della commessa, accordi, produzione e consuntivo.",
+      "baselineStatus": "ASSENTE",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-01",
+      "section": "Gestionale - dieci moduli",
+      "briefLines": "302;286-287",
+      "requirement": "Anagrafiche complete di clienti, fornitori, collaboratori e due ditte, ciascuna con documenti.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js os_fin_entities/counterparties e /counterparties; tests/administration.test.js anagrafiche condivise"
+      ],
+      "missing": "Anagrafiche minimali e riferimenti testuali; mancano documenti gestiti, dati fiscali/professionali e modifica completa delle ditte.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-02",
+      "section": "Gestionale - dieci moduli",
+      "briefLines": "303",
+      "requirement": "Commerciale→contratti: preventivo, accettazione, contratto, date e rinnovo automatico segnalato.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js os_fin_contracts con start/end/notice_days; src/registry.js managementModules"
+      ],
+      "missing": "Nessun preventivo strutturato/accettazione, firma/versione, periodicità o flag rinnovo automatico; contratto manuale non copre la catena.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-03",
+      "section": "Gestionale - dieci moduli",
+      "briefLines": "304;380-383",
+      "requirement": "Fatturazione/incassi: lista mensile da canoni e lavori chiusi, bozze nel software fiscale e verifica dovuto.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js /invoices e financials; tests/administration.test.js incassi parziali"
+      ],
+      "missing": "Lista e bozze solo manuali; non generate da ricorrenze/lavori e non collegate a software fiscale.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-04",
+      "section": "Gestionale - dieci moduli",
+      "briefLines": "305;387-391",
+      "requirement": "Scadenziario unico con anticipo per fisco, contratti, hosting, domini, abbonamenti e collaboratori.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js obligations/subscriptions/contracts, tax_reserve rifiutato; public/app.js amministrazione"
+      ],
+      "missing": "Fonti separate, nessuna vista temporale unificata o sistema di avvisi anticipati; fisco non configurabile dopo conferma.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-05",
+      "section": "Gestionale - dieci moduli",
+      "briefLines": "306;318-331",
+      "requirement": "Prima nota in centesimi con data, verso, ditta/conto, categoria, controparte, documento/metodo e saldi coerenti.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:src/administration.js insertMovement/balance; tests/administration.test.js centesimi, coerenza ditta/conto/documento, parziali, contanti/trasferimenti; docs/COLLAUDO-INTERFACCIA.md form registrazione"
+      ],
+      "missing": "Funzione di registrazione/calcolo locale coperta; nessuna banca reale importata.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-06",
+      "section": "Gestionale - dieci moduli",
+      "briefLines": "307;290;377;386",
+      "requirement": "Costi e abbonamenti con periodicità, rinnovi, storico variazioni, doppioni/inutilità e attribuzione strumenti AI per cliente.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js subscriptions e regole duplicate/increase/missing; tests/administration.test.js subscription_duplicate"
+      ],
+      "missing": "Gestione ricorrenze iniziale; mancano utilizzo/inutilità, storico canoni, attribuzione costi condivisi/API agli effettivi beneficiari.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-07",
+      "section": "Gestionale - dieci moduli",
+      "briefLines": "308;398",
+      "requirement": "Ore umane/agenti e marginalità attendibile per cliente e servizio.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js hourly_rates/work_allocations/marginState; tests/administration.test.js tariffe e doppio conteggio"
+      ],
+      "missing": "Costo ore parziale funziona, ma full_margin null; mancano costo agenti attribuito al servizio, costi comuni/competenza e aggregazione economica per servizio.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-08",
+      "section": "Gestionale - dieci moduli",
+      "briefLines": "309",
+      "requirement": "Task e consegne per cliente/servizio con assegnatario, scadenza, stato, ore previste/effettive e calendario.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:src/production.js /tasks; public/app.js workView/workCalendar; docs/COLLAUDO-INTERFACCIA.md prove F creazione/aggiornamento task con persistenza"
+      ],
+      "missing": "Coperto nel modello locale base scelto come sostituto futuro; import Trello non è eseguito.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-09",
+      "section": "Gestionale - dieci moduli",
+      "briefLines": "310;291;392;509",
+      "requirement": "Documenti: contratti, privacy/GDPR, portfolio, accordi collaboratori, scadenze e mancanti.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js managementModules include solo etichetta Documenti; src/administration.js document_ref stringhe",
+        "Dopo audit: src/agency/management.js documents; src/agency/foundations.js portfolio; tests/agency.test.js"
+      ],
+      "missing": "Contratto documenti tipizzati/versionati e autorizzazioni, sezioni e permessi predisposti; archivio e controlli ancora da implementare.",
+      "baselineStatus": "ASSENTE",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-10",
+      "section": "Gestionale - dieci moduli",
+      "briefLines": "311;284-285",
+      "requirement": "Cruscotto direzione con tutte le sei risposte calcolate, decisioni aperte, priorità e KPI.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js questions; server.js overview.agency; public/app.js directionView"
+      ],
+      "missing": "Cinque risposte locali parziali; capacità esplicitamente non configurata, assenza KPI storici e registro decisioni/obiettivi 90 giorni.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-11",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "330;364;422",
+      "requirement": "Quadratura mensile per conto/ditta: saldo reale contro calcolato, differenze motivate e chiusura bloccante.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:src/administration.js /reconciliations/ensureOpen; tests/administration.test.js quadratura due ditte e periodi chiusi"
+      ],
+      "missing": "Funzione locale verificata con saldi di esempio, non una chiusura reale dell’agenzia.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-12",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "335-338;394",
+      "requirement": "Compensi collaboratori: concordato, scadenza, saldo, documento e ore/attività cliente; avvisi ritardo/documento.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js obligations collaborator, paid e work_allocations; test anagrafiche/obblighi"
+      ],
+      "missing": "Compenso e residuo esistono; mancano documento tipizzato/verifica ricezione, raccordo completo accordo→task e avviso documento mancante prima del pagamento.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-13",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "340;360;421",
+      "requirement": "Prelievi soci confrontati con accordo e utile/disponibile effettivo.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js owner_agreement/owner_overdraw; tests/administration.test.js prelievo oltre accordo"
+      ],
+      "missing": "Confronta accordo e conto negativo, non utile reale né disponibilità dopo impegni/accantonamenti.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-14",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "341-343;372;388;419",
+      "requirement": "Regole fiscali/previdenziali confermate dal commercialista: soglie, bollo, accantonamenti e avvisi di insufficienza per ditta.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js tax_rules_confirmed, tax null e tax_reserve 409; docs/DOMANDE-PER-RAFFAELE.md"
+      ],
+      "missing": "Manca flusso di inserimento/conferma versionata delle regole e calcolo successivo; attendere conferma evita errori ma non implementa il requisito.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-15",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "345;347;349-350;383",
+      "requirement": "Controllo dovuto/incassato: fatture scadute, canoni e parziali con importo corretto.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:src/administration.js financials/analyze invoice_overdue/partial_payment; tests/administration.test.js residuo fattura e analisi idempotente"
+      ],
+      "missing": "Coperto sui documenti registrati; non genera da solo canoni/documenti mancanti.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-16",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "347;353",
+      "requirement": "Segnalare incasso/movimento privo di documento collegato e categoria/ditta mancanti o incoerenti.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:src/administration.js validazione insertMovement e analyze missing_document/category/entity_mismatch; tests/administration.test.js documenti mancanti e ditta incoerente"
+      ],
+      "missing": "Coperto sul modello locale; la validazione della ditta reale dipende dai dati autorizzati.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-17",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "348;361;374-375;409",
+      "requirement": "Confrontare Prima Nota, Tracker e fonti pagamenti: pagato non registrato e viceversa.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js RULES tracker_mismatch not_connected e unrecorded_payment needs_external_statement; src/registry.js sheets"
+      ],
+      "missing": "Nessun adapter/import/staging riconciliabile o chiave di corrispondenza riga fonte; confronto esterno assente.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-18",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "352;354",
+      "requirement": "Prevenire o segnalare doppi movimenti, anche fra conti, e attribuzioni incoerenti alla ditta.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:src/administration.js source_ref unique/entity checks/analyze duplicates; tests/administration.test.js idempotenza su conti e mismatched entity"
+      ],
+      "missing": "Controllo su riferimenti/dati registrati; non può sapere la ditta corretta senza documento fonte.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-19",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "356",
+      "requirement": "Segnalare spese insolite per importo o frequenza rispetto allo storico.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js RULES unusual_expense not_implemented",
+        "Dopo audit: src/agency/foundations.js unusual-expenses; tests/agency.test.js"
+      ],
+      "missing": "Schema di baseline, periodo, soglie e verifica definito; mancano storico, configurazione e algoritmo.",
+      "baselineStatus": "ASSENTE",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-20",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "357-358",
+      "requirement": "Segnalare abbonamenti aumentati/doppi e rinnovi attesi senza pagamento.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js analyze subscription_increase/duplicate/missing; test amministrazione verifica duplicato"
+      ],
+      "missing": "Tre regole presenti, ma il confronto temporale pagamenti/scadenze non ha test dedicati completi e manca storico variazioni: copertura intera non dimostrata.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-21",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "366",
+      "requirement": "Lista anomalie con priorità/importo, stato, responsabile e nota; nessuna autocorrezione.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:src/administration.js anomalies/analyze/PATCH; tests/administration.test.js analisi senza mutazioni e risoluzione motivata"
+      ],
+      "missing": "Coperto per le regole implementate; altre regole riportate separatamente.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-22",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "366",
+      "requirement": "Rettifica confermata dal socio preservando originali, traccia, idempotenza e periodi chiusi.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:src/administration.js reversal/corrections; tests/administration.test.js cinque casi storno/rettifica/trasferimenti/chiusure; docs/COLLAUDO-INTERFACCIA.md F"
+      ],
+      "missing": "Coperto nel perimetro prima nota locale, senza movimenti bancari reali.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-23",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "384",
+      "requirement": "Arretrati con età del credito, storico, solleciti gentile/fermo/ultimo avviso e clienti da sospendere.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js arrears contiene residuo e due_date; public/app.js tabella incassi"
+      ],
+      "missing": "Mancano fasce/cronologia di recupero, bozze sollecito a scaglioni, sospensione proposta e relativa coda approvazioni.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-24",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "385;416",
+      "requirement": "Cash flow a 30/60/90 giorni da scadenze registrate, con ipotesi e arretrati distinti.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js state.projections; tests/administration.test.js verifica entrata attesa 30 giorni"
+      ],
+      "missing": "Formule presenti, ma manca prova completa 30/60/90 con anticipi, ricorrenze, pagamenti parziali e tutti i confini data; non dichiarabile interamente testato.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-25",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "393",
+      "requirement": "Preparare pacchetto mensile/trimestrale per il commercialista, per ditta e con documenti mancanti.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:docs/PLAYBOOK.md §10 punto 7 soltanto; src/administration.js nessuna API package/export fiscale",
+        "Dopo audit: src/agency/foundations.js accountant; tests/agency.test.js"
+      ],
+      "missing": "Spazio pacchetto commercialista per ditta/periodo con documenti mancanti; generazione, archivio e approvazione specifica da implementare.",
+      "baselineStatus": "ASSENTE",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-26",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "289;395-400",
+      "requirement": "Report mensile soci: fatturato/incassi per ditta e cliente, arretrati, costi/margini per servizio, carico persone e criticità.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js state aggrega solo alcune misure correnti; docs/PLAYBOOK.md template; src/orchestrator.js reporter solo task"
+      ],
+      "missing": "Nessun report mensile persistito/esportabile; fatturato di competenza, margini completi e capacità non disponibili.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-27",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "288;292;469",
+      "requirement": "Vista aggregata clienti: canone, cadenza, pagamento, arretrati, persi, portfolio e stato onboarding.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:public/app.js clientsView mostra servizi/risk/stage; src/administration.js contratti e fatture separati"
+      ],
+      "missing": "Nessuna vista economico-operativa aggregata con cadenza/metodo, storico clienti persi e portfolio/onboarding.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-28",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "284;399",
+      "requirement": "Carico per persona/periodo confrontato con ore disponibili, con sovraccarico spiegabile.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js questions.capacity status capacity_not_configured; src/store.js os_tasks minuti senza capacità",
+        "Dopo audit: src/agency/foundations.js capacity; tests/agency.test.js"
+      ],
+      "missing": "Schema disponibilità/assenze/minuti per persona/settimana e spazio dedicato; mancano registro e confronto automatico.",
+      "baselineStatus": "ASSENTE",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-29",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "295-299;313;409",
+      "requirement": "Migrazione controllata delle fonti esistenti senza doppia compilazione o spegnimento anticipato dei fogli.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:docs/ANALISI-INIZIALE.md piano doppia chiusura; docs/ROADMAP.md 3A; src/registry.js sheets/drive non collegati"
+      ],
+      "missing": "Piano esiste; nessun import con staging, mappatura, preview differenze, riconciliazione e rollback eseguibili.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-30",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "296;392",
+      "requirement": "Segnalare clienti senza contratto, contratti scaduti e documenti obbligatori mancanti.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js contract_expiring solo contratti esistenti; counterparty.document_ref"
+      ],
+      "missing": "Non individua cliente privo di contratto e documenti obbligatori mancanti; scadenza dei contratti presenti soltanto.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-ADM-31",
+      "section": "Amministrazione - sottocapacità",
+      "briefLines": "403",
+      "requirement": "Preparare pagamenti, fatture e solleciti in coda per decisione del socio senza eseguirli autonomamente.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/administration.js /send,/pay,/sdi bloccati e mutate owner; server.js approvazioni solo contenuti/Growth/Fidelity"
+      ],
+      "missing": "Blocco esterno presente, ma nessun oggetto proposta pagamento/fattura/sollecito con decisione registrata nella coda comune.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-01",
+      "section": "Dashboard interna",
+      "briefLines": "435-436",
+      "requirement": "Registro unico filtrabile delle azioni, con data, agente/autore, cliente, output e costo.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:public/app.js activityView ricerca testuale; server.js overview.agency.activity; src/store.js os_audit",
+        "public/app.js: openAgentOutput/showAgentOutput; src/agents/outputs.js; docs/COLLAUDO-SCIAME-UI.md"
+      ],
+      "missing": "La regia ora apre gli elaborati con fonti, dati mancanti, costo, modifica e decisione. Restano filtri completi per cliente/periodo e un registro unificato di tutte le attività future dell’agenzia.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-03",
+      "section": "Dashboard interna",
+      "briefLines": "438",
+      "requirement": "Stato automatismi, esiti/fallimenti/ritardi e notifica email o WhatsApp ai soci quando si blocca qualcosa.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:public/app.js agentsView/moduleJobsPanel; src/orchestrator.js moduleErrors e notifications non collegate"
+      ],
+      "missing": "Esiti locali consultabili; nessuna notifica esterna e nessun SLA operativo dei ritardi/reparti.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-04",
+      "section": "Dashboard interna",
+      "briefLines": "439;469",
+      "requirement": "Vista di tutti i clienti e reparti insieme, con consegne, rischio, scadenze e opportunità upsell.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:server.js overview.agency conteggi globali; public/app.js clientsView/directionView; src/registry.js departments"
+      ],
+      "missing": "Mancano matrice cliente×reparto/servizio, stato onboarding, opportunità upsell e confronto rischio basato su dati.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-06",
+      "section": "Dashboard interna",
+      "briefLines": "441",
+      "requirement": "Costi API/strumenti per cliente e totale, tetto mensile che blocca lavoro e avvisa.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/orchestrator.js budget/reserve; tests/core.test.js tetto/pausa; public/app.js agentsView"
+      ],
+      "missing": "Cap centrale locale testato, ma mancano riparto strumenti per cliente, consumi provider reali e avvisi automatici esterni.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-07",
+      "section": "Dashboard interna",
+      "briefLines": "411-422",
+      "requirement": "Area amministrativa completa: incassi, arretrati, fatture, prossimi 30 giorni, cash flow, costi, margini, soglie, compensi/utile e ultima quadratura.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:public/app.js administrationView/adminExtra; src/administration.js state; docs/COLLAUDO-INTERFACCIA.md amministrazione"
+      ],
+      "missing": "Presente parte sostanziale con dati DEMO; mancano vista scadenze 30 giorni completa, soglie fiscali confermate, utile completo e confronto prelievi/utile.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-08",
+      "section": "Dashboard cliente",
+      "briefLines": "455",
+      "requirement": "Analisi del PED esistente e decisione documentata su estensione o ricostruzione con pro/contro.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:docs/ANALISI-INIZIALE.md PED: UI autenticata osservata, Supabase client e limiti; alternative confrontate"
+      ],
+      "missing": "Decisione provvisoria motivata consegnata; backend/codice PED non verificati e non dichiarati tali.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "AG-UI-09",
+      "section": "Dashboard cliente",
+      "briefLines": "457;472",
+      "requirement": "Perimetro cliente e servizi acquistati applicati sia alle viste sia agli endpoint.",
+      "status": "FATTO e testato",
+      "evidence": [
+        "8750e80:server.js overview filtra ownedServices; src/production.js serviceAllowed/visible; tests/core.test.js e core-review.test.js servizi rimossi/isolamento"
+      ],
+      "missing": "Coperto su contenuti e moduli implementati; nessun test di provider reali incluso.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-10",
+      "section": "Dashboard cliente",
+      "briefLines": "458",
+      "requirement": "Panoramica con KPI mese precedente/obiettivi, sintesi reporter e prossimi passi.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:public/app.js clientView mostra conteggi lavori/contenuti e metriche non collegate"
+      ],
+      "missing": "Nessuna serie KPI/confronto target, sintesi contestuale del reporter approvata o percorso di prossime azioni misurate.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-11",
+      "section": "Dashboard cliente",
+      "briefLines": "459",
+      "requirement": "Contatti: chiamate, WhatsApp, form e prenotazioni con fonte.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:public/app.js clientView card Contatti e richieste con trattino; src/registry.js integrazioni"
+      ],
+      "missing": "Nessun dataset contatti omnicanale per il cliente. Il CRM commerciale BigAnt non sostituisce i contatti delle attività clienti.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-12",
+      "section": "Dashboard cliente",
+      "briefLines": "460",
+      "requirement": "Social: follower, copertura, interazioni, contenuti migliori e calendario prossimi post.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:public/app.js clientView Social placeholder e workCalendar locale"
+      ],
+      "missing": "Calendario locale disponibile; follower/copertura/interazioni/top content assenti e nessun dato canale verificato.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-13",
+      "section": "Dashboard cliente",
+      "briefLines": "461",
+      "requirement": "Pubblicità: spesa, risultati e costo per contatto per Google/Meta e canali attivi.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:public/app.js clientView Pubblicità placeholder; src/registry.js google-ads/meta"
+      ],
+      "missing": "Nessun dato Ads, costo contatto/attribuzione, periodo o confronto obiettivi.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-14",
+      "section": "Dashboard cliente",
+      "briefLines": "462",
+      "requirement": "Presenza locale: visualizzazioni, chiamate, indicazioni, posizioni e coerenza directory.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:public/app.js clientView Google e presenza locale placeholder"
+      ],
+      "missing": "Nessun dato GBP/directory/posizioni o ultimo aggiornamento verificato.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-15",
+      "section": "Dashboard cliente",
+      "briefLines": "463",
+      "requirement": "Reputazione: recensioni nuove, media, risposte e attese.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:public/app.js clientView Reputazione placeholder; src/registry.js reputation planned"
+      ],
+      "missing": "Manca modello recensioni, versioni risposta, approvazione, urgenza e misure.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-16",
+      "section": "Dashboard cliente",
+      "briefLines": "464",
+      "requirement": "Sito/SEO: visite, fonti, pagine, conversioni, salute tecnica.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:public/app.js clientView Sito e ricerca placeholder; src/registry.js ga4/gsc"
+      ],
+      "missing": "Mancano serie web analytics, audit tecnico, import fonte e indicatori aggiornati.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-17",
+      "section": "Dashboard cliente",
+      "briefLines": "466",
+      "requirement": "Report mensili scaricabili, strategia e materiali consegnati al cliente.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:public/app.js Report e materiali da memory; src/production.js export riservato al team"
+      ],
+      "missing": "Nessun report approvato/scaricabile dal cliente, archivio documenti o versioni materiali consegnati.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-18",
+      "section": "Dashboard cliente",
+      "briefLines": "467",
+      "requirement": "Domande sui dati reali del cliente con risposta pertinente e conversione delle richieste in task.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/production.js /ask risponde sempre con conteggi fissi; public/app.js ask-form"
+      ],
+      "missing": "Task creabile, ma risposta non risponde al contenuto della domanda, non usa dati di canale reali e non ha agente informativo operativo.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-19",
+      "section": "Dashboard cliente",
+      "briefLines": "473",
+      "requirement": "Accesso sicuro per l’utilizzo reale della dashboard cliente.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:server.js sessioni/scrypt/CSRF e login rapido DEMO; tests/core.test.js protezioni locali"
+      ],
+      "missing": "Fondazione di autenticazione testata, ma i profili rapidi senza password sono intenzionalmente presenti; manca assetto operativo sicuro online/recupero accessi.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-20",
+      "section": "Dashboard cliente",
+      "briefLines": "474",
+      "requirement": "Interfaccia facile da usare dal telefono, verificata sui percorsi principali.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:public/style.css media query; docs/COLLAUDO-INTERFACCIA.md dichiara nessuna prova dispositivo mobile"
+      ],
+      "missing": "Layout predisposto ma prova mobile reale non effettuata; usabilità dei percorsi principali non dimostrata.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-UI-21",
+      "section": "Dashboard cliente",
+      "briefLines": "145;475-476",
+      "requirement": "Interfaccia italiana e BigAnt, personalizzabile con logo dell’attività cliente.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:public/app.js logo BigAnt/testi italiani; tests/brand.test.js asset; logo per programma Fidelity"
+      ],
+      "missing": "Brand italiano BigAnt verificato; manca personalizzazione del logo nella dashboard generale cliente, distinta dalla tessera Fidelity.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-PIL-01",
+      "section": "Pilota BigAnt",
+      "briefLines": "247;535-541",
+      "requirement": "DNA BigAnt completo e verificato, con pubblico, offerta, tono, prove e obiettivi del cliente zero.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/store.js seedCore inserisce soltanto master generico DEMO; docs/PLAYBOOK.md DNA è template",
+        "Dopo audit: src/agency/marketing.js dna; public/app.js marketingView; tests/agency.test.js"
+      ],
+      "missing": "Area DNA BigAnt distinta e memoria comune; DNA completo verificato ancora da redigere.",
+      "baselineStatus": "ASSENTE",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-PIL-02",
+      "section": "Pilota BigAnt",
+      "briefLines": "542;551",
+      "requirement": "Strategia BigAnt a 90 giorni con obiettivi per tutti i profili, iniziative, responsabilità e misure.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/orchestrator.js marketing/director frasi fisse; src/store.js nessun modello obiettivi/iniziative",
+        "Dopo audit: src/agency/marketing.js strategy; src/agency/foundations.js objectives; tests/agency.test.js",
+        "src/agents/core.js: marketing; docs/SOP-REGIA-DEMO.md"
+      ],
+      "missing": "Marketing propone un percorso 1–30/31–60/61–90 giorni DEMO. Mancano strategia approvata del cliente zero, obiettivi misurabili, iniziative/responsabili e registro decisioni.",
+      "baselineStatus": "ASSENTE",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-PIL-03",
+      "section": "Pilota BigAnt",
+      "briefLines": "543-544",
+      "requirement": "Calendario editoriale BigAnt e un mese completo di contenuti approvabili.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:public/app.js workCalendar; src/orchestrator.js social produce una bozza generica; seedCore nessun mese BigAnt",
+        "src/agents/core.js: marketing/social; src/agents/outputs.js; tests/swarm.test.js"
+      ],
+      "missing": "Marketing prepara dodici proposte datate; Social una bozza approvabile. Non è ancora un mese completo validato di copy e creatività per tutti i canali, con frequenze/quantità concordate.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-PIL-04",
+      "section": "Pilota BigAnt",
+      "briefLines": "537-539",
+      "requirement": "Portfolio, case study, reputazione e notorietà sui canali BigAnt e dei soci.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:docs/PLAYBOOK.md Marketing e portfolio; src/orchestrator.js marketing ricorda il consenso"
+      ],
+      "missing": "Nessun registro case study/canali/obiettivi, materiale autorizzato o esito misurato.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-PIL-05",
+      "section": "Pilota BigAnt",
+      "briefLines": "181;545",
+      "requirement": "Ottimizzazione della scheda Google e del sito BigAnt partendo dall’audit SEO esistente.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:docs/BRIEF-BIGANT.md audit dichiarato 4,8/10; registry local/seo/website solo metodo"
+      ],
+      "missing": "Audit originale non importato, nessun backlog di difetti verificati o intervento/collaudo.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-PIL-06",
+      "section": "Pilota BigAnt",
+      "briefLines": "551-552",
+      "requirement": "Primo piano del Direttore: prossimi due servizi, pacchetti/listino e piano ADV BigAnt.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/orchestrator.js director non produce questi deliverable; docs/ROADMAP.md tappe generiche",
+        "Dopo audit: src/agency/marketing.js growth-plan e ads-plan; src/agency/foundations.js packages; tests/agency.test.js",
+        "src/agents/core.js: director; src/agents/specialists.js: ads/verticals; tests/swarm.test.js"
+      ],
+      "missing": "Direttore, ADS e Verticali producono proposte DEMO; restano business case dei due prossimi servizi, listini/costi verificati e piano ADV BigAnt validato sui dati effettivi.",
+      "baselineStatus": "ASSENTE",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-CON-01",
+      "section": "Connettori e privacy",
+      "briefLines": "478-479",
+      "requirement": "Connettori ufficiali Google Ads, Meta, GA4, Search Console e GBP, con OAuth cliente e lettura iniziale.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js integrations tutti Non collegato; public/app.js connectionsView"
+      ],
+      "missing": "Nessun adapter operativo, autorizzazione OAuth, import, revoca o refresh dati per queste fonti.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-CON-02",
+      "section": "Connettori e privacy",
+      "briefLines": "163;480;511",
+      "requirement": "Collegare Postiz/strumento social al flusso di approvazione, programmazione e verifica esito.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js postiz; src/production.js pubblicazione 409"
+      ],
+      "missing": "Nessun adapter social, mapping canali/media, ricevuta o riconciliazione di programmazione/pubblicazione.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-CON-03",
+      "section": "Connettori e privacy",
+      "briefLines": "159-161;313;511",
+      "requirement": "Collegare Drive, Sheets e Trello oppure migrarne in modo controllato memoria, contabilità e task.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js drive/sheets/trello Non collegato; docs/ANALISI-INIZIALE.md piano"
+      ],
+      "missing": "Nessun import/corrispondenza/reconciliation. Task e memoria OS esistono, ma i flussi reali attuali non sono collegati.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-CON-04",
+      "section": "Connettori e privacy",
+      "briefLines": "431;478;483",
+      "requirement": "Per ogni integrazione mantenere stato, fonte, ultimo aggiornamento, errori, permessi e revoca.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js integrations ha status e lastSync:null statici"
+      ],
+      "missing": "Registro statico; mancano configurazione scoped, log sync/dataset, permessi OAuth e gestione revoca/errori reali.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-CON-05",
+      "section": "Connettori e privacy",
+      "briefLines": "485-489;508",
+      "requirement": "Privacy operativa: DPA, ruoli trattamento, hosting UE, credenziali protette e registro accessi.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:docs/ARCHITETTURA.md prerequisiti cloud; src/store.js audit/sessioni; server.js login audit"
+      ],
+      "missing": "Registro accessi locale esiste; mancano DPA gestiti, retention/processi privacy e ambiente UE reale. Nessuna conformità complessiva dimostrata.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-CON-06",
+      "section": "Connettori e privacy",
+      "briefLines": "504;509",
+      "requirement": "Pubblicare materiali/logo cliente solo con autorizzazione registrata valida e verificata nel gate.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:docs/PLAYBOOK.md divieto portfolio senza autorizzazione; src/store.js nessuna tabella autorizzazioni",
+        "Dopo audit: src/agency/foundations.js portfolio; tests/agency.test.js"
+      ],
+      "missing": "Contratto ambito/materiale/canali/scadenza/revoca presente; archivio e controllo applicativo di autorizzazione ancora assenti. Uscite comunque bloccate.",
+      "baselineStatus": "ASSENTE",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-FAS-01",
+      "section": "Fasi e misurazione",
+      "briefLines": "515",
+      "requirement": "Scoperta completa dei materiali e del lavoro effettivo con interviste, mappa attriti e fonti verificate.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:docs/ANALISI-INIZIALE.md deriva dal brief; docs/DOMANDE-PER-RAFFAELE.md ancora aperte"
+      ],
+      "missing": "Analisi preliminare presente; interviste e confronto con modelli reali non avvenuti. Non confondere mappa ipotizzata e processo validato.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-FAS-02",
+      "section": "Fasi e misurazione",
+      "briefLines": "555",
+      "requirement": "Pilota con due o tre clienti reali scelti dai soci, ciascun servizio con SOP collaudata.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:docs/ROADMAP.md primo trimestre 2027; docs/PLAYBOOK.md §12"
+      ],
+      "missing": "Fase soltanto pianificata; nessun cliente reale attivato o criterio di accettazione per servizio provato.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "AG-FAS-03",
+      "section": "Fasi e misurazione",
+      "briefLines": "557",
+      "requirement": "Roadmap trimestrale fino a ottobre 2027 per attivare progressivamente il catalogo secondo soglie.",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:docs/ROADMAP.md trimestri e condizioni; src/registry.js activation"
+      ],
+      "missing": "Roadmap documentale presente; manca stato iniziative/soglie/dipendenze/decisioni persistito e avanzamento dimostrato.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-01",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Prima configurazione titolare",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:15",
+        "server.js:80-81,102; src/growth.js:74-76; src/store.js:seedCore",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Il bootstrap protetto del primo titolare non è portato: esistono profili DEMO precreati e creazione utenti riservata a un socio già autenticato.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-02",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Accesso, sessione, uscita",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:16",
+        "server.js:39-42,78-81,96; tests/core.test.js:17; tests/core-review.test.js:74; public/app.js:211",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Accesso locale DEMO verificato; HTTPS e account di produzione esclusi da questa classificazione.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-03",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Aggiunta altro titolare",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:17",
+        "server.js:102; tests/core-review.test.js:74; public/app.js:212",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Creazione locale di un altro socio con email .example; nessun account reale.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-04",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Pannello dati aggregato",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:18",
+        "src/growth.js:27-41; public/app.js:81; tests/growth.test.js:21; docs/COLLAUDO-INTERFACCIA.md:71",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Pannello alimentato dal database DEMO, non da risultati commerciali reali.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-05",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Inserimento azienda",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:19",
+        "src/growth.js:78-80; src/growth-domain.js:7-14; public/app.js:118; tests/growth.test.js:39",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Contatti inventati e domini .example come richiesto dal perimetro notturno.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-06",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Aggiornamento scheda",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:20",
+        "src/growth.js:82-83; src/growth-domain.js:15-22; public/app.js:119; tests/growth.test.js:49",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "PATCH implementata, ma UI incompleta: non modifica owner, settore, città e analisi manuale.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-07",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Pipeline 8 fasi",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:21",
+        "src/growth-domain.js:16; src/growth-store.js:stages; public/app.js:119; tests/growth.test.js:39",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Otto fasi del CRM locale; non implica una trattativa reale acquisita.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-08",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Valore trattativa",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:22",
+        "src/growth-domain.js:17; public/app.js:119; tests/growth.test.js:39; docs/COLLAUDO-INTERFACCIA.md:151",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Importi in centesimi; nessun valore economico reale inserito.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-09",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Proprietario, settore, città, note",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:23",
+        "src/growth-domain.js:15; public/app.js:118-119; docs/COLLAUDO-INTERFACCIA.md:175",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Creazione settore/città/note presente; assegnazione commerciale e modifica di tutti i campi non esposte nella UI.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-10",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Deduplica azienda/contatto",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:24",
+        "src/growth-store.js:19-23; tests/growth.test.js:39; public/app.js:118",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Vincoli dominio/email per workspace verificati su fixture.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-11",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Ricerca web di aziende",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:25",
+        "src/growth-providers.js:22-24; src/growth-engine.js:10; tests/growth.test.js:58; public/app.js:224",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Brave non implementato come connettore operativo: vengono restituite cinque attività inventate, non aziende trovate online.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-12",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Accodamento analisi dopo ricerca",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:26",
+        "src/growth-engine.js:10; src/growth-store.js:enqueue; tests/growth.test.js:58; docs/COLLAUDO-INTERFACCIA.md:18",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Accodamento e deduplica funzionano per risultati fixture; ricerca reale distinta e incompleta.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-13",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Lettura sito pubblico",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:27",
+        "src/growth-providers.js:5-8; tests/growth.test.js:58",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Il lettore web originale con DNS/IP fissato, redirect e limiti non è portato. websiteText accetta solo .example e restituisce una frase fissa.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-14",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Analisi commerciale AI",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:28",
+        "src/growth-providers.js:26-32; src/growth-engine.js:11; tests/growth.test.js:58",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Non c'è analisi AI reale: punteggio 72 e descrizione deterministica, nessun modello o fonte web collegati.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-15",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Passaggio a qualificato",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:29",
+        "src/growth-engine.js:11; tests/growth.test.js:58; public/app.js:81",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Regola di passaggio a qualified verificata; la qualità del punteggio resta simulata.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-16",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Generazione prima bozza",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:30",
+        "src/growth-engine.js:12-24; src/growth-providers.js:26-32; tests/growth.test.js:86; public/app.js:121",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Coda, persistenza e approvazione funzionano, ma il testo commerciale è un template deterministico, senza generazione AI.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-17",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Generazione risposta",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "src/growth-conversations.js; src/gmail-message.js; src/growth-engine.js; src/growth-mail.js",
+        "tests/growth-conversations.test.js: 78/78; tests/modalita-reale.test.js; docs/COLLAUDO-GROWTH-RIORDINO.md; Browser desktop e 390 px con fornitori finti"
+      ],
+      "missing": "Risposta manuale integrata con provenienza, ultima email, controllo consenso e approvazione; AI e casella reali da autorizzare/collaudare. Testi incompleti da gestire manualmente in Gmail.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-18",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Generazione sollecito commerciale",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:32",
+        "src/growth-engine.js:36-40; tests/growth.test.js:246; docs/COLLAUDO-INTERFACCIA.md:177",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Pianificazione della bozza di follow-up testata, ma generazione AI assente e UI senza comando completo per singolo follow-up.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-19",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Escalation al titolare",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:33",
+        "src/growth-providers.js:29-32; src/growth-engine.js:16; tests/growth.test.js:144; public/app.js:128",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Escalation su poche parole deterministiche; classificazione AI di ambiguità e richieste fuori offerta non equivalente all'originale.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-20",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Rifiuto e disiscrizione",
+      "status": "FATTO e testato",
+      "evidence": [
+        "src/growth-conversations.js; src/gmail-message.js; src/growth-engine.js; src/growth-mail.js",
+        "tests/growth-conversations.test.js: 78/78; tests/modalita-reale.test.js; docs/COLLAUDO-GROWTH-RIORDINO.md; Browser desktop e 390 px con fornitori finti"
+      ],
+      "missing": "Rifiuti email e disiscrizione invalidano localmente bozze/approvazioni; lettura Gmail predisposta e provata con trasporto finto. Account reale e formulazioni non riconosciute richiedono collaudo/verifica umana.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-21",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Modifica, approvazione, annullamento bozza",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:35",
+        "src/growth.js:115-130; tests/growth.test.js:86,96; tests/core-review.test.js:55; public/app.js:128",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Versioni, autore e decisione persistiti; non autorizza invii esterni.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-22",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Autorizzazione al contatto",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:36",
+        "src/growth-domain.js:19,25; tests/growth.test.js:49,86; public/app.js:119",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Presenza di prova e finalità controllata tecnicamente; veridicità giuridica della prova non verificata dal software.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-23",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Cambio email revoca vecchio consenso",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:37",
+        "src/growth-domain.js:20; tests/growth.test.js:49; public/app.js:119",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Revoca della precedente autorizzazione al cambio email verificata.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-24",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Distinzione richiesta/promozione",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:38",
+        "src/growth-domain.js:25; tests/growth.test.js:114; public/app.js:119",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "La richiesta consente reply, non una campagna promozionale iniziale.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-25",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Blocco azienda e annullamento messaggi pendenti",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:39",
+        "src/growth.js:84-85; src/growth-domain.js:24; tests/growth.test.js:136; public/app.js:125",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Blocco locale e cancellazione messaggi pendenti verificati.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-26",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Disiscrizione tramite collegamento",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:40",
+        "src/growth.js:153-154; src/growth-engine.js:8-9; tests/growth.test.js:202,256; public/app.js:198,201",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Collegamento pubblico locale e token verificati; pubblicazione internet non prevista stanotte.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-27",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Invio Gmail",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:41",
+        "src/growth-providers.js:34-42; src/growth.js:132-137; tests/growth.test.js:104; public/app.js:129",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Nessuna integrazione Gmail né invio effettivo; solo gr_demo_mail e stato simulated_sent.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-28",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Esito email incerto",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:42",
+        "src/growth-engine.js:26-31,59; tests/growth.test.js:172; public/app.js:132",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Stato incerto e blocco del reinvio verificati con interruzione simulata; nessuna prova di guasto Gmail reale.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-29",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Riconciliazione email",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:43",
+        "src/growth-engine.js:31; src/growth-providers.js:findSent; tests/growth.test.js:172; public/app.js:132",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Ricerca per Message-ID avviene nell'outbox DEMO, non nella posta inviata Google.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-30",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Recupero conversazioni",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "src/growth-conversations.js; src/gmail-message.js; src/growth-engine.js; src/growth-mail.js",
+        "tests/growth-conversations.test.js: 78/78; tests/modalita-reale.test.js; docs/COLLAUDO-GROWTH-RIORDINO.md; Browser desktop e 390 px con fornitori finti"
+      ],
+      "missing": "Lettura manuale di thread verificati e UI dedicate implementate; trasporto reale ancora scollegato. Mancano collaudo casella reale e telefono fisico.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-31",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Deduplica risposta",
+      "status": "FATTO e testato",
+      "evidence": [
+        "src/growth-conversations.js; src/gmail-message.js; src/growth-engine.js; src/growth-mail.js",
+        "tests/growth-conversations.test.js: 78/78; tests/modalita-reale.test.js; docs/COLLAUDO-GROWTH-RIORDINO.md; Browser desktop e 390 px con fornitori finti"
+      ],
+      "missing": "Deduplica e impronta immutabile del contenuto acquisite con fixture Gmail, replay diverso rifiutato in transazione. Nessuna prova con casella reale.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-32",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Stop followup alla prima risposta",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:46",
+        "src/growth-engine.js:33-35; tests/growth.test.js:120; public/app.js:131",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Follow-up cancellati prima della classificazione della risposta locale.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-33",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Calendario disponibilità",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:47",
+        "src/growth-engine.js:60-63; src/growth-providers.js:busy; tests/growth.test.js:152,256; public/app.js:133",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS.",
+        "10 ottobre 2026: src/growth-calendar.js, src/google-oauth.js, src/growth-live-providers.js; tests/growth-calendar*.test.js e tests/google-oauth-calendar.test.js; suite 543/543; SOP-GROWTH-CALENDAR.md e COLLAUDO-GROWTH-RIORDINO.md. Stato storico conservativo invariato, nessuna attestazione del provider reale."
+      ],
+      "missing": "Disponibilità Google integrata con consenso separato, versione e fasi precedenti; FreeBusy e slot Europe/Rome verificati con trasporto finto. Collegamento e collaudo con calendario reale ancora necessari; le app esterne possono cambiare la disponibilità durante la prenotazione.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-34",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Collegamento di prenotazione",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:48",
+        "src/growth.js:146-152; tests/growth.test.js:152,167,256; tests/core-review.test.js:100; public/app.js:133,197",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS.",
+        "10 ottobre 2026: src/growth-calendar.js, src/google-oauth.js, src/growth-live-providers.js; tests/growth-calendar*.test.js e tests/google-oauth-calendar.test.js; suite 543/543; SOP-GROWTH-CALENDAR.md e COLLAUDO-GROWTH-RIORDINO.md. Stato storico conservativo invariato, nessuna attestazione del provider reale."
+      ],
+      "missing": "Link pubblico monouso conservato come hash, socio e contatto correnti, scadenza e doppia conferma verificati localmente anche nel Browser. Pubblicazione e collaudo sul dominio reale da fare.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-35",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Creazione appuntamento",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:49",
+        "src/growth-engine.js:62-63; src/growth-providers.js:book; tests/growth.test.js:152; public/app.js:133,197,226",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS.",
+        "10 ottobre 2026: src/growth-calendar.js, src/google-oauth.js, src/growth-live-providers.js; tests/growth-calendar*.test.js e tests/google-oauth-calendar.test.js; suite 543/543; SOP-GROWTH-CALENDAR.md e COLLAUDO-GROWTH-RIORDINO.md. Stato storico conservativo invariato, nessuna attestazione del provider reale."
+      ],
+      "missing": "Creazione Google collegata a intenzione persistente e contenuto autorizzato; test di concorrenza, revoca e risposta incoerente superati con trasporto finto. Evento e notifiche reali non collaudati.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-36",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Incertezza e riconciliazione appuntamento",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:50",
+        "src/growth-engine.js:42; src/growth-providers.js:event; tests/growth.test.js:182; public/app.js:134",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS.",
+        "10 ottobre 2026: src/growth-calendar.js, src/google-oauth.js, src/growth-live-providers.js; tests/growth-calendar*.test.js e tests/google-oauth-calendar.test.js; suite 543/543; SOP-GROWTH-CALENDAR.md e COLLAUDO-GROWTH-RIORDINO.md. Stato storico conservativo invariato, nessuna attestazione del provider reale."
+      ],
+      "missing": "Riconciliazione sul calendario originale con confronto evento/destinatario/orari/marcatura implementata e testata localmente. Esiti assenti restano in verifica senza reinvio; percorso reale da collaudare.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-37",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Annullamento appuntamento",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:51",
+        "src/growth-engine.js:64; src/growth-providers.js:cancelEvent; tests/growth.test.js:152; public/app.js:135",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS.",
+        "10 ottobre 2026: src/growth-calendar.js, src/google-oauth.js, src/growth-live-providers.js; tests/growth-calendar*.test.js e tests/google-oauth-calendar.test.js; suite 543/543; SOP-GROWTH-CALENDAR.md e COLLAUDO-GROWTH-RIORDINO.md. Stato storico conservativo invariato, nessuna attestazione del provider reale."
+      ],
+      "missing": "Annullamento integrato con anteprima, conferma, versione If-Match e gestione 412/timeout. Provider e notifica reali ancora da collaudare; nessun invito o annullamento esterno eseguito.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-38",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Modulo richiesta analisi",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:52",
+        "src/growth.js:157-168; tests/growth.test.js:202; public/app.js:199,227",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Form locale con informativa, honeypot e consenso distinto; richiede dati .example e non produce un audit reale.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-39",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Importazione contatti",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:53",
+        "src/growth.js:89-94; tests/growth.test.js:194; docs/COLLAUDO-INTERFACCIA.md:84",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Import fino a 200 fixture con errori per riga; parsing UI presente, caricamento browser individuale non ricollaudato in questo audit.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-40",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Esportazione CSV",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:54",
+        "src/growth.js:88; src/growth-domain.js:33; tests/growth.test.js:194; public/app.js:136",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "CSV verificato e download UI presente; nessun export di dati reali.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-41",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Parametri acquisizione",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:55",
+        "src/growth-domain.js:26-32; src/growth.js:170-177; public/app.js:127; docs/COLLAUDO-INTERFACCIA.md:175",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Editor UI incompleto per descrizione agenzia, firma, mittente e calendario; impostazioni locali/API presenti.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-42",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Budget mensile",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:56",
+        "src/growth-store.js:reserve,settle,costs; src/growth.js:174; tests/growth.test.js:224; tests/core-review.test.js:92,107; public/app.js:agentsView",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Tetto comune 50 euro e pausa verificati; costi provider demo zero, non fatture reali.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-43",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Pausa e automatismi",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:57",
+        "src/growth.js:103-105,170-175; src/growth-engine.js:36-41; tests/growth.test.js:73,246; public/app.js:123,127",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Pausa e bozze locali testate. autoSend/autoReply reali sono disabilitati dal nuovo cancello umano, quindi non c'è parità dell'autonomia precedente.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-44",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Scheduler",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:58",
+        "src/growth-engine.js:36-59; src/orchestrator.js:tick; tests/core.test.js:89; tests/growth.test.js:246; public/app.js:agentsView",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Scheduler comune locale presente; ricerca/sync/invii schedulati usano provider DEMO e non operano in cloud.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-45",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Esecuzione e tentativi",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:59",
+        "src/growth.js:95-113; src/growth-engine.js:44-57; tests/growth.test.js:73; public/app.js:122,124",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Esecuzione, errore, pausa e retry esplicito verificati per job locali.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-46",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Ripartenza dopo arresto",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:60",
+        "src/growth-engine.js:59; tests/growth.test.js:172; public/app.js:132",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Recupero stati sending/running verificato senza doppi effetti nella simulazione.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-47",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Attività e costi",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:61",
+        "src/growth-store.js:log,reserve,settle; tests/growth.test.js:21,232; public/app.js:activityView,agentsView",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Audit centrale con autore e costi DEMO; misurazione consuntiva di provider reali non compresa.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-48",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Chiavi cifrate",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:62",
+        "src/growth.js:74; src/growth-store.js:getSecret; docs/API-GROWTH.md",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS.",
+        "Dopo audit: src/agency/foundations.js credentials; tests/agency.test.js"
+      ],
+      "missing": "Solo contratto della custodia dei collegamenti e riferimento a gestore segreti: vault cifrato e OAuth non implementati; nessuna chiave acquisita.",
+      "baselineStatus": "ASSENTE",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-49",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Connessione Google OAuth",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:63",
+        "src/growth.js:32,74; tests/growth.test.js:224; public/app.js:75",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS.",
+        "10 ottobre 2026: src/growth-calendar.js, src/google-oauth.js, src/growth-live-providers.js; tests/growth-calendar*.test.js e tests/google-oauth-calendar.test.js; suite 543/543; SOP-GROWTH-CALENDAR.md e COLLAUDO-GROWTH-RIORDINO.md. Stato storico conservativo invariato, nessuna attestazione del provider reale."
+      ],
+      "missing": "OAuth Gmail e Calendar opzionale implementati con stato/sessione monouso, PKCE, scope salvati lato server e refresh token cifrato. 44 test OAuth con Google finto; account, applicazione Google, consenso e callback reali non collaudati.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-50",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Scollegamento Google",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:64",
+        "src/growth.js:74; tests/growth.test.js:224; public/app.js:75",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Non esiste una connessione reale da revocare e non è portata la cancellazione del refresh token.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-51",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Email con brand",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:65",
+        "src/growth-brand.js:21-28; src/growth.js:77; docs/COLLAUDO-INTERFACCIA.md:176",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Generatore HTML presente, ma invio MIME con logo CID e verifica nel client email non portati/collaudati.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-52",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Anteprima email",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:66",
+        "src/growth.js:77; src/growth-brand.js:22; docs/COLLAUDO-INTERFACCIA.md:176",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "API di anteprima HTML presente; manca una vista dedicata nella dashboard, che mostra solo testo.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-GR-53",
+      "section": "Migrazione Growth e ricerca clienti",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Stato servizio",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/GROWTH-INVENTARIO.md:67",
+        "server.js:health; tests/core.test.js:17; scripts/check.js:checkOfflineMode",
+        "Suite tests/growth.test.js rieseguita nel presente audit: 24/24 PASS."
+      ],
+      "missing": "Health unico locale verificato; non è monitoraggio remoto o SLA.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-01",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Login, logout, cambio password, sessioni 12 ore",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:28",
+        "server.js:39-42,80-81,103; .sources/fidelity.git@350d64f:server/routes.ts:15; tests/core.test.js:17; public/app.js:213",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Login/logout comuni presenti, ma sessione passata a 8 ore e cambio password autonomo del titolare cliente/staff assente: solo reset dei soci OS.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-02",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Ruoli agency / owner / staff",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:29",
+        "src/fidelity.js:authorized,manager; src/store.js:requireClient; tests/fidelity.test.js:28,38,45; public/app.js:60,83",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Mapping agency→owner OS, owner Fidelity→client e staff→collaborator verificato; privilegi amministrativi mai ereditati.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-03",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Elenco, creazione, modifica, sospensione attività",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:30",
+        "src/fidelity.js:281-292; tests/fidelity.test.js:204; public/app.js:68; docs/COLLAUDO-INTERFACCIA.md:178",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Anagrafica comune via API completa; UI non espone modifica nome/slug/indirizzo/colore e sospensione attività.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-04",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Aggiornamento carte per cambio nome/sospensione attività",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:31",
+        "src/fidelity.js:291; tests/fidelity.test.js:204",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Aggiornamento locale, sequenza e coda presenti; propagazione/rimozione carte Apple/Google sospese non portata.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-05",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Dashboard iscritti, attivi, consensi, accrediti, riscatti, programmi",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:32",
+        "src/fidelity.js:232-243; tests/fidelity.test.js:18; public/app.js:83",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Metriche API presenti; UI espone iscritti/programmi/riscatti/consensi, ma non tutti i contatori originali (attivi e accrediti).",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-06",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Trend di 14 giorni e ultime operazioni",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:33",
+        "src/fidelity.js:238-243; public/app.js:83; docs/COLLAUDO-INTERFACCIA.md:179",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Trend API 14 giorni presente ma manca grafico/vista nella UI; registro ultime operazioni visibile.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-07",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Programmi a timbri",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:34",
+        "src/fidelity.js:createProgram,transact; tests/fidelity.test.js:18,53,61; public/app.js:163,169",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Dominio, programma e movimenti timbri locali implementati.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-08",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Programmi a punti e conversione spesa in centesimi",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:35",
+        "src/fidelity.js:transact; tests/fidelity.test.js:68; public/app.js:163,169",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Conversione da centesimi e arrotondamento server verificati; non equivale a registrare incassi contabili.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-09",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Coupon monouso",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:36",
+        "src/fidelity.js:createMember,transact; tests/fidelity.test.js:75; public/app.js:163,169",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Coupon saldo iniziale uno, niente ricarica e riscatto unico.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-10",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Modifica programma, scadenza, geolocalizzazioni e colore",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:37",
+        "src/fidelity.js:299-304; tests/fidelity.test.js:93; public/app.js:165; docs/COLLAUDO-INTERFACCIA.md:180",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "API completa con fino a dieci sedi; UI modifica solo la prima e conserva le altre, senza gestione multisede completa.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-11",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Logo programma",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:38",
+        "src/fidelity.js:298; src/fidelity-branding.js; tests/fidelity.test.js:184,195; public/app.js:208",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Logo PNG/JPEG/WebP normalizzato e isolato; upload UI presente, test dominio eseguiti.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-12",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "URL/QR di iscrizione per attività e programma",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:39",
+        "server.js:route QR programma; tests/core.test.js:95; public/app.js:164,195; docs/COLLAUDO-INTERFACCIA.md:105",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "QR PNG e URL locali verificati; lettura fisica fotocamera distinta.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-13",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Iscrizione e accettazione termini",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:40",
+        "src/fidelity.js:259-262; tests/fidelity.test.js:102; public/app.js:195,225",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Iscrizione DEMO con accettazione termini persistita; documenti legali reali da validare.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-14",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Prevenzione duplicati iscrizione senza svelare tessera esistente",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:41",
+        "src/fidelity.js:createMember; tests/fidelity.test.js:102; public/app.js:225",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Duplicato non rivela il token della carta esistente.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-15",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Carta web pubblica con saldo, QR, premio e offerta",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:42",
+        "src/fidelity.js:264-266; tests/fidelity.test.js:110; tests/core.test.js:95; public/app.js:196",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Saldo/premio/QR web funzionano; l'offerta r.offer restituita dall'API non è mostrata nella carta pubblica OS.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-16",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Modifica/revoca consenso dal titolare carta",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:43",
+        "src/fidelity.js:267,updateConsent; tests/fidelity.test.js:110,126; public/app.js:196 e gestore public-consent",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Revoca persistita e consegne pendenti bloccate; nessuna gestione di notifiche remote attive.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-17",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Ricerca iscritti e segmenti tutti/attivi/inattivi/premio/marketing",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:44",
+        "src/fidelity.js:309; public/app.js:83,171; docs/COLLAUDO-INTERFACCIA.md:179",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "API filtri q/programId/segment presente, UI senza ricerca/filtri avanzati per tutti i segmenti; scanner non equivale all'elenco filtrabile.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-18",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Creazione e modifica iscritti da operatore autorizzato",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:45",
+        "src/fidelity.js:310,320-324; tests/fidelity.test.js:28,45,102,110; public/app.js:166,168",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Operazioni del gestore nel tenant corretto; collaboratore limitato a scanner e movimenti come mapping definito.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-19",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Export CSV clienti",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:46",
+        "src/fidelity.js:308; tests/fidelity.test.js:213; public/app.js:172",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "CSV isolato e neutralizzazione formule verificati; download UI presente.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-20",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Anonimizzazione/revoca tessera",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:47",
+        "src/fidelity.js:325-327; tests/fidelity.test.js:155; public/app.js:167; docs/COLLAUDO-INTERFACCIA.md:181",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Anonimizzazione API testata, ma manca comando/form nella dashboard. Revoca Apple/Google reale inoltre non disponibile.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-21",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Scanner fotocamera e ricerca manuale",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:48",
+        "src/fidelity.js:330-333; tests/fidelity.test.js:119; public/app.js:171,218; docs/COLLAUDO-INTERFACCIA.md:25,111",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Ricerca manuale testata; fotocamera dipende da BarcodeDetector/getUserMedia, senza collaudo fisico né fallback ZXing originale.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-22",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Accredito e riscatto",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:49",
+        "src/fidelity.js:transact; tests/fidelity.test.js:53,61,68,75; public/app.js:169; docs/COLLAUDO-INTERFACCIA.md:19",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Saldo, costo premio e transazione atomica verificati; prova browser di accredito 4→5 riportata.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-23",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Idempotenza accrediti/riscatti",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:50",
+        "src/fidelity.js:withIdempotency,transact; tests/fidelity.test.js:53,61; public/app.js:169",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Chiave e fingerprint per tenant; nessun doppio movimento al retry.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-24",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Storno una sola volta, senza saldo negativo",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:51",
+        "src/fidelity.js:reverse; tests/fidelity.test.js:83; public/app.js:170",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Storno unico, motivato e atomico senza saldo negativo; ledger originale conservato.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-25",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Registro operazioni e dettaglio carta",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:52",
+        "src/fidelity.js:319,335-337; public/app.js:83,167; tests/fidelity.test.js:53,83",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Registro globale visibile e API dettaglio carta completa; finestra iscritto non presenta la propria cronologia completa delle operazioni.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-26",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Campagne per segmento/programma",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:53",
+        "src/fidelity.js:339-356; tests/fidelity.test.js:126,220,234,251; public/app.js:173-176",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Creazione/segmenti/anteprima/versioni/approvazione locali verificati; consegna esterna separata e non completata.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-27",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Pianificazione campagne",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:54",
+        "src/fidelity.js:380-385; tests/fidelity.test.js:147; public/app.js:173,175",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "È pianificata la preparazione della bozza, non l'invio della campagna come nell'originale.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-28",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Consegne distinte Apple/Google e stati reali",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:55",
+        "src/fidelity.js:prepareCampaign,campaignJson,356; tests/fidelity.test.js:126; docs/COLLAUDO-INTERFACCIA.md:182",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Consegne conservate come blocked, nessun invio o stato reale Apple/Google; UI non espone tutto il dettaglio per canale.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-29",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Recupero clienti inattivi con cooldown",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:56",
+        "src/fidelity.js:runAutomation,358-384; tests/fidelity.test.js:139; public/app.js:177-179",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Segmento, consenso e cooldown testati, ma l'automazione prepara bozze da approvare e non ricontatta gli inattivi tramite Wallet.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-30",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Coda, backoff, tentativi, ripresa dopo riavvio",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:57",
+        "src/fidelity.js:queue,372-385; .sources/fidelity.git@350d64f:server/jobs.ts; docs/API-FIDELITY.md",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Persistono job bloccati e scheduler di preparazione; worker provider, backoff e recupero dopo invio non sono portati.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-31",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Riprova job bloccati/falliti",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:58",
+        "src/fidelity.js:372-375; tests/fidelity.test.js:166; docs/COLLAUDO-INTERFACCIA.md:183",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "POST jobs/retry restituisce 409; non esiste retry operativo né UI equivalente.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-32",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Apple `.pkpass`, aggiornamenti, registrazioni, revoche",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:59",
+        "src/fidelity-wallet.js:buildAppleDefinition; src/fidelity.js:268,277,312-317; tests/fidelity.test.js:166,175",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Payload puro presente, ma firma .pkpass, certificati, APNs, registrazioni dispositivi, web service, aggiornamenti e revoche remoti non portati.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-33",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Google Wallet loyalty/offer, link firmato, aggiornamenti/messaggi",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:60",
+        "src/fidelity-wallet.js:buildGooglePayloads; src/fidelity.js:268,312-317; tests/fidelity.test.js:166,175",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Payload loyalty/offer presente, ma OAuth/service account, JWT firmato, provisioning, upsert, messaggi e rate limit Google non operativi.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-34",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Gestione operatori, titolari e disattivazione accessi",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:61",
+        "src/fidelity.js:370; server.js:101-103; public/app.js:212-214; .sources/fidelity.git@350d64f:server/routes.ts:48-50",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Gestione accentrata ai soci: titolare cliente non può creare/disattivare i propri operatori. Non sono portati cambio ruolo/nome/assegnazioni di utenti esistenti.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-35",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Regolamento, informativa, stato wallet e job",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:62",
+        "src/fidelity.js:366-375; tests/fidelity.test.js:204; public/app.js:207,83; docs/COLLAUDO-INTERFACCIA.md:121-122",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Policy e stato scollegato presenti; dettaglio/controllo job non completamente fruibile dal gestore cliente nella sua UI.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-36",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Registro attività",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:63",
+        "src/fidelity.js:371,audit; tests/fidelity.test.js:213; public/app.js:activityView; server.js:overview",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Eventi comuni fidelity.* filtrati per cliente; esclusione dati amministrativi verificata.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-37",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Backup e restore offline SQLite",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:64",
+        "scripts/backup.js; scripts/restore.js; tests/backup.test.js:33,56,91,104,117,137,162,185; README.md:Salvataggio e ripristino",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Backup/ripristino CLI del DB comune collaudati su copie isolate; procedura originale CLI tradotta, nessun requisito di form UI originale.",
+      "baselineStatus": "FATTO e testato",
+      "category": "funzionale"
+    },
+    {
+      "id": "MIG-FI-38",
+      "section": "Migrazione Fidelity",
+      "briefLines": [
+        42,
+        43,
+        44,
+        105,
+        112
+      ],
+      "requirement": "Bootstrap e dati demo espliciti",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline 8750e80; research/FIDELITY-INVENTARIO.md:65",
+        "src/store.js:seedCore; src/fidelity.js:387-395; tests/fidelity.test.js:18; tests/core.test.js:85; server.js:80",
+        "Suite tests/fidelity.test.js rieseguita nel presente audit: 27/27 PASS."
+      ],
+      "missing": "Seed DEMO idempotente completo; bootstrap sicuro del primo amministratore nominale di produzione non implementato.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "funzionale"
+    },
+    {
+      "id": "NOTTE-01",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        9,
+        128,
+        564,
+        567
+      ],
+      "requirement": "Autonomia notturna con decisioni motivate e domande pendenti registrate",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. docs/DECISIONI.md; docs/DOMANDE-PER-RAFFAELE.md; docs/REPORT-NOTTE.md:158-164"
+      ],
+      "missing": "Documenti verificati in lettura; nessuna ipotesi decisionale viene qui elevata a funzionalità implementata.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-02",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        34,
+        40,
+        42,
+        60
+      ],
+      "requirement": "Esaminare le versioni correnti dei due progetti e collocare la ricerca clienti",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. research/GROWTH-INVENTARIO.md:3-9, originale cfd4b0bfc1b9f209474af1eb9ca7fe90c6eb8aa4; research/FIDELITY-INVENTARIO.md:5-12, originale 350d64f16826530d1c64e6d3cbe998e3adbdd587; clone bare Fidelity letto anche in questo audit"
+      ],
+      "missing": "Non è attestata l'esistenza di un terzo repository indipendente per la ricerca: le funzioni sono già nel sorgente Growth. Nessun test live degli originali.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-03",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        42,
+        43,
+        112
+      ],
+      "requirement": "Unificare integralmente Growth, ricerca e Fidelity, con tutte le funzioni collegate alle dashboard",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline congelata 8750e80. 91 righe MIG-GR/MIG-FI di questo audit; src/growth.js e src/fidelity.js sullo store condiviso; docs/REPORT-NOTTE.md:9,149-156"
+      ],
+      "missing": "Unificazione locale sostanziale ma incompleta: provider sostituiti da simulatori o bloccati, UI avanzate e alcune capacità utenti mancanti. Il divieto di azioni reali è rispettato; non equivale al porting completo degli adapter.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-04",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        44,
+        90
+      ],
+      "requirement": "Tabella funzione per funzione e limiti espliciti nel report",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. docs/REPORT-NOTTE.md:Growth e Fidelity funzione per funzione; research/GROWTH-INVENTARIO.md e research/FIDELITY-INVENTARIO.md; docs/COLLAUDO-INTERFACCIA.md:169-191"
+      ],
+      "missing": "Le tabelle baseline raggruppano alcune capacità. Il presente audit conserva tutte le 53+38 righe degli inventari e rende espliciti ulteriori scostamenti, senza modificare il report storico.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-05",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        50,
+        51,
+        52,
+        66,
+        123
+      ],
+      "requirement": "Repository privato bigant-os, ramo notturno, PR verso main senza merge",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. docs/REPORT-NOTTE.md:17-20; https://github.com/lol-afk23456/bigant-os/pull/1; git log locale fino a 8750e80; conferma del coordinatore della PR aperta"
+      ],
+      "missing": "Verifica remota già effettuata dal coordinatore; questo audit è offline e non ricontrolla stato/visibilità GitHub dal vivo.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-06",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        53,
+        54,
+        55,
+        67,
+        68,
+        69,
+        70
+      ],
+      "requirement": "Lasciare intatte le versioni online e i sorgenti originali",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. docs/REPORT-NOTTE.md:11; AGENTS.md; originali letti tramite git show; server.js:147-153 rifiuta produzione e ascolta solo loopback"
+      ],
+      "missing": "Conformità attestata dal coordinatore e dal perimetro osservato; non è una revisione indipendente dei log Railway. Nessun deploy o azione esterna effettuato in questo audit.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-07",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        54,
+        60
+      ],
+      "requirement": "Capire pubblicazione esistente: servizi, database e nomi delle variabili Railway",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline congelata 8750e80. docs/ANALISI-INIZIALE.md:61-63; riferimenti di pubblicazione nei due inventari"
+      ],
+      "missing": "Documentata la lettura e il divieto di modifica, ma manca un inventario riproducibile dei servizi/database/storage/nomi variabili per entrambe le app. Non sono stati letti valori riservati.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-08",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        56,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        128
+      ],
+      "requirement": "Non leggere Gmail, inviare messaggi, collegare account reali, pubblicare, pagare o attivare servizi",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. docs/REPORT-NOTTE.md:9-11; src/growth-providers.js:1-8,18-42; src/growth.js:74; src/fidelity.js:268,277,344,375; tests/growth.test.js:224; tests/fidelity.test.js:166"
+      ],
+      "missing": "Il rispetto del divieto operativo non certifica che i connettori reali siano stati portati. GitHub e i tre report Drive sono le sole consegne esterne autorizzate dal brief.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-09",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        57,
+        90
+      ],
+      "requirement": "Copiare su Drive soltanto REPORT-NOTTE, ANALISI-INIZIALE e ARCHITETTURA nella cartella autorizzata",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. docs/REPORT-NOTTE.md:20; cartella Drive 17P2Zg4dvhi8ZODnPMcMFQg6lB4xkIzad; conferma esplicita del coordinatore: tre report completati"
+      ],
+      "missing": "Esito attribuito alla verifica browser del coordinatore; nessuna apertura di Drive o altri documenti in questo audit.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-10",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        58,
+        71
+      ],
+      "requirement": "Conservare il lavoro nella cartella tecnica, portarlo su GitHub e non cancellare gli originali",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. .gitignore; .cache/verifica-copia-github.json datato 2026-10-08T10:51:13.430Z: 54 file same=true; git ls-tree 8750e80:56 file; tests/brand.test.js; docs/DECISIONI.md:copia testuale reversibile"
+      ],
+      "missing": "I due PNG originali locali sono intatti; su GitHub la loro rappresentazione canonica è base64 con byte/SHA-256 equivalenti verificati. Non si dichiara confronto byte dei due file PNG binari remoti.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-11",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        72,
+        73,
+        74,
+        75,
+        299,
+        504
+      ],
+      "requirement": "Fixture inventate, niente archivi economici/clienti reali o segreti nel repository",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. src/store.js:seedCore; src/growth.js:11-17,43-49; src/fidelity.js:387-395; .gitignore; .env.example; docs/REPORT-NOTTE.md:11-13"
+      ],
+      "missing": "Controllo limitato ai file applicativi e fixture baseline; non attesta scansione completa di ogni commit storico. Non aperti .env reali, 04_ACCESSI o database in uso.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-12",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        82,
+        507
+      ],
+      "requirement": "Dipendenze note e versioni fissate",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. package.json e package-lock.json: sharp 0.34.5, qrcode 1.5.4; scripts/check.js:checkDependencies; README.md:npm ci --ignore-scripts"
+      ],
+      "missing": "Controllo locale versioni/integrità lockfile passato nella consegna; non comprende un audit indipendente di tutta la supply chain.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-13",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        83
+      ],
+      "requirement": "Commit piccoli e comprensibili in italiano",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. git log: 4d34306,932d890,a999ceb,2d7d192,8772479,66c97c0,93e1ea4,8750e80; docs/DECISIONI.md:salvataggio remoto"
+      ],
+      "missing": "La storia remota è distinta perché caricata per cartella tramite browser; identità dei contenuti verificata separatamente. Nessun force push dichiarato.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-14",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        87,
+        88,
+        90
+      ],
+      "requirement": "Report notturno leggibile con fatti, limiti, rischi urgenti, cinque passi, PR e copia Drive",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. docs/REPORT-NOTTE.md:1-164; paragrafi Cosa manca e Prossimi cinque passi; link PR1 e Drive; .cache/verifica-copia-github.json"
+      ],
+      "missing": "Valutazione documentale, non attestato di piena parità operativa. Il report dichiara esplicitamente che OS non sostituisce ancora le app online.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-15",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97
+      ],
+      "requirement": "Analisi iniziale dei sistemi, processo, gap, mercato e 2-3 architetture con costi",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. docs/ANALISI-INIZIALE.md:13-119; docs/CONFRONTO-MERCATO.md; tre opzioni e stime nella sezione 6 dell'analisi"
+      ],
+      "missing": "Sono stime e fonti documentali dichiarate; nessun prezzo aggiornato via rete in questo audit. PED/sorgenti e materiali originali non acquisiti restano esplicitamente incompleti.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-16",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104
+      ],
+      "requirement": "Documento architettura completo di componenti, dashboard, permessi, dati e collegamenti",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. docs/ARCHITETTURA.md:1-213; diagramma iniziale; sezioni dati/ruoli/agenti/servizi/gestionale/dashboard/integrazioni"
+      ],
+      "missing": "La completezza del progetto documentale non implica che tutte le componenti siano già eseguibili: agenti specialistici e fonti reali rimangono pianificati.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-17",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        105,
+        106,
+        107,
+        113,
+        114,
+        115
+      ],
+      "requirement": "Fondazione locale modulare, registro servizi, dati e accessi condivisi, struttura delle due dashboard",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. server.js:createApp; src/store.js; src/registry.js:23 servizi/8 reparti/19 agenti; public/app.js:59-76; docs/COME-AGGIUNGERE-UN-MODULO.md; tests/core.test.js:29,34,85; docs/COLLAUDO-INTERFACCIA.md:10,16-25",
+        "Dopo audit: src/agency/*.js; tests/agency.test.js; docs/STRUTTURA-AGENZIA.md"
+      ],
+      "missing": "Fondazione strutturale ora presente; nessuna equivalenza con completamento dei servizi.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-18",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        108,
+        109,
+        110,
+        111
+      ],
+      "requirement": "Primo agente locale, orchestratore, approvazioni e registro, con simulazione dichiarata",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. src/orchestrator.js; tests/core.test.js:41,64,70,79,89,108; docs/COLLAUDO-INTERFACCIA.md:21; src/registry.js:mode"
+      ],
+      "missing": "Procedure deterministiche a costo zero, non uno sciame LLM operativo; il brief notturno ammette esplicitamente una prima simulazione dichiarata.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-19",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        117
+      ],
+      "requirement": "Avvio locale, test passanti e comandi esatti per riprodurre la prova",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. README.md:Avvio locale; docs/REPORT-NOTTE.md:130-147 (103/103 complessivi riportati); presente audit: node --test tests/growth.test.js tests/fidelity.test.js → 51/51 PASS; scripts/check.js"
+      ],
+      "missing": "103 è il risultato storico della consegna del coordinatore, non una nuova esecuzione completa di questo audit. Nessuna prova provider, mobile o camera.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-20",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        118,
+        119,
+        120,
+        121,
+        122,
+        564
+      ],
+      "requirement": "README italiano, AGENTS, brief integrale, ROADMAP e DECISIONI aggiornati",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. README.md; AGENTS.md; docs/BRIEF-BIGANT.md:1-567; docs/ROADMAP.md; docs/DECISIONI.md; .cache/verifica-copia-github.json"
+      ],
+      "missing": "Brief letto integralmente a blocchi in questo audit; contenuti e limiti presenti nei documenti baseline.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "NOTTE-21",
+      "section": "Consegne e vincoli della sessione notturna",
+      "briefLines": [
+        237,
+        238,
+        239,
+        240,
+        241,
+        242
+      ],
+      "requirement": "Nuovo progetto interno semplice ed economico, senza struttura commerciale SaaS",
+      "status": "FATTO e testato",
+      "evidence": [
+        "Baseline congelata 8750e80. docs/ANALISI-INIZIALE.md:11,76-86; docs/DECISIONI.md; package.json; server.js:createApp; src/store.js"
+      ],
+      "missing": "Un processo Node/SQLite, nessuna fatturazione abbonamenti del prodotto né piano SaaS. Il costo futuro dei provider resta una stima da autorizzare.",
+      "baselineStatus": "FATTO e testato",
+      "category": "consegna o vincolo"
+    },
+    {
+      "id": "STRUTTURA-01",
+      "section": "Scostamenti trasversali della migrazione",
+      "briefLines": [
+        40,
+        43,
+        455,
+        525
+      ],
+      "requirement": "Conservare e analizzare PED prima di decidere integrazione definitiva",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline congelata 8750e80. docs/ANALISI-INIZIALE.md:47-59; docs/DECISIONI.md:riga PED; docs/REPORT-NOTTE.md:154"
+      ],
+      "missing": "UI PED osservata e client Supabase identificato; repository, schema, RLS, API e hosting non acquisiti. Integrazione o migrazione PED non implementata.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "riepilogo trasversale"
+    },
+    {
+      "id": "STRUTTURA-02",
+      "section": "Scostamenti trasversali della migrazione",
+      "briefLines": [
+        42,
+        43,
+        112,
+        432,
+        449
+      ],
+      "requirement": "Distinguere unificazione dati locale da operatività cloud e sostituzione degli originali",
+      "status": "SOLO STRUTTURA",
+      "evidence": [
+        "Baseline congelata 8750e80. src/growth-store.js:connessione comune; src/fidelity.js:os_clients/os_users; server.js:147-153; docs/ARCHITETTURA.md:112,199; tests/core.test.js:85,89"
+      ],
+      "missing": "Database e identità comuni funzionano. Processo solo loopback, nessun cloud sempre acceso, nessun import di dati/carte reali o mapping degli URL Wallet preesistenti.",
+      "baselineStatus": "SOLO STRUTTURA",
+      "category": "riepilogo trasversale"
+    },
+    {
+      "id": "FOND-01",
+      "section": "Fondazione completa richiesta ora",
+      "briefLines": "109-119;243-267;302-311;424-479",
+      "requirement": "Struttura completa dello sciame: ogni reparto e ogni specialista, inneschi, memoria, input/output, approvazioni, registro, budget e fallimento dichiarati.",
+      "status": "FATTO e testato",
+      "baselineStatus": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js",
+        "8750e80:public/app.js",
+        "8750e80:docs/COME-AGGIUNGERE-UN-MODULO.md",
+        "Dopo audit: src/agency/*.js; public/app.js; tests/agency.test.js; docs/STRUTTURA-AGENZIA.md; docs/COLLAUDO-INTERFACCIA.md",
+        "src/agents/catalog.js; src/agency/swarm.js; tests/swarm.test.js; tests/agency.test.js:31-34"
+      ],
+      "missing": "Nessun gap per il posto strutturale richiesto; 32 procedure DEMO aggiunte. La suite completa non è interamente verde (160/161): riallineare il test agency sugli eventi. Servizi reali e pilota restano incompleti.",
+      "category": "fondazione strutturale"
+    },
+    {
+      "id": "FOND-02",
+      "section": "Fondazione completa richiesta ora",
+      "briefLines": "109-119;243-267;302-311;424-479",
+      "requirement": "Spazio marketing BigAnt dedicato, con tutti i canali e i deliverable del cliente zero anche quando ancora vuoti.",
+      "status": "FATTO e testato",
+      "baselineStatus": "ASSENTE",
+      "evidence": [
+        "8750e80:src/registry.js",
+        "8750e80:public/app.js",
+        "8750e80:docs/COME-AGGIUNGERE-UN-MODULO.md",
+        "Dopo audit: src/agency/*.js; public/app.js; tests/agency.test.js; docs/STRUTTURA-AGENZIA.md; docs/COLLAUDO-INTERFACCIA.md"
+      ],
+      "missing": "Nessuno per il requisito di struttura; implementazione operativa, provider e pilota restano incompleti nelle righe funzionali.",
+      "category": "fondazione strutturale"
+    },
+    {
+      "id": "FOND-03",
+      "section": "Fondazione completa richiesta ora",
+      "briefLines": "109-119;243-267;302-311;424-479",
+      "requirement": "Spazio navigabile e documentato per ciascun servizio del catalogo e specialità BigAnt, con stato reale.",
+      "status": "FATTO e testato",
+      "baselineStatus": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js",
+        "8750e80:public/app.js",
+        "8750e80:docs/COME-AGGIUNGERE-UN-MODULO.md",
+        "Dopo audit: src/agency/*.js; public/app.js; tests/agency.test.js; docs/STRUTTURA-AGENZIA.md; docs/COLLAUDO-INTERFACCIA.md"
+      ],
+      "missing": "Nessuno per il requisito di struttura; implementazione operativa, provider e pilota restano incompleti nelle righe funzionali.",
+      "category": "fondazione strutturale"
+    },
+    {
+      "id": "FOND-04",
+      "section": "Fondazione completa richiesta ora",
+      "briefLines": "109-119;243-267;302-311;424-479",
+      "requirement": "Esattamente dieci moduli gestionali registrati con ID, responsabile, dati, dipendenze, funzioni presenti e segnaposto.",
+      "status": "FATTO e testato",
+      "baselineStatus": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js",
+        "8750e80:public/app.js",
+        "8750e80:docs/COME-AGGIUNGERE-UN-MODULO.md",
+        "Dopo audit: src/agency/*.js; public/app.js; tests/agency.test.js; docs/STRUTTURA-AGENZIA.md; docs/COLLAUDO-INTERFACCIA.md"
+      ],
+      "missing": "Nessuno per il requisito di struttura; implementazione operativa, provider e pilota restano incompleti nelle righe funzionali.",
+      "category": "fondazione strutturale"
+    },
+    {
+      "id": "FOND-05",
+      "section": "Fondazione completa richiesta ora",
+      "briefLines": "109-119;243-267;302-311;424-479",
+      "requirement": "Scheletro dashboard interna e cliente con tutte le sezioni del brief e filtro server dei servizi acquistati.",
+      "status": "FATTO e testato",
+      "baselineStatus": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js",
+        "8750e80:public/app.js",
+        "8750e80:docs/COME-AGGIUNGERE-UN-MODULO.md",
+        "Dopo audit: src/agency/*.js; public/app.js; tests/agency.test.js; docs/STRUTTURA-AGENZIA.md; docs/COLLAUDO-INTERFACCIA.md"
+      ],
+      "missing": "Nessuno per il requisito di struttura; implementazione operativa, provider e pilota restano incompleti nelle righe funzionali.",
+      "category": "fondazione strutturale"
+    },
+    {
+      "id": "FOND-06",
+      "section": "Fondazione completa richiesta ora",
+      "briefLines": "109-119;243-267;302-311;424-479",
+      "requirement": "Registro estensibile e guida riproducibile per aggiungere modulo, servizio, specialista e integrazione senza rifare la base.",
+      "status": "FATTO e testato",
+      "baselineStatus": "SOLO STRUTTURA",
+      "evidence": [
+        "8750e80:src/registry.js",
+        "8750e80:public/app.js",
+        "8750e80:docs/COME-AGGIUNGERE-UN-MODULO.md",
+        "Dopo audit: src/agency/*.js; public/app.js; tests/agency.test.js; docs/STRUTTURA-AGENZIA.md; docs/COLLAUDO-INTERFACCIA.md"
+      ],
+      "missing": "Nessuno per il requisito di struttura; implementazione operativa, provider e pilota restano incompleti nelle righe funzionali.",
+      "category": "fondazione strutturale"
+    }
+  ],
+  "changes": [
+    "Ultima misura conservata del SOLO brief notturno originale (567 righe, ora docs/BRIEF-NOTTE-ORIGINALE.md): 30,2%, 62/205 requisiti; agenzia oltre Growth/Fidelity 14,9%, 17/114. Il nuovo integrale docs/BRIEF-BIGANT.md di 2184 righe NON è stato misurato e non eredita queste percentuali.",
+    "La baseline precedente distingueva sette procedure centrali, quattro definizioni dei moduli e 21 specialisti pianificati. Ora tutte le 32 definizioni hanno procedure DEMO eseguibili: sette centrali, quattro adapter e 21 executor specifici con SOP e fixture dichiarate. Nessun modello AI o provider reale è collegato.",
+    "Gli elaborati passano dall’archivio comune: fotografia degli input, fonti, SOP, versioni immutabili, approvazioni e feedback specifico. I risultati interni e amministrativi non sono esposti ai clienti. Consensi e prerequisiti non vengono inventati.",
+    "Otto eventi locali e quattro calendari sono configurabili con input persistenti, controlli dei servizi e deduplica. Eventi DEMO non equivalgono a webhook reali o a firme contrattuali verificate. Il processo resta locale e si ferma quando viene spento.",
+    "Prova isolata dei 32 agenti: 32 elaborati e approvazioni senza email, inviti, notifiche Fidelity o costi API. Ultima suite completa: 160 test superati su 161. Resta il test tests/agency.test.js:31-34 che pretende implemented:false per eventi ora disponibili in DEMO. Non è stato corretto nel passaggio solo documentale.",
+    "27 spazi di servizio, dieci moduli e dashboard rimangono registrati. I nuovi executor preparano piani, bozze e controlli: non completano materialmente siti, video, campagne, negozi, voli o conformità. Le righe dei servizi restano SOLO STRUTTURA con il lavoro parziale ora documentato.",
+    "Nessuno stato o denominatore viene promosso automaticamente in questa consegna a Claude Code. La copertura integrale aggiornata va rifatta sul nuovo brief; il 30,2% è il riferimento storico del perimetro originale, non una nuova misura del progetto ampliato.",
+    "Codice del primo salvataggio locale 569c70d, copia GitHub cc1585e. Nessun deploy, modifica Railway, dato reale o invio. Questa revisione aggiorna soltanto la documentazione di passaggio.",
+    "Consegna documentale: brief integrale copiato senza modifiche; check finale 4/5 perché 22 link relativi del testo sorgente puntano a schede playbook non ancora estratte. Dettagli in docs/ESITO-CONTROLLI-CONSEGNA.md. Nessuno stato promosso per questo salvataggio."
+  ],
+  "coverageScope": {
+    "brief": "docs/BRIEF-NOTTE-ORIGINALE.md",
+    "lines": 567,
+    "functionalRequirements": 205,
+    "lastMeasuredDone": 62,
+    "lastMeasuredPercent": 30.2,
+    "agencyRequirements": 114,
+    "lastMeasuredAgencyDone": 17,
+    "lastMeasuredAgencyPercent": 14.9,
+    "newFullBrief": "docs/BRIEF-BIGANT.md",
+    "newFullBriefLines": 2184,
+    "newFullBriefMeasured": false,
+    "note": "Il nuovo documento integrale non ha ancora una matrice requisito per requisito. Il 30,2% non va attribuito al suo perimetro. Gli stati precedenti sono conservati in questo passaggio documentale; nessuna promozione automatica per la sola disponibilità degli executor DEMO."
+  },
+  "verificationAtHandoff": {
+    "testsPassed": 160,
+    "testsTotal": 161,
+    "allTestsPassed": false,
+    "openFailure": "tests/agency.test.js:31-34 conserva la vecchia aspettativa implemented:false per review.created, content.approved e contract.signed, ora registrati come eventi DEMO locali. Da riallineare e rieseguire; non corretto nel passaggio solo documentale.",
+    "localCodeCommit": "569c70d",
+    "remoteCodeCommit": "cc1585e",
+    "externalProvidersVerified": false
+  }
+}

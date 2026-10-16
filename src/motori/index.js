@@ -1,0 +1,161 @@
+// Livello "motore" intercambiabile dello sciame. Ogni output dichiara il motore che lo ha prodotto.
+// - claude-code: Claude Code in modalità non interattiva (claude -p) con i sottoagenti di .claude/agents/;
+// - api: Messages API Anthropic, attivabile solo con variabili d'ambiente dedicate;
+// - demo: regole deterministiche, solo per i test automatici.
+import {spawn,spawnSync} from 'node:child_process';
+import {readFileSync,existsSync} from 'node:fs';
+import {resolve} from 'node:path';
+import {cervelloDemo} from './demo.js';
+
+export const ETICHETTE={
+ 'claude-code':'Claude Code (sottoagenti .claude/agents, sessione cloud)',
+ api:'API Anthropic (variabili d’ambiente)',
+ openai:'API OpenAI (variabili d’ambiente)',
+ demo:'Motore DEMO deterministico (solo test, nessuna AI)',
+ nessuno:'Nessun motore AI disponibile'
+};
+
+export function istruzioniAgente(root,agente){
+ const file=resolve(root,'.claude/agents',`bigant-${agente}.md`);
+ if(!existsSync(file))throw new Error(`Istruzioni mancanti: .claude/agents/bigant-${agente}.md`);
+ return readFileSync(file,'utf8').replace(/^---\n[\s\S]*?\n---\n/,'').trim();
+}
+
+export function promptPasso({compito,pacchetto}){
+ return `COMPITO\n${compito}\n\nPACCHETTO DI INPUT (JSON, dati DEMO: non presentarli come reali)\n\`\`\`json\n${JSON.stringify(pacchetto,null,1)}\n\`\`\`\n\nRispondi soltanto con l’oggetto JSON richiesto dallo schema. Ciò che manca nel pacchetto è [DA VERIFICARE].`;
+}
+
+export function estraiJson(testo){
+ if(typeof testo!=='string')return null;
+ const prova=t=>{try{const v=JSON.parse(t);return v&&typeof v==='object'&&!Array.isArray(v)?v:null;}catch{return null;}};
+ const blocco=testo.match(/```(?:json)?\s*\n([\s\S]*?)\n```/);
+ return prova(testo.trim())||(blocco&&prova(blocco[1]))||prova(testo.slice(testo.indexOf('{'),testo.lastIndexOf('}')+1));
+}
+
+let cliVerificato=null;
+export function claudeDisponibile(bin='claude'){
+ if(cliVerificato?.bin===bin)return cliVerificato.ok;
+ let ok=false;try{ok=spawnSync(bin,['--version'],{timeout:15000,encoding:'utf8'}).status===0;}catch{ok=false;}
+ cliVerificato={bin,ok};return ok;
+}
+
+export function scegliMotore(env=process.env){
+ const richiesto=env.BIGANT_MOTORE;
+ if(richiesto){if(!Object.hasOwn(ETICHETTE,richiesto))throw new Error('BIGANT_MOTORE non valido: usare claude-code, api, openai, demo o nessuno.');return richiesto;}
+ if(env.BIGANT_MODALITA==='reale')return 'nessuno';
+ return claudeDisponibile(env.BIGANT_CLAUDE_BIN||'claude')?'claude-code':'nessuno';
+}
+
+function motoreClaudeCode({root,env,spawnImpl=spawn}){
+ const bin=env.BIGANT_CLAUDE_BIN||'claude',timeout=Number(env.BIGANT_MOTORE_TIMEOUT_MS||420000);
+ return {id:'claude-code',etichetta:ETICHETTE['claude-code'],
+  stato(){const ok=claudeDisponibile(bin);return {disponibile:ok,statoCollegamento:ok?'OPERATIVO':'COLLEGAMENTO MANCANTE',motivo:ok?'Claude Code risponde in modalità non interattiva; strumenti disattivati per ogni agente.':'Comando claude non trovato o non autenticato in questo ambiente.'};},
+  esegui({agente,compito,pacchetto,schema,onProgresso=()=>{},beforeDispatch=()=>{}}){
+   // Nessuno strumento: l'agente non legge file, non naviga e non esegue comandi. Il pacchetto arriva da stdin.
+   // stream-json: il testo arriva mentre l'agente lo scrive, così l'ufficio virtuale lo mostra in diretta.
+   const args=['-p','--agent',`bigant-${agente}`,'--tools','','--output-format','stream-json','--verbose','--include-partial-messages','--json-schema',JSON.stringify(schema),'--no-session-persistence'];
+   const inizio=Date.now();
+   return new Promise((ok,ko)=>{
+    beforeDispatch();
+    const child=spawnImpl(bin,args,{cwd:root,env,stdio:['pipe','pipe','pipe']});
+    let resto='',err='',testo='',r=null;const timer=setTimeout(()=>{child.kill('SIGTERM');ko(new Error(`Claude Code non ha risposto entro ${Math.round(timeout/1000)} s.`));},timeout);
+    const riga=x=>{let j;try{j=JSON.parse(x);}catch{return;}
+     for(const ev of Array.isArray(j)?j:[j]){
+      if(ev?.type==='result')r=ev;
+      const d=ev?.type==='stream_event'&&ev.event?.type==='content_block_delta'?ev.event.delta:null;
+      if(d?.type==='text_delta'){testo+=d.text;onProgresso({fase:'scrittura',testo});}
+      else if(d?.type==='thinking_delta')onProgresso({fase:'ragionamento',testo});
+     }};
+    child.stdout.on('data',d=>{const parti=(resto+d).split('\n');resto=parti.pop();parti.forEach(riga);});child.stderr.on('data',d=>{err+=d;});
+    child.on('error',e=>{clearTimeout(timer);ko(new Error('Avvio di Claude Code non riuscito: '+e.message));});
+    child.on('close',code=>{
+     clearTimeout(timer);
+     if(resto.trim())riga(resto);
+     if(!r)return ko(new Error(`Risposta di Claude Code non leggibile (uscita ${code}). ${err.slice(0,300)}`));
+     if(r.is_error||r.subtype!=='success')return ko(new Error(`Claude Code: esecuzione non riuscita (${r.subtype||'errore'}). ${String(r.result||err).slice(0,300)}`));
+     // Con --agent gli strumenti del sottoagente sostituiscono quello dell'output strutturato:
+     // in quel caso il JSON arriva nel testo e viene comunque validato sullo schema dal chiamante.
+     const output=r.structured_output??estraiJson(r.result);
+     if(!output)return ko(new Error(`Claude Code: risposta senza JSON leggibile. ${String(r.result||'').slice(0,300)}`));
+     ok({output,meta:{motore:'claude-code',durataMs:Date.now()-inizio,costoUsdMicro:Math.round(Number(r.total_cost_usd||0)*1e6),costoNota:'Costo equivalente a listino dichiarato da Claude Code (USD)',turni:r.num_turns??null}});
+    });
+    child.stdin.end(promptPasso({compito,pacchetto}));
+   });
+  }};
+}
+
+function motoreApi({root,env,importSdk=()=>import('@anthropic-ai/sdk')}){
+ // Chiave e modello dedicati: non si usa ANTHROPIC_API_KEY per non interferire con Claude Code.
+ const chiave=env.BIGANT_ANTHROPIC_API_KEY,modello=env.BIGANT_API_MODELLO,maxCent=Number(env.BIGANT_API_COSTO_MAX_CENT||25);
+ return {id:'api',etichetta:ETICHETTE.api,costoMassimoCent:maxCent,
+  stato(){const mancanti=[!chiave&&'BIGANT_ANTHROPIC_API_KEY',!modello&&'BIGANT_API_MODELLO',(!Number.isSafeInteger(maxCent)||maxCent<1||maxCent>5000)&&'BIGANT_API_COSTO_MAX_CENT valido'].filter(Boolean);return {disponibile:!mancanti.length,statoCollegamento:mancanti.length?'COLLEGAMENTO MANCANTE':'OPERATIVO',motivo:mancanti.length?'Impostare '+mancanti.join(' e ')+' nelle impostazioni dell’ambiente.':'Chiave e modello configurati.'};},
+  async esegui({agente,compito,pacchetto,schema,beforeDispatch=()=>{}}){
+   if(!chiave||!modello)throw new Error('Motore API non configurato: servono BIGANT_ANTHROPIC_API_KEY e BIGANT_API_MODELLO.');
+   if(!Number.isSafeInteger(maxCent)||maxCent<1||maxCent>5000)throw new Error('Costo massimo API non valido.');
+   const {default:Anthropic}=await importSdk(),client=new Anthropic({apiKey:chiave,baseURL:env.BIGANT_API_URL||'https://api.anthropic.com',maxRetries:0,timeout:120000});
+   const inizio=Date.now();
+   beforeDispatch();
+   const r=await client.messages.create({model:modello,max_tokens:16000,system:istruzioniAgente(root,agente),messages:[{role:'user',content:promptPasso({compito,pacchetto})}],output_config:{format:{type:'json_schema',schema}}});
+   if(r.stop_reason==='refusal')throw new Error('Il modello ha rifiutato la richiesta.');
+   if(r.stop_reason==='max_tokens')throw new Error('Risposta troncata: limite di lunghezza raggiunto.');
+   const testo=r.content.filter(b=>b.type==='text').map(b=>b.text).join('');
+   let output;try{output=JSON.parse(testo);}catch{throw new Error('Risposta API non in formato JSON.');}
+   // Il costo reale dipende dal listino del modello scelto: si addebita prudenzialmente il tetto per chiamata.
+   return {output,meta:{motore:'api',durataMs:Date.now()-inizio,costoUsdMicro:maxCent*10000,costoNota:'Tetto prudenziale per chiamata (BIGANT_API_COSTO_MAX_CENT); consumo reale da verificare sul pannello Anthropic',token:{input:r.usage?.input_tokens??null,output:r.usage?.output_tokens??null}}};
+  }};
+}
+
+function motoreOpenAI({root,env,fetchImpl=globalThis.fetch}){
+ const chiave=env.BIGANT_OPENAI_API_KEY,modello=env.BIGANT_OPENAI_MODELLO,maxCent=Number(env.BIGANT_OPENAI_COSTO_MAX_CENT||25);
+ return {id:'openai',etichetta:ETICHETTE.openai,costoMassimoCent:maxCent,
+  stato(){const disponibile=!!chiave&&!!modello&&Number.isSafeInteger(maxCent)&&maxCent>0&&maxCent<=5000;return {disponibile,statoCollegamento:disponibile?'OPERATIVO':'COLLEGAMENTO MANCANTE',motivo:disponibile?'Chiave e modello configurati.':'Configurare chiave OpenAI, modello e tetto per chiamata.'};},
+  async esegui({agente,compito,pacchetto,schema,beforeDispatch=()=>{}}){
+   if(!this.stato().disponibile)throw new Error('Motore OpenAI non configurato: servono chiave, modello e tetto validi.');
+   const inizio=Date.now();
+   let response;
+   beforeDispatch();
+   try{response=await fetchImpl('https://api.openai.com/v1/responses',{
+    method:'POST',redirect:'error',signal:AbortSignal.timeout(120000),
+    headers:{Authorization:`Bearer ${chiave}`,'Content-Type':'application/json'},
+    body:JSON.stringify({model:modello,store:false,instructions:istruzioniAgente(root,agente),
+     input:promptPasso({compito,pacchetto}),max_output_tokens:16000,
+     text:{format:{type:'json_schema',name:'bigant_output',strict:true,schema}}})
+   });}catch{throw new Error('OpenAI non raggiungibile o tempo di risposta scaduto. Nessun nuovo tentativo automatico.');}
+   if(!response.ok)throw new Error(`OpenAI: richiesta non completata (${response.status}). Verifica il collegamento.`);
+   let result;try{result=await response.json();}catch{throw new Error('Risposta OpenAI non leggibile.');}
+   if(result.status!=='completed')throw new Error('Risposta OpenAI incompleta. Il risultato non entra nelle approvazioni.');
+   const content=(result.output||[]).filter(item=>item.type==='message').flatMap(item=>item.content||[]);
+   if(content.some(item=>item.type==='refusal'))throw new Error('Il modello ha rifiutato la richiesta.');
+   let output;try{output=JSON.parse(content.filter(item=>item.type==='output_text').map(item=>item.text).join(''));}catch{throw new Error('Risposta OpenAI non in formato JSON.');}
+   return {output,meta:{motore:'openai',durataMs:Date.now()-inizio,costoUsdMicro:maxCent*10000,
+    costoNota:'Tetto prudenziale per chiamata; consumo effettivo da verificare sul pannello OpenAI',
+    token:{input:result.usage?.input_tokens??null,output:result.usage?.output_tokens??null}}};
+  }
+ };
+}
+
+function motoreDemo({env={}}={}){
+ // BIGANT_DEMO_RITMO_MS (solo versione online): il testo già pronto compare a velocità di lettura per mostrare il flusso.
+ const ritmo=Math.min(Number(env.BIGANT_DEMO_RITMO_MS||0),60000);
+ return {id:'demo',etichetta:ETICHETTE.demo,
+  stato:()=>({disponibile:true,statoCollegamento:'DEMO',motivo:'Regole deterministiche, non è intelligenza artificiale.'+(ritmo?' Il testo compare a velocità di lettura per mostrarti il flusso del lavoro.':'')}),
+  async esegui({agente,pacchetto,onProgresso=()=>{}}){const inizio=Date.now(),output=cervelloDemo(agente,pacchetto),testo=JSON.stringify(output);
+   if(ritmo>0)for(let i=1;i<=24;i++){await new Promise(r=>setTimeout(r,ritmo/24));onProgresso({fase:'scrittura',testo:testo.slice(0,Math.ceil(testo.length*i/24))});}
+   else onProgresso({fase:'scrittura',testo});
+   return {output,meta:{motore:'demo',durataMs:Date.now()-inizio,costoUsdMicro:0,costoNota:'Nessun costo: regole locali'}};}};
+}
+
+function motoreNessuno(){
+ return {id:'nessuno',etichetta:ETICHETTE.nessuno,
+  stato:()=>({disponibile:false,statoCollegamento:'COLLEGAMENTO MANCANTE',motivo:'Nessun motore AI configurato: impostare BIGANT_MOTORE=claude-code (con Claude Code installato) oppure il motore API.'}),
+  async esegui(){throw new Error('Nessun motore AI disponibile: lo sciame non produce output simulati al posto dell’AI.');}};
+}
+
+export function createMotore({nome,root,env=process.env,...opzioni}={}){
+ const id=nome||scegliMotore(env);
+ if(id==='claude-code')return motoreClaudeCode({root,env,...opzioni});
+ if(id==='api')return motoreApi({root,env,...opzioni});
+ if(id==='openai')return motoreOpenAI({root,env,...opzioni});
+ if(id==='demo')return motoreDemo({env});
+ return motoreNessuno();
+}

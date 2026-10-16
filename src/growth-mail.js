@@ -1,0 +1,84 @@
+import {createHash} from 'node:crypto';
+import {AppError,requireOwner} from './store.js';
+import {canContact} from './growth-domain.js';
+import {createGrowthLiveProviders} from './growth-live-providers.js';
+import {createGrowthConversations} from './growth-conversations.js';
+const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
+const address=value=>String(value||'').toLowerCase();
+const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+export function createGrowthMail({store:root,growthStore:s,runtime,googleAuth,origin,enabled=false,providerOptions={},clock=()=>new Date()}){
+ const time=()=>clock().toISOString(),checking=new Set();
+ root.db.exec(`CREATE TABLE IF NOT EXISTS gr_mail_config(workspace TEXT PRIMARY KEY REFERENCES gr_workspaces(id),version INTEGER NOT NULL DEFAULT 0,fingerprint TEXT,checked_at TEXT,enabled_by TEXT,enabled_at TEXT);
+ CREATE TABLE IF NOT EXISTS gr_mail_approvals(message_id TEXT NOT NULL REFERENCES gr_messages(id),version INTEGER NOT NULL,payload_json TEXT NOT NULL,context_json TEXT NOT NULL,hash TEXT NOT NULL,PRIMARY KEY(message_id,version));
+ CREATE TABLE IF NOT EXISTS gr_mail_intents(message_id TEXT PRIMARY KEY REFERENCES gr_messages(id),workspace TEXT NOT NULL,approval_version INTEGER NOT NULL,payload_json TEXT NOT NULL,hash TEXT NOT NULL,google_email TEXT NOT NULL,requested_by TEXT NOT NULL,status TEXT NOT NULL,created_at TEXT NOT NULL,updated_at TEXT NOT NULL,error TEXT);
+ CREATE TRIGGER IF NOT EXISTS gr_mail_approvals_immutable BEFORE UPDATE ON gr_mail_approvals BEGIN SELECT RAISE(ABORT,'Approvazione invio immutabile'); END;`);
+ root.run("UPDATE gr_mail_intents SET status='uncertain',error='Processo riavviato. Verifica la posta inviata.' WHERE status IN ('preparing','dispatching')");
+ function owner(user){requireOwner(user);if(!root.one("SELECT id FROM os_users WHERE id=? AND active=1 AND role='owner' AND must_change_password=0",user.id))throw new AppError('Socio non più autorizzato.',403);}
+ const readConfig=w=>root.one('SELECT * FROM gr_mail_config WHERE workspace=?',w)||{version:0,fingerprint:null,checked_at:null,enabled_by:null};
+ const config=w=>{s.workspace(w);root.run('INSERT OR IGNORE INTO gr_mail_config(workspace) VALUES(?)',w);return readConfig(w);};
+ const google=user=>googleAuth?googleAuth.state(user):{connected:false,version:0,email:null};
+ function proof(user,w,options){const context=runtime.deliveryContext(user,w,options),g=google(user),st=s.settings(w);return {fingerprint:hash({runtime:context.fingerprint,google:g.version,email:g.email,sender:st.senderEmail}),ready:enabled&&context.ready&&g.connected&&address(st.senderEmail)===g.email&&!!st.senderEmail,google:g};}
+ function snapshot(row,p){const checked=row.fingerprint===p.fingerprint&&!!row.checked_at,by=!!row.enabled_by&&!!root.one("SELECT id FROM os_users WHERE id=? AND role='owner' AND active=1",row.enabled_by);return {available:enabled,configured:p.google.connected,email:p.google.email,version:row.version,checked,lastCheck:row.checked_at,enabled:p.ready&&checked&&by,canReconcile:enabled&&p.google.connected,note:!enabled?'Gmail è disabilitato sul server.':'Invio solo manuale, dopo approvazione della versione e controllo del consenso.'};}
+ function state(user,w){owner(user);return snapshot(config(w),proof(user,w));}
+ function progress(user,w){owner(user);const status=snapshot(readConfig(w),proof(user,w,{readOnly:true}));return {available:status.available,configured:status.configured,checked:status.checked,enabled:status.enabled,lastCheck:status.checked?status.lastCheck:null};}
+ function permitted(user,w,{probe=false,read=false}={}){owner(user);if(!enabled)throw new AppError('Gmail non abilitato sul server.',409);const g=google(user);if(!g.connected)throw new AppError('Casella Google da autorizzare.',409);if(read)return {google:g};const p=proof(user,w);if(!p.ready||s.settings(w).paused)throw new AppError('Completa le fasi precedenti e il mittente; Growth deve essere attivo.',409);if(!probe&&!state(user,w).enabled)throw new AppError('Gmail da collaudare o attivare per questa attività.',409);return {google:g,proof:p,config:config(w)};}
+ const providers=(user,version,allow)=>createGrowthLiveProviders({...providerOptions,origin,clock,credentials:(_w,id)=>{if(id!=='google')throw new AppError('Fornitore non autorizzato.',403);return googleAuth.credentials(user,version);},allow});
+ async function check(user,w,b){
+  const access=permitted(user,w,{probe:true}),row=access.config;if(b.version!==row.version)throw new AppError('Configurazione Gmail cambiata.',409);if(checking.has(w))throw new AppError('Collaudo Gmail già in corso.',409);
+  root.run('UPDATE gr_mail_config SET version=version+1,fingerprint=NULL,checked_at=NULL,enabled_by=NULL,enabled_at=NULL WHERE workspace=?',w);const version=row.version+1;checking.add(w);
+  const allow=(_w,op)=>{const current=permitted(user,w,{probe:true});if(current.proof.fingerprint!==access.proof.fingerprint||config(w).version!==version)throw new AppError('Configurazione cambiata durante il collaudo.',409);return op==='google-profile';};
+  try{const profile=await providers(user,access.google.version,allow).profile(w);allow(w,'google-profile');if(address(profile.emailAddress)!==access.google.email)throw new AppError('La casella Google non corrisponde al mittente.',409);root.run('UPDATE gr_mail_config SET fingerprint=?,checked_at=? WHERE workspace=?',access.proof.fingerprint,time(),w);root.audit(user,w,'Casella Gmail collaudata',w,{},'admin');return state(user,w);}catch(e){if([401,403].includes(e.remoteStatus))googleAuth.invalidate();throw e;}finally{checking.delete(w);}
+ }
+ function activate(user,w,b){owner(user);const row=config(w);if(row.version!==b.version||typeof b.enabled!=='boolean')throw new AppError('Configurazione Gmail cambiata o richiesta non valida.',409);if(b.enabled){permitted(user,w,{probe:true});if(!state(user,w).checked)throw new AppError('Collauda prima la casella Gmail.',409);}root.run('UPDATE gr_mail_config SET version=version+1,enabled_by=?,enabled_at=? WHERE workspace=?',b.enabled?user.id:null,b.enabled?time():null,w);root.audit(user,w,b.enabled?'Invio manuale Gmail abilitato':'Invio Gmail sospeso',w,{},'admin');return state(user,w);}
+ const latest=(w,id)=>root.one("SELECT * FROM os_approvals WHERE client_id=? AND kind='growth_message' AND entity_id=? ORDER BY version DESC LIMIT 1",w,id);
+ function envelope(user,w,m){
+  const l=s.lead(w,m.lead_id),st=s.settings(w),g=google(user),base=new URL(origin).origin;
+  if(m.kind==='reply'||m.thread_id||m.reply_to){
+   if(m.kind!=='reply')throw new AppError('Riferimenti di conversazione non validi per questo tipo di messaggio.',409);
+   const incoming=s.query("SELECT * FROM messages WHERE workspace=? AND lead_id=? AND direction='in' AND thread_id=? AND reply_to=?",w,m.lead_id,m.thread_id,m.reply_to);
+   if(incoming.length!==1)throw new AppError('Conversazione originale non verificabile.',409);
+   const reason=conversations.replyReason(user,w,incoming[0]);if(reason)throw new AppError(reason,409);
+  }
+  const token=s.query("SELECT id FROM tokens WHERE workspace=? AND lead_id=? AND kind='unsubscribe' AND expires>?",w,m.lead_id,clock().getTime()).find(t=>m.body.split(/\s+/).includes(base+'/growth/unsubscribe/'+t.id));
+  if(/[\r\n]/.test(m.subject)||/[\r\n]/.test(st.senderName))throw new AppError('Oggetto e nome mittente devono stare su una sola riga.');
+  if(!token||!m.body.includes('Assistente digitale del team BigAnt Agency.')||!st.signature.trim()||!m.body.includes(st.signature))throw new AppError('La bozza deve contenere firma, indicazione dell’assistente digitale e link di disiscrizione valido.',409);
+  return {payload:{id:m.id,from:st.senderEmail,fromName:st.senderName,to:l.email,subject:m.subject,body:m.body,replyTo:m.reply_to,threadId:m.thread_id,unsubscribe:base+'/growth/unsubscribe/'+token.id},context:{consent:l.consent,proof:l.consent_proof,consentAt:l.consent_at,googleVersion:g.version,googleEmail:g.email}};
+ }
+ function recordApproval(user,w,id){owner(user);const m=s.one('SELECT * FROM messages WHERE workspace=? AND id=?',w,id),a=latest(w,id);if(!a||a.status!=='approved'||a.title!==m.subject||a.body!==s.approvalBody(w,m))throw new AppError('Versione da rivedere prima dell’approvazione.',409);const value=envelope(user,w,m);root.run('INSERT INTO gr_mail_approvals VALUES(?,?,?,?,?)',id,a.version,JSON.stringify(value.payload),JSON.stringify(value.context),hash(value));}
+ function current(user,w,id,status='approved'){
+  owner(user);const m=s.one("SELECT * FROM messages WHERE workspace=? AND id=? AND direction='out'",w,id),a=latest(w,id);if(!m||m.status!==status||!a||a.status!=='approved'||!s.hasApproval(w,id))throw new AppError('Versione non approvata o non più disponibile per l’invio.',409);
+  const snapshot=root.one('SELECT * FROM gr_mail_approvals WHERE message_id=? AND version=?',id,a.version),value=envelope(user,w,m);
+  if(!snapshot||snapshot.hash!==hash(value)||a.title!==m.subject||a.body!==s.approvalBody(w,m))throw new AppError('Contatto, testo o mittente cambiati: approva una nuova versione.',409);
+  const reason=canContact(s,w,s.lead(w,m.lead_id),m.kind);if(reason)throw new AppError(reason,409);return {m,a,snapshot,...value};
+ }
+ function preview(user,w,id){const value=current(user,w,id);let reason=null;try{permitted(user,w);}catch(e){reason=e.message;}return {...value.payload,version:value.a.version,hash:value.snapshot.hash,canSend:!reason,reason};}
+ const day=value=>new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Rome',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(value));
+ function limit(w){const today=day(time()),count=root.query("SELECT created_at,status FROM gr_mail_intents WHERE workspace=? AND status IN ('preparing','dispatching','uncertain','sent')",w).filter(r=>r.status==='uncertain'||day(r.created_at)===today).length;if(count>=s.settings(w).dailyLimit)throw new AppError('Limite giornaliero raggiunto; gli invii incerti restano conteggiati.',409);}
+ function markSent(user,w,intent,result,sentAt=time()){
+  root.transaction(()=>{root.run("UPDATE gr_mail_intents SET status='sent',updated_at=?,error=NULL WHERE message_id=?",time(),intent.message_id);s.run("UPDATE messages SET status='sent',provider_id=?,thread_id=?,sent=?,error=NULL WHERE workspace=? AND id=?",result.id,result.threadId,sentAt,w,intent.message_id);const m=s.one('SELECT lead_id FROM messages WHERE id=?',intent.message_id);s.run("UPDATE leads SET stage=CASE WHEN stage IN ('new','qualified') AND suppressed=0 THEN 'contacted' ELSE stage END,updated=? WHERE workspace=? AND id=?",time(),w,m.lead_id);root.audit(user,w,'Invio Gmail confermato',intent.message_id,{version:intent.approval_version},'admin');});
+ }
+ async function send(user,w,id,b){
+  const access=permitted(user,w),value=current(user,w,id);if(b.confirmed!==true||b.version!==value.a.version||b.hash!==value.snapshot.hash)throw new AppError('Rivedi destinatario e versione prima di inviare.',409);
+  root.transaction(()=>{limit(w);const existing=root.one('SELECT status FROM gr_mail_intents WHERE message_id=?',id);if(existing&&existing.status!=='safe_failed')throw new AppError('Invio già richiesto: verifica l’esito senza riprovare.',409);root.run("INSERT INTO gr_mail_intents VALUES(?,?,?,?,?,?,?,'preparing',?,?,NULL) ON CONFLICT(message_id) DO UPDATE SET approval_version=excluded.approval_version,payload_json=excluded.payload_json,hash=excluded.hash,google_email=excluded.google_email,requested_by=excluded.requested_by,status='preparing',created_at=excluded.created_at,updated_at=excluded.updated_at,error=NULL",id,w,value.a.version,JSON.stringify(value.payload),value.snapshot.hash,access.google.email,user.id,time(),time());if(!s.run("UPDATE messages SET status='sending',error=NULL WHERE workspace=? AND id=? AND status='approved'",w,id).changes)throw new AppError('Messaggio già preso in carico.',409);});
+  const allow=(_w,op,context)=>{const currentAccess=permitted(user,w),live=current(user,w,id,'sending');if(op!=='gmail-send'||!same(context.message,value.payload)||live.snapshot.hash!==value.snapshot.hash||currentAccess.proof.fingerprint!==access.proof.fingerprint||config(w).version!==access.config.version)throw new AppError('Invio interrotto: dati o autorizzazioni cambiati.',409);if(context.stage==='dispatch')root.run("UPDATE gr_mail_intents SET status='dispatching',updated_at=? WHERE message_id=?",time(),id);return true;};
+  try{const result=await providers(user,access.google.version,allow).send(w,value.payload);const intent=root.one('SELECT * FROM gr_mail_intents WHERE message_id=?',id);markSent(user,w,intent,result);return {ok:true,status:'sent',externalDelivery:true};}
+  catch(e){const intent=root.one('SELECT * FROM gr_mail_intents WHERE message_id=?',id),uncertain=intent.status==='dispatching';root.transaction(()=>{root.run('UPDATE gr_mail_intents SET status=?,error=?,updated_at=? WHERE message_id=?',uncertain?'uncertain':'safe_failed',uncertain?'Esito da verificare nella posta inviata.':'Richiesta fermata prima dell’invio Gmail.',time(),id);const m=s.one('SELECT * FROM messages WHERE workspace=? AND id=?',w,id);let status=m.status;
+   if(uncertain)status='uncertain';else if(m.status==='sending'){try{current(user,w,id,'sending');status='approved';}catch{status=canContact(s,w,s.lead(w,m.lead_id),m.kind)?'cancelled':'draft';s.requestApproval(w,id,{changed:true});}}
+   s.run('UPDATE messages SET status=?,error=? WHERE workspace=? AND id=?',status,uncertain?'Verifica la posta inviata. Nessun reinvio automatico.':'Invio non avviato. Verifica il collegamento.',w,id);});if([401,403].includes(e.remoteStatus))googleAuth.invalidate();throw e;}
+ }
+ async function reconcile(user,w,id){
+  const access=permitted(user,w,{read:true}),intent=root.one("SELECT * FROM gr_mail_intents WHERE workspace=? AND message_id=? AND status='uncertain'",w,id);if(!intent)throw new AppError('Nessun invio incerto da verificare.',409);if(intent.google_email!==access.google.email)throw new AppError('Ricollega la stessa casella usata nel tentativo di invio.',409);
+  const p=providers(user,access.google.version,(_w,op)=>{const live=permitted(user,w,{read:true});if(live.google.version!==access.google.version||live.google.email!==intent.google_email)throw new AppError('Casella cambiata durante la verifica.',409);return op==='gmail-read';});
+  const found=await p.findSent(w,id);if(!found)return {status:'uncertain',found:false};
+  const message=await p.message(w,found.id),payload=JSON.parse(intent.payload_json),headers=message.payload?.headers||[],header=name=>{const matches=headers.filter(h=>typeof h.name==='string'&&h.name.toLowerCase()===name.toLowerCase());return matches.length===1&&typeof matches[0].value==='string'?matches[0].value:'';},mail=value=>{if(/[\r\n,;]/.test(value))return '';const match=value.match(/^(?:[^<>]*<([^<>]+)>|([^<>]+))$/);return address((match?.[1]||match?.[2]||'').trim());},subject=header('Subject').replace(/=\?UTF-8\?B\?([^?]+)\?=/gi,(_,value)=>Buffer.from(value,'base64').toString('utf8'));
+  if(message.id!==found.id||message.threadId!==found.threadId||!message.labelIds?.includes('SENT')||header('Message-ID')!==`<${id}@growth.bigantagency.it>`||mail(header('From'))!==address(payload.from)||mail(header('To'))!==address(payload.to)||subject!==payload.subject)throw new AppError('Il messaggio trovato non corrisponde all’invio: verifica manuale necessaria.',409);
+  const sentAt=new Date(Number(message.internalDate));if(typeof message.internalDate!=='string'||!/^[0-9]+$/.test(message.internalDate)||!Number.isFinite(sentAt.getTime())||sentAt.getTime()<Date.parse(intent.created_at)-300000||sentAt.getTime()>clock().getTime()+300000)throw new AppError('Data Gmail non verificabile.',409);markSent(user,w,intent,found,sentAt.toISOString());return {status:'sent',found:true};
+ }
+ const conversations=createGrowthConversations({store:root,growthStore:s,providers,clock,authorize:(user,w)=>{
+  const access=permitted(user,w,{read:true});
+  if(!s.active(w))throw new AppError('Attività non più attiva.',409);
+  return access;
+ }});
+ async function sync(user,w,b){try{return await conversations.sync(user,w,b);}catch(e){if([401,403].includes(e.remoteStatus))googleAuth.invalidate();throw e;}}
+ return {state,progress,check,activate,recordApproval,preview,send,reconcile,conversations,sync};
+}

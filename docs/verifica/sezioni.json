@@ -1,0 +1,901 @@
+{
+ "socio": [
+  {
+   "id": "agency",
+   "menu": "Mappa agenzia",
+   "titolo": "Tutta BigAnt, prima dei singoli strumenti.",
+   "descrizione": "Reparti, servizi e gestione lavorano sullo stesso cliente, con la stessa memoria e le stesse approvazioni.",
+   "numeri": [],
+   "riquadri": [
+    "Una regia, con controlli comuni"
+   ],
+   "azioni": [
+    "Apri la regia DEMO"
+   ]
+  },
+  {
+   "id": "marketing",
+   "menu": "Marketing BigAnt",
+   "titolo": "BigAnt è il nostro primo caso studio.",
+   "descrizione": "Una vista dedicata al marketing dell’agenzia: canali, memoria e lavoro del cliente zero.",
+   "numeri": [
+    "Canali previsti",
+    "Lavori BigAnt",
+    "Contenuti BigAnt",
+    "Obiettivi registrati"
+   ],
+   "riquadri": [
+    "Obiettivi e risultati",
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Memoria del cliente zero"
+   ],
+   "azioni": [
+    "Apri i lavori BigAnt",
+    "Apri la memoria nei lavori BigAnt"
+   ]
+  },
+  {
+   "id": "direction",
+   "menu": "Direzione",
+   "titolo": "Una regia. Tutta BigAnt.",
+   "descrizione": "Il punto su lavori, persone, soldi e prossime decisioni.",
+   "numeri": [
+    "Attività nel sistema",
+    "Lavori in corso",
+    "Decisioni in attesa",
+    "Cassa registrata"
+   ],
+   "riquadri": [
+    "Serve il tuo sguardo",
+    "Il prossimo passo"
+   ],
+   "azioni": [
+    "Apri le approvazioni",
+    "Tutte"
+   ]
+  },
+  {
+   "id": "administration",
+   "menu": "Amministrazione",
+   "titolo": "I conti, senza punti ciechi.",
+   "descrizione": "Due ditte distinte. Movimenti, scadenze e differenze da verificare insieme.",
+   "numeri": [
+    "Incassi del mese",
+    "Arretrati",
+    "Bozze da emettere",
+    "Cosa non torna"
+   ],
+   "riquadri": [
+    "Ditta Creativa A DEMO",
+    "Ditta Video B DEMO",
+    "Cosa non torna",
+    "Prima nota",
+    "Documenti e incassi",
+    "Scadenze e compensi",
+    "Cassa a 30 giorni",
+    "Cassa a 60 giorni",
+    "Cassa a 90 giorni",
+    "Conti e quadrature",
+    "Abbonamenti",
+    "Contributo di cassa per cliente",
+    "Ore e margini gestionali",
+    "Tariffe confermate",
+    "Ore attribuite",
+    "Contratti e rinnovi",
+    "Storico delle quadrature"
+   ],
+   "azioni": [
+    "Registra movimento",
+    "Altre registrazioni",
+    "Ricalcola controlli",
+    "Movimento",
+    "Nuova bozza",
+    "Nuova scadenza",
+    "Nuovo",
+    "Attribuisci ore",
+    "Nuova tariffa",
+    "Nuovo contratto"
+   ]
+  },
+  {
+   "id": "clients",
+   "menu": "Clienti",
+   "titolo": "Le relazioni, al centro.",
+   "descrizione": "Anagrafiche comuni a commerciale, produzione, amministrazione e Fidelity.",
+   "numeri": [],
+   "riquadri": [],
+   "azioni": [
+    "Nuova attività"
+   ]
+  },
+  {
+   "id": "work",
+   "menu": "Lavori e contenuti",
+   "titolo": "Dal brief al lavoro fatto.",
+   "descrizione": "Contenuti, consegne e approvazioni della stessa attività.",
+   "numeri": [],
+   "riquadri": [
+    "Calendario dell’attività",
+    "Lavori e consegne",
+    "Memoria dell’attività"
+   ],
+   "azioni": [
+    "Nuovo contenuto",
+    "Nuovo lavoro",
+    "Versioni",
+    "Esporta memoria",
+    "Nuova scheda"
+   ]
+  },
+  {
+   "id": "growth",
+   "menu": "Growth",
+   "titolo": "Le prossime relazioni di BigAnt.",
+   "descrizione": "Dalla ricerca alla chiamata, con ogni passaggio nello stesso CRM.",
+   "numeri": [
+    "Aziende nel radar",
+    "Qualificate",
+    "Bozze da rivedere",
+    "Budget disponibile"
+   ],
+   "riquadri": [
+    "Accendi il radar",
+    "Aziende e trattative",
+    "Bozze e conversazioni",
+    "Appuntamenti",
+    "Attività del motore Growth"
+   ],
+   "azioni": [
+    "Aggiungi azienda",
+    "Impostazioni",
+    "Esegui prossima"
+   ]
+  },
+  {
+   "id": "fidelity",
+   "menu": "Fidelity",
+   "titolo": "Un buon motivo per tornare.",
+   "descrizione": "Programmi fedeltà, iscritti, premi e campagne per l’attività selezionata.",
+   "numeri": [
+    "Iscritti",
+    "Programmi attivi",
+    "Premi riscattati",
+    "Consensi marketing"
+   ],
+   "riquadri": [
+    "Programmi",
+    "Iscritti e tessere",
+    "Registro timbri e punti",
+    "Campagne",
+    "Ritorno clienti"
+   ],
+   "azioni": [
+    "Nuovo programma",
+    "Nuovo iscritto",
+    "Regolamento",
+    "Cerca tessera",
+    "Esporta",
+    "Nuova bozza",
+    "Nuova regola"
+   ]
+  },
+  {
+   "id": "ufficio",
+   "menu": "Ufficio virtuale",
+   "titolo": "Ufficio virtuale",
+   "descrizione": "Lo sciame al lavoro, stanza per stanza. Ogni stato viene dal registro delle esecuzioni, aggiornato in automatico.",
+   "numeri": [
+    "Motore",
+    "Al lavoro ora",
+    "In attesa di un socio",
+    "Errori o fermi Qualità"
+   ],
+   "riquadri": [
+    "Regia",
+    "Direzione e crescita",
+    "Marketing BigAnt",
+    "Commerciale",
+    "Account e fidelizzazione",
+    "Produzione",
+    "Local e reputazione",
+    "Qualità e compliance",
+    "Amministrazione",
+    "Ultimi giri dello sciame",
+    "Azioni verso l’esterno bloccate"
+   ],
+   "azioni": [
+    "Avvia un giro",
+    "Aggiorna"
+   ]
+  },
+  {
+   "id": "agents",
+   "menu": "Sciame di agenti",
+   "titolo": "Uno sciame, una sola regia.",
+   "descrizione": "Ogni reparto produce elaborati DEMO leggibili, con fonti e revisione umana.",
+   "numeri": [
+    "Procedure disponibili",
+    "Da eseguire",
+    "Elaborati prodotti",
+    "Spesa degli agenti"
+   ],
+   "riquadri": [
+    "Giri dell’attività",
+    "Automatismi pianificati",
+    "Budget del pilota",
+    "Attività dei moduli collegati"
+   ],
+   "azioni": [
+    "Metti in pausa",
+    "Apri approvazioni",
+    "Nuova regola"
+   ]
+  },
+  {
+   "id": "approvals",
+   "menu": "Approvazioni1",
+   "titolo": "L’ultima parola è vostra.",
+   "descrizione": "Ogni decisione conserva autore, data e motivo. Una modifica apre una nuova revisione.",
+   "numeri": [],
+   "riquadri": [],
+   "azioni": []
+  },
+  {
+   "id": "activity",
+   "menu": "Registro attività",
+   "titolo": "Ogni azione lascia una traccia.",
+   "descrizione": "Chi ha fatto cosa, per quale attività e con quali fonti.",
+   "numeri": [],
+   "riquadri": [
+    "Registro comune"
+   ],
+   "azioni": []
+  },
+  {
+   "id": "catalog",
+   "menu": "Servizi",
+   "titolo": "Tutti i servizi, con il loro spazio.",
+   "descrizione": "Dalle produzioni quotidiane ai servizi futuri: stato, metodo e lavoro condiviso.",
+   "numeri": [],
+   "riquadri": [],
+   "azioni": []
+  },
+  {
+   "id": "connections",
+   "menu": "Collegamenti",
+   "titolo": "I collegamenti, sotto controllo.",
+   "descrizione": "Le integrazioni sono predisposte. Nessun account reale è collegato in questa prova.",
+   "numeri": [],
+   "riquadri": [],
+   "azioni": []
+  },
+  {
+   "id": "users",
+   "menu": "Accessi",
+   "titolo": "A ciascuno il proprio spazio.",
+   "descrizione": "I soci vedono l’agenzia. Il team lavora sui clienti assegnati. Ogni cliente vede soltanto la propria attività.",
+   "numeri": [],
+   "riquadri": [
+    "Persone e permessi"
+   ],
+   "azioni": [
+    "Nuovo accesso DEMO"
+   ]
+  },
+  {
+   "id": "client",
+   "menu": "Vista cliente",
+   "titolo": "BigAnt · cliente zero DEMO",
+   "descrizione": "Come sta andando, cosa stiamo facendo e cosa aspetta la tua decisione.",
+   "numeri": [
+    "Contatti",
+    "Chiamate",
+    "Prenotazioni",
+    "Recensioni",
+    "Spesa ADV",
+    "Contatti nel CRM",
+    "Iscritti Fidelity"
+   ],
+   "riquadri": [
+    "Home",
+    "Come sta andando",
+    "Avvisi",
+    "Il team BigAnt al lavoro per te",
+    "Cosa abbiamo fatto per te questo mese",
+    "Prossimi passi",
+    "I tuoi risultati",
+    "Contatti",
+    "Presenza: scheda Google, directory, recensioni",
+    "Sito e SEO",
+    "Pubblicità",
+    "Social e contenuti",
+    "Approvazioni e calendario",
+    "Da approvare",
+    "Calendario",
+    "Storico delle decisioni",
+    "I tuoi servizi",
+    "Servizi consigliati per te",
+    "Report",
+    "Report mensili",
+    "Documenti e amministrazione",
+    "Contratti",
+    "Fatture e pagamenti",
+    "Contatti e clienti (CRM)",
+    "Chiedi all’agenzia",
+    "Chiedi all’agenzia",
+    "Il tuo profilo",
+    "La tua attività",
+    "Chi ha accesso",
+    "Collegamenti alle tue fonti dati"
+   ],
+   "azioni": []
+  }
+ ],
+ "servizi": [
+  {
+   "id": "presence",
+   "nome": "Apri spazio",
+   "titolo": "Presenza online e reputazione",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "multisite",
+   "nome": "Apri spazio",
+   "titolo": "Presenza multisede",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "reception",
+   "nome": "Apri spazio",
+   "titolo": "Centralino AI",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "website",
+   "nome": "Apri spazio",
+   "titolo": "Siti web",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "accessibility",
+   "nome": "Apri spazio",
+   "titolo": "Accessibilità digitale",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "seo",
+   "nome": "Apri spazio",
+   "titolo": "SEO e contenuti",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "ecommerce",
+   "nome": "Apri spazio",
+   "titolo": "E-commerce",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "social-commerce",
+   "nome": "Apri spazio",
+   "titolo": "Social commerce",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "booking",
+   "nome": "Apri spazio",
+   "titolo": "Prenotazioni",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "ads",
+   "nome": "Apri spazio",
+   "titolo": "Pubblicità online",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "display",
+   "nome": "Apri spazio",
+   "titolo": "Display e programmatic",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "social",
+   "nome": "Apri spazio",
+   "titolo": "Social media",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "video",
+   "nome": "Apri spazio",
+   "titolo": "Foto, video e drone",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "marketplace",
+   "nome": "Leggi scheda",
+   "titolo": "Marketplace servizi casa",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "tv",
+   "nome": "Apri spazio",
+   "titolo": "TV, cinema e DOOH",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "merch",
+   "nome": "Apri spazio",
+   "titolo": "Abbigliamento e gadget",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "apple-leasing",
+   "nome": "Leggi scheda",
+   "titolo": "Noleggio Apple",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "verticals",
+   "nome": "Apri spazio",
+   "titolo": "Pacchetti verticali",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "audit",
+   "nome": "Apri spazio",
+   "titolo": "Analisi gratuita presenza online",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "branding",
+   "nome": "Apri spazio",
+   "titolo": "Brand e direzione creativa",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "growth",
+   "nome": "Apri spazio",
+   "titolo": "Growth e ricerca clienti",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "fidelity",
+   "nome": "Apri spazio",
+   "titolo": "Fidelity",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "local",
+   "nome": "Apri spazio",
+   "titolo": "Google Business Profile",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "events",
+   "nome": "Apri spazio",
+   "titolo": "Gestione eventi",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "drone",
+   "nome": "Apri spazio",
+   "titolo": "Riprese con drone",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "video-ai",
+   "nome": "Apri spazio",
+   "titolo": "Video AI",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  },
+  {
+   "id": "creative-direction",
+   "nome": "Apri spazio",
+   "titolo": "Direzione creativa",
+   "descrizione": "BigAnt · cliente zero DEMO · Metodo, lavoro e fonti dello stesso servizio.",
+   "numeri": [],
+   "riquadri": [
+    "Lavori registrati",
+    "Contenuti registrati",
+    "Approvazioni collegate",
+    "Fonti e collegamenti",
+    "Specialisti del servizio"
+   ],
+   "azioni": [
+    "Torna ai servizi"
+   ]
+  }
+ ],
+ "cliente": [
+  {
+   "id": "work",
+   "menu": "Lavori e contenuti",
+   "titolo": "Dal brief al lavoro fatto.",
+   "descrizione": "Contenuti, consegne e approvazioni della stessa attività.",
+   "numeri": [],
+   "riquadri": [
+    "Calendario dell’attività",
+    "Lavori e consegne"
+   ],
+   "azioni": []
+  },
+  {
+   "id": "fidelity",
+   "menu": "Fidelity",
+   "titolo": "Un buon motivo per tornare.",
+   "descrizione": "Programmi fedeltà, iscritti, premi e campagne per l’attività selezionata.",
+   "numeri": [
+    "Iscritti",
+    "Programmi attivi",
+    "Premi riscattati",
+    "Consensi marketing"
+   ],
+   "riquadri": [
+    "Programmi",
+    "Iscritti e tessere",
+    "Registro timbri e punti",
+    "Campagne",
+    "Ritorno clienti"
+   ],
+   "azioni": [
+    "Nuovo programma",
+    "Nuovo iscritto",
+    "Regolamento",
+    "Cerca tessera",
+    "Esporta",
+    "Nuova bozza",
+    "Nuova regola"
+   ]
+  },
+  {
+   "id": "approvals",
+   "menu": "Approvazioni1",
+   "titolo": "L’ultima parola è vostra.",
+   "descrizione": "Ogni decisione conserva autore, data e motivo. Una modifica apre una nuova revisione.",
+   "numeri": [],
+   "riquadri": [],
+   "azioni": []
+  },
+  {
+   "id": "catalog",
+   "menu": "Servizi",
+   "titolo": "I servizi della tua attività.",
+   "descrizione": "Ogni spazio raccoglie soltanto il lavoro e le sezioni dei servizi attivi per questa attività.",
+   "numeri": [],
+   "riquadri": [],
+   "azioni": []
+  },
+  {
+   "id": "client",
+   "menu": "Vista cliente",
+   "titolo": "Bottega Aurora DEMO",
+   "descrizione": "Come sta andando, cosa stiamo facendo e cosa aspetta la tua decisione.",
+   "numeri": [
+    "Contatti",
+    "Chiamate",
+    "Prenotazioni",
+    "Recensioni",
+    "Spesa ADV",
+    "Contatti nel CRM",
+    "Iscritti Fidelity"
+   ],
+   "riquadri": [
+    "Home",
+    "Come sta andando",
+    "Avvisi",
+    "Il team BigAnt al lavoro per te",
+    "Cosa abbiamo fatto per te questo mese",
+    "Prossimi passi",
+    "I tuoi risultati",
+    "Contatti",
+    "Presenza: scheda Google, directory, recensioni",
+    "Sito e SEO",
+    "Social e contenuti",
+    "Approvazioni e calendario",
+    "Da approvare",
+    "Calendario",
+    "Storico delle decisioni",
+    "I tuoi servizi",
+    "Servizi consigliati per te",
+    "Report",
+    "Report mensili",
+    "Documenti e amministrazione",
+    "Contratti",
+    "Fatture e pagamenti",
+    "Contatti e clienti (CRM)",
+    "Chiedi all’agenzia",
+    "Chiedi all’agenzia",
+    "Il tuo profilo",
+    "La tua attività",
+    "Chi ha accesso",
+    "Collegamenti alle tue fonti dati"
+   ],
+   "azioni": []
+  }
+ ]
+}

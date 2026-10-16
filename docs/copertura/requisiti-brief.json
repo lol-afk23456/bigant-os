@@ -1,0 +1,3018 @@
+[
+ {
+  "id": "R-001",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "11;61",
+  "requisito": "Modello dati unico condiviso dai tre sistemi con: aziende, clienti, contatti, servizi, pacchetti, contratti, attività, contenuti, approvazioni, movimenti, documenti, agenti, esecuzioni, costi.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-002",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "12;30;69",
+  "requisito": "Ogni reparto (Direttore Crescita, Marketing BigAnt, Commerciale, Account, Produzione per servizio, Qualità e compliance, Amministrazione) ha un agente definito e almeno un flusso DEMO funzionante.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-003",
+  "area": "pacchetti",
+  "kind": "funzionale",
+  "righe": "13;63",
+  "requisito": "Il registro dei moduli include i pacchetti del catalogo accanto ai codici S01-S19.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-004",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "14;31;74",
+  "requisito": "Esistono i 10 moduli del gestionale (tra cui CRM e commerciale, clienti e contratti, progetti e consegne, prima nota e contabilità, compensi, scadenziario, cosa non torna, crescita e fidelizzazione).",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-005",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "14;74",
+  "requisito": "Il controllo \"cosa non torna\" rileva e segnala le incongruenze nei dati gestionali e contabili.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-006",
+  "area": "dashboard-interna",
+  "kind": "funzionale",
+  "righe": "16;32;75",
+  "requisito": "La dashboard interna per i soci mostra tutte le sezioni previste con dati DEMO coerenti.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-007",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "16;32;75",
+  "requisito": "La dashboard cliente mostra tutte le 9 sezioni del documento \"Punti di forza, dashboard e sito\" con dati DEMO coerenti.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-008",
+  "area": "metodo-consegne",
+  "kind": "vincolo",
+  "righe": "18;34",
+  "requisito": "Si riparte dalla prima versione esistente (Growth, Fidelity, Amministrazione, ricerca clienti) senza rifare da zero; i 99 test esistenti e l'intera suite di test passano.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-009",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "20;141",
+  "requisito": "Le decisioni prese in autonomia sono registrate con il motivo in docs/DECISIONI.md; le domande che solo i soci possono chiarire vanno in docs/DOMANDE-PER-RAFFAELE.md.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-010",
+  "area": "metodo-consegne",
+  "kind": "vincolo",
+  "righe": "23-28;56;140",
+  "requisito": "In docs/VERIFICA-COPERTURA-BRIEF.md nessun requisito è ASSENTE: ognuno è FATTO (funziona e ha test) o SOLO STRUTTURA con uno dei 3 motivi ammessi (credenziali, decisione soci, servizio a pagamento).",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-011",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "29;63;73",
+  "requisito": "Il registro dei moduli contiene i servizi S01-S19, ognuno con scheda collegata, flusso e agenti; i servizi ATTIVI sono completi e quelli DA ATTIVARE presenti come struttura completa.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-012",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "29",
+  "requisito": "Ogni servizio S01-S19 mostra i propri KPI nella dashboard cliente.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-013",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "29;64",
+  "requisito": "Esiste una coda comune delle approvazioni e ogni servizio S01-S19 vi invia le proprie approvazioni.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-014",
+  "area": "automazioni",
+  "kind": "funzionale",
+  "righe": "30;70",
+  "requisito": "Ogni reparto dello sciame ha inneschi configurati sia a calendario sia su evento.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-015",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "31",
+  "requisito": "I dati passano tra i moduli: un contratto genera le scadenze, le fatture da emettere e i canoni attesi in prima nota.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-016",
+  "area": "growth-fidelity",
+  "kind": "funzionale",
+  "righe": "33",
+  "requisito": "Growth, Fidelity e ricerca clienti funzionano dentro BigAnt OS, funzione per funzione.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-017",
+  "area": "metodo-consegne",
+  "kind": "funzionale",
+  "righe": "34;77-91",
+  "requisito": "Scenario DEMO con un solo comando, 13 passaggi: lead, analisi S17, proposta Presenza, contratto, onboarding, contenuti, approvazione cliente, programmazione simulata, report, fattura, incasso, anomalia, upsell.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-018",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "40",
+  "requisito": "docs/BRIEF-BIGANT.md contiene il prompt integrale e senza modifiche, usato come fonte di verità.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-019",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "42-44;140",
+  "requisito": "La matrice assegna un ID R-xxx a ogni requisito di tutte le parti, con stato, prova e cosa manca, e riporta in cima la copertura reale totale e per macro-area.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-020",
+  "area": "metodo-consegne",
+  "kind": "vincolo",
+  "righe": "45-47",
+  "requisito": "Ogni ciclo parte dalla macro-area con copertura più bassa e nessuna macro-area resta oltre 30 punti percentuali sotto la media.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-021",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "48;142",
+  "requisito": "README.md e AGENTS.md aggiornati; AGENTS.md ha in cima la regola di rileggere docs/BRIEF-BIGANT.md e la matrice prima di ogni sessione e dopo ogni compressione.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-022",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "49;56;141",
+  "requisito": "docs/DIARIO-LAVORO.md registra per ogni ciclo data e ora, macro-area, requisiti R-xxx toccati, risultato e problemi, ed è aggiornato anche in caso di interruzione.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-023",
+  "area": "metodo-consegne",
+  "kind": "vincolo",
+  "righe": "50;113",
+  "requisito": "Commit piccoli, chiari e in italiano; ogni messaggio cita i requisiti R-xxx che chiude.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-024",
+  "area": "metodo-consegne",
+  "kind": "vincolo",
+  "righe": "51-55",
+  "requisito": "Ogni 5 cicli e prima del completamento si fa una revisione indipendente brief-codice-matrice su requisiti dimenticati, stati gonfiati e incoerenze, correggendo quanto trovato.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-025",
+  "area": "sicurezza",
+  "kind": "funzionale",
+  "righe": "62",
+  "requisito": "Ruoli e permessi sono definiti e applicati a utenti e moduli della piattaforma.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-026",
+  "area": "sicurezza",
+  "kind": "funzionale",
+  "righe": "65",
+  "requisito": "Un registro delle attività traccia le operazioni svolte da utenti e agenti.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-027",
+  "area": "automazioni",
+  "kind": "funzionale",
+  "righe": "66",
+  "requisito": "Un tetto di spesa configurabile limita i costi delle esecuzioni degli agenti.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-028",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "68",
+  "requisito": "Un orchestratore coordina gli agenti dei reparti dello sciame.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-029",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "71",
+  "requisito": "Lo sciame mantiene una memoria separata per ciascun cliente.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-030",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "72",
+  "requisito": "L'agente Direttore Crescita esegue la propria guida operativa definita nella Parte 2 del brief.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-031",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "74",
+  "requisito": "La contabilità è precisa al centesimo, senza errori di arrotondamento.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-032",
+  "area": "sito",
+  "kind": "documento",
+  "righe": "76;141",
+  "requisito": "docs/SITO-BIGANT.md contiene il piano completo del sito, accompagnato dai modelli di pagina.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-033",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "76;95-97",
+  "requisito": "Cosa è online non si tocca: Railway solo in lettura (no deploy, modifiche, riavvii, cancellazioni); Grow, Fidelity e sito bigantagency.it restano invariati.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-034",
+  "area": "metodo-consegne",
+  "kind": "funzionale",
+  "righe": "91",
+  "requisito": "Un test automatico esegue lo scenario dimostrativo e verifica tutti i 13 passaggi su dati DEMO.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-035",
+  "area": "metodo-consegne",
+  "kind": "vincolo",
+  "righe": "94;144",
+  "requisito": "Lavoro solo su branch dedicato: mai main, force-push o riscrittura della cronologia; alla fine pull request aperta e non unita.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-036",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "98",
+  "requisito": "Nulla di esistente viene cancellato: ciò che va sostituito è spostato in archivio/ e documentato.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-037",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "99",
+  "requisito": "Solo dati DEMO marcati come tali; nessun dato reale di clienti, contatti o contabilità in repository, log o screenshot.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-038",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "100-102",
+  "requisito": "Segreti solo da variabili d'ambiente con .env.example senza valori; eventuali segreti trovati in codice o cronologia non vengono usati e sono segnalati in cima al report.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-039",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "103-109",
+  "requisito": "Nessuna azione verso l'esterno: niente email o messaggi, pubblicazioni, account reali collegati, spese o servizi a pagamento; Gmail non viene usata.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-040",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "110;111;139",
+  "requisito": "File di lavoro solo nella cartella tecnica del repository; su Drive accesso solo alla cartella \"BigAnt OS - Report\" per la copia dei report, con link alla PR.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-041",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "112",
+  "requisito": "Si usano solo dipendenze affidabili con versione fissata.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-042",
+  "area": "integrazioni",
+  "kind": "funzionale",
+  "righe": "116-125",
+  "requisito": "Ogni integrazione (Google Business Profile, Google Ads, Meta ads_read, GA4, Search Console) ha interfaccia, implementazione DEMO e implementazione reale disattivata attivabile via variabili d'ambiente.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-043",
+  "area": "integrazioni",
+  "kind": "documento",
+  "righe": "126;141",
+  "requisito": "docs/INTEGRAZIONI.md spiega per ogni integrazione cosa serve per attivarla.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-044",
+  "area": "integrazioni",
+  "kind": "funzionale",
+  "righe": "128",
+  "requisito": "La dashboard indica chiaramente quando una fonte dati esterna non è collegata.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-045",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "131-137",
+  "requisito": "docs/REPORT-FINALE.md in italiano semplice: cosa funziona, cosa è solo struttura e perché, rischi urgenti, comandi esatti di avvio e prova, esecuzione scenario, prossimi 10 passi.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-046",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "141",
+  "requisito": "Consegnati docs/ARCHITETTURA.md, docs/ANALISI-INIZIALE.md aggiornata, docs/COME-AGGIUNGERE-UN-MODULO.md e docs/ROADMAP.md.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-047",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "143",
+  "requisito": "Parte 2 salvata in docs/playbook/ con un file per ogni marcatore <!-- FILE: ... -->; Parte 3 salvata in docs/INTEGRAZIONI-ACCESSI.md.",
+  "blocco": "parte0"
+ },
+ {
+  "id": "R-048",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "149;298",
+  "requisito": "Pubblicare, spendere, firmare, scrivere ai clienti e assumere restano decisioni dei soci con cancello umano; nel prototipo nessuna pubblicazione, pagamento, invio o modifica a sistemi online.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-049",
+  "area": "sciame",
+  "kind": "vincolo",
+  "righe": "155;269",
+  "requisito": "Nessun agente o servizio attivato senza SOP scritta e testata; nuovi clienti entrano nel sistema solo dopo che il pilota funziona.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-050",
+  "area": "sito",
+  "kind": "vincolo",
+  "righe": "163",
+  "requisito": "Nei materiali pubblici BigAnt non è mai presentata come società: è un marchio condiviso tra le ditte individuali forfettarie Costantino Agency e La Manna Agency.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-051",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "166",
+  "requisito": "Dashboard e modelli di pagina usano i colori del brand BigAnt: arancione #F26B21 e nero #141413.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-052",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "187-196;267",
+  "requisito": "Agenti specializzati coordinati da un orchestratore lavorano su una memoria condivisa per cliente in Markdown con la struttura fissa da 00_SCHEDA-MASTER a 06_CONTRATTO-E-STORICO.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-053",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "194",
+  "requisito": "La cartella 04_ACCESSI (credenziali) di ogni cliente non è mai leggibile dagli agenti; il blocco è verificato da un test.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-054",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "198-201;207;266",
+  "requisito": "Playbook vivo con una SOP per ogni servizio (inclusioni, consegne, frequenza, misura, tempo richiesto) che integra metodo Google Ads, SOP Video AI a 3 livelli e scheda DNA esistenti.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-055",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "199;1108-1110",
+  "requisito": "S03: checklist dell'agente ADS dal metodo operativo: reti partner e Display spente sulle Search, AI Max/automazioni spente finché i dati non sono affidabili, conversioni tracciabili, comandi di sessione.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-056",
+  "area": "metodo-consegne",
+  "kind": "funzionale",
+  "righe": "202;268",
+  "requisito": "Pilota interno con BigAnt cliente zero: il sistema gestisce prima comunicazione e marketing di BigAnt, partendo dall'audit SEO del sito (voto 4,8/10) come baseline.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-057",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "206",
+  "requisito": "Processo standard documentato per acquisire, avviare, gestire e rinnovare un cliente.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-058",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "208",
+  "requisito": "Flusso standard documentato di produzione e approvazione dei contenuti prima della loro uscita.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-059",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "209",
+  "requisito": "Ritmo operativo settimanale e mensile dell'agenzia definito e documentato.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-060",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "210",
+  "requisito": "Il metodo definisce KPI di agenzia e KPI per singolo cliente, con modalità di misura.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-061",
+  "area": "servizi",
+  "kind": "documento",
+  "righe": "220-242",
+  "requisito": "Scheda per ciascuno dei 19 servizi del catalogo target (S01-S19) con contenuto, stato attuale in BigAnt e valutazione di replicabilità.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-062",
+  "area": "pacchetti",
+  "kind": "funzionale",
+  "righe": "241;280",
+  "requisito": "Il Direttore Crescita progetta pacchetti e listini a livelli (S, M, L, XL) e pacchetti verticali per settore, a partire dalla sanità.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-063",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "242;286",
+  "requisito": "Il Commerciale produce l'analisi gratuita della presenza online (S19) come porta d'ingresso commerciale.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-064",
+  "area": "servizi",
+  "kind": "documento",
+  "righe": "244-250;273;279",
+  "requisito": "Roadmap verso il catalogo completo (esclusi directory, network, marketplace proprietari e noleggio Apple): ordine dei servizi, competenze, strumenti, partner white-label, costi e momento di attivazione.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-065",
+  "area": "servizi",
+  "kind": "documento",
+  "righe": "252",
+  "requisito": "Il catalogo valorizza i servizi distintivi BigAnt assenti in Italiaonline: branding, direzione creativa, riprese drone, merch e video AI.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-066",
+  "area": "sciame",
+  "kind": "vincolo",
+  "righe": "258-261",
+  "requisito": "Strumento interno per soci, collaboratori e poche decine di clienti: niente piani a pagamento, onboarding self-service o scalabilità SaaS; preferire strumenti esistenti a codice da zero.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-067",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "262",
+  "requisito": "Documentazione chiara che permetta a una persona non tecnica di far funzionare il sistema.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-068",
+  "area": "automazioni",
+  "kind": "documento",
+  "righe": "263",
+  "requisito": "Per ogni scelta tecnica è indicato il costo mensile, mantenuto proporzionato a un'agenzia piccola.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-069",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "270",
+  "requisito": "Dashboard cliente: ogni titolare vede in un unico posto dati, analisi e lavoro sulla sua attività; nel pilota la usa il titolare BigAnt.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-070",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "275-291",
+  "requisito": "Organigramma dello sciame con reparti distinti: Direttore Crescita, Marketing BigAnt, Commerciale, Account, Produzione, Qualità e compliance, Amministrazione.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-071",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "277-278",
+  "requisito": "Il Direttore Crescita produce ogni settimana un'analisi di clienti, servizi, risultati, mercato e concorrenti (Italiaonline e agenzie locali) con al massimo 3 priorità per i soci.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-072",
+  "area": "pacchetti",
+  "kind": "funzionale",
+  "righe": "280",
+  "requisito": "Il Direttore Crescita individua opportunità di upsell sui clienti attuali e possibili partnership.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-073",
+  "area": "dashboard-interna",
+  "kind": "funzionale",
+  "righe": "281",
+  "requisito": "KPI di agenzia misurati: numero clienti, servizi per cliente, ricavo medio per cliente, clienti persi, ore risparmiate dagli agenti, crescita dei canali BigAnt.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-074",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "282",
+  "requisito": "Il Direttore Crescita usa per i numeri economici solo KPI aggregati preparati da Amministrazione (fatturato, margini, incassi, costi), mai i dati grezzi.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-075",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "283",
+  "requisito": "Il reparto Marketing BigAnt fa crescere i canali propri: Instagram, Facebook, LinkedIn di agenzia e soci, TikTok, Google Business Profile, sito e recensioni.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-076",
+  "area": "growth-fidelity",
+  "kind": "funzionale",
+  "righe": "285",
+  "requisito": "Il Commerciale trova e qualifica nuovi clienti locali con criteri di qualificazione espliciti.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-077",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "287",
+  "requisito": "Il Commerciale prepara preventivi e proposte e segue ogni contatto fino alla chiusura.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-078",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "288",
+  "requisito": "Il reparto Account gestisce l'onboarding dei nuovi clienti con una procedura standard.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-079",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "288",
+  "requisito": "Il reparto Account monitora la salute di ogni cliente ed evidenzia i segnali di rischio.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-080",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "288",
+  "requisito": "Il reparto Account presidia i rinnovi dei contratti dei clienti.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-081",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "288",
+  "requisito": "Il reparto Account raccoglie e registra le autorizzazioni dei clienti all'uso dei lavori nel portfolio.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-082",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "289",
+  "requisito": "La Produzione ha un reparto per ogni servizio attivo del catalogo (social, video, ADV, SEO, local e reputazione, siti...), ciascuno con la sua SOP e i suoi specialisti.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-083",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "290",
+  "requisito": "Il reparto Qualità e compliance controlla ogni output in uscita: coerenza di brand, correttezza dei dati, GDPR e norme sulla pubblicità sanitaria.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-084",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "291",
+  "requisito": "Amministrazione e gestione interna è un reparto completo che opera sul gestionale interno dell'agenzia.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-085",
+  "area": "servizi",
+  "kind": "documento",
+  "righe": "293-298",
+  "requisito": "Per ogni servizio è indicato se farlo con agenti e strumenti propri, partner/white-label o una nuova persona, e in che momento ciascuna scelta diventa necessaria.",
+  "blocco": "parte1-chi-organigramma"
+ },
+ {
+  "id": "R-086",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "301;316;334",
+  "requisito": "Il gestionale è la fonte unica dei dati per agenti, dashboard interna e dashboard cliente: nessuna modifica da ripetere a mano su Mac e Drive.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-087",
+  "area": "gestionale",
+  "kind": "documento",
+  "righe": "301;322",
+  "requisito": "Piano di costruzione dei moduli per gradi, con priorità ai moduli che fanno perdere soldi (arretrati, scadenze dimenticate, abbonamenti inutili).",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-088",
+  "area": "gestionale",
+  "kind": "documento",
+  "righe": "303-313;320",
+  "requisito": "Piano di migrazione della cartella GESTIONE INTERNA BIGANT e della sezione 00_CONTROLLO-CLIENTI, con struttura e modelli mappati sui moduli del gestionale.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-089",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "305-306;332",
+  "requisito": "Cruscotto direzione: 6 domande settimanali (cassa, da incassare, rischi, contratti in scadenza, sovraccarichi, decisioni) calcolate in automatico, più decisioni aperte, priorità 90 giorni e KPI.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-090",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "307;323",
+  "requisito": "Modulo Anagrafiche: clienti, fornitori, collaboratori e le due ditte, ciascuno con i propri documenti collegati.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-091",
+  "area": "sicurezza",
+  "kind": "funzionale",
+  "righe": "308",
+  "requisito": "Matrice degli accessi di team e collaboratori (chi vede cosa) gestita nel gestionale e applicata ai permessi.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-092",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "309;313",
+  "requisito": "Vista aggregata clienti: canone, cadenza, metodo di pagamento, arretrati, stato onboarding, storico dei clienti persi e portfolio.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-093",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "310;416-421",
+  "requisito": "Report mensile di gestione per i soci: fatturato e incassi per ditta e cliente, arretrati, costi e margine per cliente e servizio, carico per persona, criticità.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-094",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "311;328;398",
+  "requisito": "Modulo Costi e abbonamenti: costi ricorrenti (affitto, utenze, strumenti come Canva/Adobe/AI, compensi) con costo mensile e data di rinnovo.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-095",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "312;331",
+  "requisito": "Modulo Documenti: contratti, privacy e GDPR, registro autorizzazioni portfolio e accordi con i collaboratori.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-096",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "317;413",
+  "requisito": "Segnalazione documenti mancanti: clienti senza contratto scritto o con contratto scaduto, preventivi, accordi collaboratori, autorizzazioni portfolio, privacy, cookie, nomine GDPR.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-097",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "320",
+  "requisito": "I dati economici reali si caricano solo nel gestionale definitivo: mai nel repository, nelle fixture o nei log.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-098",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "324",
+  "requisito": "Modulo Commerciale: lead, preventivi, preventivi accettati e contratti con data di inizio, data di fine e segnalazione del rinnovo automatico.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-099",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "325",
+  "requisito": "Modulo Fatturazione e incassi: fatture collegate a cliente, ditta e movimenti di incasso, con stato da emettere, emessa, incassata.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-100",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "326",
+  "requisito": "Modulo Scadenziario unico: scadenze fiscali, contratti, hosting e domini, abbonamenti e pagamenti ai collaboratori in un'unica lista.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-101",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "327;345",
+  "requisito": "Modulo Cassa e prima nota: elenco dei conti (cassa comune, conto di Alfonso, conto di Raffaele…) per ditta, base per movimenti e saldi.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-102",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "329",
+  "requisito": "Modulo Lavoro e marginalità: ore e attività per cliente, incluse quelle degli agenti con il loro costo, e margine reale per cliente e per servizio.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-103",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "330",
+  "requisito": "Modulo Task e consegne, con decisione motivata e documentata se collegarlo a Trello o sostituirlo.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-104",
+  "area": "integrazioni",
+  "kind": "vincolo",
+  "righe": "334;430",
+  "requisito": "I fogli Google Prima Nota e Tracker restano fonte finché i soci non decidono la migrazione: si collegano solo in sola lettura, lo spegnimento si decide insieme.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-105",
+  "area": "gestionale",
+  "kind": "vincolo",
+  "righe": "337",
+  "requisito": "Contabilità precisa al centesimo: importi gestiti in centesimi interi, senza arrotondamenti in calcoli e saldi.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-106",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "339-349;352",
+  "requisito": "Ogni movimento registra data, importo, entrata/uscita, ditta, conto, categoria, cliente o fornitore, fattura o ricevuta e metodo (bonifico, contanti, carta).",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-107",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "350",
+  "requisito": "Saldi per conto e per ditta calcolati dai movimenti e sempre aggiornati.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-108",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "351",
+  "requisito": "Chiusura mensile con quadratura: saldo calcolato confrontato con il saldo reale di conti e cassa, ogni differenza registrata con spiegazione.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-109",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "355-358;415",
+  "requisito": "Scheda collaboratori: compenso concordato, scadenza, pagato o da pagare, documento ricevuto (fattura, ricevuta, prestazione occasionale), ore e attività per cliente.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-110",
+  "area": "automazioni",
+  "kind": "funzionale",
+  "righe": "359",
+  "requisito": "Avviso automatico se un pagamento a un collaboratore è in ritardo o se manca il suo documento.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-111",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "361",
+  "requisito": "Prelievi di Raffaele e Alfonso confrontati con quanto concordato e con l'utile reale, per evitare prelievi oltre quanto l'azienda produce.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-112",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "362",
+  "requisito": "Calcolo per ciascun socio dei contributi previdenziali e delle tasse da accantonare.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-113",
+  "area": "automazioni",
+  "kind": "funzionale",
+  "righe": "363",
+  "requisito": "Avviso se gli accantonamenti di un socio non bastano per le prossime scadenze fiscali e contributive.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-114",
+  "area": "gestionale",
+  "kind": "vincolo",
+  "righe": "364",
+  "requisito": "Regole fiscali su compensi e ritenute (occasionali, partita IVA, dipendenti, forfettario) applicate solo dopo conferma del commercialista; prima restano disattivate.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-115",
+  "area": "automazioni",
+  "kind": "funzionale",
+  "righe": "366",
+  "requisito": "Controllo \"cosa non torna\" eseguito ogni giorno e in forma completa a fine mese, con lista anomalie ordinata per priorità e importo.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-116",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "367-371;404",
+  "requisito": "Controlli corrispondenze: incasso senza fattura e viceversa, pagato nel Tracker senza movimento e viceversa, canone non incassato a scadenza, incasso diverso dal dovuto.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-117",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "372-375;392",
+  "requisito": "Controlli registrazione: movimenti doppi anche su conti diversi, movimenti senza categoria, ditta o documento, incasso attribuito alla ditta sbagliata.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-118",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "376-379;407",
+  "requisito": "Controlli costi: spese insolite per importo o frequenza, abbonamenti aumentati, doppi o inutili, costi spariti per rinnovo mancato o carta scaduta.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-119",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "380-382",
+  "requisito": "Controlli soci e collaboratori: prelievi oltre il disponibile, compensi pagati ma non registrati.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-120",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "383-385",
+  "requisito": "Controlli fisco e cassa: avvicinamento alla soglia del forfettario di una ditta, saldo di cassa che non quadra con il conteggio reale.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-121",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "387",
+  "requisito": "Ogni anomalia ha stato (aperta, in verifica, risolta), un responsabile e una nota su come è stata risolta.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-122",
+  "area": "gestionale",
+  "kind": "vincolo",
+  "righe": "387",
+  "requisito": "Le anomalie non si correggono da sole: il sistema propone la rettifica e un socio la conferma.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-123",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "389;400",
+  "requisito": "Reparto Amministrazione nello sciame: agenti con SOP che lavorano sul gestionale e preparano liste e bozze senza effetti esterni.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-124",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "393",
+  "requisito": "Monitoraggio per ditta delle regole del forfettario (soglia ricavi, niente IVA in fattura, bollo sopra soglia) con valori parametrici da verificare col commercialista.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-125",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "402",
+  "requisito": "Lista mensile delle fatture da emettere (canoni e lavori chiusi), raggruppata per cliente e per ditta.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-126",
+  "area": "integrazioni",
+  "kind": "funzionale",
+  "righe": "403",
+  "requisito": "Bozze di fattura per il software di fatturazione elettronica (da definire): connettore scollegato fino a scelta del software, collaudo e autorizzazione.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-127",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "405",
+  "requisito": "Lista arretrati sempre aggiornata, con età del credito e storico per cliente.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-128",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "405",
+  "requisito": "Bozze di sollecito a scaglioni (gentile, fermo, ultimo avviso) e segnalazione dei clienti da sospendere.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-129",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "406",
+  "requisito": "Riconciliazione della prima nota con l'estratto conto; un eventuale collegamento bancario è solo in lettura e resta scollegato fino ad autorizzazione.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-130",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "406",
+  "requisito": "Cash flow previsto a 30, 60 e 90 giorni.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-131",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "407",
+  "requisito": "Calcolo del costo degli strumenti AI ripartito per cliente.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-132",
+  "area": "automazioni",
+  "kind": "funzionale",
+  "righe": "408-412",
+  "requisito": "Avvisi anticipati per scadenze fiscali e contributive delle due ditte, contratti clienti in scadenza e rinnovi hosting e domini, nostri e dei clienti.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-133",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "414",
+  "requisito": "Preparazione mensile o trimestrale del pacchetto di documenti e numeri da mandare al commercialista.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-134",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "424",
+  "requisito": "Gli agenti non pagano, non trasferiscono denaro, non inviano fatture allo SDI né solleciti senza ok esplicito di un socio dalla coda approvazioni.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-135",
+  "area": "gestionale",
+  "kind": "vincolo",
+  "righe": "425",
+  "requisito": "Nessuna consulenza fiscale presentata come certa: i dubbi fiscali diventano domande registrate per il commercialista.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-136",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "426-428;432",
+  "requisito": "Area Amministrazione della dashboard visibile solo a Raffaele e Alfonso, con verifica sul server; collaboratori e clienti non la vedono mai.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-137",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "429",
+  "requisito": "Gli altri reparti ricevono solo i KPI amministrativi aggregati che servono a loro, mai dati contabili di dettaglio.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-138",
+  "area": "dashboard-interna",
+  "kind": "funzionale",
+  "righe": "432-436",
+  "requisito": "Sezione Amministrazione: incassi del mese, arretrati per cliente, fatture da emettere e scadenze dei prossimi 30 giorni.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-139",
+  "area": "dashboard-interna",
+  "kind": "funzionale",
+  "righe": "437-440",
+  "requisito": "Sezione Amministrazione: cash flow previsto, costi ricorrenti, margine per cliente e avanzamento verso la soglia del forfettario per ciascuna ditta.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-140",
+  "area": "dashboard-interna",
+  "kind": "funzionale",
+  "righe": "441-443",
+  "requisito": "Sezione Amministrazione: anomalie \"cosa non torna\" aperte con importo e priorità, compensi e prelievi rispetto all'utile, esito dell'ultima quadratura mensile.",
+  "blocco": "parte1-gestionale"
+ },
+ {
+  "id": "R-141",
+  "area": "automazioni",
+  "kind": "funzionale",
+  "righe": "448-449",
+  "requisito": "Inneschi a calendario per reparto: piano settimanale il lunedì, report il primo del mese, controllo recensioni ogni giorno, analisi del Direttore Crescita il venerdì.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-142",
+  "area": "automazioni",
+  "kind": "funzionale",
+  "righe": "450",
+  "requisito": "Inneschi su evento: nuovo lead, nuova recensione, contenuto approvato e nuovo cliente firmato avviano automaticamente il lavoro del reparto competente.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-143",
+  "area": "automazioni",
+  "kind": "documento",
+  "righe": "452;454;546",
+  "requisito": "Documento per reparto (innesco, dove gira, costo, cosa succede se fallisce) e proposta di infrastruttura (scheduler, code di lavoro, database) con stima dei costi mensili di strumenti, API e hosting.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-144",
+  "area": "automazioni",
+  "kind": "vincolo",
+  "righe": "453",
+  "requisito": "Gli agenti girano su un server o servizio cloud, non sul computer personale di un socio acceso.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-145",
+  "area": "dashboard-interna",
+  "kind": "funzionale",
+  "righe": "457;533",
+  "requisito": "Registro attività filtrabile: per ogni azione o giro di agente indica quando, quale agente, quale cliente, cosa ha fatto, file o contenuto prodotto e costo.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-146",
+  "area": "dashboard-interna",
+  "kind": "funzionale",
+  "righe": "458",
+  "requisito": "Coda approvazioni con approva / modifica / rifiuta in un clic per tutto ciò che aspetta l'ok di un socio, con motivo registrato.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-147",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "458;515",
+  "requisito": "Ogni rifiuto o correzione dei soci, con il motivo, diventa una regola scritta nel log feedback che l'agente rilegge nei giri successivi.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-148",
+  "area": "automazioni",
+  "kind": "funzionale",
+  "righe": "459",
+  "requisito": "Stato degli automatismi (riusciti, falliti, in ritardo) con notifica ai soci via email o WhatsApp quando qualcosa si blocca.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-149",
+  "area": "dashboard-interna",
+  "kind": "funzionale",
+  "righe": "460;490",
+  "requisito": "Vista interna di tutti i clienti e reparti: lavori in corso, scadenze, ritardi, approvazioni in attesa, KPI, clienti a rischio e opportunità di upsell dai servizi del catalogo non acquistati.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-150",
+  "area": "dashboard-interna",
+  "kind": "funzionale",
+  "righe": "461",
+  "requisito": "Sezione con le priorità della settimana proposte dal Direttore Crescita e i KPI di crescita dell'agenzia.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-151",
+  "area": "automazioni",
+  "kind": "funzionale",
+  "righe": "462",
+  "requisito": "Costi di API e strumenti tracciati per cliente e in totale, con tetto mensile oltre il quale gli agenti si fermano e avvisano i soci.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-152",
+  "area": "sciame",
+  "kind": "vincolo",
+  "righe": "465;504;523",
+  "requisito": "Ogni output e numero è riconducibile alle fonti; nessun dato inventato o simulato presentato come vero: ciò che non ha fonte nei file va marcato [DA VERIFICARE].",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-153",
+  "area": "metodo-consegne",
+  "kind": "vincolo",
+  "righe": "466",
+  "requisito": "Ogni reparto ha test e una checklist di accettazione, eseguiti e superati prima di ogni rilascio.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-154",
+  "area": "metodo-consegne",
+  "kind": "vincolo",
+  "righe": "467;546;548;583",
+  "requisito": "Ogni fase e tappa si chiude con consegna concreta, demo con dati reali di BigAnt, checklist di accettazione e ok esplicito del titolare prima di passare alla successiva.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-155",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "470-471",
+  "requisito": "Agenti, dashboard interna e dashboard cliente leggono e scrivono gli stessi dati in un'unica fonte centrale (database e/o cartelle clienti sincronizzate); nessun dato copiato a mano in due posti.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-156",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "474;479",
+  "requisito": "Panoramica leggibile in 30 secondi: KPI del mese rispetto al mese precedente e agli obiettivi, sintesi in linguaggio semplice dell'agente reporter e prossimi passi.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-157",
+  "area": "dashboard-cliente",
+  "kind": "documento",
+  "righe": "476;546",
+  "requisito": "Analisi di ped.bigantagency.it (tecnologia, funzioni, parti riusabili) e scelta motivata tra estenderla o rifarla con pro e contro, tecnologia, hosting e flusso dati, senza buttare ciò che funziona.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-158",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "478",
+  "requisito": "Un modulo per servizio, attivo solo per i servizi acquistati dal cliente.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-159",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "480",
+  "requisito": "Modulo Contatti e lead: chiamate, WhatsApp, form e prenotazioni, ciascuno con la sua fonte.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-160",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "481",
+  "requisito": "Modulo Social: follower, copertura, interazioni, contenuti migliori e calendario dei prossimi post.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-161",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "482",
+  "requisito": "Modulo Pubblicità: spesa, risultati e costo per contatto su Google Ads e Meta Ads, e sugli altri canali quando attivi.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-162",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "483",
+  "requisito": "Modulo Google e presenza locale: visualizzazioni, chiamate e indicazioni stradali dalla scheda Google, posizioni nelle ricerche locali, coerenza sulle directory.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-163",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "484",
+  "requisito": "Modulo Reputazione: recensioni nuove, media voti, risposte date e recensioni in attesa di risposta.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-164",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "485",
+  "requisito": "Modulo Sito: visite, fonti, pagine principali e conversioni da GA4 e Search Console, salute tecnica e SEO.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-165",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "486",
+  "requisito": "Contenuti da approvare: il cliente approva o chiede modifiche dalla dashboard, con traccia di chi ha approvato e quando.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-166",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "487",
+  "requisito": "Report e documenti: report mensili scaricabili, strategia e materiali consegnati.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-167",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "488",
+  "requisito": "Chiedi all'agenzia: un agente risponde alle domande del cliente basandosi solo sui suoi dati reali; le richieste di lavoro diventano un task per l'agenzia.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-168",
+  "area": "sicurezza",
+  "kind": "funzionale",
+  "righe": "493-494",
+  "requisito": "Login sicuro e isolamento multi-cliente: ogni cliente vede solo i propri dati.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-169",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "495-497",
+  "requisito": "Dashboard cliente facile da usare dal telefono, in italiano, con brand BigAnt e logo del cliente personalizzabile.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-170",
+  "area": "integrazioni",
+  "kind": "funzionale",
+  "righe": "499-502",
+  "requisito": "Connettori ufficiali con autorizzazione OAuth del cliente, preferibilmente in sola lettura, per Google Ads, Meta, GA4, Search Console, Google Business Profile, strumento di programmazione social e CRM.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-171",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "504",
+  "requisito": "Se una fonte dati non è collegata, la dashboard lo dichiara esplicitamente invece di mostrare numeri.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-172",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "507-508",
+  "requisito": "Conformità GDPR con data processing agreement verso i clienti e dati ospitati preferibilmente nell'UE.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-173",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "509;525",
+  "requisito": "Nessuna credenziale in chiaro e nessun agente legge le credenziali in 04_ACCESSI/.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-174",
+  "area": "sicurezza",
+  "kind": "funzionale",
+  "righe": "510",
+  "requisito": "Registro degli accessi alla dashboard e ai dati.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-175",
+  "area": "sciame",
+  "kind": "vincolo",
+  "righe": "513;576",
+  "requisito": "Ogni agente implementa una SOP scritta che esiste prima di lui; un servizio entra sui clienti reali solo con la sua SOP testata.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-176",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "514",
+  "requisito": "Orchestratore che legge la scheda master, pianifica, delega, raccoglie e aggiorna stato e log; specialisti a compito unico (stratega, social, video, local/GBP, ADS, SEO/sito, reputazione, reporting, QA).",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-177",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "515",
+  "requisito": "Memoria nei file: ogni giro legge e aggiorna la cartella cliente (scheda master, DNA, strategia, calendario, cruscotto, log decisioni, log feedback).",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-178",
+  "area": "sicurezza",
+  "kind": "funzionale",
+  "righe": "516-521",
+  "requisito": "Cancello umano: gli agenti si fermano prima di pubblicare, spendere budget, modificare account pubblicitari o schede Google e scrivere a un cliente; per BigAnt basta l'ok di un socio registrato con nome e data.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-179",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "521;538-543",
+  "requisito": "Playbook BigAnt: ciclo di vita del cliente (acquisizione, onboarding, produzione, report, rinnovo e upsell, chiusura), flusso di approvazione per servizio, ritmo settimanale e mensile, KPI di agenzia e template.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-180",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "522",
+  "requisito": "Stati di lavorazione standard: IDEA, IN PRODUZIONE, DA APPROVARE, APPROVATO, PROGRAMMATO, PUBBLICATO, RIUTILIZZABILE.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-181",
+  "area": "sicurezza",
+  "kind": "funzionale",
+  "righe": "526-527",
+  "requisito": "Permessi minimi per ogni agente; dati economici e amministrativi accessibili solo agli agenti dell'Amministrazione con permessi separati e visibili in dashboard solo ai due soci.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-182",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "528",
+  "requisito": "Nessuna installazione di pacchetti o esecuzione di script presi da fonti non verificate.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-183",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "529",
+  "requisito": "Contenuti conformi a GDPR, Codice del Consumo e regole sulla pubblicità sanitaria (molti clienti sono medici).",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-184",
+  "area": "sicurezza",
+  "kind": "funzionale",
+  "righe": "530",
+  "requisito": "Lavori e loghi dei clienti pubblicabili solo se esiste un'autorizzazione registrata.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-185",
+  "area": "sciame",
+  "kind": "vincolo",
+  "righe": "531",
+  "requisito": "Output in italiano e orientati al mercato locale: Google.it, ricerca locale, Campania.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-186",
+  "area": "integrazioni",
+  "kind": "vincolo",
+  "righe": "532",
+  "requisito": "Strumenti prima del codice: meccanismi nativi (AGENTS.md, skill, MCP, sotto-agenti) e integrazioni con Google Ads, Meta, Search Console, GBP, Drive, Trello e Postiz; codice su misura solo dove serve.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-187",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "533",
+  "requisito": "Confronto mensile tra ore risparmiate e qualità del lavoro prodotto dallo sciame.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-188",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "536",
+  "requisito": "Fase 0: sintesi 'come lavorate oggi / dove si perde tempo / cosa manca', da materiali esistenti e interviste ai soci con domande raggruppate.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-189",
+  "area": "servizi",
+  "kind": "documento",
+  "righe": "540;544",
+  "requisito": "Scheda standard per ogni servizio (cosa include, deliverable, frequenza, input dal cliente, KPI, tempo stimato, rischi); prima i servizi già venduti, gli altri marcati 'da attivare'.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-190",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "546",
+  "requisito": "Fase 2: schema di architettura con orchestratore, automatismi e dove girano, dashboard interna, specialisti, file di memoria, skill, integrazioni, cancelli di approvazione e permessi.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-191",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "550",
+  "requisito": "Anagrafiche, contratti e scadenziario nel gestionale base.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-192",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "551",
+  "requisito": "Prima nota collegata in sola lettura ai fogli Prima Nota e Tracker.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-193",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "552",
+  "requisito": "Lista 'cosa non torna' con le incongruenze dei dati economici da verificare.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-194",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "552",
+  "requisito": "Elenco arretrati dei clienti con bozze di sollecito (solo bozze, nessun invio automatico).",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-195",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "552",
+  "requisito": "Elenco costi ricorrenti con segnalazione dei doppioni.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-196",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "553",
+  "requisito": "Cruscotto direzione che risponde alle 6 domande della direzione.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-197",
+  "area": "gestionale",
+  "kind": "documento",
+  "righe": "553;574",
+  "requisito": "Primo report mensile di gestione generato dal gestionale.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-198",
+  "area": "servizi",
+  "kind": "documento",
+  "righe": "556-563",
+  "requisito": "DNA di BigAnt e strategia a 90 giorni con obiettivi (lead da PMI di Caserta e Campania, portfolio e recensioni Google, notorietà) e canali Instagram, Facebook, LinkedIn, TikTok, GBP e sito.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-199",
+  "area": "servizi",
+  "kind": "documento",
+  "righe": "564-565",
+  "requisito": "Calendario editoriale di BigAnt e un mese di contenuti pronti per l'approvazione dei soci.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-200",
+  "area": "sito",
+  "kind": "documento",
+  "righe": "566",
+  "requisito": "Piano di ottimizzazione della scheda Google Business Profile e del sito di BigAnt.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-201",
+  "area": "growth-fidelity",
+  "kind": "funzionale",
+  "righe": "567",
+  "requisito": "Lo strumento di ricerca clienti esistente entra nel marketing BigAnt insieme all'analisi gratuita della presenza online dei potenziali clienti.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-202",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "570",
+  "requisito": "Prima versione della dashboard cliente usata dal titolare BigAnt (cliente zero) su dati reali: panoramica, contatti, social, Google e presenza locale, recensioni, contenuti da approvare, report.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-203",
+  "area": "servizi",
+  "kind": "documento",
+  "righe": "572",
+  "requisito": "Primo piano del Direttore Crescita: posizione rispetto al catalogo, prossimi 2 servizi da attivare e obiettivi per tutti i profili BigAnt.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-204",
+  "area": "pacchetti",
+  "kind": "documento",
+  "righe": "572",
+  "requisito": "Proposta di pacchetti e listino dei servizi BigAnt elaborata dal Direttore Crescita.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-205",
+  "area": "servizi",
+  "kind": "documento",
+  "righe": "573",
+  "requisito": "Piano ADV (pubblicità a pagamento) di BigAnt come consegna della tappa 3D.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-206",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "574",
+  "requisito": "Gestione di compensi e prelievi dei soci e quadratura mensile completa.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-207",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "578;585",
+  "requisito": "DECISIONI.md (data, decisione, motivo) e ROADMAP.md aggiornati, con roadmap trimestrale di scala sul catalogo fino a ottobre 2027.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-208",
+  "area": "metodo-consegne",
+  "kind": "documento",
+  "righe": "592",
+  "requisito": "Playbook servizi della Parte 2 salvato in docs/playbook/, un file per ogni documento.",
+  "blocco": "parte1-automazione-dashboard"
+ },
+ {
+  "id": "R-209",
+  "area": "servizi",
+  "kind": "documento",
+  "righe": "596-627",
+  "requisito": "Indice docs/playbook/00_INDICE-PLAYBOOK.md con tabella S01-S19 (codice, servizio, stato, link alla scheda) e rimando a catalogo, guida Direttore Crescita e documento punti di forza.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-210",
+  "area": "servizi",
+  "kind": "documento",
+  "righe": "605",
+  "requisito": "Ogni scheda S01-S19 contiene la sezione 12 benchmark Italiaonline, la sezione 13 struttura dei pacchetti e la sezione 14 prezzi proposti marcati da validare.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-211",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "607-635;773",
+  "requisito": "Registro moduli/servizi in BigAnt OS con lo stato di S01-S19 (ATTIVO, IN PARTE, DA ATTIVARE con priorità 1-6, SU RICHIESTA, IN COSTRUZIONE); al lancio il modulo si attiva nel registro e nel gestionale.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-212",
+  "area": "gestionale",
+  "kind": "funzionale",
+  "righe": "638",
+  "requisito": "Ogni lavoro ha uno stato tra IDEA, IN PRODUZIONE, DA APPROVARE, APPROVATO, PROGRAMMATO, PUBBLICATO, RIUTILIZZABILE, con passaggi tracciati in questo ordine.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-213",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "639",
+  "requisito": "Nulla viene pubblicato, speso o inviato al cliente senza l'ok di un socio o del cliente (dove previsto), registrato con nome e data; senza ok l'azione resta bloccata.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-214",
+  "area": "sciame",
+  "kind": "vincolo",
+  "righe": "640",
+  "requisito": "Nessun dato inventato negli output di agenti e documenti: ogni informazione mancante è marcata [DA VERIFICARE].",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-215",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "641",
+  "requisito": "Gli agenti non leggono mai 04_ACCESSI né i dati economici: accesso negato e verificato da test.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-216",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "642",
+  "requisito": "Ogni correzione di un socio o di un cliente viene registrata nel log feedback di quel cliente e trasformata in una regola versionata usata dagli agenti.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-217",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "644-645",
+  "requisito": "Un nuovo servizio si aggiunge copiando una scheda esistente con il codice successivo (S20, S21…) e registrandolo nel registro dei moduli.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-218",
+  "area": "servizi",
+  "kind": "documento",
+  "righe": "649-683",
+  "requisito": "Catalogo docs/playbook/00_CATALOGO-BIGANT.md con mappa servizi Italiaonline verso servizi BigAnt, stato attuale e modo di erogazione, indicando i servizi proprietari non replicabili.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-219",
+  "area": "pacchetti",
+  "kind": "documento",
+  "righe": "652;685-707",
+  "requisito": "Listino per singolo servizio S01-S19 con setup e canone mensile, marcato DA VALIDARE: le fasce non si usano con un cliente prima della validazione dei soci sui costi reali.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-220",
+  "area": "growth-fidelity",
+  "kind": "funzionale",
+  "righe": "682;738;829",
+  "requisito": "S17 Analisi gratuita della presenza online prodotta da BigAnt OS con lo strumento di ricerca clienti: primo modello di report con punteggio.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-221",
+  "area": "pacchetti",
+  "kind": "funzionale",
+  "righe": "691-692;1100;1140",
+  "requisito": "Canone di gestione S03/S04 calcolato come il maggiore tra minimo fisso e 15-20% della spesa pubblicitaria; il budget ADV è pagato dal cliente direttamente alla piattaforma, fuori dal canone.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-222",
+  "area": "pacchetti",
+  "kind": "funzionale",
+  "righe": "694-695;1371",
+  "requisito": "Listino e gestionale supportano clienti multi-sede: canoni S06 e S07 calcolati per sede e un profilo per sede con accessi separati.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-223",
+  "area": "pacchetti",
+  "kind": "funzionale",
+  "righe": "695;1374",
+  "requisito": "Il catalogo impedisce di vendere S07 da solo: il servizio è proposto solo in bundle con S06 e S08.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-224",
+  "area": "pacchetti",
+  "kind": "funzionale",
+  "righe": "714",
+  "requisito": "Pacchetto BigAnt Presenza (ingresso) a catalogo: S06 + S07 + S08 base + S17 trimestrale + dashboard, per attività locali, 150-250 €/mese + setup 200-300 €, da validare.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-225",
+  "area": "pacchetti",
+  "kind": "funzionale",
+  "righe": "715",
+  "requisito": "Pacchetto BigAnt Crescita Locale a catalogo: Presenza + S01 M + S03 Start, per PMI che vogliono contatti ogni mese, 900-1.400 €/mese + budget ADV, da validare.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-226",
+  "area": "pacchetti",
+  "kind": "funzionale",
+  "righe": "716",
+  "requisito": "Pacchetto BigAnt Sanità a catalogo: Sito Standard + S05 S + Presenza + S12 Servizi + S13 chatbot + compliance sanitaria, 600-1.000 €/mese + setup 2.500-4.000 €, da validare.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-227",
+  "area": "pacchetti",
+  "kind": "funzionale",
+  "righe": "717",
+  "requisito": "Pacchetto BigAnt Ristorazione a catalogo: S01 S/M + Presenza + S12 Ristoranti (menù QR, Prenota con Google) + S02 mezza giornata a trimestre, 450-800 €/mese, da validare.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-228",
+  "area": "pacchetti",
+  "kind": "funzionale",
+  "righe": "718",
+  "requisito": "Pacchetto BigAnt Brand a catalogo: S15 identità + S09 Essenziale + S01 S per 3 mesi + S16 kit merch, per nuove attività e rebranding, progetto 3.500-6.000 €, da validare.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-229",
+  "area": "pacchetti",
+  "kind": "vincolo",
+  "righe": "721",
+  "requisito": "Il prezzo di un pacchetto è inferiore del 10-20% alla somma dei singoli servizi che lo compongono, con controllo automatico sul catalogo.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-230",
+  "area": "pacchetti",
+  "kind": "documento",
+  "righe": "722;808-809",
+  "requisito": "Primo compito Direttore Crescita: lista ordinata dei punti [DA DEFINIRE]/[DA VALIDARE], proposta definitiva del pacchetto Presenza e piano 30 giorni con messaggi scritti, da approvare e non inviati.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-231",
+  "area": "pacchetti",
+  "kind": "documento",
+  "righe": "723;1476;2048",
+  "requisito": "Contratto standard con durata minima e condizioni dei pacchetti, intestazione del dominio al cliente e responsabilità con i partner, marcati [DA DEFINIRE] finché i soci non decidono.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-232",
+  "area": "dashboard-interna",
+  "kind": "funzionale",
+  "righe": "725-726;786;789;802",
+  "requisito": "Ricavo medio per cliente, margine per servizio e valore del catalogo sui clienti attuali calcolati dall'Amministrazione sui dati del gestionale e passati agli agenti solo aggregati.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-233",
+  "area": "servizi",
+  "kind": "documento",
+  "righe": "728-738",
+  "requisito": "Tabella di attivazione dei servizi nuovi (S07, S08, S10, S12, S13, S14, S17) con strumento o partner da scegliere, competenza responsabile e prima azione.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-234",
+  "area": "growth-fidelity",
+  "kind": "funzionale",
+  "righe": "737;836",
+  "requisito": "Modulo S14 CRM ed email in BigAnt OS collegato a BigAnt Fidelity, senza alterare il Fidelity originale e senza invii reali durante il prototipo.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-235",
+  "area": "metodo-consegne",
+  "kind": "vincolo",
+  "righe": "740-747;959-963",
+  "requisito": "I benchmark di mercato e su Italiaonline riportano le fonti con URL e data di consultazione.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-236",
+  "area": "sciame",
+  "kind": "funzionale",
+  "righe": "751-758",
+  "requisito": "Agente Direttore Crescita in BigAnt OS istruito dalla guida 00_GUIDA-DIRETTORE-CRESCITA.md: obiettivo catalogo completo entro ottobre 2027, ricavo per cliente prima del numero clienti; propone, i soci decidono.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-237",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "753;801",
+  "requisito": "Il Direttore Crescita non cambia prezzi, non invia proposte ai clienti e non firma accordi con partner: produce solo proposte che i soci approvano.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-238",
+  "area": "automazioni",
+  "kind": "funzionale",
+  "righe": "761",
+  "requisito": "Ogni lunedì il Direttore Crescita legge i KPI settimanali dalla dashboard interna e propone ai soci al massimo 3 priorità, ognuna con motivo, costo, tempo e risultato atteso.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-239",
+  "area": "automazioni",
+  "kind": "funzionale",
+  "righe": "762",
+  "requisito": "A fine mese il Direttore Crescita aggiorna la roadmap: per ogni servizio stato, passo successivo e cosa blocca.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-240",
+  "area": "automazioni",
+  "kind": "funzionale",
+  "righe": "763",
+  "requisito": "Ogni trimestre il Direttore Crescita propone la revisione di catalogo e prezzi sui dati di costo, tempo e margine ricevuti dall'Amministrazione solo in forma aggregata.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-241",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "765-773",
+  "requisito": "Ogni attivazione di servizio segue 8 passi tracciati (scheda, strumento, prova, pilota, misura, decisione soci, lancio, registro) con misure di tempo, costo, margine, soddisfazione e problemi.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-242",
+  "area": "integrazioni",
+  "kind": "vincolo",
+  "righe": "767",
+  "requisito": "Ogni strumento o partner per un servizio nuovo è scelto tra almeno 3 opzioni con costo mensile, italiano, GDPR e server UE verificati, e resta scollegato fino a collaudo e ok dei soci.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-243",
+  "area": "servizi",
+  "kind": "vincolo",
+  "righe": "768-769",
+  "requisito": "Un servizio nuovo si prova su BigAnt stessa (cliente zero) per almeno 30 giorni prima del pilota con 1-2 clienti attuali in cambio di feedback e, se d'accordo, di un caso studio.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-244",
+  "area": "servizi",
+  "kind": "documento",
+  "righe": "775-783",
+  "requisito": "Roadmap Q4 2026 - Q4 2027 da validare: Presenza e S17 (Q4 2026), Sanità e S10 (Q1), Ristorazione e S14 Fidelity (Q2), S11 e SEO L (Q3), S19 e revisione catalogo (Q4 2027).",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-245",
+  "area": "dashboard-interna",
+  "kind": "funzionale",
+  "righe": "787-788",
+  "requisito": "La dashboard interna mostra servizi per cliente (media e distribuzione) e clienti attivi, nuovi e persi con il motivo della perdita.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-246",
+  "area": "dashboard-interna",
+  "kind": "funzionale",
+  "righe": "790",
+  "requisito": "Funnel commerciale nella dashboard interna: lead, analisi gratuite, appuntamenti, proposte, clienti.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-247",
+  "area": "dashboard-interna",
+  "kind": "funzionale",
+  "righe": "791-792",
+  "requisito": "KPI di crescita dei canali BigAnt (follower, recensioni Google, contatti dal sito) e ore risparmiate dagli agenti rispetto al lavoro manuale.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-248",
+  "area": "dashboard-interna",
+  "kind": "funzionale",
+  "righe": "793",
+  "requisito": "KPI carico dei soci con soglia configurabile [DA DEFINIRE]: oltre soglia il Direttore Crescita propone di delegare (partner o persona) invece di vendere di più.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-249",
+  "area": "sciame",
+  "kind": "vincolo",
+  "righe": "795-798",
+  "requisito": "Regole del Direttore Crescita: partner se costruire costa oltre 12 mesi di abbonamento; persona se servizio oltre soglia clienti e 30% del tempo di un socio o qualità in calo; agenti per lavoro ripetitivo.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-250",
+  "area": "sciame",
+  "kind": "vincolo",
+  "righe": "803-805",
+  "requisito": "Gli output del Direttore Crescita non copiano testi Italiaonline, non promettono risultati garantiti e non propongono servizi non replicabili (directory e network proprietari) o fuori tema.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-251",
+  "area": "servizi",
+  "kind": "documento",
+  "righe": "812-843",
+  "requisito": "Documento punti di forza Italiaonline: 14 punti con cosa significano per BigAnt, punti deboli da sfruttare e fonti, come base per dashboard cliente e sito.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-252",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "824;881",
+  "requisito": "Dashboard cliente progettata prima per il telefono e installabile sulla schermata home come web app, senza app negli store.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-253",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "826;867",
+  "requisito": "Voce Report: report mensili in PDF e invio automatico via email ai destinatari scelti dal cliente, solo con ok del socio; nessun invio reale durante il prototipo.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-254",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "827;896-903",
+  "requisito": "Il catalogo e il registro dei servizi raggruppano S01-S19 per famiglie (Presenza, Siti e SEO, Pubblicità, Social e contenuti, ecc.), non come servizi sparsi.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-255",
+  "area": "sito",
+  "kind": "vincolo",
+  "righe": "831;916;919-920",
+  "requisito": "Sul sito solo numeri BigAnt veri (altrimenti [DA VERIFICARE]), recensioni Google reali e screenshot della piattaforma con dati DEMO dichiarati.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-256",
+  "area": "sito",
+  "kind": "documento",
+  "righe": "832",
+  "requisito": "SITO-BIGANT.md prevede pagine per città o zona servita (Caserta e Campania), con la sede di San Marco Evangelista.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-257",
+  "area": "servizi",
+  "kind": "vincolo",
+  "righe": "835",
+  "requisito": "Ogni funzione AI offerta ai clienti dichiara con trasparenza cosa fa l'AI e cosa controlla una persona.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-258",
+  "area": "dashboard-cliente",
+  "kind": "vincolo",
+  "righe": "848",
+  "requisito": "La dashboard cliente si costruisce in BigAnt OS partendo dall'area clienti esistente (ped.bigantagency.it) senza modificare il PED originale.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-259",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "851-856;843",
+  "requisito": "Home dashboard cliente: andamento del mese vs mese precedente e obiettivi, 3-5 numeri chiave (contatti, chiamate, prenotazioni, recensioni, spesa ADV), sintesi approvata da un socio, fatto/prossimi passi, avvisi.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-260",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "857-864;827",
+  "requisito": "Voce I tuoi risultati: statistiche per famiglia e servizio (contatti per fonte, presenza, sito, pubblicità con costo per contatto, social, e-commerce/prenotazioni), filtri periodo, confronto, PDF.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-261",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "865",
+  "requisito": "Voce Approvazioni e calendario: calendario editoriale, contenuti da approvare con anteprima, approva o chiedi modifiche con commento, storico delle decisioni.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-262",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "866",
+  "requisito": "Voce I tuoi servizi: servizi attivi con contenuto del pacchetto, consegne del mese fatte o in corso, servizi consigliati proposti dal Direttore Crescita solo dopo approvazione.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-263",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "868-873",
+  "requisito": "Voce Documenti e amministrazione: contratti attivi e scaduti, preventivi, fatture PDF dal gestionale per la ditta corretta, stato pagamenti, materiali consegnati.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-264",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "874;836",
+  "requisito": "Voce Contatti e clienti (CRM) visibile solo se S14 è attivo: contatti ricevuti, segmenti, campagne email/SMS, coupon, tessere Fidelity.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-265",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "875;834",
+  "requisito": "Voce Chiedi all'agenzia: domande sui dati con risposta dell'agente basata solo sui dati reali del cliente, richieste di lavoro che diventano task, link WhatsApp diretto.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-266",
+  "area": "dashboard-cliente",
+  "kind": "funzionale",
+  "righe": "876",
+  "requisito": "Voce Il tuo profilo: dati aziendali, utenti con accesso (titolare, collaboratori), preferenze notifiche, collegamenti a Google e Meta solo con autorizzazione del cliente.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-267",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "879",
+  "requisito": "Ogni cliente vede solo i propri dati e l'amministrazione interna BigAnt non è mai visibile ai clienti: controllo sul server per rotta e record, con test di isolamento.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-268",
+  "area": "dashboard-cliente",
+  "kind": "vincolo",
+  "righe": "880",
+  "requisito": "Mai numeri inventati nella dashboard cliente: se una fonte non è collegata la dashboard lo dichiara invece di mostrare valori.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-269",
+  "area": "dashboard-cliente",
+  "kind": "vincolo",
+  "righe": "882-883",
+  "requisito": "Dashboard cliente in linguaggio semplice senza gergo tecnico, con logo del cliente in alto e brand BigAnt discreto.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-270",
+  "area": "dashboard-cliente",
+  "kind": "documento",
+  "righe": "885-888",
+  "requisito": "Piano di rilascio dashboard cliente in 3 fasi: 1) Home, Risultati Presenza e Pubblicità, Approvazioni, Report; 2) Documenti e Chiedi all'agenzia; 3) CRM, Fidelity, e-commerce, prenotazioni.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-271",
+  "area": "sito",
+  "kind": "vincolo",
+  "righe": "892",
+  "requisito": "Il sito online non si modifica: la consegna è docs/SITO-BIGANT.md con i modelli di pagina, basata sull'audit del 08/10/2026 e sulla struttura del sito Italiaonline.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-272",
+  "area": "sito",
+  "kind": "documento",
+  "righe": "895-910;828",
+  "requisito": "SITO-BIGANT.md definisce il menu: Servizi in 7 famiglie, Pacchetti con prezzi di partenza, Settori, Analisi gratis, Lavori, Risorse (blog, guide, bandi), Studio, Contatti e pulsante Area clienti.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-273",
+  "area": "sito",
+  "kind": "vincolo",
+  "righe": "907;916;938",
+  "requisito": "Storie di successo, portfolio e loghi clienti si pubblicano solo con autorizzazione registrata nel registro autorizzazioni portfolio.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-274",
+  "area": "sito",
+  "kind": "documento",
+  "righe": "912-923",
+  "requisito": "SITO-BIGANT.md descrive la homepage in 11 sezioni: hero con H1, claim e 2 CTA, 7 famiglie, pacchetti, numeri, 3 storie, perché BigAnt, piattaforma, recensioni, analisi gratuita, risorse, contatti.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-275",
+  "area": "sito",
+  "kind": "documento",
+  "righe": "921;829",
+  "requisito": "Modulo analisi gratuita e Ti richiamiamo noi con soli campi nome, telefono, attività e P.IVA facoltativa.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-276",
+  "area": "sito",
+  "kind": "documento",
+  "righe": "923;944;946-949",
+  "requisito": "Checklist legale del sito: NAP uguale alla scheda Google e due ditte spiegate nel footer, fix errore modulo, noindex sull'area clienti, privacy, cookie, dichiarazione di accessibilità, WhatsApp visibile.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-277",
+  "area": "sito",
+  "kind": "documento",
+  "righe": "925-935",
+  "requisito": "Modello unico di pagina servizio in 8 blocchi (problema, cosa include, pacchetti e prezzo, fasi, cosa vedrai in dashboard, caso studio, FAQ, CTA) con contenuti presi dalle schede S01-S19.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-278",
+  "area": "sito",
+  "kind": "documento",
+  "righe": "937-938",
+  "requisito": "Modello di storia di successo: titolo frase+risultato+cliente, settore, partenza, servizi usati, cosa fatto, risultati con numeri veri, citazione, foto o video, CTA.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-279",
+  "area": "sito",
+  "kind": "documento",
+  "righe": "941-943;945;950",
+  "requisito": "Checklist tecnica SEO del sito: title e meta nuovi, H1 testuale, schema ProfessionalService, testi alternativi alle immagini, velocità e Core Web Vitals.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-280",
+  "area": "sito",
+  "kind": "documento",
+  "righe": "952-957",
+  "requisito": "Ordine di lavoro del sito: 1) correzioni audit e homepage, 2) pagine servizio e Analisi gratis, 3) Pacchetti e Settori, 4) storie di successo dopo autorizzazioni, 5) Risorse e bandi.",
+  "blocco": "parte2-indice-catalogo-guida-dashboard-sito"
+ },
+ {
+  "id": "R-281",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "966-968",
+  "requisito": "S01 Social media management: modulo nel registro servizi con scheda playbook collegata e stato ATTIVO.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-282",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "969;1022-1024",
+  "requisito": "Ogni scheda S01-S19 ha un log modifiche versionato (sez. 15) e gli agenti eseguono sempre la versione corrente: se la scheda cambia, cambia il lavoro degli agenti.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-283",
+  "area": "servizi",
+  "kind": "vincolo",
+  "righe": "969;979-980",
+  "requisito": "I campi [DA DEFINIRE], [DA MISURARE] e [DA VALIDARE] delle schede servizio li compilano solo i soci: gli agenti non li riempiono con valori propri.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-284",
+  "area": "pacchetti",
+  "kind": "funzionale",
+  "righe": "980;1020",
+  "requisito": "Per ogni servizio si misura il tempo interno mensile per cliente nei primi 3 mesi e si calcola il costo interno (ore × costo orario + strumenti + collaboratori) per verificare il margine delle fasce.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-285",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "985-991",
+  "requisito": "S01: flusso con stati: scheda DNA approvata, piano editoriale entro il 20 (ok socio poi cliente), copy/brief/grafica/video, QA brand-guardian a DA APPROVARE, ok cliente, programmazione, report e log feedback.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-286",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "993-994;999-1000",
+  "requisito": "S01: pubblicazioni e invii nella coda approvazioni comune (ok con nome e data); strumenti: ped.bigantagency.it, Postiz o equivalente, Canva, Adobe, CapCut, Meta Business Suite, LinkedIn, TikTok.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-287",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "996-997",
+  "requisito": "S01: dashboard cliente mostra copertura, interazioni e tasso di interazione, crescita follower, clic e messaggi, contatti attribuiti ai social, puntualità (% contenuti usciti da piano).",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-288",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1003;1064;1124;1536;1652;1824",
+  "requisito": "Il controllo qualità applica la sezione 9 Rischi e compliance di ogni scheda: es. consenso scritto per foto di pazienti, liberatorie, drone ENAC/EASA, licenze, nessuna promessa di conformità legale.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-289",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1005-1006;1126-1127",
+  "requisito": "Le opportunità di upsell di un cliente partono dai servizi collegati (sez. 10) delle schede dei servizi che ha già acquistato.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-290",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1027-1029",
+  "requisito": "S02 Produzione foto, video e drone: modulo nel registro servizi con scheda playbook collegata e stato ATTIVO.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-291",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1046-1052",
+  "requisito": "S02: flusso con stati: brief da SOP Pipeline Video AI, storyboard e riprese (agente video) con ok socio, shooting, montaggio (hook 3s, sottotitoli brevi), ok cliente, consegna in area clienti, log feedback.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-292",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1054-1055;1060-1061",
+  "requisito": "S02: storyboard, consegne e pubblicazioni nella coda approvazioni comune con nome e data; strumenti: Runway, Artlist, CapCut, Adobe, drone (modello e abilitazioni da verificare).",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-293",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1057-1058",
+  "requisito": "S02: dashboard cliente mostra visualizzazioni e tasso di completamento video, consegne nei tempi, numero di revisioni per progetto, riutilizzo dei contenuti su più canali.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-294",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1088-1090",
+  "requisito": "S03 Google Ads (Search, Performance Max, YouTube): modulo nel registro servizi con scheda collegata e stato ATTIVO con metodo già scritto.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-295",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1107-1112",
+  "requisito": "S03: flusso da 00_METODO-OPERATIVO (brief, mappa leve 11 sezioni, mai wizard): proposta struttura (agente ADS) con ok Raffaele, messa online, controllo settimanale termini/negative/budget/spesa, report mensile.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-296",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1114-1115;1120-1121",
+  "requisito": "S03: struttura campagne e spese nella coda approvazioni comune con nome e data; integrazioni: Google Ads (MCC BigAnt), Google Ads API (developer token), Tag Manager, GA4.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-297",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1117-1118",
+  "requisito": "S03: dashboard cliente mostra conversioni (chiamate, form, WhatsApp), costo per contatto, tasso di conversione, quota impressioni, spesa rispetto al budget.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-298",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1148-1150",
+  "requisito": "S04 Meta Ads e social a pagamento: modulo nel registro con scheda collegata e stato (ATTIVO Meta, DA ATTIVARE LinkedIn e TikTok).",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-299",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1167-1172",
+  "requisito": "S04: flusso con stati: brief (obiettivo, pubblico, offerta, budget), 3 varianti creative (agenti ADS e social) con ok, messa online, controllo a 72 ore, ottimizzazione settimanale, contatti al CRM in giornata, report.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-300",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1174-1175;1180-1181",
+  "requisito": "S04: creatività e spese nella coda approvazioni comune con nome e data; integrazioni: Meta Business Suite e Gestione inserzioni, Marketing API (ads_read), pixel e Conversions API.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-301",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1177-1178",
+  "requisito": "S04: dashboard cliente mostra costo per contatto, numero di contatti, qualità dei contatti (% utili), CTR, frequenza, spesa.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-302",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1208-1210",
+  "requisito": "S05 SEO (sito, contenuti, tecnica): modulo nel registro servizi con scheda collegata e stato IN PARTE (agenti SEO installati).",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-303",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1227-1231",
+  "requisito": "S05: flusso con stati: audit (seo-content-auditor + tecnico) con priorità, piano keyword e contenuti con ok, ottimizzazioni e contenuti (agenti seo-*) con QA e ok cliente, pubblicazione, refresh mensile.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-304",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1233-1234;1239-1240",
+  "requisito": "S05: piani e pubblicazioni nella coda approvazioni comune con nome e data; integrazioni: Search Console API, GA4 API, agenti seo-*, WordPress (wordpress-mcp) per siti WordPress.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-305",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1236-1237",
+  "requisito": "S05: dashboard cliente mostra clic e impressioni da Search Console, posizioni medie per keyword obiettivo, traffico organico, contatti da organico, pagine indicizzate.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-306",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1268-1270",
+  "requisito": "S06 Local SEO e Google Business Profile: modulo nel registro servizi con scheda collegata e stato ATTIVO (con Vincenzo).",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-307",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1287-1290",
+  "requisito": "S06: flusso con stati: checklist scheda (agente local-GBP) e correzioni di Vincenzo, calendario post GBP con ok e pubblicazione (board Trello GBP OPS), statistiche mensili e report.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-308",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1292-1293;1298-1299",
+  "requisito": "S06: post e modifiche scheda nella coda approvazioni comune con nome e data; integrazioni: Google Business Profile API (da richiedere), Drive GBP CLIENTI - VINCENZO, Trello.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-309",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1295-1296",
+  "requisito": "S06: dashboard cliente mostra visualizzazioni della scheda, chiamate, richieste di indicazioni stradali, clic al sito, posizione nel Local Pack per le ricerche chiave.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-310",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1325-1327",
+  "requisito": "S07 Presenza online multi-directory: modulo nel registro servizi con scheda collegata e stato DA ATTIVARE priorità 1.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-311",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1344-1347",
+  "requisito": "S07: flusso con stati: analisi della presenza (dentro S17), attivazione sulla piattaforma di listing con pubblicazione dati coerenti, controllo mensile incoerenze e risposte degli assistenti AI, report.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-312",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1349-1350;1355-1356",
+  "requisito": "S07: pubblicazione dei dati nella coda approvazioni comune con nome e data; integrazioni: piattaforma di listing white-label (da scegliere), GBP API.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-313",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1352-1353",
+  "requisito": "S07: dashboard cliente mostra numero di directory coerenti, errori corretti, visualizzazioni aggregate, menzioni corrette negli assistenti AI.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-314",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1382-1384",
+  "requisito": "S08 Reputazione e recensioni: modulo nel registro servizi con scheda collegata e stato DA ATTIVARE priorità 1.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-315",
+  "area": "servizi",
+  "kind": "vincolo",
+  "righe": "1399;1417",
+  "requisito": "S08: vietato comprare, inventare o incentivare recensioni (regole Google, Codice del Consumo, Omnibus); richieste solo a clienti con consenso e nessun dato clinico nelle risposte in sanità.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-316",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1401-1405",
+  "requisito": "S08: flusso con stati: kit di raccolta con ok cliente; ogni giorno nuove recensioni, bozza risposta (agente), ok cliente o socio, pubblicazione; recensione negativa con avviso immediato; report mensile.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-317",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1407-1408;1413-1414",
+  "requisito": "S08: bozze di risposta nella coda approvazioni comune con nome e data prima della pubblicazione; integrazioni: GBP API, piattaforma recensioni o listing (S07).",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-318",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1410-1411",
+  "requisito": "S08: dashboard cliente mostra nuove recensioni al mese, voto medio, % di recensioni con risposta, tempo medio di risposta.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-319",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1440-1442",
+  "requisito": "S09 Siti web e landing page: modulo nel registro servizi con scheda collegata e stato ATTIVO.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-320",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1459-1464",
+  "requisito": "S09: flusso con stati: brief e mappa sito con ok, testi (agenti) e design (Alfonso) con ok cliente, sviluppo e controllo (velocità, mobile, SEO, accessibilità, form, tracciamento), pubblicazione, manutenzione.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-321",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1466-1467;1472-1473",
+  "requisito": "S09: mappa, testi, design e pubblicazione nella coda approvazioni comune con nome e data; integrazioni: WordPress (wordpress-mcp) o altro CMS da definire, GA4, Search Console.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-322",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1469-1470",
+  "requisito": "S09: dashboard cliente mostra contatti generati dal sito, tasso di conversione, velocità (Core Web Vitals), uptime.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-323",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1502-1504",
+  "requisito": "S10 Accessibilità digitale dei siti: modulo nel registro servizi con scheda collegata e stato DA ATTIVARE priorità 3.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-324",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1521-1524",
+  "requisito": "S10: flusso con stati: verifica dell'obbligo per il cliente, audit automatico + controllo manuale con report, correzioni, nuova verifica, dichiarazione di accessibilità.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-325",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1526-1527;1532-1533",
+  "requisito": "S10: report, correzioni e dichiarazione nella coda approvazioni comune con nome e data; strumenti: audit WCAG (da scegliere), CMS del cliente.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-326",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1529-1530",
+  "requisito": "S10: dashboard cliente mostra errori di accessibilità risolti, punteggio di accessibilità, pagine conformi.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-327",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1560-1562",
+  "requisito": "S11 E-commerce e social commerce: modulo nel registro servizi con scheda collegata e stato DA ATTIVARE priorità 6.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-328",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1579-1582",
+  "requisito": "S11: flusso con stati: analisi di fattibilità (margini, logistica) e proposta, setup piattaforma e catalogo, test degli ordini con ok, lancio con ADV e social, report mensile.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-329",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1584-1585;1590-1591",
+  "requisito": "S11: proposta, lancio e spese nella coda approvazioni comune con nome e data; integrazioni: Shopify o WooCommerce (da definire), Google Merchant Center, Meta Commerce.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-330",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1587-1588",
+  "requisito": "S11: dashboard cliente mostra ordini, fatturato online, tasso di conversione, valore medio dell'ordine, costo per acquisto.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-331",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1618-1620",
+  "requisito": "S12 Prenotazioni online: modulo nel registro servizi con scheda collegata e stato DA ATTIVARE priorità 5.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-332",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1637-1640",
+  "requisito": "S12: flusso con stati: scelta dello strumento per settore e configurazione, test, collegamento a sito, GBP e social, formazione dello staff, report mensile delle prenotazioni.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-333",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1642-1643;1648-1649",
+  "requisito": "S12: configurazione e collegamenti nella coda approvazioni comune con nome e data; strumenti: strumento di prenotazione per settore (da scegliere), prenotazione diretta su GBP.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-334",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1645-1646",
+  "requisito": "S12: dashboard cliente mostra prenotazioni online al mese, % sul totale, mancate presentazioni, prenotazioni fuori orario.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-335",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1675-1677",
+  "requisito": "S13 Centralino AI e chatbot: modulo nel registro servizi con scheda collegata e stato DA ATTIVARE priorità 5.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-336",
+  "area": "servizi",
+  "kind": "vincolo",
+  "righe": "1684;1709",
+  "requisito": "S13: il bot risponde solo con informazioni approvate e passa i casi a un umano; in sanità non dà mai consigli medici e indirizza le urgenze al 112; informativa privacy sulle chiamate registrate.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-337",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1694-1697",
+  "requisito": "S13: flusso con stati: base di conoscenza (agente) con ok cliente, configurazione centralino o chatbot, test con casi reali e ok, revisione settimanale delle conversazioni e aggiornamento.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-338",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1699-1700;1705-1706",
+  "requisito": "S13: base di conoscenza e configurazione nella coda approvazioni comune con nome e data; integrazione: piattaforma voce/chat AI da scegliere (costi al minuto, italiano, GDPR, server UE).",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-339",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1702-1703",
+  "requisito": "S13: dashboard cliente mostra chiamate e chat gestite, contatti raccolti, % di risposte corrette, casi passati all'umano.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-340",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1732-1734",
+  "requisito": "S14 Email marketing, CRM e gestione contatti: modulo nel registro servizi con scheda collegata e stato DA ATTIVARE.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-341",
+  "area": "servizi",
+  "kind": "vincolo",
+  "righe": "1749;1766",
+  "requisito": "S14 e Fidelity: contatti usati per il marketing solo con consenso esplicito documentato, disiscrizione facile, nessuna lista comprata.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-342",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1751-1754",
+  "requisito": "S14: flusso con stati: collegamento delle fonti (form, ADV, WhatsApp, centralino) al CRM, automazioni base con ok, una campagna email al mese (agente) con controllo qualità, ok e poi invio.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-343",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1756-1757;1762-1763",
+  "requisito": "S14: automazioni e invii email nella coda approvazioni comune con nome e data; integrazioni: CRM di BigAnt OS o strumento esterno (da definire), piattaforma email.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-344",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1759-1760",
+  "requisito": "S14: dashboard cliente mostra contatti per fonte, tempo di risposta del cliente, tasso di apertura e clic, vendite da email.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-345",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1790-1792",
+  "requisito": "S15 Branding e corporate design: modulo nel registro servizi con scheda collegata e stato ATTIVO (Alfonso).",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-346",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1809-1812",
+  "requisito": "S15: flusso con stati: brief e ricerca concorrenti (agente competitive-analyst) con ok, proposte di Alfonso, scelta cliente e rifinitura, consegna file in 05_LOGO-E-BRAND con brand book e scheda DNA.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-347",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1814-1815;1820-1821",
+  "requisito": "S15: proposte e consegne nella coda approvazioni comune con nome e data; strumenti: Adobe, Figma, Canva (per i modelli usati dal cliente).",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-348",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1817-1818",
+  "requisito": "S15: dashboard cliente mostra rispetto dei tempi, numero di revisioni, adozione del brand sui canali.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-349",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1848-1850",
+  "requisito": "S16 Merch e abbigliamento personalizzato: modulo nel registro servizi con scheda collegata e stato ATTIVO.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-350",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1867-1869",
+  "requisito": "S16: flusso con stati: richiesta, bozza di preventivo (agente) approvata dal socio, ok cliente e acconto, grafica (Alfonso), campione con ok, produzione, consegna.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-351",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1871-1872;1877-1878",
+  "requisito": "S16: preventivi, campioni e ordini nella coda approvazioni comune con nome e data; strumenti: elenco fornitori da compilare nel gestionale.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-352",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1874-1875",
+  "requisito": "S16: KPI margine per ordine, tempi di consegna e riordini in dashboard; il margine resta visibile solo ai soci (regola economia), al cliente tempi e riordini.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-353",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1903-1905",
+  "requisito": "S17 Analisi gratuita della presenza online (commerciale): modulo nel registro servizi con scheda collegata e stato DA ATTIVARE priorità 2.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-354",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1912;1945-1952",
+  "requisito": "S17: report in due versioni, lampo (punteggio + 3 problemi) e completa (sito, scheda Google, recensioni, social, coerenza dati, 2-3 concorrenti locali, 3 azioni, invito a chiamata).",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-355",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1922-1925",
+  "requisito": "S17: flusso con stati: lead da ricerca clienti o richiesta dal sito, analisi automatica (agenti), controllo di un socio, invio solo dopo ok, follow-up (agente sales), appuntamento, proposta.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-356",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1927-1928;1933-1934",
+  "requisito": "S17: invio dell'analisi nella coda approvazioni comune con nome e data; strumenti: ricerca clienti in BigAnt OS, agenti SEO e local, PageSpeed.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-357",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1930-1931",
+  "requisito": "S17: dashboard mostra analisi inviate, % di risposte, appuntamenti fissati, clienti acquisiti, tempo per produrre un'analisi.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-358",
+  "area": "growth-fidelity",
+  "kind": "vincolo",
+  "righe": "1937",
+  "requisito": "Ricerca clienti e S17: il contatto a freddo rispetta GDPR e Registro delle opposizioni per le telefonate; le analisi non usano toni denigratori verso la concorrenza.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-359",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1960-1962",
+  "requisito": "S18 Reporting e dashboard cliente (trasversale): modulo nel registro servizi con scheda collegata e stato IN COSTRUZIONE.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-360",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1979-1982",
+  "requisito": "S18: flusso con stati: dati automatici dalle API in dashboard, report il primo giorno lavorativo del mese (agente reporter), controllo socio, pubblicazione in area clienti, call trimestrale per livello alto.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-361",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1984-1985;1990-1991",
+  "requisito": "S18: report mensile nella coda approvazioni comune con nome e data prima della pubblicazione; integrazioni: BigAnt OS, API Google e Meta (vedi ACCESSI-API-BIGANT-OS.md).",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-362",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "1987-1988",
+  "requisito": "S18: dashboard mostra report consegnati in tempo, accessi del cliente alla dashboard, rinnovi, clienti persi.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-363",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "2016-2018",
+  "requisito": "S19 Pubblicità offline tramite partner (DOOH, insegne, TV/cinema): modulo nel registro servizi con scheda collegata e stato SU RICHIESTA.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-364",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "2035-2036",
+  "requisito": "S19: flusso con stati: proposta e preventivo del partner, ok del cliente, creatività (Alfonso/Raffaele), messa in onda, report del partner.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-365",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "2038-2039;2044-2045",
+  "requisito": "S19: preventivo, creatività e messa in onda nella coda approvazioni comune con nome e data; strumenti: partner esterni.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-366",
+  "area": "servizi",
+  "kind": "funzionale",
+  "righe": "2041-2042",
+  "requisito": "S19: dashboard cliente mostra copertura dichiarata dal partner e contatti nel periodo della campagna.",
+  "blocco": "parte2-schede-S01-S19"
+ },
+ {
+  "id": "R-367",
+  "area": "integrazioni",
+  "kind": "documento",
+  "righe": "2073-2098;2162-2184",
+  "requisito": "Creare docs/INTEGRAZIONI-ACCESSI.md con ordine consigliato degli accessi API, tempi, requisiti, checklist, tabella date invio/esito e fonti ufficiali da ricontrollare prima di ogni invio.",
+  "blocco": "parte3-accessi"
+ },
+ {
+  "id": "R-368",
+  "area": "integrazioni",
+  "kind": "vincolo",
+  "righe": "2081-2085;2105;2163",
+  "requisito": "Account tecnico proprietario unico (Workspace aziendale consigliato, Gmail come alternativa) e ditta per la verifica Meta restano [DA DECIDERE] tra i soci: il sistema non li assume né li inventa.",
+  "blocco": "parte3-accessi"
+ },
+ {
+  "id": "R-369",
+  "area": "integrazioni",
+  "kind": "funzionale",
+  "righe": "2093;2102-2110;2141",
+  "requisito": "Prerequisito verifica aziendale Meta tracciato (ditta, stato, esito) a nome di una sola ditta reale: finché non approvata il connettore Meta Ads resta in modalità DEMO.",
+  "blocco": "parte3-accessi"
+ },
+ {
+  "id": "R-370",
+  "area": "integrazioni",
+  "kind": "funzionale",
+  "righe": "2094;2112-2124",
+  "requisito": "Connettore Google Business Profile predisposto (dati scheda, metriche, recensioni, post) con DEMO; collegamento reale disattivato da variabile d'ambiente fino all'approvazione Basic Access.",
+  "blocco": "parte3-accessi"
+ },
+ {
+  "id": "R-371",
+  "area": "integrazioni",
+  "kind": "funzionale",
+  "righe": "2095;2126-2138",
+  "requisito": "Connettore Google Ads via MCC predisposto (spesa, conversioni, costo per lead) con DEMO; reale disattivato da variabile d'ambiente fino al token Basic; raccomandazioni budget/keyword applicate solo da umano.",
+  "blocco": "parte3-accessi"
+ },
+ {
+  "id": "R-372",
+  "area": "integrazioni",
+  "kind": "funzionale",
+  "righe": "2096;2140-2151",
+  "requisito": "Connettore Meta Marketing API predisposto per spesa e risultati Facebook/Instagram Ads con DEMO; reale disattivato da variabile d'ambiente; richiede solo ads_read, mai ads_management.",
+  "blocco": "parte3-accessi"
+ },
+ {
+  "id": "R-373",
+  "area": "integrazioni",
+  "kind": "funzionale",
+  "righe": "2097;2153-2158",
+  "requisito": "Connettore GA4 e Search Console predisposto (visite, conversioni, posizioni) con DEMO, reale disattivato da variabile d'ambiente, solo scope in sola lettura e consenso OAuth in Production (no scadenza 7 giorni).",
+  "blocco": "parte3-accessi"
+ },
+ {
+  "id": "R-374",
+  "area": "integrazioni",
+  "kind": "vincolo",
+  "righe": "2098",
+  "requisito": "LinkedIn e TikTok API rimandate: nessun connettore in questa fase; le statistiche social passano dallo strumento di programmazione social.",
+  "blocco": "parte3-accessi"
+ },
+ {
+  "id": "R-375",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "2124",
+  "requisito": "Risposte alle recensioni e post locali GBP pubblicati solo dopo approvazione umana; nessuna creazione o rivendicazione massiva di schede e nessuna rivendita di accesso API.",
+  "blocco": "parte3-accessi"
+ },
+ {
+  "id": "R-376",
+  "area": "integrazioni",
+  "kind": "funzionale",
+  "righe": "2141;2150-2151",
+  "requisito": "Schermata DEMO del flusso di collegamento Meta (login con Facebook, consenso, dati delle campagne) pronta per il video richiesto dalla review ads_read, senza collegare account reali.",
+  "blocco": "critico"
+ },
+ {
+  "id": "R-377",
+  "area": "sicurezza",
+  "kind": "vincolo",
+  "righe": "2149-2151;2162-2169",
+  "requisito": "Richieste di accesso, verifica Meta, creazione progetto Cloud e app Meta restano azioni manuali dei soci da checklist: nessun agente le invia o le crea durante il prototipo.",
+  "blocco": "parte3-accessi"
+ }
+]

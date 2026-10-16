@@ -1,0 +1,14 @@
+.sources/
+.data/
+.env
+.env.*
+!.env.example
+node_modules/
+coverage/
+*.sqlite*
+*.db
+*.log
+.DS_Store
+docs/prove-private/
+
+.cache/
