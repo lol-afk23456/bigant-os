@@ -2080,8 +2080,8 @@ Commissione del 10–15% sull'acquisto degli spazi, oppure ricarico concordato +
 
 #### DECISIONE PRELIMINARE: quale account usare
 Tutte le richieste devono partire dallo **stesso account aziendale**, non da quelli personali, perché resterà il "proprietario" tecnico di BigAnt OS.
-- **Consigliato:** un account Google Workspace dell'agenzia (per esempio `tech@bigantagency.it`). Workspace serve anche per avere una "Organization" su Google Cloud, che la richiesta GBP chiede.
-- **Alternativa:** l'account `grandinetti.bi@gmail.com` già usato da Codex funziona per partire, ma un Gmail personale non ha una Organization e lega tutto a una persona.
+- **Consigliato:** un account Google Workspace dell'agenzia (per esempio una casella tecnica dedicata sul dominio dell'agenzia). Workspace serve anche per avere una "Organization" su Google Cloud, che la richiesta GBP chiede.
+- **Alternativa:** l'account Gmail personale già usato da Codex funziona per partire, ma un Gmail personale non ha una Organization e lega tutto a una persona.
 - **Da decidere tra i soci:** [DA DECIDERE]
 
 ---
